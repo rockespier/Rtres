@@ -1,0 +1,583 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rtres Web Solutions — Profesionales en soluciones web</title>
+<meta name="description" content="Diseño de sitios web, e-commerce, SEO/SEM y desarrollo a medida. 18+ años de experiencia, 300+ proyectos entregados.">
+<link rel="icon" href="assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          bg: '#ffffff',
+          surface: 'rgba(18,20,15,.035)',
+          primary: { DEFAULT:'#6f9a35', strong:'#c6f269', dim:'#587c29' },
+          green: '#4a6b1f',
+          accent: '#1f9c86',
+          accent2: '#6b5fd1', warning: '#b6720a',
+          ink: '#12140f',
+          muted: '#5c6355'
+        },
+        fontFamily: {
+          sans: ['Inter','system-ui','sans-serif'],
+          display: ['Space Grotesk','Inter','sans-serif'],
+          serif: ['Instrument Serif','Georgia','serif']
+        }
+      }
+    }
+  }
+</script>
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body class="bg-bg text-ink antialiased">
+
+<!-- TOP BAR -->
+<div class="hidden sm:block border-b border-black/5" style="background:var(--bg-alt)">
+  <div class="wrap flex items-center justify-between h-10 text-xs">
+    <div class="flex items-center gap-5 text-muted">
+      <a href="mailto:info@rtres.net" class="flex items-center gap-1.5 hover:text-ink transition">
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6l9 7 9-7M3 6h18v12H3V6z"/></svg>
+        info@rtres.net
+      </a>
+      <a href="tel:+393281915399" class="hidden md:flex items-center gap-1.5 hover:text-ink transition">
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6 19.8 19.8 0 01-3.1-8.7A2 2 0 014.1 2h3a2 2 0 012 1.7c.1 1 .3 2 .7 3a2 2 0 01-.4 2.1L8 10.3a16 16 0 006 6l1.5-1.4a2 2 0 012.1-.4c1 .4 2 .6 3 .7a2 2 0 011.7 2z"/></svg>
+        +39 328 191 5399
+      </a>
+    </div>
+    <div class="flex items-center gap-4">
+      <div class="flex items-center gap-1 font-semibold">
+        <button data-lang-btn="es" class="px-1.5 py-1 rounded hover:bg-black/5 transition">ES</button>
+        <span class="text-black/15">/</span>
+        <button data-lang-btn="en" class="px-1.5 py-1 rounded hover:bg-black/5 transition">EN</button>
+        <span class="text-black/15">/</span>
+        <button data-lang-btn="it" class="px-1.5 py-1 rounded hover:bg-black/5 transition">IT</button>
+      </div>
+      <span class="w-px h-3 bg-black/10"></span>
+      <a href="portal/login.html" class="text-muted hover:text-ink transition" data-i18n="nav.login">Iniciar sesión</a>
+    </div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header data-site-header class="glass sticky top-0 z-50 transition-all duration-300">
+  <div class="wrap flex items-center h-[112px]">
+    <a href="index.html" class="flex items-center shrink-0">
+      <img src="assets/logo.png" alt="Rtres Web Solutions" class="h-20 w-auto">
+    </a>
+
+    <nav class="hidden lg:flex items-center gap-8 mx-auto">
+      <a href="#inicio" class="nav-link" data-i18n="nav.inicio">Inicio</a>
+      <a href="#features" class="nav-link" data-i18n="nav.features">Características</a>
+      <a href="#projects" class="nav-link" data-i18n="nav.projects">Proyectos</a>
+      <a href="#pricing" class="nav-link" data-i18n="nav.pricing">Precios</a>
+      <a href="#faq" class="nav-link" data-i18n="nav.faq">FAQ</a>
+      <a href="#reviews" class="nav-link" data-i18n="nav.reviews">Opiniones</a>
+    </nav>
+
+    <div class="flex items-center gap-3 shrink-0 ml-auto lg:ml-0">
+      <a href="#contact" class="btn btn-primary" data-i18n="nav.cta">Solicitar cotización</a>
+      <button data-menu-btn class="lg:hidden p-2 rounded-lg border border-black/10" aria-label="Menú">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div data-mobile-menu class="hidden lg:hidden glass-strong border-t border-black/10">
+    <div class="wrap py-5 flex flex-col gap-4">
+      <a href="#inicio" class="nav-link" data-i18n="nav.inicio">Inicio</a>
+      <a href="#features" class="nav-link" data-i18n="nav.features">Características</a>
+      <a href="#projects" class="nav-link" data-i18n="nav.projects">Proyectos</a>
+      <a href="#pricing" class="nav-link" data-i18n="nav.pricing">Precios</a>
+      <a href="#faq" class="nav-link" data-i18n="nav.faq">FAQ</a>
+      <a href="#reviews" class="nav-link" data-i18n="nav.reviews">Opiniones</a>
+      <a href="portal/login.html" class="nav-link" data-i18n="nav.login">Iniciar sesión</a>
+      <div class="flex items-center gap-3 text-xs font-semibold pt-2 border-t border-black/10">
+        <button data-lang-btn="es">ES</button><span class="text-black/15">/</span>
+        <button data-lang-btn="en">EN</button><span class="text-black/15">/</span>
+        <button data-lang-btn="it">IT</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<section id="inicio" class="relative pt-16 pb-24 overflow-hidden">
+  <div class="wrap relative z-10">
+    <div class="reveal is-visible inline-flex">
+      <span class="badge"><span class="dot"></span><span data-i18n="hero.eyebrow">18+ años de experiencia · 300+ proyectos entregados</span></span>
+    </div>
+  </div>
+
+  <!-- giant wordmark -->
+  <div class="wrap relative reveal is-visible">
+    <p class="huge huge-fill -mb-4 sm:-mb-8 mt-2" data-i18n="hero.giant">CRECE</p>
+  </div>
+
+  <div class="wrap relative z-10">
+    <div class="grid lg:grid-cols-12 gap-10 lg:gap-8 items-end">
+      <div class="lg:col-span-7 reveal is-visible" style="transition-delay:.08s">
+        <h1 class="font-display font-semibold text-[32px] sm:text-[42px] lg:text-[50px] leading-[1.1] tracking-tight max-w-xl">
+          <span data-i18n="hero.title.line1">Soluciones web que</span>
+          <span class="font-serif text-green" data-i18n="hero.title.line2"> convierten visitas en clientes</span>
+        </h1>
+        <p class="mt-6 text-muted text-lg max-w-md" data-i18n="hero.sub">Diseñamos y desarrollamos sitios, tiendas y sistemas a medida — con soporte y gestión de clientes en un solo lugar.</p>
+        <div class="mt-9 flex flex-wrap items-center gap-4">
+          <a href="#contact" class="btn btn-primary text-[15px] px-7 py-3.5" data-i18n="hero.cta.primary">Solicitar cotización</a>
+          <a href="#pricing" class="btn btn-ghost text-[15px] px-7 py-3.5" data-i18n="hero.cta.secondary">Ver planes</a>
+        </div>
+      </div>
+
+      <div class="lg:col-span-5 relative reveal is-visible" style="transition-delay:.16s">
+        <div class="sunburst w-[420px] h-[420px] -top-16 -right-10 hidden sm:block"></div>
+        <div class="photo-duotone rounded-[28px] aspect-[4/5] relative">
+          <img src="https://picsum.photos/id/48/900/1100" alt="Equipo de Rtres trabajando en un proyecto web">
+        </div>
+        <div class="float-card -bottom-8 -left-6 sm:-left-10 p-5 w-[210px]">
+          <p class="font-display text-3xl font-semibold" data-i18n="hero.float.number">300+</p>
+          <p class="text-xs text-muted mt-1" data-i18n="hero.float.label">Proyectos entregados</p>
+          <div class="flex items-center gap-1.5 mt-3 pt-3 border-t border-black/10">
+            <span class="text-green text-sm">★★★★★</span>
+            <span class="text-xs text-muted" data-i18n="hero.float.rating">5.0 · 18 años</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- trust marquee -->
+    <div class="mt-24 pt-10 border-t border-black/5 text-center">
+      <p class="text-xs uppercase tracking-[.18em] text-muted mb-6" data-i18n="hero.trust">Marcas que confían en nosotros</p>
+      <div class="marquee overflow-hidden mask-fade">
+        <div class="marquee-track items-center opacity-70">
+          <span class="font-display text-xl tracking-tight">Alliance Assist</span>
+          <span class="font-display text-xl tracking-tight">TSA</span>
+          <span class="font-display text-xl tracking-tight">Atiq</span>
+          <span class="font-display text-xl tracking-tight">Kaizen Stays</span>
+          <span class="font-display text-xl tracking-tight">Air Perú Soluciones</span>
+          <span class="font-display text-xl tracking-tight">The Forest</span>
+          <span class="font-display text-xl tracking-tight">SoldiMix</span>
+          <span class="font-display text-xl tracking-tight">CROSLAND</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES (numbered index list) -->
+<section id="features" class="relative py-28 border-t border-black/5">
+  <div class="wrap">
+    <div class="reveal flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-4">
+      <h2 class="font-display font-semibold text-4xl sm:text-5xl tracking-tight max-w-xl" data-i18n="features.title">Todo lo que tu negocio necesita, en un solo partner</h2>
+      <p class="text-muted text-lg max-w-sm" data-i18n="features.sub">De la idea al lanzamiento, y del lanzamiento al crecimiento sostenido.</p>
+    </div>
+
+    <div>
+      <div class="reveal num-row">
+        <span class="num">01</span>
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+          <div>
+            <h3 class="font-display text-2xl font-semibold" data-i18n="feat.1.title">Diseño de sitios web</h3>
+            <p class="text-muted mt-1.5 max-w-lg" data-i18n="feat.1.desc">Sitios rápidos, responsivos y orientados a conversión.</p>
+          </div>
+        </div>
+      </div>
+      <div class="reveal num-row" style="transition-delay:.04s">
+        <span class="num">02</span>
+        <div>
+          <h3 class="font-display text-2xl font-semibold" data-i18n="feat.2.title">SEO & SEM</h3>
+          <p class="text-muted mt-1.5 max-w-lg" data-i18n="feat.2.desc">Posicionamos tu marca entre los primeros resultados.</p>
+        </div>
+      </div>
+      <div class="reveal num-row" style="transition-delay:.08s">
+        <span class="num">03</span>
+        <div>
+          <h3 class="font-display text-2xl font-semibold" data-i18n="feat.3.title">Desarrollo a medida</h3>
+          <p class="text-muted mt-1.5 max-w-lg" data-i18n="feat.3.desc">Sistemas y plataformas construidas para tu operación.</p>
+        </div>
+      </div>
+      <div class="reveal num-row" style="transition-delay:.12s">
+        <span class="num">04</span>
+        <div>
+          <h3 class="font-display text-2xl font-semibold" data-i18n="feat.4.title">E-commerce</h3>
+          <p class="text-muted mt-1.5 max-w-lg" data-i18n="feat.4.desc">Catálogo, carrito y pasarela de pagos integrados.</p>
+        </div>
+      </div>
+      <div class="reveal num-row" style="transition-delay:.16s">
+        <span class="num">05</span>
+        <div>
+          <h3 class="font-display text-2xl font-semibold" data-i18n="feat.5.title">Soporte y mantenimiento</h3>
+          <p class="text-muted mt-1.5 max-w-lg" data-i18n="feat.5.desc">Planes mensuales con tickets y tiempos de respuesta claros.</p>
+        </div>
+      </div>
+      <div class="reveal num-row" style="transition-delay:.2s">
+        <span class="num">06</span>
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h3 class="font-display text-2xl font-semibold" data-i18n="feat.6.title">Portal de clientes</h3>
+            <p class="text-muted mt-1.5 max-w-lg" data-i18n="feat.6.desc">Gestiona tus productos, pagos y soporte en un solo panel.</p>
+          </div>
+          <a href="portal/login.html" class="btn btn-ghost shrink-0 text-sm">Preview del portal →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects" class="relative py-28 border-t border-black/5">
+  <div class="wrap relative reveal is-visible overflow-hidden">
+    <p class="huge huge-fill -mb-4 sm:-mb-6" data-i18n="projects.giant">PROYECTOS</p>
+  </div>
+
+  <div class="wrap relative z-10">
+    <div class="reveal flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-12">
+      <h2 class="font-display font-semibold text-4xl sm:text-5xl tracking-tight max-w-xl" data-i18n="projects.title">Trabajo que habla por nosotros</h2>
+      <div class="flex flex-col gap-4 lg:items-end">
+        <p class="text-muted text-lg max-w-sm lg:text-right" data-i18n="projects.sub">Una muestra de sitios y sistemas que hemos construido para nuestros clientes.</p>
+        <a href="#contact" class="btn btn-primary w-fit shrink-0" data-i18n="projects.cta">Ver todos los proyectos</a>
+      </div>
+    </div>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="reveal">
+        <a href="#contact" class="proj-card block">
+          <div class="photo-duotone aspect-[4/5]">
+            <img src="https://picsum.photos/id/60/600/750" alt="Proyecto — Alliance Assist">
+          </div>
+          <div class="proj-overlay"><span class="proj-pill" data-i18n="projects.view">Ver proyecto</span></div>
+        </a>
+        <div class="flex items-center justify-between mt-4">
+          <p class="font-display font-semibold">Alliance Assist</p>
+          <p class="text-xs text-muted uppercase tracking-wide text-right" data-i18n="proj.1.cat">Asistencia al viajero</p>
+        </div>
+      </div>
+      <div class="reveal" style="transition-delay:.04s">
+        <a href="#contact" class="proj-card block">
+          <div class="photo-duotone aspect-[4/5]">
+            <img src="https://picsum.photos/id/96/600/750" alt="Proyecto — TSA">
+          </div>
+          <div class="proj-overlay"><span class="proj-pill" data-i18n="projects.view">Ver proyecto</span></div>
+        </a>
+        <div class="flex items-center justify-between mt-4">
+          <p class="font-display font-semibold">TSA</p>
+          <p class="text-xs text-muted uppercase tracking-wide text-right" data-i18n="proj.2.cat">Tarjetas de asistencia</p>
+        </div>
+      </div>
+      <div class="reveal" style="transition-delay:.08s">
+        <a href="#contact" class="proj-card block">
+          <div class="photo-duotone aspect-[4/5]">
+            <img src="https://picsum.photos/id/119/600/750" alt="Proyecto — Atiq">
+          </div>
+          <div class="proj-overlay"><span class="proj-pill" data-i18n="projects.view">Ver proyecto</span></div>
+        </a>
+        <div class="flex items-center justify-between mt-4">
+          <p class="font-display font-semibold">Atiq</p>
+          <p class="text-xs text-muted uppercase tracking-wide text-right" data-i18n="proj.3.cat">Educación online</p>
+        </div>
+      </div>
+      <div class="reveal" style="transition-delay:.12s">
+        <a href="#contact" class="proj-card block">
+          <div class="photo-duotone aspect-[4/5]">
+            <img src="https://picsum.photos/id/180/600/750" alt="Proyecto — Kaizen Stays">
+          </div>
+          <div class="proj-overlay"><span class="proj-pill" data-i18n="projects.view">Ver proyecto</span></div>
+        </a>
+        <div class="flex items-center justify-between mt-4">
+          <p class="font-display font-semibold">Kaizen Stays</p>
+          <p class="text-xs text-muted uppercase tracking-wide text-right" data-i18n="proj.4.cat">Hospedaje</p>
+        </div>
+      </div>
+      <div class="reveal" style="transition-delay:.16s">
+        <a href="#contact" class="proj-card block">
+          <div class="photo-duotone aspect-[4/5]">
+            <img src="https://picsum.photos/id/250/600/750" alt="Proyecto — Air Perú Soluciones">
+          </div>
+          <div class="proj-overlay"><span class="proj-pill" data-i18n="projects.view">Ver proyecto</span></div>
+        </a>
+        <div class="flex items-center justify-between mt-4">
+          <p class="font-display font-semibold">Air Perú Soluciones</p>
+          <p class="text-xs text-muted uppercase tracking-wide text-right" data-i18n="proj.5.cat">Industrial</p>
+        </div>
+      </div>
+      <div class="reveal" style="transition-delay:.2s">
+        <a href="#contact" class="proj-card block">
+          <div class="photo-duotone aspect-[4/5]">
+            <img src="https://picsum.photos/id/342/600/750" alt="Proyecto — The Forest">
+          </div>
+          <div class="proj-overlay"><span class="proj-pill" data-i18n="projects.view">Ver proyecto</span></div>
+        </a>
+        <div class="flex items-center justify-between mt-4">
+          <p class="font-display font-semibold">The Forest</p>
+          <p class="text-xs text-muted uppercase tracking-wide text-right" data-i18n="proj.6.cat">Gastronomía</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing" class="relative py-28 border-t border-black/5">
+  <div class="wrap">
+    <div class="reveal max-w-2xl mb-16 mx-auto text-center">
+      <p class="text-xs uppercase tracking-[.15em] text-green font-semibold" data-i18n="pricing.eyebrow">Precios</p>
+      <h2 class="font-display font-semibold text-4xl sm:text-5xl tracking-tight mt-4" data-i18n="pricing.title">Planes claros, sin sorpresas</h2>
+      <p class="mt-5 text-muted text-lg" data-i18n="pricing.sub">Un único pago para tu sitio — IGV no incluido.</p>
+    </div>
+
+    <div class="reveal grid grid-cols-1 lg:grid-cols-3 lg:divide-x divide-black/10 border-y border-black/10 max-w-6xl mx-auto">
+      <!-- Plan 1 -->
+      <div class="py-10 px-2 lg:px-10 border-b lg:border-b-0 border-black/10 flex flex-col">
+        <h3 class="font-display text-lg font-semibold text-muted" data-i18n="plan.1.name">Sitio Vitrina / Blog</h3>
+        <div class="mt-5 flex items-end gap-2">
+          <span class="font-display text-5xl font-semibold" data-i18n="plan.1.price">$390</span>
+        </div>
+        <p class="text-sm text-muted mt-1" data-i18n="plan.1.period">Pago único</p>
+        <ul class="mt-7 space-y-3.5 flex-1 text-[15px]">
+          <li class="flex items-start gap-2.5"><svg class="w-5 h-5 text-primary shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg><span data-i18n="plan.1.f1">Diseño responsivo a medida</span></li>
+          <li class="flex items-start gap-2.5"><svg class="w-5 h-5 text-primary shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg><span data-i18n="plan.1.f2">Hasta 5 páginas</span></li>
+          <li class="flex items-start gap-2.5"><svg class="w-5 h-5 text-primary shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg><span data-i18n="plan.1.f3">Blog integrado</span></li>
+          <li class="flex items-start gap-2.5"><svg class="w-5 h-5 text-primary shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg><span data-i18n="plan.1.f4">SEO on-page básico</span></li>
+        </ul>
+        <a href="#contact" class="btn btn-ghost justify-center mt-8" data-i18n="plan.1.cta">Empezar</a>
+      </div>
+
+      <!-- Plan 2 - featured -->
+      <div class="panel-strong py-10 px-6 lg:px-10 flex flex-col relative" style="border-top:3px solid var(--primary)">
+        <span class="badge w-fit" style="background:var(--primary-strong);color:#12140f;border:none" data-i18n="plan.2.badge">Más elegido</span>
+        <h3 class="font-display text-lg font-semibold mt-4" data-i18n="plan.2.name">Tienda Online</h3>
+        <div class="mt-5 flex items-end gap-2">
+          <span class="font-display text-5xl font-semibold" data-i18n="plan.2.price">$490</span>
+        </div>
+        <p class="text-sm text-muted mt-1" data-i18n="plan.2.period">Pago único</p>
+        <ul class="mt-7 space-y-3.5 flex-1 text-[15px]">
+          <li class="flex items-start gap-2.5"><svg class="w-5 h-5 text-primary shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg><span data-i18n="plan.2.f1">E-commerce completo</span></li>
+          <li class="flex items-start gap-2.5"><svg class="w-5 h-5 text-primary shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg><span data-i18n="plan.2.f2">Pasarela de pagos integrada</span></li>
+          <li class="flex items-start gap-2.5"><svg class="w-5 h-5 text-primary shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg><span data-i18n="plan.2.f3">Catálogo de productos ilimitado</span></li>
+          <li class="flex items-start gap-2.5"><svg class="w-5 h-5 text-primary shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg><span data-i18n="plan.2.f4">Panel de gestión incluido</span></li>
+        </ul>
+        <a href="#contact" class="btn btn-primary justify-center mt-8" data-i18n="plan.2.cta">Empezar</a>
+      </div>
+
+      <!-- Plan 3 -->
+      <div class="py-10 px-2 lg:px-10 border-t lg:border-t-0 border-black/10 flex flex-col">
+        <h3 class="font-display text-lg font-semibold text-muted" data-i18n="plan.3.name">A Medida</h3>
+        <div class="mt-5 flex items-end gap-2">
+          <span class="font-display text-4xl font-semibold" data-i18n="plan.3.price">Cotización</span>
+        </div>
+        <p class="text-sm text-muted mt-1" data-i18n="plan.3.period">Sistemas y plataformas complejas</p>
+        <ul class="mt-7 space-y-3.5 flex-1 text-[15px]">
+          <li class="flex items-start gap-2.5"><svg class="w-5 h-5 text-primary shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg><span data-i18n="plan.3.f1">Desarrollo de sistemas</span></li>
+          <li class="flex items-start gap-2.5"><svg class="w-5 h-5 text-primary shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg><span data-i18n="plan.3.f2">Integraciones vía API</span></li>
+          <li class="flex items-start gap-2.5"><svg class="w-5 h-5 text-primary shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg><span data-i18n="plan.3.f3">Consultoría técnica</span></li>
+          <li class="flex items-start gap-2.5"><svg class="w-5 h-5 text-primary shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg><span data-i18n="plan.3.f4">Soporte dedicado</span></li>
+        </ul>
+        <a href="#contact" class="btn btn-ghost justify-center mt-8" data-i18n="plan.3.cta">Hablemos</a>
+      </div>
+    </div>
+
+    <!-- Addons -->
+    <div class="reveal max-w-4xl mx-auto mt-8 panel rounded-[20px] p-6 sm:p-7">
+      <p class="text-xs uppercase tracking-[.15em] text-muted mb-4" data-i18n="addons.title">Complementa tu plan</p>
+      <div class="flex flex-wrap gap-3">
+        <span class="badge" data-i18n="addon.1">Dominio — desde $20/año</span>
+        <span class="badge" data-i18n="addon.2">Hosting — desde $90/año</span>
+        <span class="badge" data-i18n="addon.3">Certificado SSL — desde $90/año</span>
+        <span class="badge" data-i18n="addon.4">Backup de base de datos</span>
+        <span class="badge" data-i18n="addon.5">Soporte mensual</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA BAND (giant closer, dark island) -->
+<section class="on-dark relative py-24 border-t border-white/5 overflow-hidden text-center">
+  <div class="wrap reveal">
+    <p class="huge huge-fill mx-auto w-fit" data-i18n="cta.giant">HABLEMOS</p>
+  </div>
+  <div class="wrap relative z-10 -mt-2 sm:-mt-4">
+    <p class="reveal on-dark-muted text-lg max-w-md mx-auto" style="transition-delay:.06s" data-i18n="cta.sub">Lancemos tu proyecto y convirtamos visitas en resultados reales.</p>
+    <a href="#contact" class="reveal btn btn-primary mt-8 px-8 py-4 text-base" style="transition-delay:.12s" data-i18n="cta.button">Empezar mi proyecto</a>
+  </div>
+</section>
+
+<!-- FAQ (numbered index rows) -->
+<section id="faq" class="relative py-28 border-t border-black/5">
+  <div class="wrap max-w-3xl">
+    <div class="reveal mb-10">
+      <h2 class="font-display font-semibold text-4xl sm:text-5xl tracking-tight" data-i18n="faq.title">Todo lo que debes saber</h2>
+    </div>
+    <div>
+      <details class="reveal acc-item border-t border-black/10 py-7" open>
+        <summary class="flex items-start gap-5 cursor-pointer">
+          <span class="num shrink-0 w-10">01</span>
+          <span class="flex-1 flex items-center justify-between gap-4">
+            <span class="font-display text-lg font-medium" data-i18n="faq.1.q">¿Cuánto tiempo toma desarrollar mi sitio web?</span>
+            <span class="acc-chevron text-primary text-2xl leading-none shrink-0">+</span>
+          </span>
+        </summary>
+        <p class="text-muted mt-4 leading-relaxed pl-[60px]" data-i18n="faq.1.a">Un sitio vitrina toma entre 2 y 3 semanas; una tienda online o sistema a medida, entre 4 y 8 semanas según el alcance.</p>
+      </details>
+      <details class="reveal acc-item border-t border-black/10 py-7" style="transition-delay:.04s">
+        <summary class="flex items-start gap-5 cursor-pointer">
+          <span class="num shrink-0 w-10">02</span>
+          <span class="flex-1 flex items-center justify-between gap-4">
+            <span class="font-display text-lg font-medium" data-i18n="faq.2.q">¿Qué incluye el soporte mensual?</span>
+            <span class="acc-chevron text-primary text-2xl leading-none shrink-0">+</span>
+          </span>
+        </summary>
+        <p class="text-muted mt-4 leading-relaxed pl-[60px]" data-i18n="faq.2.a">Monitoreo, actualizaciones de seguridad, backups y atención de tickets con tiempos de respuesta definidos desde tu portal de cliente.</p>
+      </details>
+      <details class="reveal acc-item border-t border-black/10 py-7" style="transition-delay:.08s">
+        <summary class="flex items-start gap-5 cursor-pointer">
+          <span class="num shrink-0 w-10">03</span>
+          <span class="flex-1 flex items-center justify-between gap-4">
+            <span class="font-display text-lg font-medium" data-i18n="faq.3.q">¿Puedo pagar mis servicios en línea?</span>
+            <span class="acc-chevron text-primary text-2xl leading-none shrink-0">+</span>
+          </span>
+        </summary>
+        <p class="text-muted mt-4 leading-relaxed pl-[60px]" data-i18n="faq.3.a">Sí, gestionamos pagos y suscripciones (hosting, dominio, SSL, soporte) directamente vía PayPal desde tu portal.</p>
+      </details>
+      <details class="reveal acc-item border-t border-black/10 py-7" style="transition-delay:.12s">
+        <summary class="flex items-start gap-5 cursor-pointer">
+          <span class="num shrink-0 w-10">04</span>
+          <span class="flex-1 flex items-center justify-between gap-4">
+            <span class="font-display text-lg font-medium" data-i18n="faq.4.q">¿Cómo reporto un error o solicito un cambio?</span>
+            <span class="acc-chevron text-primary text-2xl leading-none shrink-0">+</span>
+          </span>
+        </summary>
+        <p class="text-muted mt-4 leading-relaxed pl-[60px]" data-i18n="faq.4.a">Desde tu portal creas un ticket con toda la información necesaria; se sincroniza automáticamente con el repositorio de tu proyecto.</p>
+      </details>
+      <details class="reveal acc-item border-t border-black/10 border-b py-7" style="transition-delay:.16s">
+        <summary class="flex items-start gap-5 cursor-pointer">
+          <span class="num shrink-0 w-10">05</span>
+          <span class="flex-1 flex items-center justify-between gap-4">
+            <span class="font-display text-lg font-medium" data-i18n="faq.5.q">¿Trabajan con empresas fuera de Perú?</span>
+            <span class="acc-chevron text-primary text-2xl leading-none shrink-0">+</span>
+          </span>
+        </summary>
+        <p class="text-muted mt-4 leading-relaxed pl-[60px]" data-i18n="faq.5.a">Sí, atendemos clientes en Perú, Italia y el resto del mundo — nuestro equipo trabaja de forma 100% remota.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- REVIEWS (dark island) -->
+<section id="reviews" class="on-dark relative py-28 border-t border-white/5">
+  <div class="wrap">
+    <div class="reveal max-w-2xl mb-12">
+      <h2 class="font-display font-semibold text-4xl sm:text-5xl tracking-tight" data-i18n="reviews.title">Lo que dicen quienes ya trabajan con nosotros</h2>
+      <p class="mt-5 on-dark-muted text-lg" data-i18n="reviews.sub">Más de 300 proyectos entregados en distintos rubros.</p>
+    </div>
+
+    <!-- featured rating + quote -->
+    <div class="reveal panel-strong rounded-[28px] p-8 sm:p-10 lg:p-14 grid lg:grid-cols-12 gap-8 lg:gap-10 items-center">
+      <div class="lg:col-span-4">
+        <p class="font-display text-6xl sm:text-7xl font-semibold" data-i18n="reviews.rating.value">4.9</p>
+        <div class="flex gap-1 text-primary text-lg mt-3">★★★★★</div>
+        <p class="on-dark-muted text-sm mt-3 max-w-[220px]" data-i18n="reviews.rating.label">Calificación promedio de nuestros clientes</p>
+      </div>
+      <div class="lg:col-span-8 lg:border-l border-white/10 lg:pl-10 pt-8 lg:pt-0 border-t lg:border-t-0 border-white/10">
+        <p class="font-serif text-2xl sm:text-3xl leading-snug" data-i18n="review.1.text">"Rtres nos entregó un sitio que realmente convierte. El portal de soporte simplificó muchísimo la comunicación con el equipo técnico."</p>
+        <div class="mt-6 flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent"></div>
+          <div>
+            <p class="font-semibold text-sm" data-i18n="review.1.author">Directora Comercial</p>
+            <p class="on-dark-muted text-xs" data-i18n="review.1.role">Empresa de asistencia al viajero</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- secondary quotes, plain text, no cards -->
+    <div class="grid sm:grid-cols-2 gap-8 mt-8 pt-8 border-t border-white/5">
+      <div class="reveal">
+        <p class="text-[15px] leading-relaxed on-dark-muted" data-i18n="review.2.text">"El equipo entendió nuestro negocio desde el día uno. Los tickets con seguimiento automático son un antes y un después."</p>
+        <p class="mt-4 text-sm"><span class="font-semibold" data-i18n="review.2.author">CTO</span> <span class="on-dark-muted">— <span data-i18n="review.2.role">Plataforma de consultoría y servicios</span></span></p>
+      </div>
+      <div class="reveal" style="transition-delay:.06s">
+        <p class="text-[15px] leading-relaxed on-dark-muted" data-i18n="review.3.text">"18 años de experiencia se notan: procesos claros, entregas a tiempo y soporte real cuando lo necesitamos."</p>
+        <p class="mt-4 text-sm"><span class="font-semibold" data-i18n="review.3.author">Fundador</span> <span class="on-dark-muted">— <span data-i18n="review.3.role">Restaurante boutique</span></span></p>
+      </div>
+    </div>
+
+    <div class="mt-16 text-center">
+      <p class="text-xs uppercase tracking-[.18em] on-dark-muted mb-6" data-i18n="clients.label">Algunas marcas con las que trabajamos</p>
+      <div class="marquee overflow-hidden">
+        <div class="marquee-track items-center opacity-60">
+          <span class="font-display text-lg">mrm consultores</span>
+          <span class="font-display text-lg">EUA</span>
+          <span class="font-display text-lg">Building Connections</span>
+          <span class="font-display text-lg">García Persico</span>
+          <span class="font-display text-lg">Atiq Educación</span>
+          <span class="font-display text-lg">Antvart</span>
+          <span class="font-display text-lg">Innova Doctors</span>
+          <span class="font-display text-lg">Cabalgatas Andinas</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER / CONTACT -->
+<footer id="contact" class="relative border-t border-black/5 pt-20 pb-10">
+  <div class="wrap">
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-10">
+      <div class="col-span-2">
+        <img src="assets/logo.png" alt="Rtres Web Solutions" class="h-12 w-auto mb-4">
+        <p class="text-muted text-sm max-w-xs" data-i18n="footer.tagline">Profesionales en soluciones web. Generamos el retorno de tu inversión.</p>
+        <div class="flex items-center gap-3 mt-6">
+          <a href="mailto:info@rtres.net" class="w-9 h-9 rounded-full panel flex items-center justify-center hover:bg-black/5 transition">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6l9 7 9-7M3 6h18v12H3V6z"/></svg>
+          </a>
+          <a href="https://fb.me/rtres.net" target="_blank" rel="noopener" class="w-9 h-9 rounded-full panel flex items-center justify-center hover:bg-black/5 transition">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 9H16V6h-2.5C11.6 6 10 7.6 10 9.9V12H8v3h2v6h3v-6h2.4l.6-3H13v-1.6c0-.7.3-1.4 1.5-1.4z"/></svg>
+          </a>
+        </div>
+      </div>
+      <div>
+        <p class="font-semibold text-sm mb-4" data-i18n="footer.col1.title">Servicios</p>
+        <ul class="space-y-2.5 text-sm text-muted">
+          <li data-i18n="footer.col1.l1">Diseño web</li>
+          <li data-i18n="footer.col1.l2">E-commerce</li>
+          <li data-i18n="footer.col1.l3">SEO / SEM</li>
+          <li data-i18n="footer.col1.l4">Desarrollo a medida</li>
+          <li data-i18n="footer.col1.l5">Soporte y mantenimiento</li>
+        </ul>
+      </div>
+      <div>
+        <p class="font-semibold text-sm mb-4" data-i18n="footer.col2.title">Empresa</p>
+        <ul class="space-y-2.5 text-sm text-muted">
+          <li data-i18n="footer.col2.l1">Nosotros</li>
+          <li data-i18n="footer.col2.l2">Casos de éxito</li>
+          <li data-i18n="footer.col2.l3">Blog</li>
+          <li data-i18n="footer.col2.l4">Contacto</li>
+        </ul>
+      </div>
+      <div>
+        <p class="font-semibold text-sm mb-4" data-i18n="footer.col3.title">Portal</p>
+        <ul class="space-y-2.5 text-sm text-muted">
+          <li><a href="portal/login.html" class="hover:text-ink transition" data-i18n="footer.col3.l1">Iniciar sesión</a></li>
+          <li data-i18n="footer.col3.l2">Crear cuenta</li>
+          <li data-i18n="footer.col3.l3">Centro de ayuda</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="mt-16 pt-7 border-t border-black/5 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <p class="text-xs text-muted" data-i18n="footer.rights">© 2026 Rtres Web Solutions. Todos los derechos reservados.</p>
+      <div class="flex items-center gap-4 text-xs text-muted">
+        <span>info@rtres.net</span>
+        <span class="w-1 h-1 rounded-full bg-black/20"></span>
+        <span>+39 328 191 5399</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/i18n.js"></script>
+</body>
+</html>

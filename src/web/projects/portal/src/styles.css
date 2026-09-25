@@ -1,0 +1,218 @@
+/* ===================================================================
+   Portal — light SaaS-admin system. Deliberately separate from the
+   dark editorial public site (assets/styles.css): the portal is a
+   product-register surface (clarity, predictable structure, low
+   cognitive load for an occasional, task-driven visit), not a brand
+   surface. Loaded standalone by portal/*.html — does not extend or
+   depend on styles.css.
+   =================================================================== */
+
+:root{
+  --bg:#f6f7f3;
+  --surface:#ffffff;
+  --surface-tint:#eef6e2;
+  --border:rgba(20,23,15,.09);
+  --border-strong:rgba(20,23,15,.16);
+  --ink:#14170f;
+  --muted:#656b5e;
+  --muted-2:#8a9082;
+  --primary:#6f9a35;
+  --primary-strong:#587c29;
+  --primary-soft:#a4d64e;
+  --on-primary:#ffffff;
+  --success-bg:#e8f7ec; --success-ink:#1f8a4c; --success-border:#bfe8cc;
+  --warn-bg:#fff4e0; --warn-ink:#b6720a; --warn-border:#f5dba9;
+  --info-bg:#eef1ff; --info-ink:#4338ca; --info-border:#d6dbfb;
+  --neutral-bg:#f1f2ee; --neutral-ink:#63695b; --neutral-border:#e1e3db;
+  --danger-bg:#fdecec; --danger-ink:#c0362c; --danger-border:#f6cac6;
+  --radius-lg:20px; --radius-md:14px; --radius-sm:10px;
+  --shadow-card:0 1px 2px rgba(20,23,15,.04), 0 10px 28px -16px rgba(20,23,15,.14);
+  --shadow-pop:0 2px 4px rgba(20,23,15,.05), 0 20px 48px -20px rgba(20,23,15,.22);
+}
+
+/* Dark mode — toggled via portal.js, which sets html[data-theme="dark"]
+   before first paint (localStorage) to avoid a flash of the wrong theme. */
+html[data-theme="dark"]{
+  --bg:#14170f;
+  --surface:#1b2015;
+  --surface-tint:rgba(164,214,78,.14);
+  --border:rgba(255,255,255,.08);
+  --border-strong:rgba(255,255,255,.15);
+  --ink:#f2f4ee;
+  --muted:#9aa392;
+  --muted-2:#6f7a63;
+  --primary:#a4d64e;
+  --primary-strong:#c6f269;
+  --primary-soft:#a4d64e;
+  --on-primary:#0c1206;
+  --success-bg:rgba(164,214,78,.14); --success-ink:#a4d64e; --success-border:rgba(164,214,78,.35);
+  --warn-bg:rgba(242,184,74,.14); --warn-ink:#f2b84a; --warn-border:rgba(242,184,74,.35);
+  --info-bg:rgba(138,124,255,.16); --info-ink:#a79bff; --info-border:rgba(138,124,255,.4);
+  --neutral-bg:rgba(255,255,255,.06); --neutral-ink:#9aa392; --neutral-border:rgba(255,255,255,.12);
+  --danger-bg:rgba(240,100,100,.14); --danger-ink:#f28080; --danger-border:rgba(240,100,100,.35);
+  --shadow-card:0 1px 2px rgba(0,0,0,.2), 0 10px 28px -18px rgba(0,0,0,.5);
+  --shadow-pop:0 2px 4px rgba(0,0,0,.25), 0 20px 48px -20px rgba(0,0,0,.6);
+}
+html{transition:background-color .15s ease;}
+html[data-theme="dark"] .search-field, html[data-theme="dark"] .field{background:var(--surface);}
+html[data-theme="dark"] .btn-ghost:hover{background:#212a17;}
+html[data-theme="dark"] .side-link:hover{background:rgba(255,255,255,.05);}
+html[data-theme="dark"] .p-table tbody tr:hover{background:rgba(255,255,255,.03);}
+html[data-theme="dark"] .pagination-btn{background:var(--surface);}
+html[data-theme="dark"] .pagination-btn:hover:not(.active){background:rgba(255,255,255,.06);}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:'Inter',system-ui,-apple-system,sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+.font-display{font-family:'Space Grotesk','Inter',sans-serif;}
+
+.portal-surface{background:var(--surface);}
+
+/* Cards / surfaces */
+.card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius-md);
+  box-shadow:var(--shadow-card);
+}
+.card-flat{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius-md);
+}
+
+/* Buttons */
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  padding:11px 20px; border-radius:10px; font-weight:600; font-size:14px;
+  transition:transform .15s ease, box-shadow .15s ease, background .15s ease, border-color .15s ease;
+  white-space:nowrap; border:1px solid transparent;
+}
+.btn-primary{
+  background:var(--primary); color:var(--on-primary, #fff);
+  box-shadow:0 1px 2px rgba(20,23,15,.06), 0 8px 20px -10px rgba(111,154,53,.55);
+}
+.btn-primary:hover{background:var(--primary-strong); transform:translateY(-1px);}
+.btn-ghost{
+  background:var(--surface); color:var(--ink); border-color:var(--border-strong);
+}
+.btn-ghost:hover{background:#fbfbf9; border-color:var(--muted-2);}
+.btn-sm{padding:8px 14px; font-size:13px; border-radius:8px;}
+
+/* Badges / status pills — soft pastel bg + saturated text, per reference */
+.pill{
+  display:inline-flex; align-items:center; gap:6px;
+  padding:4px 11px; border-radius:999px; font-size:12.5px; font-weight:600;
+  border:1px solid transparent;
+}
+.pill-dot{width:6px;height:6px;border-radius:99px;background:currentColor;}
+.pill-success{background:var(--success-bg); color:var(--success-ink); border-color:var(--success-border);}
+.pill-warn{background:var(--warn-bg); color:var(--warn-ink); border-color:var(--warn-border);}
+.pill-info{background:var(--info-bg); color:var(--info-ink); border-color:var(--info-border);}
+.pill-neutral{background:var(--neutral-bg); color:var(--neutral-ink); border-color:var(--neutral-border);}
+.pill-danger{background:var(--danger-bg); color:var(--danger-ink); border-color:var(--danger-border);}
+
+/* Sidebar nav */
+.side-group-label{
+  font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
+  color:var(--muted-2); padding:0 12px; margin:18px 0 6px;
+}
+.side-link{
+  color:var(--muted); font-size:14px; font-weight:500;
+  transition:all .15s ease; border-radius:10px;
+}
+.side-link:hover{color:var(--ink); background:var(--neutral-bg);}
+.side-link.active{color:var(--primary-strong); background:var(--surface-tint); font-weight:600;}
+.side-link .side-icon{color:var(--muted-2);}
+.side-link.active .side-icon, .side-link:hover .side-icon{color:currentColor;}
+.side-count{
+  margin-left:auto; font-size:11.5px; font-weight:600; color:var(--muted-2);
+  background:var(--neutral-bg); border-radius:999px; padding:1px 7px;
+}
+.side-link.active .side-count{background:transparent; color:currentColor;}
+
+/* Search field (sidebar + topbar) */
+.search-field{
+  display:flex; align-items:center; gap:8px;
+  background:#fff; border:1px solid var(--border); border-radius:10px;
+  padding:9px 12px; font-size:13.5px; color:var(--muted);
+}
+.search-field input{background:transparent; border:none; outline:none; width:100%; color:var(--ink); font-size:13.5px;}
+.search-field input::placeholder{color:var(--muted-2);}
+.kbd{
+  font-size:11px; font-weight:600; color:var(--muted-2); background:var(--neutral-bg);
+  border:1px solid var(--border); border-radius:5px; padding:1px 5px;
+}
+
+/* Form fields */
+.field{
+  width:100%; border-radius:10px; background:#fff; border:1px solid var(--border);
+  padding:11px 13px; font-size:14px; color:var(--ink);
+}
+.field:focus{border-color:var(--primary); box-shadow:0 0 0 3px var(--surface-tint);}
+.field::placeholder{color:var(--muted-2);}
+.field-label{font-size:12.5px; font-weight:600; color:var(--muted); margin-bottom:6px; display:block;}
+
+/* Table */
+.p-table{width:100%; font-size:13.5px; border-collapse:collapse;}
+.p-table thead th{
+  text-align:left; font-size:11.5px; font-weight:700; letter-spacing:.04em; text-transform:uppercase;
+  color:var(--muted-2); padding:12px 16px; border-bottom:1px solid var(--border);
+}
+.p-table tbody td{padding:14px 16px; border-bottom:1px solid var(--border); vertical-align:middle;}
+.p-table tbody tr:last-child td{border-bottom:none;}
+.p-table tbody tr:hover{background:#fbfcf9;}
+.p-table tbody tr{cursor:pointer;}
+
+.pagination-btn{
+  width:30px; height:30px; display:inline-flex; align-items:center; justify-content:center;
+  border-radius:8px; font-size:13px; font-weight:600; color:var(--muted);
+  border:1px solid var(--border); background:#fff;
+}
+.pagination-btn.active{background:var(--primary); color:var(--on-primary); border-color:var(--primary);}
+.pagination-btn:hover:not(.active){background:var(--neutral-bg);}
+
+/* Theme-aware text accents — use these instead of Tailwind's static
+   text-primary/text-primary-strong utilities (baked to a fixed hex at
+   config time) anywhere the color must adapt between light and dark. */
+.text-accent{color:var(--primary-strong);}
+.text-accent:hover{color:var(--primary);}
+.text-warn{color:var(--warn-ink);}
+
+/* Avatars */
+.avatar{
+  border-radius:999px; display:flex; align-items:center; justify-content:center;
+  font-weight:700; font-size:12.5px; color:#fff; flex-shrink:0;
+}
+
+/* Focus + motion */
+input:focus-visible, textarea:focus-visible, select:focus-visible, button:focus-visible, a:focus-visible{
+  outline:2px solid var(--primary); outline-offset:2px;
+}
+@media (prefers-reduced-motion: reduce){
+  *{transition:none !important; scroll-behavior:auto !important;}
+}
+
+::-webkit-scrollbar{width:10px;height:10px;}
+::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:99px;}
+::-webkit-scrollbar-track{background:transparent;}
+
+/* Theme switch */
+.switch{position:relative; display:inline-flex; align-items:center; width:36px; height:21px; flex-shrink:0;}
+.switch input{position:absolute; opacity:0; width:100%; height:100%; margin:0; cursor:pointer;}
+.switch .track{
+  position:absolute; inset:0; background:var(--neutral-bg); border:1px solid var(--border-strong);
+  border-radius:999px; transition:background .15s ease, border-color .15s ease; pointer-events:none;
+}
+.switch .thumb{
+  position:absolute; top:2px; left:2px; width:15px; height:15px; border-radius:999px;
+  background:#fff; box-shadow:0 1px 2px rgba(0,0,0,.3); transition:transform .15s ease;
+}
+.switch input:checked + .track{background:var(--primary); border-color:var(--primary);}
+.switch input:checked + .track .thumb{transform:translateX(15px);}
+.switch input:focus-visible + .track{outline:2px solid var(--primary); outline-offset:2px;}

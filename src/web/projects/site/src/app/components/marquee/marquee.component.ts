@@ -1,0 +1,2 @@
+import { Component, Input } from '@angular/core'; import { CommonModule } from '@angular/common';
+@Component({selector:'app-marquee',standalone:true,imports:[CommonModule],template:`<div class="marquee overflow-hidden"><div class="marquee-track"><span *ngFor="let item of repeated">{{item}}</span></div></div>`}) export class MarqueeComponent{@Input()items:string[]=[];get repeated(){return [...this.items,...this.items];}}

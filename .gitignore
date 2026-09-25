@@ -1,0 +1,13 @@
+# Node / Angular
+node_modules/
+dist/
+.angular/
+
+# .NET
+bin/
+obj/
+.dotnet-cli/
+
+# Secrets and local configuration
+.env
+appsettings.*.local.json

@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="Rtres.Api.Tests/Rtres.Api.Tests.csproj" />
+  <Project Path="Rtres.Api/Rtres.Api.csproj" />
+  <Project Path="Rtres.Domain/Rtres.Domain.csproj" />
+  <Project Path="Rtres.Infrastructure/Rtres.Infrastructure.csproj" />
+</Solution>

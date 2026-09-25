@@ -1,0 +1,1 @@
+import{Injectable,signal}from'@angular/core';@Injectable({providedIn:'root'})export class ThemeService{theme=signal(typeof localStorage==='undefined'?'light':localStorage.getItem('rtres_portal_theme')||'light');toggle(){const n=this.theme()==='dark'?'light':'dark';this.theme.set(n);localStorage.setItem('rtres_portal_theme',n);document.documentElement.dataset['theme']=n;}}

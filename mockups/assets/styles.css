@@ -1,0 +1,249 @@
+:root{
+  --bg:#ffffff;
+  --bg-alt:#f6f7f3;
+  --surface:rgba(18,20,15,.035);
+  --surface-strong:rgba(18,20,15,.06);
+  --panel-1:#f6f7f3;
+  --panel-2:#eef2e6;
+  --border:rgba(18,20,15,.10);
+  --border-strong:rgba(18,20,15,.18);
+  --text:#12140f;
+  --text-muted:#5c6355;
+  --green:#4a6b1f;
+  --primary:#6f9a35;
+  --primary-strong:#c6f269;
+  --primary-dim:#587c29;
+  --accent:#1f9c86;
+  --accent-2:#6b5fd1;
+  --warning:#b6720a;
+  --huge-stroke:rgba(18,20,15,.14);
+  --radius-lg:28px;
+  --radius-md:18px;
+  --radius-sm:12px;
+  --maxw:1240px;
+}
+
+/* Dark "island" sections (reviews band, closing CTA) — the one place
+   the page inverts to near-black, echoing the reference's contrast
+   bands. Scope it on a section and every var-based component below
+   (panel, badge, huge, float-card…) adapts automatically. Tailwind's
+   own static utilities (text-muted, border-black/…) do NOT read these
+   vars, so on-dark sections must use the .on-dark-* helper classes
+   below instead of those utilities for anything that needs to flip. */
+.on-dark{
+  --text:#f5f7f1;
+  --text-muted:#a9b39c;
+  --green:#c6f269;
+  --border:rgba(255,255,255,.12);
+  --border-strong:rgba(255,255,255,.2);
+  --panel-1:#161d10;
+  --panel-2:#1c2513;
+  --surface:rgba(255,255,255,.05);
+  --surface-strong:rgba(255,255,255,.09);
+  --huge-stroke:rgba(245,247,241,.16);
+  background:#0e1209;
+  color:var(--text);
+}
+.on-dark-muted{color:var(--text-muted);}
+.on-dark-border{border-color:var(--border);}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Inter',system-ui,-apple-system,sans-serif;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+.font-display{font-family:'Space Grotesk','Inter',sans-serif;}
+h1,h2,h3{text-wrap:balance;}
+p{text-wrap:pretty;}
+
+.wrap{max-width:var(--maxw);margin-inline:auto;padding-inline:24px;}
+
+.noise{
+  position:absolute; inset:0; z-index:1; pointer-events:none; opacity:.02; mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Glass — reserved for floating chrome that sits over scrolling content
+   (sticky header, mobile nav drawer, topbar). Not used for resting cards. */
+.glass{
+  background:rgba(255,255,255,.72);
+  border:1px solid var(--border);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+}
+.glass-strong{
+  background:rgba(255,255,255,.92);
+  border:1px solid var(--border);
+  backdrop-filter:blur(22px);
+  -webkit-backdrop-filter:blur(22px);
+}
+
+/* Panel — flat, opaque surface. Default treatment for cards, tiles,
+   form containers and any content that sits at rest on the page. */
+.panel{
+  background:var(--panel-1);
+  border:1px solid var(--border);
+}
+.panel-strong{
+  background:var(--panel-2);
+  border:1px solid var(--border-strong);
+}
+
+/* Buttons */
+.btn{
+  display:inline-flex; align-items:center; gap:8px;
+  padding:13px 24px; border-radius:999px; font-weight:600; font-size:14.5px;
+  transition:transform .25s ease, box-shadow .25s ease, background .25s ease;
+  white-space:nowrap;
+}
+.btn-primary{
+  background:var(--primary-strong);
+  color:#12140f;
+  box-shadow:0 8px 24px -8px rgba(111,154,53,.45);
+}
+.btn-primary:hover{background:var(--primary);transform:translateY(-2px);box-shadow:0 14px 30px -8px rgba(111,154,53,.6);}
+.btn-ghost{
+  background:var(--text); color:var(--bg); border:1px solid var(--text);
+}
+.btn-ghost:hover{background:transparent;color:var(--text);transform:translateY(-2px);}
+.on-dark .btn-ghost{background:var(--text); color:#0e1209; border-color:var(--text);}
+.on-dark .btn-ghost:hover{background:transparent;color:var(--text);}
+
+.badge{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:6px 14px;border-radius:999px;font-size:12.5px;font-weight:600;
+  background:var(--panel-1);border:1px solid var(--border);color:var(--text-muted);
+  letter-spacing:.02em;
+}
+.dot{width:6px;height:6px;border-radius:99px;background:var(--primary);box-shadow:0 0 8px rgba(111,154,53,.5);}
+
+/* Reveal on scroll */
+.reveal{opacity:0; transform:translateY(24px); transition:opacity .7s ease, transform .7s ease;}
+.reveal.is-visible{opacity:1; transform:translateY(0);}
+
+@media (prefers-reduced-motion: reduce){
+  .reveal{opacity:1; transform:none; transition:none;}
+  .marquee-track{animation:none;}
+  *{scroll-behavior:auto !important;}
+}
+
+/* Nav */
+.nav-link{color:var(--text-muted);font-size:12.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;transition:color .2s;}
+.nav-link:hover{color:var(--text);}
+
+/* Bento (kept for the Preview-del-portal tile) */
+.bento{border-radius:var(--radius-md); position:relative; overflow:hidden;}
+.bento:hover .bento-glow{opacity:1;}
+.bento-glow{
+  position:absolute; inset:-40% -40% auto auto; width:220px;height:220px;border-radius:999px;
+  background:radial-gradient(circle,rgba(111,154,53,.25),transparent 70%);
+  opacity:0; transition:opacity .4s ease; pointer-events:none;
+}
+
+/* Marquee */
+.marquee-track{display:flex;gap:56px;animation:scroll 28s linear infinite;width:max-content;}
+.marquee:hover .marquee-track{animation-play-state:paused;}
+@keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* Accordion */
+.acc-item[open] .acc-chevron{transform:rotate(45deg);}
+.acc-chevron{transition:transform .25s ease;}
+.acc-item summary::-webkit-details-marker{display:none;}
+.acc-item summary{list-style:none;cursor:pointer;}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:10px;height:10px;}
+::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:99px;}
+::-webkit-scrollbar-track{background:transparent;}
+
+/* Focus */
+input:focus,textarea:focus,select:focus,button:focus-visible,a:focus-visible{outline:2px solid var(--primary);outline-offset:2px;}
+
+/* ===================================================================
+   Editorial layer — oversized type, duotone photography, numbered
+   rows. Used by the public site (index.html) for a bolder, less
+   "component-library" visual language than the panel/card system
+   above.
+   =================================================================== */
+.font-serif{font-family:'Instrument Serif','Georgia',serif; font-style:italic; font-weight:400;}
+
+/* Oversized wordmark: sits as texture behind a headline (outlined) or
+   as a bold solid closer (huge-fill). */
+.huge{
+  font-family:'Space Grotesk',sans-serif; font-weight:700;
+  font-size:clamp(5rem, 19vw, 15rem);
+  line-height:.82; letter-spacing:-0.03em;
+  color:transparent; -webkit-text-stroke:1.5px var(--huge-stroke);
+  white-space:nowrap; pointer-events:none; user-select:none;
+}
+.huge-fill{
+  -webkit-text-stroke:0; color:var(--primary);
+  mix-blend-mode:normal; opacity:1;
+}
+
+/* Sunburst: thin radiating lines behind the hero headline, echoing
+   the reference's radial mark without copying it literally. */
+.sunburst{
+  position:absolute; pointer-events:none;
+  background:repeating-conic-gradient(from 0deg, rgba(111,154,53,.6) 0deg .6deg, transparent .6deg 9deg);
+  -webkit-mask-image:radial-gradient(circle, black 28%, transparent 70%);
+  mask-image:radial-gradient(circle, black 28%, transparent 70%);
+}
+
+/* Duotone photography: grayscale base + a faint green-toward-ink wash,
+   so any stock photo reads as part of the same two-tone system
+   instead of a full-color stock-photo intrusion. */
+.photo-duotone{position:relative; overflow:hidden; background:var(--panel-1);}
+.photo-duotone img{
+  width:100%; height:100%; object-fit:cover; display:block;
+  filter:grayscale(1) contrast(1.1) brightness(1.02);
+  transition:transform .5s ease;
+}
+.photo-duotone:hover img{transform:scale(1.04);}
+.photo-duotone::after{
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(155deg, rgba(111,154,53,.16), rgba(18,20,15,.06) 70%);
+  mix-blend-mode:multiply;
+}
+
+/* Numbered divided rows — services & FAQ. Replaces boxed cards with
+   an editorial index-list: a rule, a numeral, content. */
+.num-row{
+  display:grid; grid-template-columns:64px 1fr; gap:20px;
+  padding-block:36px; border-top:1px solid var(--border);
+  align-items:start;
+}
+.num-row:last-child{border-bottom:1px solid var(--border);}
+.num-row .num{
+  font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:15px;
+  color:var(--green); padding-top:4px;
+}
+
+/* Floating stat card over the hero photo */
+.float-card{
+  position:absolute; background:var(--bg); border:1px solid var(--border-strong);
+  border-radius:var(--radius-md); box-shadow:0 30px 60px -24px rgba(18,20,15,.28);
+}
+
+/* Project grid tiles */
+.proj-card{position:relative; border-radius:var(--radius-md); overflow:hidden; display:block;}
+.proj-card .proj-overlay{
+  position:absolute; inset:0; background:rgba(14,18,9,.55);
+  display:flex; align-items:center; justify-content:center;
+  opacity:0; transition:opacity .3s ease;
+}
+.proj-card:hover .proj-overlay{opacity:1;}
+.proj-card:hover .photo-duotone img{transform:scale(1.06);}
+.proj-pill{
+  display:inline-flex; align-items:center; gap:8px; padding:10px 18px;
+  border-radius:999px; background:var(--primary-strong); color:#12140f;
+  font-size:13px; font-weight:700;
+}
+
+@media (max-width:768px){
+  .huge{font-size:clamp(3.5rem, 22vw, 8rem);}
+}

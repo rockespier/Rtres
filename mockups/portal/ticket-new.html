@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nuevo ticket — Portal Rtres</title>
+<link rel="icon" href="../assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: { primary:{DEFAULT:'#6f9a35',strong:'#587c29',soft:'#a4d64e'}, ink:'#14170f', muted:'#656b5e' },
+    fontFamily: { sans:['Inter','system-ui','sans-serif'], display:['Space Grotesk','Inter','sans-serif'] }
+  }}}
+</script>
+<script src="../assets/portal.js"></script>
+<link rel="stylesheet" href="../assets/portal.css">
+<style>
+  .type-tab{padding:9px 18px;border-radius:9px;font-size:13.5px;font-weight:600;border:1px solid var(--border);color:var(--muted);cursor:pointer;transition:all .15s;background:var(--surface);}
+  .type-tab.active{background:var(--primary);color:var(--on-primary);border-color:var(--primary);}
+  .change-only{display:none;}
+  body.type-cambio .change-only{display:block;}
+</style>
+</head>
+<body class="min-h-screen">
+<div class="flex">
+
+  <aside class="hidden lg:flex flex-col w-[264px] shrink-0 h-screen sticky top-0 border-r border-[color:var(--border)] portal-surface px-4 py-6">
+    <a href="../index.html" class="flex items-center gap-2.5 px-2 mb-6">
+      <img src="../assets/logo.png" alt="Rtres" class="h-7 w-auto">
+    </a>
+    <div class="search-field mb-2">
+      <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      <input type="text" placeholder="Buscar…">
+      <span class="kbd">⌘K</span>
+    </div>
+    <nav class="flex flex-col gap-0.5 text-sm mt-2">
+      <a href="dashboard.html" class="side-link flex items-center gap-3 px-3 py-2.5">
+        <svg class="side-icon w-[18px] h-[18px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+        Mis productos
+      </a>
+      <a href="tickets.html" class="side-link active flex items-center gap-3 px-3 py-2.5">
+        <svg class="side-icon w-[18px] h-[18px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 12l2 2 4-4M7 4h10a2 2 0 012 2v13l-3-2-3 2-3-2-3 2V6a2 2 0 012-2z"/></svg>
+        Tickets
+      </a>
+      <p class="side-group-label">Cuenta</p>
+      <a href="#" class="side-link flex items-center gap-3 px-3 py-2.5">
+        <svg class="side-icon w-[18px] h-[18px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+        Facturación
+      </a>
+      <a href="#" class="side-link flex items-center gap-3 px-3 py-2.5">
+        <svg class="side-icon w-[18px] h-[18px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+        Perfil
+      </a>
+    </nav>
+    <div class="mt-auto">
+      <label class="flex items-center justify-between gap-3 px-2 py-2.5 mb-2 text-sm text-muted cursor-pointer">
+        <span class="flex items-center gap-2.5">
+          <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z"/></svg>
+          Modo oscuro
+        </span>
+        <span class="switch">
+          <input type="checkbox" class="theme-toggle-input">
+          <span class="track"><span class="thumb"></span></span>
+        </span>
+      </label>
+      <div class="flex items-center gap-2.5 px-2 py-2 border-t border-[color:var(--border)] pt-4">
+        <div class="avatar w-9 h-9 bg-primary text-[13px]">RR</div>
+        <div class="min-w-0 flex-1">
+          <p class="text-sm font-semibold truncate">Roberto Ramos</p>
+          <p class="text-xs text-muted truncate">Cabalgatas Andinas</p>
+        </div>
+        <a href="login.html" aria-label="Cerrar sesión" class="text-muted hover:text-ink transition p-1.5 rounded-lg hover:bg-[color:var(--neutral-bg)]">
+          <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+        </a>
+      </div>
+    </div>
+  </aside>
+
+  <div class="flex-1 min-w-0">
+    <header class="sticky top-0 z-30 portal-surface border-b border-[color:var(--border)]">
+      <div class="flex items-center justify-between gap-4 px-6 lg:px-9 h-[68px]">
+        <div class="flex items-center gap-3 min-w-0">
+          <button data-menu-btn class="lg:hidden p-2 -ml-2 rounded-lg border border-[color:var(--border-strong)]" aria-label="Menú">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+          </button>
+          <div class="text-sm text-muted truncate">
+            <a href="tickets.html" class="hover:text-ink transition">Tickets</a><span class="mx-1.5 text-[color:var(--border-strong)]">/</span><span class="text-ink font-medium">Nuevo</span>
+          </div>
+        </div>
+        <div class="flex items-center gap-3">
+          <a href="tickets.html" class="btn btn-ghost btn-sm hidden sm:inline-flex">Cancelar</a>
+          <button form="ticket-form" type="submit" class="btn btn-primary btn-sm">Enviar ticket</button>
+        </div>
+      </div>
+      <div data-mobile-menu class="hidden lg:hidden portal-surface border-t border-[color:var(--border)]">
+        <nav class="flex flex-col gap-1 text-sm px-4 py-4">
+          <a href="dashboard.html" class="side-link flex items-center gap-3 px-3 py-2.5">
+            <svg class="side-icon w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+            Mis productos
+          </a>
+          <a href="tickets.html" class="side-link active flex items-center gap-3 px-3 py-2.5">
+            <svg class="side-icon w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 12l2 2 4-4M7 4h10a2 2 0 012 2v13l-3-2-3 2-3-2-3 2V6a2 2 0 012-2z"/></svg>
+            Tickets
+          </a>
+          <a href="#" class="side-link flex items-center gap-3 px-3 py-2.5">
+            <svg class="side-icon w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+            Facturación
+          </a>
+          <a href="#" class="side-link flex items-center gap-3 px-3 py-2.5">
+            <svg class="side-icon w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+            Perfil
+          </a>
+          <a href="login.html" class="side-link flex items-center gap-3 px-3 py-2.5 mt-2 pt-2 border-t border-[color:var(--border)]">
+            <svg class="side-icon w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+            Cerrar sesión
+          </a>
+          <label class="flex items-center justify-between gap-3 px-3 py-2.5 text-sm text-muted cursor-pointer">
+            <span>Modo oscuro</span>
+            <span class="switch">
+              <input type="checkbox" class="theme-toggle-input">
+              <span class="track"><span class="thumb"></span></span>
+            </span>
+          </label>
+        </nav>
+      </div>
+    </header>
+
+    <main class="px-6 lg:px-9 py-8 max-w-6xl">
+      <h1 class="font-display text-2xl font-semibold tracking-tight">Nuevo ticket</h1>
+      <p class="text-muted mt-1.5 text-sm">Completa la información solicitada para facilitar su análisis y reproducción.</p>
+
+      <div class="grid lg:grid-cols-[1fr_360px] gap-6 mt-6 items-start">
+        <!-- FORM -->
+        <form id="ticket-form" onsubmit="event.preventDefault(); window.location.href='tickets.html';">
+          <div class="card p-6 sm:p-7 space-y-6">
+            <div class="flex items-center gap-2.5">
+              <button type="button" data-tab="soporte" class="type-tab active" onclick="setType('soporte')">Ticket de soporte</button>
+              <button type="button" data-tab="cambio" class="type-tab" onclick="setType('cambio')">Solicitud de cambio</button>
+            </div>
+
+            <div>
+              <label class="field-label">Proyecto</label>
+              <select class="field">
+                <option>cabalgatas-andinas-web</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="field-label">Título</label>
+              <input id="f-title" type="text" class="field" placeholder="Resumen breve del problema o cambio solicitado" oninput="syncPreview()">
+            </div>
+
+            <div>
+              <label class="field-label">Descripción *</label>
+              <textarea id="f-desc" rows="3" class="field" placeholder="Describe con detalle el problema o la funcionalidad solicitada." oninput="syncPreview()"></textarea>
+            </div>
+
+            <div class="grid sm:grid-cols-2 gap-6">
+              <div>
+                <label class="field-label">Comportamiento actual *</label>
+                <textarea rows="3" class="field" placeholder="¿Qué está pasando actualmente?"></textarea>
+              </div>
+              <div>
+                <label class="field-label">Comportamiento esperado *</label>
+                <textarea rows="3" class="field" placeholder="¿Qué debería pasar?"></textarea>
+              </div>
+            </div>
+
+            <div>
+              <label class="field-label">Pasos para reproducir *</label>
+              <textarea rows="3" class="field" placeholder="Describe los pasos exactos para reproducir el error."></textarea>
+            </div>
+
+            <div>
+              <label class="field-label">Entorno *</label>
+              <input id="f-env" type="text" class="field" placeholder="Ej: Producción, Chrome 128 / Windows 11, móvil iOS 18" oninput="syncPreview()">
+            </div>
+
+            <div>
+              <label class="field-label">Evidencias o contexto *</label>
+              <div class="border border-dashed border-[color:var(--border-strong)] rounded-xl px-4 py-6 text-center text-sm text-muted hover:border-primary/50 hover:bg-primary/[.03] transition cursor-pointer">
+                Arrastra capturas, logs o adjunta archivos aquí
+              </div>
+              <p class="text-xs text-muted mt-2">Incluye logs, capturas, mensajes de error o respuestas HTTP.</p>
+            </div>
+
+            <div>
+              <label class="field-label">Criterios de aceptación *</label>
+              <textarea rows="3" class="field" placeholder="Define cómo se comprobará que el problema está resuelto."></textarea>
+            </div>
+
+            <div class="change-only">
+              <label class="field-label">Impacto / alcance estimado</label>
+              <textarea rows="3" class="field" placeholder="Módulos afectados, urgencia y estimación de esfuerzo si la conoces."></textarea>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-end gap-3 mt-6 lg:hidden">
+            <a href="tickets.html" class="btn btn-ghost">Cancelar</a>
+            <button type="submit" class="btn btn-primary px-7">Enviar ticket</button>
+          </div>
+        </form>
+
+        <!-- LIVE PREVIEW -->
+        <div class="lg:sticky lg:top-[92px] space-y-4">
+          <div class="card p-6">
+            <div class="flex items-center justify-between">
+              <p class="text-xs font-semibold uppercase tracking-wide text-muted">Vista previa</p>
+              <span id="p-type" class="pill pill-info">Soporte</span>
+            </div>
+            <p id="p-title" class="font-display text-lg font-semibold mt-4">Resumen breve del problema o cambio solicitado</p>
+            <p id="p-desc" class="text-sm text-muted mt-2 leading-relaxed">Describe con detalle el problema o la funcionalidad solicitada.</p>
+            <div class="mt-5 pt-5 border-t border-[color:var(--border)] space-y-2.5 text-sm">
+              <div class="flex items-center justify-between"><span class="text-muted">Proyecto</span><span class="font-medium">cabalgatas-andinas-web</span></div>
+              <div class="flex items-center justify-between"><span class="text-muted">Entorno</span><span id="p-env" class="font-medium text-right">—</span></div>
+              <div class="flex items-center justify-between"><span class="text-muted">Solicitado por</span><span class="font-medium">Roberto Ramos</span></div>
+            </div>
+          </div>
+          <div class="card p-5 flex items-start gap-3 text-sm text-muted">
+            <svg class="w-5 h-5 text-accent shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
+            <p>Al enviar este ticket se creará automáticamente un issue en el repositorio de tu proyecto en GitHub y recibirás notificaciones por correo cuando cambie de estado.</p>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+<script src="../assets/i18n.js"></script>
+<script>
+  function setType(type){
+    document.body.classList.toggle('type-cambio', type === 'cambio');
+    document.querySelectorAll('.type-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === type));
+    const pill = document.getElementById('p-type');
+    pill.textContent = type === 'cambio' ? 'Cambio' : 'Soporte';
+    pill.className = 'pill ' + (type === 'cambio' ? 'pill-success' : 'pill-info');
+  }
+  function syncPreview(){
+    document.getElementById('p-title').textContent = document.getElementById('f-title').value || 'Resumen breve del problema o cambio solicitado';
+    document.getElementById('p-desc').textContent = document.getElementById('f-desc').value || 'Describe con detalle el problema o la funcionalidad solicitada.';
+    document.getElementById('p-env').textContent = document.getElementById('f-env').value || '—';
+  }
+</script>
+</body>
+</html>

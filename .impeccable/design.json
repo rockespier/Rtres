@@ -1,0 +1,121 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-24T00:00:00Z",
+  "title": "Design System: Rtres Web Solutions",
+  "extensions": {
+    "colorMeta": {
+      "bg": { "role": "neutral", "displayName": "Deep Circuit Black", "canonical": "oklch(15% 0.006 145)", "tonalRamp": ["#050605", "#0a0d0a", "#0f130f", "#171d13", "#232b1d", "#3a4530", "#5c6b4a", "#8a9873"] },
+      "panel-1": { "role": "neutral", "displayName": "Panel One", "canonical": "oklch(19% 0.012 140)", "tonalRamp": ["#0a0d0a", "#0f130f", "#12160f", "#171d13", "#232b1d", "#3a4530", "#5c6b4a", "#8a9873"] },
+      "panel-2": { "role": "neutral", "displayName": "Panel Two", "canonical": "oklch(23% 0.014 140)", "tonalRamp": ["#0f130f", "#12160f", "#171d13", "#1f261a", "#2c3524", "#454f36", "#6b7955", "#9aa983"] },
+      "ink": { "role": "neutral", "displayName": "Signal White", "canonical": "oklch(96% 0.006 120)" },
+      "muted": { "role": "neutral", "displayName": "Field Gray", "canonical": "oklch(67% 0.014 145)" },
+      "primary": { "role": "primary", "displayName": "Signal Lime", "canonical": "oklch(80% 0.19 122)", "tonalRamp": ["#3d5416", "#4f6d1d", "#6f9a35", "#8bc042", "#a4d64e", "#b8e661", "#c6f269", "#dbfa96"] },
+      "accent-teal": { "role": "secondary", "displayName": "Data Teal", "canonical": "oklch(80% 0.12 178)" },
+      "accent-violet": { "role": "tertiary", "displayName": "Night Violet", "canonical": "oklch(70% 0.14 290)" },
+      "warning": { "role": "status", "displayName": "Warning Amber", "canonical": "oklch(80% 0.14 75)" }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Hero headline only." },
+      "headline": { "displayName": "Headline", "purpose": "Section titles." },
+      "title": { "displayName": "Title", "purpose": "Card and component titles." },
+      "body": { "displayName": "Body", "purpose": "Paragraph copy, max ~70ch." },
+      "label": { "displayName": "Label", "purpose": "Form field labels, small status text — used sparingly." }
+    },
+    "shadows": [
+      { "name": "cta-glow", "value": "0 8px 30px -8px rgba(164,214,78,.55)", "purpose": "Primary button at rest." },
+      { "name": "cta-glow-hover", "value": "0 14px 34px -8px rgba(164,214,78,.7)", "purpose": "Primary button on hover." },
+      { "name": "device-mock-lift", "value": "0 40px 120px -30px rgba(0,0,0,.6)", "purpose": "Hero device-mock panel, used once." }
+    ],
+    "motion": [
+      { "name": "reveal-ease", "value": "ease (opacity/transform, .7s)", "purpose": "Scroll-triggered card/section reveal; disabled entirely under prefers-reduced-motion." },
+      { "name": "marquee-scroll", "value": "linear, 28s, infinite", "purpose": "Trust-logo / client-name marquee; paused on hover, disabled under prefers-reduced-motion." },
+      { "name": "hover-lift", "value": "transform .25s ease", "purpose": "Buttons and cards lifting 2px on hover." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Main CTA across site and portal.",
+      "html": "<button class=\"ds-btn-primary\">Solicitar cotización</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; gap: 8px; padding: 13px 24px; border-radius: 999px; font-weight: 600; font-size: 14.5px; background: linear-gradient(135deg, #c6f269, #6f9a35); color: #0a0d0a; border: none; box-shadow: 0 8px 30px -8px rgba(164,214,78,.55); transition: transform .25s ease, box-shadow .25s ease; } .ds-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 14px 34px -8px rgba(164,214,78,.7); } .ds-btn-primary:focus-visible { outline: 2px solid #a4d64e; outline-offset: 2px; }"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Secondary action next to a primary button.",
+      "html": "<button class=\"ds-btn-ghost\">Ver planes</button>",
+      "css": ".ds-btn-ghost { display: inline-flex; align-items: center; gap: 8px; padding: 13px 24px; border-radius: 999px; font-weight: 600; font-size: 14.5px; background: #12160f; color: #f4f6f1; border: 1px solid rgba(255,255,255,.09); transition: background .25s ease, transform .25s ease; } .ds-btn-ghost:hover { background: #171d13; transform: translateY(-2px); } .ds-btn-ghost:focus-visible { outline: 2px solid #a4d64e; outline-offset: 2px; }"
+    },
+    {
+      "name": "Flat Panel Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Default resting-state card for features, pricing, FAQ items, reviews and portal tiles.",
+      "html": "<div class=\"ds-card\"><h3 class=\"ds-card-title\">Diseño de sitios web</h3><p class=\"ds-card-body\">Sitios rápidos, responsivos y orientados a conversión.</p></div>",
+      "css": ".ds-card { background: #12160f; border: 1px solid rgba(255,255,255,.09); border-radius: 18px; padding: 36px; } .ds-card-title { font-family: 'Space Grotesk', 'Inter', sans-serif; font-size: 24px; font-weight: 600; color: #f4f6f1; margin: 0 0 8px; } .ds-card-body { color: #9aa39a; font-size: 15px; line-height: 1.6; margin: 0; }"
+    },
+    {
+      "name": "Form Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Text input / textarea used across login and ticket forms.",
+      "html": "<input class=\"ds-field\" type=\"text\" placeholder=\"tucorreo@empresa.com\" />",
+      "css": ".ds-field { width: 100%; border-radius: 12px; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.1); padding: 12px 14px; font-size: 14px; color: #f4f6f1; } .ds-field::placeholder { color: #9aa39a; opacity: 1; } .ds-field:focus { border-color: rgba(164,214,78,.6); outline: 2px solid #a4d64e; outline-offset: 2px; }"
+    },
+    {
+      "name": "Status Badge",
+      "kind": "chip",
+      "refersTo": "badge",
+      "description": "Ticket / product status indicator, portal only.",
+      "html": "<span class=\"ds-badge-active\">Activo</span>",
+      "css": ".ds-badge-active { display: inline-flex; align-items: center; padding: 6px 14px; border-radius: 999px; font-size: 12.5px; font-weight: 600; color: #4fd6c0; background: rgba(79,214,192,.12); border: 1px solid rgba(79,214,192,.35); }"
+    },
+    {
+      "name": "Sticky Header (glass exception)",
+      "kind": "nav",
+      "refersTo": "nav-header",
+      "description": "The only place translucency + blur is used at rest — functional, sits over scrolling content.",
+      "html": "<header class=\"ds-header\"><span class=\"ds-header-logo\">R·tres</span><nav class=\"ds-header-nav\"><a href=\"#\">Características</a><a href=\"#\">Precios</a></nav></header>",
+      "css": ".ds-header { display: flex; align-items: center; justify-content: space-between; padding: 0 24px; height: 76px; background: rgba(255,255,255,.045); border-bottom: 1px solid rgba(255,255,255,.09); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); } .ds-header-logo { font-family: 'Space Grotesk', sans-serif; font-weight: 600; color: #f4f6f1; } .ds-header-nav a { color: #9aa39a; font-size: 14.5px; font-weight: 500; margin-left: 32px; text-decoration: none; } .ds-header-nav a:hover { color: #f4f6f1; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Signal Room",
+    "overview": "A calm, technical control room at night: near-black surfaces, one deliberate signal color (lime), and information laid out in clean panels rather than noise. The system exists to make an 18-year-old, 300-project agency feel current in 2026 without reaching for the generic AI SaaS template — no cream backgrounds, no gradient text, no identical eyebrow tag repeated above every section. Confidence here comes from restraint and precision, not decoration. The public site (brand register) uses this system boldly — large display type, a floating glass header, scroll reveals — to sell. The client portal (product register) uses the same tokens with more restraint — flat panels, predictable layout, no decorative motion — because there the job is to get an existing client in and out of a task with confidence, not to persuade.",
+    "keyCharacteristics": [
+      "Near-black, faintly green-tinted background; lime signal color is rare and always meaningful.",
+      "Flat, opaque panels by default. Blur/glass reserved for chrome that floats over scrolling content only.",
+      "Space Grotesk for anything that asserts; Inter for anything that's read.",
+      "Bento-style asymmetric grids over uniform icon-card grids."
+    ],
+    "rules": [
+      { "name": "The One Signal Rule", "body": "Lime appears only where the user should act or where something is actively true. Never used on well under 10% of any given screen.", "section": "colors" },
+      { "name": "The Contrast Rule", "body": "Muted/Field Gray text is never rendered below full opacity on a dark panel.", "section": "colors" },
+      { "name": "The One Eyebrow Rule", "body": "A small uppercase kicker above a heading is earned, not automatic. Only the hero's stat badge and the Pricing section's plain-text label use it.", "section": "typography" },
+      { "name": "The Functional Glass Rule", "body": "Glass/blur is applied only to elements that float over other content while scrolling.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do keep lime to CTAs, active/status states and focus rings — under 10% of any screen.",
+      "Do use flat panel-1/panel-2 for every card, tile and form container.",
+      "Do reserve glass/backdrop-blur for the sticky header, portal topbar and mobile nav drawer only.",
+      "Do keep muted body text at full opacity on dark panels (≥4.5:1 contrast).",
+      "Do pair Space Grotesk with Inter — never introduce a third typeface.",
+      "Do provide a prefers-reduced-motion alternative for every reveal/marquee animation."
+    ],
+    "donts": [
+      "Don't use background-clip: text gradient text for emphasis.",
+      "Don't put a bordered eyebrow pill above every section heading.",
+      "Don't use .glass/backdrop-blur on a resting card, tile or form container.",
+      "Don't drop text-muted below full opacity on a dark background.",
+      "Don't introduce a cream/beige/warm-neutral background anywhere in this system."
+    ]
+  }
+}

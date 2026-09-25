@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Iniciar sesión — Portal Rtres</title>
+<link rel="icon" href="../assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: { primary:{DEFAULT:'#6f9a35',strong:'#587c29',soft:'#a4d64e'}, ink:'#14170f', muted:'#656b5e' },
+    fontFamily: { sans:['Inter','system-ui','sans-serif'], display:['Space Grotesk','Inter','sans-serif'] }
+  }}}
+</script>
+<script src="../assets/portal.js"></script>
+<link rel="stylesheet" href="../assets/portal.css">
+</head>
+<body class="min-h-screen flex items-center justify-center px-5 py-16">
+
+<a href="../index.html" class="absolute top-7 left-7 flex items-center gap-2.5">
+  <img src="../assets/logo.png" alt="Rtres" class="h-8 w-auto">
+</a>
+
+<div class="w-full max-w-[420px]">
+  <div class="card p-9 sm:p-10">
+    <span class="pill pill-neutral mb-6"><span class="pill-dot"></span>Portal de clientes</span>
+    <h1 class="font-display text-3xl font-semibold tracking-tight">Bienvenido de nuevo</h1>
+    <p class="text-muted text-sm mt-2">Ingresa para gestionar tus productos, pagos y tickets de soporte.</p>
+
+    <form class="mt-8 space-y-5" onsubmit="event.preventDefault(); window.location.href='dashboard.html';">
+      <div>
+        <label class="field-label">Correo electrónico</label>
+        <input type="email" required placeholder="tucorreo@empresa.com" class="field">
+      </div>
+      <div>
+        <div class="flex items-center justify-between mb-1.5">
+          <label class="field-label !mb-0">Contraseña</label>
+          <a href="#" class="text-xs text-accent font-medium hover:underline">¿Olvidaste tu contraseña?</a>
+        </div>
+        <input type="password" required placeholder="••••••••" class="field">
+      </div>
+      <label class="flex items-center gap-2.5 text-sm text-muted">
+        <input type="checkbox" class="rounded border-gray-300 text-primary focus:ring-primary/40">
+        Mantener sesión iniciada
+      </label>
+      <button type="submit" class="btn btn-primary w-full py-3 text-[15px]">Iniciar sesión</button>
+    </form>
+
+    <div class="mt-7 pt-6 border-t border-[color:var(--border)] text-center">
+      <p class="text-sm text-muted">¿Aún no tienes cuenta?</p>
+      <p class="text-sm mt-1">Te la creamos nosotros — <a href="mailto:info@rtres.net" class="text-accent font-semibold hover:underline">contáctanos</a> y te enviamos tus credenciales.</p>
+    </div>
+  </div>
+
+  <p class="text-center text-xs text-muted mt-7">¿Necesitas ayuda? <a href="mailto:info@rtres.net" class="text-ink font-medium hover:text-accent transition">info@rtres.net</a></p>
+</div>
+
+</body>
+</html>

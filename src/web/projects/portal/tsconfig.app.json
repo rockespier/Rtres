@@ -1,0 +1,1 @@
+{"extends":"../../tsconfig.json","compilerOptions":{"outDir":"../../out-tsc/portal","types":[]},"files":["src/main.ts"]}

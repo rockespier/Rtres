@@ -1,0 +1,2 @@
+import { Component, Input } from '@angular/core';
+@Component({selector:'app-project-card',standalone:true,template:`<a class="proj-card" [href]="href"><div class="photo-duotone"><img [src]="imageUrl" [alt]="alt"></div><div class="proj-overlay"><span class="proj-pill">{{category}}</span><span class="proj-pill" i18n="@@projects.view">Ver proyecto</span></div><h3>{{name}}</h3><p>{{category}}</p></a>`}) export class ProjectCardComponent{@Input()name='';@Input()category='';@Input()imageUrl='';@Input()href='#';get alt(){return $localize`:@@project.alt:Proyecto — ${this.name}`;}}

@@ -1,0 +1,1 @@
+import{Component,Input}from'@angular/core';@Component({selector:'app-topbar',standalone:true,template:`<header class="sticky top-0 z-30 portal-surface border-b h-[68px] flex items-center justify-between px-6 lg:px-9"><span class="text-sm text-muted">{{breadcrumb}}</span><ng-content/></header>`})export class TopbarComponent{@Input()breadcrumb='Portal Rtres';}

@@ -1,0 +1,1 @@
+import{bootstrapApplication}from'@angular/platform-browser';import{provideRouter}from'@angular/router';import{PortalAppComponent}from'./app/portal-app.component';import{portalRoutes}from'./app/portal.routes';bootstrapApplication(PortalAppComponent,{providers:[provideRouter(portalRoutes)]});
