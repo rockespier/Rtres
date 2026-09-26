@@ -137,18 +137,19 @@ public class GitHubIssueSyncJobTests
 public class GitHubWebhookProcessorTests
 {
     [Fact]
-    public async Task Status_change_updates_ticket_notifies_and_logs()
+    public async Task Status_change_updates_ticket_and_notifies()
     {
         using var db = TestData.Db(out var seed, issueNumber: 7);
         var notifications = new FakeNotifications();
         await Processor(db, notifications).ProcessAsync("issues", TestData.IssueEvent("labeled", 7, labels: ["estado:en-progreso"]), CancellationToken.None);
         Assert.Equal(TicketStatus.EnProgreso, (await db.Tickets.SingleAsync()).Status);
-        Assert.Equal([GitHubWebhookProcessor.StatusChangedTemplate], notifications.Templates);
-        Assert.True((await db.NotificationLogs.SingleAsync()).Success);
+        var sent = Assert.Single(notifications.Sent);
+        Assert.Equal(NotificationType.TicketStatusChanged, sent.Type);
+        Assert.Equal("EnProgreso", sent.Data["status"]); Assert.Equal("RT-108", sent.Data["code"]); Assert.Equal(seed.Ticket.Id.ToString(), sent.Data["ticketId"]);
 
         // Mismo estado otra vez: no se notifica de nuevo.
         await Processor(db, notifications).ProcessAsync("issues", TestData.IssueEvent("edited", 7, labels: ["estado:en-progreso"]), CancellationToken.None);
-        Assert.Single(notifications.Templates);
+        Assert.Single(notifications.Sent);
     }
 
     [Fact]
@@ -163,13 +164,17 @@ public class GitHubWebhookProcessorTests
     public async Task Comments_are_created_edited_deleted_and_bots_ignored()
     {
         using var db = TestData.Db(out var seed, issueNumber: 7);
-        var processor = Processor(db, new FakeNotifications());
+        var notifications = new FakeNotifications();
+        var processor = Processor(db, notifications);
         await processor.ProcessAsync("issue_comment", TestData.CommentEvent("created", 7, 900, "Lo estamos revisando"), CancellationToken.None);
         await processor.ProcessAsync("issue_comment", TestData.CommentEvent("created", 7, 900, "Lo estamos revisando"), CancellationToken.None);
         await processor.ProcessAsync("issue_comment", TestData.CommentEvent("created", 7, 901, "ci", userType: "Bot"), CancellationToken.None);
         await processor.ProcessAsync("issue_comment", TestData.CommentEvent("created", 7, 902, "**Ana** (vía portal):\n\nHola\n\n" + GitHubLabels.PortalCommentMarker + Guid.NewGuid() + " -->"), CancellationToken.None);
         var comment = await db.TicketComments.SingleAsync();
         Assert.True(comment.FromGithub); Assert.Equal("dev", comment.GithubAuthorLogin);
+        // Solo el comentario humano nuevo avisa al cliente (ni el duplicado, ni el bot, ni el eco del portal).
+        var reply = Assert.Single(notifications.Sent);
+        Assert.Equal(NotificationType.TicketReply, reply.Type); Assert.Equal("ticket-reply:900", reply.DedupeKey); Assert.Equal("dev", reply.Data["author"]);
 
         await processor.ProcessAsync("issue_comment", TestData.CommentEvent("edited", 7, 900, "Corregido"), CancellationToken.None);
         Assert.Equal("Corregido", (await db.TicketComments.SingleAsync()).Body);
@@ -291,6 +296,6 @@ internal sealed class FakeGitHub : IGitHubIssuesClient
 
 internal sealed class FakeNotifications : INotificationSender
 {
-    public List<string> Templates { get; } = [];
-    public Task SendAsync(Client client, string template, object model, CancellationToken cancellationToken = default) { Templates.Add(template); return Task.CompletedTask; }
+    public List<Notification> Sent { get; } = [];
+    public Task SendAsync(Client client, Notification notification, CancellationToken cancellationToken = default) { Sent.Add(notification); return Task.CompletedTask; }
 }

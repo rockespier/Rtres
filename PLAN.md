@@ -288,7 +288,7 @@ Las tareas T1.5–T1.8 (sitio) y T1.9–T1.13 (portal) son independientes entre 
 3. **Portal — roles y alta de clientes**: pantallas de `Facturación`/`Perfil` (hoy stubs), gestión de usuarios por Admin, y el **rol SuperAdmin** (ver sección dedicada abajo).
 4. **Suscripciones PayPal**: detallada abajo en "Fase 4 — detalle (suscripciones y facturación PayPal)".
 5. **Tickets ↔ GitHub**: detallada abajo en "Fase 5 — detalle (tickets: tipos, comentarios, GitHub)".
-6. **Notificaciones**: Hangfire job diario de vencimientos, emails de cambio de estado, plantillas ES/EN/IT.
+6. **Notificaciones**: detallada abajo en "Fase 6 — detalle (notificaciones por email)".
 7. **Contabilidad Perú**: detallada abajo en "Fase 7 — detalle (contabilidad Perú: multi-moneda, documentos tributarios, IGV/Renta, gastos)".
 
 ## Fase 3 — detalle (roles, Facturación, Perfil, gestión de equipo, SuperAdmin)
@@ -565,11 +565,11 @@ Migración EF Core puramente de metadata (el enum ya es compatible a nivel de st
 - [x] **T5.3** — Backend: `POST /api/webhooks/github` — verifica firma, mapea comentarios entrantes a `TicketComment(FromGithub=true)` y cierres de issue a `TicketStatus.Resuelto`/`Cerrado`.
 - [x] **T5.4** — Frontend: `TicketDetailComponent`, `CommentThreadComponent`, `CommentFormComponent`, ruta `/tickets/:id`.
 - [x] **T5.5** — Frontend: `TicketTableComponent` — filas navegables a `/tickets/:id`; `TicketTypePillComponent`.
-- [ ] **T5.6** — Verificación end-to-end: crear un ticket de cada tipo (Bug/Funcionalidad/Requerimiento) y confirmar que aparece un Issue real en el repo de GitHub del proyecto correspondiente con las labels correctas; comentar desde el portal y desde GitHub y confirmar que ambos lados se reflejan en `CommentThreadComponent`.
+- [x] **T5.6** — Verificación end-to-end: crear un ticket de cada tipo (Bug/Funcionalidad/Requerimiento) y confirmar que aparece un Issue real en el repo de GitHub del proyecto correspondiente con las labels correctas; comentar desde el portal y desde GitHub y confirmar que ambos lados se reflejan en `CommentThreadComponent`.
 
 ### Estado de la Fase 5 (implementado 2026-09-26)
 
-T5.0–T5.5 implementados; **T5.6 (verificación end-to-end contra GitHub real) pendiente** — requiere `GitHub:Token` con permiso de issues en los repos de los proyectos y el webhook configurado. Detalles de la implementación:
+T5.0–T5.6 completos. **T5.6 verificada 2026-09-26** contra GitHub real (repo de pruebas en cuenta personal, API local expuesta con ngrok, SQL Server remoto): creación de issues con labels, comentarios portal→GitHub y GitHub→portal, y cambios de estado vía labels/cierre. La verificación destapó un 500 en `POST /tickets/{id}/comments` (filtro sobre DTO no traducible en SQL Server), corregido en rockespier/Rtres#3. Detalles de la implementación:
 
 - **Issue al crear ticket**: `POST /api/tickets` encola `GitHubIssueSyncJob.CreateIssueAsync` (Hangfire, 5 reintentos, idempotente). Título `[RT-xxx] <título>`, cuerpo con solo las secciones completadas (Impacto solo en Funcionalidad/Requerimiento), labels `bug`/`enhancement`/`requirement` + `estado:abierto` + `proyecto:<slug>`. Proyectos sin `GithubRepoOwner/Name` se omiten con warning.
 - **Comentarios portal → GitHub**: `POST /api/tickets/{id}/comments` (Cliente/Admin; SuperAdmin recibe 403) guarda el `TicketComment` y encola `PostCommentAsync`, que lo publica en el issue como `**<nombre>** (vía portal de clientes)` con una marca oculta `<!-- rtres-portal-comment:<id> -->`. Si el issue aún no existe, se publica cuando `CreateIssueAsync` lo crea.
@@ -579,6 +579,42 @@ T5.0–T5.5 implementados; **T5.6 (verificación end-to-end contra GitHub real) 
 - `GET /api/tickets` acepta `?status=&type=`; `GET /api/tickets/{id}` devuelve `comments` como `TicketCommentDto` con `authorName`.
 - Migración `GitHubTicketSync`: `TicketComment.GithubCommentId`/`GithubAuthorLogin` + índices. El renombre de `TicketType` no genera cambios de esquema (int).
 - Frontend: filtros de estado/tipo y paginación reales en `TicketsListComponent`; formulario con Bug/Funcionalidad/Requerimiento (tras crear navega al detalle).
+
+## Fase 6 — detalle (notificaciones por email)
+
+### Decisiones (confirmadas 2026-09-26)
+
+- **Proveedor**: SMTP de una cuenta de correo propia (ej. `notificaciones@rtres.net` en el hosting), vía MailKit. Sin `Smtp:Host` configurado, los emails solo se escriben en el log (desarrollo).
+- **Emails de esta fase**: vencimientos, cambio de estado de ticket, respuesta del equipo en un ticket, pago recibido y pago fallido.
+- **Vencimientos**: avisos a **30, 7 y 1 día** de `ClientProduct.RenewsAt`.
+- **Idioma**: `Client.PreferredLanguage` (`es`/`en`/`it`, por defecto `es`). **Destinatario**: `Client.Email` (el contacto del cliente, no cada usuario del equipo).
+
+### Diseño
+
+- `INotificationSender.SendAsync(client, Notification)` → `QueuedNotificationSender` encola `NotificationJob` en Hangfire (un SMTP lento no frena los webhooks de GitHub/PayPal; 3 reintentos).
+- `NotificationJob`: omite clientes inactivos o sin email; renderiza con `EmailTemplates` (HTML + texto plano, ES/EN/IT, datos escapados); envía con `IEmailSender`; registra cada intento en `NotificationLog` (`Recipient`, `DedupeKey`, `Success`, `Error`).
+- **Dedupe**: un aviso con `DedupeKey` ya enviado con éxito no se repite (un fallo no bloquea el reintento). Claves: `renewal:{clientProductId}:{yyyyMMdd}:{30|7|1}`, `ticket-reply:{githubCommentId}`, `payment:{orderId}`, `payment-failed:{webhookEventId}`.
+- `RenewalReminderJob` (diario 13:00 UTC = 8:00 Lima): productos `Activo`/`PorVencer` con `RenewsAt` en los próximos 30 días; elige el umbral más chico que aplica (a 20 días → aviso de 30; a 5 → de 7; a 0–1 → de 1), así un producto dado de alta a 5 días del vencimiento no recibe el de 30, y un día sin correr el job no pierde el aviso. Marca el producto `PorVencer`. El texto distingue renovación automática (`PayPalSubscriptionId`) de manual.
+- Disparadores: `GitHubWebhookProcessor` (cambio real de `TicketStatus`; comentario humano nuevo en el issue, no ediciones/bots/eco del portal) y webhook de PayPal (`PAYMENT.CAPTURE.COMPLETED`/`PAYMENT.SALE.COMPLETED` que crean un `PaymentTransaction` nuevo; `PAYMENT.CAPTURE.DENIED`/`PAYMENT.SALE.DENIED`/`BILLING.SUBSCRIPTION.PAYMENT.FAILED`).
+- Migración `NotificationLogDetails`: `NotificationLog.Recipient`/`DedupeKey`/`Error` + índice en `DedupeKey`.
+
+### Configuración (`appsettings.*.local.json`)
+
+```json
+"Smtp": { "Host": "mail.rtres.net", "Port": 587, "Security": "StartTls", "User": "notificaciones@rtres.net", "Password": "…", "From": "notificaciones@rtres.net", "FromName": "Rtres Web Solutions" }
+```
+
+`Security`: `Auto` (defecto), `StartTls` (587), `SslOnConnect` (465) o `None`. `Frontend:PortalUrl` se usa para los enlaces de los emails.
+
+### Checklist de tareas — Fase 6
+
+- [x] **T6.0** — Modelo `Notification`/`NotificationType`, `IEmailSender` (SMTP con MailKit + fallback a log), `EmailTemplates` ES/EN/IT, `NotificationJob` con log y dedupe, migración.
+- [x] **T6.1** — `RenewalReminderJob` con umbrales 30/7/1 y dedupe.
+- [x] **T6.2** — Avisos de estado y respuesta de ticket desde el webhook de GitHub.
+- [x] **T6.3** — Avisos de pago recibido/fallido desde el webhook de PayPal.
+- [ ] **T6.4** — Verificación con el SMTP real: configurar `Smtp:*`, forzar el job `renewal-reminders` desde `/jobs` con un producto a ≤30 días, cambiar el estado de un ticket y comentar desde GitHub; confirmar la recepción (y que no caiga en spam: revisar SPF/DKIM del dominio remitente) y las filas en `NotificationLogs`.
+
+**Pendiente/riesgo conocido**: Hangfire usa `MemoryStorage`, así que los emails encolados se pierden si la API se reinicia antes de enviarlos. Para producción conviene pasar a `Hangfire.SqlServer` (también afecta a los jobs de GitHub de la Fase 5).
 
 ## Fase 7 — detalle (contabilidad Perú: multi-moneda, documentos tributarios, IGV/Renta, gastos)
 

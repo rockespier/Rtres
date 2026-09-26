@@ -216,12 +216,3 @@ public sealed class GitHubIssuesClient(IConfiguration configuration) : IGitHubIs
         body.AppendLine().Append("## ").AppendLine(heading).AppendLine(content.Trim());
     }
 }
-
-public sealed class LoggingNotificationSender(ILogger<LoggingNotificationSender> logger) : INotificationSender
-{
-    public Task SendAsync(Client client, string template, object model, CancellationToken cancellationToken = default)
-    {
-        logger.LogInformation("Notification {Template} queued for {Email} ({Language})", template, client.Email, client.PreferredLanguage);
-        return Task.CompletedTask;
-    }
-}
