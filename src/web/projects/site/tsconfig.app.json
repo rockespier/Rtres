@@ -1,1 +1,4 @@
-{"extends":"../../tsconfig.json","compilerOptions":{"outDir":"../../out-tsc/site","types":["@angular/localize"]},"files":["src/main.ts"]}
+{"extends":"../../tsconfig.json","compilerOptions":{"outDir":"../../out-tsc/site","types":["@angular/localize"]},"files":[
+    "src/main.ts",
+    "server.ts"
+  ]}
