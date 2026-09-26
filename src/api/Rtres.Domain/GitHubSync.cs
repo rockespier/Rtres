@@ -6,8 +6,6 @@ namespace Rtres.Domain;
 /// <summary>Convención de labels entre el portal y los repos de GitHub de cada proyecto.</summary>
 public static class GitHubLabels
 {
-    public const string TypeSoporte = "tipo:soporte";
-    public const string TypeCambio = "tipo:cambio";
     public const string StatusPrefix = "estado:";
     public const string ProjectPrefix = "proyecto:";
 
@@ -20,7 +18,15 @@ public static class GitHubLabels
         (TicketStatus.Cerrado, "estado:cerrado"),
     ];
 
-    public static string ForType(TicketType type) => type == TicketType.Soporte ? TypeSoporte : TypeCambio;
+    /// <summary>Marca oculta que llevan los comentarios publicados desde el portal, para no reimportarlos por el webhook.</summary>
+    public const string PortalCommentMarker = "<!-- rtres-portal-comment:";
+
+    public static string ForType(TicketType type) => type switch
+    {
+        TicketType.Bug => "bug",
+        TicketType.Funcionalidad => "enhancement",
+        _ => "requirement",
+    };
     public static string ForStatus(TicketStatus status) => StatusLabels.First(x => x.Status == status).Label;
     public static string ForProject(string projectSlug) => ProjectPrefix + projectSlug;
 

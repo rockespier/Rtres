@@ -29,23 +29,36 @@ export interface ClientProductApiDto {
   project: ProjectDto;
 }
 
+export type TicketType = 'Bug' | 'Funcionalidad' | 'Requerimiento';
+export type TicketStatus = 'Abierto' | 'EnProgreso' | 'Resuelto' | 'Publicado' | 'Cerrado';
+
 export interface TicketDto {
   id: string;
   code: string;
-  type: string;
-  status: string;
+  projectId: string;
+  type: TicketType;
+  status: TicketStatus;
   title: string;
   description: string;
+  currentBehavior: string | null;
+  expectedBehavior: string | null;
+  stepsToReproduce: string | null;
+  environment: string | null;
+  acceptanceCriteria: string | null;
+  estimatedImpact: string | null;
+  createdAt: string;
   updatedAt: string;
   githubIssueNumber: number | null;
   githubIssueUrl: string | null;
 }
 
+export interface TicketCommentDto { id: string; body: string; fromGithub: boolean; authorName: string | null; createdAt: string; }
+
 export interface TicketsPage { items: TicketDto[]; page: number; totalPages: number; }
 
 export interface CreateTicketRequest {
   projectId: string;
-  type: 'Soporte' | 'Cambio';
+  type: TicketType;
   title: string;
   description: string;
   currentBehavior?: string;
@@ -78,8 +91,12 @@ export class PortalApiService {
   getClientProduct(id:string) { return this.http.get<ClientProductApiDto>(this.scoped(`/client-products/${id}`)); }
   getProjects() { return this.http.get<ProjectDto[]>(this.scoped('/projects')); }
   getProjectsForClient(clientId:string) { return this.http.get<ProjectDto[]>(`${this.base}/projects?clientId=${encodeURIComponent(clientId)}`); }
-  getTickets(page = 1) { return this.http.get<TicketsPage>(this.scoped(`/tickets?page=${page}`)); }
-  getTicket(id: string) { return this.http.get<{ ticket: TicketDto; comments: unknown[] }>(`${this.base}/tickets/${id}`); }
+  getTickets(page = 1, filters: { status?: string; type?: string } = {}) {
+    const q = [`page=${page}`, filters.status ? `status=${filters.status}` : '', filters.type ? `type=${filters.type}` : ''].filter(Boolean).join('&');
+    return this.http.get<TicketsPage>(this.scoped(`/tickets?${q}`));
+  }
+  getTicket(id: string) { return this.http.get<{ ticket: TicketDto; comments: TicketCommentDto[] }>(this.scoped(`/tickets/${id}`)); }
+  addTicketComment(id: string, body: string) { return this.http.post<TicketCommentDto>(`${this.base}/tickets/${id}/comments`, { body }); }
   createTicket(body: CreateTicketRequest) { return this.http.post<TicketDto>(`${this.base}/tickets`, body); }
   uploadAttachment(ticketId: string, file: File) {
     const form = new FormData();
