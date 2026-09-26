@@ -30,5 +30,5 @@ public interface IGitHubIssuesClient
 
 public interface INotificationSender
 {
-    Task SendAsync(Client client, string template, object model, CancellationToken cancellationToken = default);
+    Task SendAsync(Client client, Notification notification, CancellationToken cancellationToken = default);
 }
