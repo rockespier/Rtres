@@ -24,7 +24,8 @@ public interface IPayPalClient
 
 public interface IGitHubIssuesClient
 {
-    Task<GitHubIssue> CreateIssueAsync(Project project, Ticket ticket, string clientSlug, CancellationToken cancellationToken = default);
+    Task<GitHubIssue> CreateIssueAsync(Project project, Ticket ticket, CancellationToken cancellationToken = default);
+    Task<long> CreateCommentAsync(Project project, int issueNumber, string body, CancellationToken cancellationToken = default);
 }
 
 public interface INotificationSender

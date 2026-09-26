@@ -4,6 +4,7 @@ using Hangfire;
 using Hangfire.MemoryStorage;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Rtres.Api.GitHub;
 using Rtres.Api.Jobs;
 using Rtres.Api.Services;
 using Rtres.Infrastructure;
@@ -14,6 +15,7 @@ builder.Configuration.AddJsonFile($"appsettings.{builder.Environment.Environment
 builder.Services.AddControllers().AddJsonOptions(o => o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 builder.Services.AddOpenApi();
 builder.Services.AddRtresInfrastructure(builder.Configuration);
+builder.Services.AddScoped<GitHubWebhookProcessor>();
 builder.Services.AddScoped<PayPalCheckoutService>();
 builder.Services.AddCors(options => options.AddDefaultPolicy(policy => policy
     .WithOrigins(builder.Configuration["Frontend:PublicUrl"] ?? "https://rtres.net", builder.Configuration["Frontend:PortalUrl"] ?? "https://portal.rtres.net", "http://localhost:4200", "http://localhost:4201")

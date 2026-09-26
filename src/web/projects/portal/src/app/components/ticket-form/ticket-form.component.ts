@@ -5,7 +5,7 @@ import { Router, RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TicketPreviewCardComponent } from '../ticket-preview-card/ticket-preview-card.component';
 import { FileDropzoneComponent } from '../file-dropzone/file-dropzone.component';
-import { PortalApiService, ProjectDto } from '../../core/portal-api.service';
+import { PortalApiService, ProjectDto, TicketType } from '../../core/portal-api.service';
 import { PortalUiService } from '../../core/portal-ui.service';
 
 @Component({
@@ -21,19 +21,18 @@ import { PortalUiService } from '../../core/portal-ui.service';
       <form id="ticketForm" [formGroup]="form" (ngSubmit)="submit()">
         <div class="card p-6 space-y-6">
           <div>
-            <button type="button" class="type-tab" [class.active]="form.value.type==='Soporte'" (click)="setType('Soporte')">Ticket de soporte</button>
-            <button type="button" class="type-tab ml-2" [class.active]="form.value.type==='Cambio'" (click)="setType('Cambio')">Solicitud de cambio</button>
+            <button *ngFor="let t of types; let first = first" type="button" class="type-tab" [class.ml-2]="!first" [class.active]="form.value.type===t.value" (click)="setType(t.value)">{{ t.label }}</button>
           </div>
           <label>Proyecto<select class="field" formControlName="projectId"><option *ngFor="let p of projects()" [value]="p.id">{{ p.name }}</option></select></label>
           <label>Título<input class="field" formControlName="title"></label>
           <label>Descripción *<textarea class="field" formControlName="description"></textarea></label>
-          <label>Comportamiento actual *<textarea class="field" formControlName="currentBehavior"></textarea></label>
+          <label>Comportamiento actual{{ isBug() ? ' *' : ' (opcional)' }}<textarea class="field" formControlName="currentBehavior"></textarea></label>
           <label>Comportamiento esperado *<textarea class="field" formControlName="expectedBehavior"></textarea></label>
-          <label>Pasos para reproducir *<textarea class="field" formControlName="stepsToReproduce"></textarea></label>
-          <label>Entorno *<input class="field" formControlName="environment"></label>
+          <label *ngIf="isBug()">Pasos para reproducir *<textarea class="field" formControlName="stepsToReproduce"></textarea></label>
+          <label *ngIf="isBug()">Entorno *<input class="field" formControlName="environment"></label>
           <app-file-dropzone/>
           <label>Criterios de aceptación *<textarea class="field" formControlName="acceptanceCriteria"></textarea></label>
-          <label *ngIf="form.value.type==='Cambio'">Impacto / alcance estimado<textarea class="field" formControlName="estimatedImpact"></textarea></label>
+          <label *ngIf="!isBug()">Impacto / alcance estimado<textarea class="field" formControlName="estimatedImpact"></textarea></label>
           <p *ngIf="error()" class="text-red-600 text-sm">{{ error() }}</p>
         </div>
       </form>
@@ -51,8 +50,14 @@ export class TicketFormComponent implements OnInit, AfterViewInit, OnDestroy {
   submitting = signal(false);
   error = signal('');
 
+  types: { value: TicketType; label: string }[] = [
+    { value: 'Bug', label: 'Reportar bug' },
+    { value: 'Funcionalidad', label: 'Nueva funcionalidad' },
+    { value: 'Requerimiento', label: 'Requerimiento' },
+  ];
+
   form = this.fb.group({
-    type: ['Soporte'],
+    type: ['Bug' as TicketType],
     projectId: [''],
     title: [''],
     description: ['', Validators.required],
@@ -88,26 +93,38 @@ export class TicketFormComponent implements OnInit, AfterViewInit, OnDestroy {
     this.ui.actions.set(null);
   }
 
-  setType(t: 'Soporte' | 'Cambio') { this.form.controls.type.setValue(t); }
+  isBug(): boolean { return this.form.value.type === 'Bug'; }
+
+  /** Bug usa los campos de reporte de error; Funcionalidad/Requerimiento solo exigen el comportamiento esperado. */
+  setType(t: TicketType) {
+    this.form.controls.type.setValue(t);
+    const bug = t === 'Bug';
+    for (const name of ['currentBehavior', 'stepsToReproduce', 'environment'] as const) {
+      const control = this.form.controls[name];
+      control.setValidators(bug ? Validators.required : null);
+      control.updateValueAndValidity();
+    }
+  }
 
   submit(): void {
     if (this.form.invalid) { this.error.set('Completa los campos obligatorios.'); return; }
     const v = this.form.getRawValue();
+    const bug = v.type === 'Bug';
     this.submitting.set(true);
     this.error.set('');
     this.api.createTicket({
       projectId: v.projectId!,
-      type: v.type as 'Soporte' | 'Cambio',
+      type: v.type!,
       title: v.title!,
       description: v.description!,
-      currentBehavior: v.currentBehavior!,
+      currentBehavior: v.currentBehavior || undefined,
       expectedBehavior: v.expectedBehavior!,
-      stepsToReproduce: v.stepsToReproduce!,
-      environment: v.environment!,
+      stepsToReproduce: bug ? v.stepsToReproduce! : undefined,
+      environment: bug ? v.environment! : undefined,
       acceptanceCriteria: v.acceptanceCriteria!,
-      estimatedImpact: v.estimatedImpact || undefined,
+      estimatedImpact: bug ? undefined : v.estimatedImpact || undefined,
     }).subscribe({
-      next: () => this.router.navigateByUrl('/tickets'),
+      next: t => this.router.navigate(['/tickets', t.id]),
       error: () => { this.error.set('No se pudo crear el ticket.'); this.submitting.set(false); },
     });
   }
