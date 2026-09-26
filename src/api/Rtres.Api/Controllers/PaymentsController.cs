@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Security.Claims;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
@@ -10,7 +11,7 @@ using Rtres.Infrastructure.Persistence;
 namespace Rtres.Api.Controllers;
 
 [ApiController, Route("api")]
-public sealed class PaymentsController(RtresDbContext db, IPayPalClient payPal, PayPalCheckoutService checkoutService) : ControllerBase
+public sealed class PaymentsController(RtresDbContext db, IPayPalClient payPal, PayPalCheckoutService checkoutService, INotificationSender notifications) : ControllerBase
 {
     private IActionResult? ClientScope(Guid? requested, out Guid clientId)
     {
@@ -73,12 +74,22 @@ public sealed class PaymentsController(RtresDbContext db, IPayPalClient payPal, 
         if (item is null) return Ok();
         if (eventType is "BILLING.SUBSCRIPTION.ACTIVATED" or "BILLING.SUBSCRIPTION.CANCELLED") { item.Status = eventType.EndsWith("ACTIVATED") ? ClientProductStatus.Activo : ClientProductStatus.Cancelado; item.PayPalSubscriptionId ??= resourceId; }
         if (eventType is "PAYMENT.CAPTURE.COMPLETED" or "CHECKOUT.ORDER.APPROVED") { item.PayPalOrderId ??= orderId; item.Status = ClientProductStatus.Activo; item.RenewsAt = (item.RenewsAt ?? DateTime.UtcNow).AddYears(1); }
+        Notification? notification = null;
         if (eventType is "PAYMENT.SALE.COMPLETED" or "PAYMENT.CAPTURE.COMPLETED")
         {
             var (amount, currency) = Amount(resource); var transactionId = orderId ?? item.PayPalSubscriptionId ?? item.PayPalOrderId ?? item.Id.ToString();
-            if (amount is decimal value && !await db.PaymentTransactions.AnyAsync(x => x.PayPalOrderIdOrSubscriptionId == transactionId, ct)) db.PaymentTransactions.Add(new PaymentTransaction { ClientProductId = item.Id, PayPalOrderIdOrSubscriptionId = transactionId, Amount = value, Currency = currency ?? item.Product?.Currency ?? "USD", Status = "COMPLETED" });
+            if (amount is decimal value && !await db.PaymentTransactions.AnyAsync(x => x.PayPalOrderIdOrSubscriptionId == transactionId, ct))
+            {
+                var transaction = new PaymentTransaction { ClientProductId = item.Id, PayPalOrderIdOrSubscriptionId = transactionId, Amount = value, Currency = currency ?? item.Product?.Currency ?? "USD", Status = "COMPLETED" };
+                db.PaymentTransactions.Add(transaction);
+                notification = new Notification(NotificationType.PaymentReceived, new() { ["product"] = item.Product?.Name ?? "", ["amount"] = value.ToString(CultureInfo.InvariantCulture), ["currency"] = transaction.Currency }, $"payment:{transactionId}");
+            }
         }
-        await db.SaveChangesAsync(ct); return Ok();
+        if (eventType is "PAYMENT.CAPTURE.DENIED" or "PAYMENT.SALE.DENIED" or "BILLING.SUBSCRIPTION.PAYMENT.FAILED")
+            notification = new Notification(NotificationType.PaymentFailed, new() { ["product"] = item.Product?.Name ?? "" }, $"payment-failed:{Find(root, "id") ?? resourceId}");
+        await db.SaveChangesAsync(ct);
+        if (notification is not null && await db.Clients.FindAsync([item.ClientId], ct) is Client client) await notifications.SendAsync(client, notification, ct);
+        return Ok();
     }
 
     private static string? Find(JsonElement value, string property) => value.TryGetProperty(property, out var item) && item.ValueKind == JsonValueKind.String ? item.GetString() : null;

@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Rtres.Domain;
+using Rtres.Infrastructure.Notifications;
 using Rtres.Infrastructure.Persistence;
 
 namespace Rtres.Infrastructure;
@@ -19,7 +20,8 @@ public static class ServiceCollectionExtensions
         });
         services.AddHttpClient<IPayPalClient, PayPalClient>(client => client.BaseAddress = new Uri(configuration["PayPal:BaseUrl"] ?? "https://api-m.sandbox.paypal.com/"));
         services.AddScoped<IGitHubIssuesClient, GitHubIssuesClient>();
-        services.AddScoped<INotificationSender, LoggingNotificationSender>();
+        if (string.IsNullOrWhiteSpace(configuration["Smtp:Host"])) services.AddScoped<IEmailSender, LoggingEmailSender>();
+        else services.AddScoped<IEmailSender, SmtpEmailSender>();
         return services;
     }
 }

@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Rtres.Api.GitHub;
 using Rtres.Api.Jobs;
+using Rtres.Api.Notifications;
+using Rtres.Domain;
 using Rtres.Api.Services;
 using Rtres.Infrastructure;
 using Rtres.Infrastructure.Persistence;
@@ -16,6 +18,7 @@ builder.Services.AddControllers().AddJsonOptions(o => o.JsonSerializerOptions.Co
 builder.Services.AddOpenApi();
 builder.Services.AddRtresInfrastructure(builder.Configuration);
 builder.Services.AddScoped<GitHubWebhookProcessor>();
+builder.Services.AddScoped<INotificationSender, QueuedNotificationSender>();
 builder.Services.AddScoped<PayPalCheckoutService>();
 builder.Services.AddCors(options => options.AddDefaultPolicy(policy => policy
     .WithOrigins(builder.Configuration["Frontend:PublicUrl"] ?? "https://rtres.net", builder.Configuration["Frontend:PortalUrl"] ?? "https://portal.rtres.net", "http://localhost:4200", "http://localhost:4201")
@@ -42,7 +45,8 @@ app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseHangfireDashboard("/jobs");
-RecurringJob.AddOrUpdate<RenewalReminderJob>("renewal-reminders", job => job.SendAsync(CancellationToken.None), Cron.Daily);
+// 13:00 UTC = 8:00 en Lima.
+RecurringJob.AddOrUpdate<RenewalReminderJob>("renewal-reminders", job => job.SendAsync(CancellationToken.None), Cron.Daily(13));
 app.MapControllers();
 app.Run();
 

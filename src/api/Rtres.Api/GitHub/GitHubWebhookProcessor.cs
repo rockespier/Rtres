@@ -8,8 +8,6 @@ namespace Rtres.Api.GitHub;
 /// <summary>Aplica los eventos <c>issues</c> e <c>issue_comment</c> de GitHub sobre los tickets del portal.</summary>
 public sealed class GitHubWebhookProcessor(RtresDbContext db, INotificationSender notifications, ILogger<GitHubWebhookProcessor> logger)
 {
-    public const string StatusChangedTemplate = "ticket-status-changed";
-
     public async Task ProcessAsync(string eventName, JsonElement payload, CancellationToken ct)
     {
         if (eventName is not ("issues" or "issue_comment")) return;
@@ -40,14 +38,16 @@ public sealed class GitHubWebhookProcessor(RtresDbContext db, INotificationSende
         var newStatus = GitHubLabels.ResolveStatus(issue.GetProperty("state").GetString() ?? "open", stateReason, labels);
         if (newStatus == ticket.Status) return;
 
-        var previous = ticket.Status;
         ticket.Status = newStatus; ticket.UpdatedAt = DateTime.UtcNow;
+        await NotifyAsync(ticket, NotificationType.TicketStatusChanged, new() { ["status"] = newStatus.ToString() }, null, ct);
+    }
+
+    private async Task NotifyAsync(Ticket ticket, NotificationType type, Dictionary<string, string> data, string? dedupeKey, CancellationToken ct)
+    {
         var client = await db.Clients.FindAsync([ticket.ClientId], ct);
         if (client is null) return;
-        var success = true;
-        try { await notifications.SendAsync(client, StatusChangedTemplate, new { ticket.Code, ticket.Title, PreviousStatus = previous, Status = newStatus, ticket.GithubIssueUrl }, ct); }
-        catch (Exception ex) { success = false; logger.LogError(ex, "No se pudo notificar el cambio de estado del ticket {Code}", ticket.Code); }
-        db.NotificationLogs.Add(new NotificationLog { ClientId = client.Id, Type = "TicketStatusChange", Channel = "email", Success = success });
+        data["ticketId"] = ticket.Id.ToString(); data["code"] = ticket.Code; data["title"] = ticket.Title;
+        await notifications.SendAsync(client, new Notification(type, data, dedupeKey), ct);
     }
 
     private async Task ApplyCommentAsync(Ticket ticket, string? action, JsonElement comment, CancellationToken ct)
@@ -61,7 +61,9 @@ public sealed class GitHubWebhookProcessor(RtresDbContext db, INotificationSende
         switch (action)
         {
             case "created" when existing is null:
-                db.TicketComments.Add(new TicketComment { TicketId = ticket.Id, Body = body, FromGithub = true, GithubCommentId = commentId, GithubAuthorLogin = user.GetProperty("login").GetString() });
+                var login = user.GetProperty("login").GetString();
+                db.TicketComments.Add(new TicketComment { TicketId = ticket.Id, Body = body, FromGithub = true, GithubCommentId = commentId, GithubAuthorLogin = login });
+                await NotifyAsync(ticket, NotificationType.TicketReply, new() { ["author"] = login ?? "Rtres", ["body"] = body }, $"ticket-reply:{commentId}", ct);
                 break;
             case "edited" when existing is not null:
                 existing.Body = body;
