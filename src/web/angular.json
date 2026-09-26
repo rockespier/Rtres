@@ -1,1 +1,105 @@
-{"$schema":"./node_modules/@angular/cli/lib/config/schema.json","version":1,"newProjectRoot":"projects","projects":{"site":{"projectType":"application","root":"projects/site","sourceRoot":"projects/site/src","prefix":"app","architect":{"build":{"builder":"@angular/build:application","options":{"outputPath":"dist/site","browser":"projects/site/src/main.ts","index":"projects/site/src/index.html","polyfills":["zone.js","@angular/localize/init"],"tsConfig":"projects/site/tsconfig.app.json","styles":["projects/site/src/styles.css"],"assets":["projects/site/src/assets"]}},"serve":{"builder":"@angular/build:dev-server","options":{"buildTarget":"site:build"}}}},"portal":{"projectType":"application","root":"projects/portal","sourceRoot":"projects/portal/src","prefix":"app","architect":{"build":{"builder":"@angular/build:application","options":{"outputPath":"dist/portal","browser":"projects/portal/src/main.ts","index":"projects/portal/src/index.html","polyfills":["zone.js"],"tsConfig":"projects/portal/tsconfig.app.json","styles":["projects/portal/src/styles.css"],"assets":["projects/portal/src/assets"]}},"serve":{"builder":"@angular/build:dev-server","options":{"buildTarget":"portal:build"}}}}}}
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "newProjectRoot": "projects",
+  "projects": {
+    "site": {
+      "projectType": "application",
+      "root": "projects/site",
+      "sourceRoot": "projects/site/src",
+      "prefix": "app",
+      "i18n": {
+        "sourceLocale": "es",
+        "locales": {
+          "en": {
+            "translation": "projects/site/src/locale/messages.en.xlf"
+          },
+          "it": {
+            "translation": "projects/site/src/locale/messages.it.xlf"
+          }
+        }
+      },
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "outputPath": "dist/site",
+            "browser": "projects/site/src/main.ts",
+            "index": "projects/site/src/index.html",
+            "polyfills": [
+              "zone.js",
+              "@angular/localize/init"
+            ],
+            "tsConfig": "projects/site/tsconfig.app.json",
+            "styles": [
+              "projects/site/src/styles.css"
+            ],
+            "assets": [
+              "projects/site/src/assets"
+            ],
+            "localize": true,
+            "server": "projects/site/src/main.server.ts",
+            "prerender": true,
+            "ssr": {
+              "entry": "projects/site/server.ts"
+            }
+          },
+          "configurations": {
+            "development": {
+              "localize": [
+                "es"
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "options": {
+            "buildTarget": "site:build:development"
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular/build:extract-i18n",
+          "options": {
+            "buildTarget": "site:build"
+          }
+        }
+      }
+    },
+    "portal": {
+      "projectType": "application",
+      "root": "projects/portal",
+      "sourceRoot": "projects/portal/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "outputPath": "dist/portal",
+            "browser": "projects/portal/src/main.ts",
+            "index": "projects/portal/src/index.html",
+            "polyfills": [
+              "zone.js"
+            ],
+            "tsConfig": "projects/portal/tsconfig.app.json",
+            "styles": [
+              "projects/portal/src/styles.css"
+            ],
+            "assets": [
+              "projects/portal/src/assets"
+            ]
+          }
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "options": {
+            "buildTarget": "portal:build"
+          }
+        }
+      }
+    }
+  },
+  "cli": {
+    "analytics": "fbda07a6-68ca-4112-8d0d-d74ff904e7ad"
+  }
+}

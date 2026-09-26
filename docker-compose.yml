@@ -1,16 +1,17 @@
 services:
-  postgres:
-    image: postgres:16-alpine
-    environment: { POSTGRES_DB: rtres, POSTGRES_USER: rtres, POSTGRES_PASSWORD: change-me }
-    volumes: [postgres-data:/var/lib/postgresql/data]
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment: { ACCEPT_EULA: "Y", MSSQL_SA_PASSWORD: "Change-me-2026!" }
+    volumes: [sqlserver-data:/var/opt/mssql]
+    ports: ["1433:1433"]
   api:
     build: ./src/api/Rtres.Api
-    environment: { ConnectionStrings__Postgres: Host=postgres;Database=rtres;Username=rtres;Password=change-me }
-    depends_on: [postgres]
+    environment: { ConnectionStrings__SqlServer: "Server=sqlserver;Database=rtres;User Id=sa;Password=Change-me-2026!;TrustServerCertificate=True" }
+    depends_on: [sqlserver]
   web: { build: ./src/web, depends_on: [api] }
   nginx:
     image: nginx:alpine
     ports: ["80:80"]
     volumes: ["./infrastructure/nginx/rtres.conf:/etc/nginx/conf.d/default.conf:ro"]
     depends_on: [web, api]
-volumes: { postgres-data: {} }
+volumes: { sqlserver-data: {} }
