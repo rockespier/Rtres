@@ -565,11 +565,11 @@ Migración EF Core puramente de metadata (el enum ya es compatible a nivel de st
 - [x] **T5.3** — Backend: `POST /api/webhooks/github` — verifica firma, mapea comentarios entrantes a `TicketComment(FromGithub=true)` y cierres de issue a `TicketStatus.Resuelto`/`Cerrado`.
 - [x] **T5.4** — Frontend: `TicketDetailComponent`, `CommentThreadComponent`, `CommentFormComponent`, ruta `/tickets/:id`.
 - [x] **T5.5** — Frontend: `TicketTableComponent` — filas navegables a `/tickets/:id`; `TicketTypePillComponent`.
-- [ ] **T5.6** — Verificación end-to-end: crear un ticket de cada tipo (Bug/Funcionalidad/Requerimiento) y confirmar que aparece un Issue real en el repo de GitHub del proyecto correspondiente con las labels correctas; comentar desde el portal y desde GitHub y confirmar que ambos lados se reflejan en `CommentThreadComponent`.
+- [x] **T5.6** — Verificación end-to-end: crear un ticket de cada tipo (Bug/Funcionalidad/Requerimiento) y confirmar que aparece un Issue real en el repo de GitHub del proyecto correspondiente con las labels correctas; comentar desde el portal y desde GitHub y confirmar que ambos lados se reflejan en `CommentThreadComponent`.
 
 ### Estado de la Fase 5 (implementado 2026-09-26)
 
-T5.0–T5.5 implementados; **T5.6 (verificación end-to-end contra GitHub real) pendiente** — requiere `GitHub:Token` con permiso de issues en los repos de los proyectos y el webhook configurado. Detalles de la implementación:
+T5.0–T5.6 completos. **T5.6 verificada 2026-09-26** contra GitHub real (repo de pruebas en cuenta personal, API local expuesta con ngrok, SQL Server remoto): creación de issues con labels, comentarios portal→GitHub y GitHub→portal, y cambios de estado vía labels/cierre. La verificación destapó un 500 en `POST /tickets/{id}/comments` (filtro sobre DTO no traducible en SQL Server), corregido en rockespier/Rtres#3. Detalles de la implementación:
 
 - **Issue al crear ticket**: `POST /api/tickets` encola `GitHubIssueSyncJob.CreateIssueAsync` (Hangfire, 5 reintentos, idempotente). Título `[RT-xxx] <título>`, cuerpo con solo las secciones completadas (Impacto solo en Funcionalidad/Requerimiento), labels `bug`/`enhancement`/`requirement` + `estado:abierto` + `proyecto:<slug>`. Proyectos sin `GithubRepoOwner/Name` se omiten con warning.
 - **Comentarios portal → GitHub**: `POST /api/tickets/{id}/comments` (Cliente/Admin; SuperAdmin recibe 403) guarda el `TicketComment` y encola `PostCommentAsync`, que lo publica en el issue como `**<nombre>** (vía portal de clientes)` con una marca oculta `<!-- rtres-portal-comment:<id> -->`. Si el issue aún no existe, se publica cuando `CreateIssueAsync` lo crea.
