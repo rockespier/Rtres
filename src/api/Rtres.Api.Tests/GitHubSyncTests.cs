@@ -225,6 +225,19 @@ public class TicketCommentsEndpointTests
     }
 }
 
+public class SqlServerTranslationTests
+{
+    // La base en memoria de los demás tests acepta consultas que SQL Server no puede traducir; esto valida la traducción real.
+    [Fact]
+    public void Comment_queries_translate_to_sql_server()
+    {
+        using var db = new RtresDbContext(new DbContextOptionsBuilder<RtresDbContext>().UseSqlServer("Server=none;Database=x;User Id=a;Password=b").Options);
+        var id = Guid.NewGuid();
+        Assert.Contains("SELECT", PortalController.ToCommentDtos(db, db.TicketComments.Where(x => x.TicketId == id).OrderBy(x => x.CreatedAt)).ToQueryString());
+        Assert.Contains("SELECT", PortalController.ToCommentDtos(db, db.TicketComments.Where(x => x.Id == id)).ToQueryString());
+    }
+}
+
 internal sealed class FakeJobs : IBackgroundJobClient
 {
     public List<Job> Created { get; } = [];
