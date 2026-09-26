@@ -7,6 +7,10 @@
    depend on styles.css.
    =================================================================== */
 
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root{
   --bg:#f6f7f3;
   --surface:#ffffff;
@@ -102,6 +106,8 @@ body{
   background:var(--surface); color:var(--ink); border-color:var(--border-strong);
 }
 .btn-ghost:hover{background:#fbfbf9; border-color:var(--muted-2);}
+.btn-danger{background:var(--danger-bg); color:var(--danger-ink); border-color:var(--danger-border);}
+.btn-danger:hover{background:var(--danger-border);}
 .btn-sm{padding:8px 14px; font-size:13px; border-radius:8px;}
 
 /* Badges / status pills — soft pastel bg + saturated text, per reference */
@@ -216,3 +222,7 @@ input:focus-visible, textarea:focus-visible, select:focus-visible, button:focus-
 .switch input:checked + .track{background:var(--primary); border-color:var(--primary);}
 .switch input:checked + .track .thumb{transform:translateX(15px);}
 .switch input:focus-visible + .track{outline:2px solid var(--primary); outline-offset:2px;}
+
+/* Ticket form type tabs (page-scoped in the original mockup) */
+.type-tab{padding:9px 18px;border-radius:9px;font-size:13.5px;font-weight:600;border:1px solid var(--border);color:var(--muted);cursor:pointer;transition:all .15s;background:var(--surface);}
+.type-tab.active{background:var(--primary);color:var(--on-primary);border-color:var(--primary);}

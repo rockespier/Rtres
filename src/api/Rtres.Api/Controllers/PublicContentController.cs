@@ -3,13 +3,34 @@ using Rtres.Domain;
 
 namespace Rtres.Api.Controllers;
 
-[ApiController, Route("api/public/{locale}/pages")]
+[ApiController, Route("api/public")]
 public sealed class PublicContentController(IWordPressContentClient content) : ControllerBase
 {
-    [HttpGet("{slug}")]
-    public async Task<ActionResult<WordPressPage>> Get(string locale, string slug, CancellationToken cancellationToken)
+    [HttpGet("{locale}/pages/{slug}")]
+    public async Task<ActionResult<WordPressPage>> GetPage(string locale, string slug, CancellationToken cancellationToken)
     {
         if (locale is not ("es" or "en" or "it")) return NotFound();
         return await content.GetPageAsync(locale, slug, cancellationToken) is { } page ? Ok(page) : NotFound();
+    }
+
+    [HttpGet("{locale}/projects")]
+    public async Task<ActionResult<IReadOnlyList<WordPressProject>>> GetProjects(string locale, CancellationToken cancellationToken)
+    {
+        if (locale is not ("es" or "en" or "it")) return NotFound();
+        return Ok(await content.GetProjectsAsync(locale, cancellationToken));
+    }
+
+    [HttpGet("{locale}/reviews")]
+    public async Task<ActionResult<IReadOnlyList<WordPressReview>>> GetReviews(string locale, CancellationToken cancellationToken)
+    {
+        if (locale is not ("es" or "en" or "it")) return NotFound();
+        return Ok(await content.GetReviewsAsync(locale, cancellationToken));
+    }
+
+    [HttpGet("hero-photo")]
+    public async Task<ActionResult> GetHeroPhoto(CancellationToken cancellationToken)
+    {
+        var url = await content.GetHeroPhotoUrlAsync(cancellationToken);
+        return url is null ? NotFound() : Ok(new { url });
     }
 }

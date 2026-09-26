@@ -13,7 +13,7 @@ namespace Rtres.Infrastructure.Persistence.Migrations
             migrationBuilder.AddColumn<string>(
                 name: "GithubAuthorLogin",
                 table: "TicketComments",
-                type: "text",
+                type: "nvarchar(max)",
                 nullable: true);
 
             migrationBuilder.AddColumn<long>(
@@ -31,7 +31,8 @@ namespace Rtres.Infrastructure.Persistence.Migrations
                 name: "IX_TicketComments_GithubCommentId",
                 table: "TicketComments",
                 column: "GithubCommentId",
-                unique: true);
+                unique: true,
+                filter: "[GithubCommentId] IS NOT NULL");
         }
 
         /// <inheritdoc />

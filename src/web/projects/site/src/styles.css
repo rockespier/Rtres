@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root{
   --bg:#ffffff;
   --bg-alt:#f6f7f3;
@@ -246,5 +250,5 @@ input:focus,textarea:focus,select:focus,button:focus-visible,a:focus-visible{out
 }
 
 @media (max-width:768px){
-  .huge{font-size:clamp(3.5rem, 22vw, 8rem);}
+  .huge{font-size:clamp(2.75rem, 16vw, 6rem);}
 }

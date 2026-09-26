@@ -10,8 +10,13 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddRtresInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddDbContext<RtresDbContext>(options => options.UseNpgsql(configuration.GetConnectionString("Postgres")));
-        services.AddHttpClient<IWordPressContentClient, WordPressContentClient>(client => client.BaseAddress = new Uri(configuration["WordPress:BaseUrl"] ?? "https://cms.rtres.net/"));
+        services.AddDbContext<RtresDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("SqlServer")));
+        services.AddMemoryCache();
+        services.AddHttpClient<IWordPressContentClient, WordPressContentClient>(client =>
+        {
+            client.BaseAddress = new Uri(configuration["WordPress:BaseUrl"] ?? "https://cms.rtres.net/");
+            client.DefaultRequestHeaders.UserAgent.ParseAdd("Rtres.Api/1.0 (+https://rtres.net)");
+        });
         services.AddHttpClient<IPayPalClient, PayPalClient>(client => client.BaseAddress = new Uri(configuration["PayPal:BaseUrl"] ?? "https://api-m.sandbox.paypal.com/"));
         services.AddScoped<IGitHubIssuesClient, GitHubIssuesClient>();
         services.AddScoped<INotificationSender, LoggingNotificationSender>();
