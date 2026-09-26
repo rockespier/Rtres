@@ -22,4 +22,8 @@
     <ProjectReference Include="..\Rtres.Infrastructure\Rtres.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="Rtres.Api.Tests" />
+  </ItemGroup>
+
 </Project>
