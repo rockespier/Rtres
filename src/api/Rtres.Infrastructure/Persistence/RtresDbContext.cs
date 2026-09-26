@@ -10,7 +10,7 @@ public sealed class RtresDbContext(DbContextOptions<RtresDbContext> options) : D
     public DbSet<Ticket> Tickets => Set<Ticket>(); public DbSet<TicketAttachment> TicketAttachments => Set<TicketAttachment>(); public DbSet<TicketComment> TicketComments => Set<TicketComment>(); public DbSet<PaymentTransaction> PaymentTransactions => Set<PaymentTransaction>(); public DbSet<NotificationLog> NotificationLogs => Set<NotificationLog>();
     protected override void OnModelCreating(ModelBuilder b)
     {
-        b.Entity<Client>().HasIndex(x => x.Email).IsUnique(); b.Entity<UserAccount>().HasIndex(x => x.Email).IsUnique(); b.Entity<Project>().HasIndex(x => x.Slug).IsUnique(); b.Entity<ClientProduct>().HasIndex(x => x.PayPalSubscriptionId).IsUnique(); b.Entity<Ticket>().HasIndex(x => x.Code).IsUnique();
+        b.Entity<Client>().HasIndex(x => x.Email).IsUnique(); b.Entity<UserAccount>().HasIndex(x => x.Email).IsUnique(); b.Entity<Project>().HasIndex(x => x.Slug).IsUnique(); b.Entity<ClientProduct>().HasIndex(x => x.PayPalSubscriptionId).IsUnique(); b.Entity<Ticket>().HasIndex(x => x.Code).IsUnique(); b.Entity<Ticket>().HasIndex(x => x.GithubIssueNumber); b.Entity<TicketComment>().HasIndex(x => x.GithubCommentId).IsUnique();
         b.Entity<Product>().Property(x => x.BasePrice).HasPrecision(12, 2); b.Entity<ClientProduct>().Property(x => x.Price).HasPrecision(12, 2); b.Entity<PaymentTransaction>().Property(x => x.Amount).HasPrecision(12, 2);
     }
 }

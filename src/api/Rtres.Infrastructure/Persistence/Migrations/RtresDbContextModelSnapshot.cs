@@ -304,6 +304,8 @@ namespace Rtres.Infrastructure.Persistence.Migrations
                     b.HasIndex("Code")
                         .IsUnique();
 
+                    b.HasIndex("GithubIssueNumber");
+
                     b.ToTable("Tickets");
                 });
 
@@ -351,10 +353,19 @@ namespace Rtres.Infrastructure.Persistence.Migrations
                     b.Property<bool>("FromGithub")
                         .HasColumnType("boolean");
 
+                    b.Property<string>("GithubAuthorLogin")
+                        .HasColumnType("text");
+
+                    b.Property<long?>("GithubCommentId")
+                        .HasColumnType("bigint");
+
                     b.Property<Guid>("TicketId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("GithubCommentId")
+                        .IsUnique();
 
                     b.ToTable("TicketComments");
                 });
