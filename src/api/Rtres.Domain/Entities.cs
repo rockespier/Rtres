@@ -4,7 +4,7 @@ public enum UserRole { Admin, Cliente, SuperAdmin }
 public enum ProductType { Hosting, Dominio, Ssl, BackupBd, SoporteMensual, DesarrolloWeb }
 public enum BillingCycle { Unico, Mensual, Anual }
 public enum ClientProductStatus { Activo, PorVencer, Vencido, Cancelado, Pendiente }
-public enum TicketType { Soporte, Cambio }
+public enum TicketType { Bug, Funcionalidad, Requerimiento } // mismos valores 0/1 que los antiguos Soporte/Cambio
 public enum TicketStatus { Abierto, EnProgreso, Resuelto, Publicado, Cerrado }
 
 public sealed class Client { public Guid Id { get; set; } = Guid.NewGuid(); public string CompanyName { get; set; } = string.Empty; public string ContactName { get; set; } = string.Empty; public string Email { get; set; } = string.Empty; public string? Phone { get; set; } public string PreferredLanguage { get; set; } = "es"; public bool IsActive { get; set; } = true; public DateTime CreatedAt { get; set; } = DateTime.UtcNow; }

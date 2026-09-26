@@ -1,6 +1,10 @@
+using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using Hangfire;
+using Hangfire.Common;
+using Hangfire.States;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -56,15 +60,30 @@ public class GitHubIssuesClientTests
     [Fact]
     public void Body_skips_empty_sections_and_impact_only_for_changes()
     {
-        var ticket = new Ticket { Code = "RT-110", Type = TicketType.Soporte, Title = "Botón roto", Description = "No responde", Environment = "  ", EstimatedImpact = "Alto" };
+        var ticket = new Ticket { Code = "RT-110", Type = TicketType.Bug, Title = "Botón roto", Description = "No responde", Environment = "  ", EstimatedImpact = "Alto" };
         var body = GitHubIssuesClient.BuildBody(ticket);
         Assert.Contains("## Descripción\nNo responde", body.ReplaceLineEndings("\n"));
         Assert.DoesNotContain("## Entorno", body);
         Assert.DoesNotContain("Impacto", body);
-        ticket.Type = TicketType.Cambio;
+        ticket.Type = TicketType.Requerimiento;
         Assert.Contains("## Impacto estimado", GitHubIssuesClient.BuildBody(ticket));
         Assert.Equal("[RT-110] Botón roto", GitHubIssuesClient.BuildTitle(ticket));
-        Assert.Equal(["tipo:cambio", "estado:abierto", "proyecto:web"], GitHubIssuesClient.BuildLabels(new Project { Slug = "web" }, ticket));
+        Assert.Equal(["requirement", "estado:abierto", "proyecto:web"], GitHubIssuesClient.BuildLabels(new Project { Slug = "web" }, ticket));
+    }
+
+    [Theory]
+    [InlineData(TicketType.Bug, "bug")]
+    [InlineData(TicketType.Funcionalidad, "enhancement")]
+    [InlineData(TicketType.Requerimiento, "requirement")]
+    public void Type_labels_follow_github_conventions(TicketType type, string label) => Assert.Equal(label, GitHubLabels.ForType(type));
+
+    [Fact]
+    public void Portal_comment_body_carries_marker()
+    {
+        var comment = new TicketComment { Body = " Gracias " };
+        var body = GitHubIssuesClient.BuildCommentBody(comment, "Roberto");
+        Assert.StartsWith("**Roberto** (vía portal de clientes):", body);
+        Assert.Contains(GitHubLabels.PortalCommentMarker + comment.Id, body);
     }
 }
 
@@ -82,6 +101,26 @@ public class GitHubIssueSyncJobTests
         var ticket = await db.Tickets.SingleAsync(x => x.Id == seed.Ticket.Id);
         Assert.Equal(42, ticket.GithubIssueNumber);
         Assert.Equal("https://github.com/rtres/cabalgatas-andinas-web/issues/42", ticket.GithubIssueUrl);
+    }
+
+    [Fact]
+    public async Task Portal_comments_are_published_once_issue_exists()
+    {
+        using var db = TestData.Db(out var seed);
+        var comment = new TicketComment { TicketId = seed.Ticket.Id, AuthorUserId = seed.User.Id, Body = "¿Novedades?" };
+        db.TicketComments.Add(comment); await db.SaveChangesAsync();
+        var github = new FakeGitHub();
+        var job = new GitHubIssueSyncJob(db, github, NullLogger<GitHubIssueSyncJob>.Instance);
+
+        await job.PostCommentAsync(comment.Id, CancellationToken.None); // sin issue todavía: no publica
+        Assert.Empty(github.Comments);
+
+        await job.CreateIssueAsync(seed.Ticket.Id, CancellationToken.None); // publica los pendientes
+        await job.PostCommentAsync(comment.Id, CancellationToken.None); // ya publicado: no duplica
+        var (issue, body) = Assert.Single(github.Comments);
+        Assert.Equal(42, issue);
+        Assert.StartsWith("**Roberto Ramos**", body);
+        Assert.Equal(5000, (await db.TicketComments.SingleAsync()).GithubCommentId);
     }
 
     [Fact]
@@ -128,6 +167,7 @@ public class GitHubWebhookProcessorTests
         await processor.ProcessAsync("issue_comment", TestData.CommentEvent("created", 7, 900, "Lo estamos revisando"), CancellationToken.None);
         await processor.ProcessAsync("issue_comment", TestData.CommentEvent("created", 7, 900, "Lo estamos revisando"), CancellationToken.None);
         await processor.ProcessAsync("issue_comment", TestData.CommentEvent("created", 7, 901, "ci", userType: "Bot"), CancellationToken.None);
+        await processor.ProcessAsync("issue_comment", TestData.CommentEvent("created", 7, 902, "**Ana** (vía portal):\n\nHola\n\n" + GitHubLabels.PortalCommentMarker + Guid.NewGuid() + " -->"), CancellationToken.None);
         var comment = await db.TicketComments.SingleAsync();
         Assert.True(comment.FromGithub); Assert.Equal("dev", comment.GithubAuthorLogin);
 
@@ -164,7 +204,35 @@ public class GitHubWebhookControllerTests
     }
 }
 
-internal sealed record Seed(Client Client, Project Project, Ticket Ticket);
+public class TicketCommentsEndpointTests
+{
+    [Fact]
+    public async Task Portal_comment_is_saved_with_author_and_queued_for_github()
+    {
+        using var db = TestData.Db(out var seed, issueNumber: 7);
+        var jobs = new FakeJobs();
+        var identity = new ClaimsIdentity([new Claim(ClaimTypes.NameIdentifier, seed.User.Id.ToString()), new Claim("client_id", seed.Client.Id.ToString()), new Claim(ClaimTypes.Role, "Cliente")], "test");
+        var controller = new PortalController(db, jobs) { ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext { User = new ClaimsPrincipal(identity) } } };
+
+        Assert.IsType<BadRequestObjectResult>(await controller.AddComment(seed.Ticket.Id, new CreateTicketCommentRequest("  "), CancellationToken.None));
+        Assert.IsType<NotFoundResult>(await controller.AddComment(Guid.NewGuid(), new CreateTicketCommentRequest("Hola"), CancellationToken.None));
+
+        var result = Assert.IsType<OkObjectResult>(await controller.AddComment(seed.Ticket.Id, new CreateTicketCommentRequest(" Hola "), CancellationToken.None));
+        var dto = Assert.IsType<TicketCommentDto>(result.Value);
+        Assert.Equal("Hola", dto.Body); Assert.Equal("Roberto Ramos", dto.AuthorName); Assert.False(dto.FromGithub);
+        var job = Assert.Single(jobs.Created);
+        Assert.Equal(nameof(GitHubIssueSyncJob.PostCommentAsync), job.Method.Name);
+    }
+}
+
+internal sealed class FakeJobs : IBackgroundJobClient
+{
+    public List<Job> Created { get; } = [];
+    public string Create(Job job, IState state) { Created.Add(job); return Created.Count.ToString(); }
+    public bool ChangeState(string jobId, IState state, string expectedState) => true;
+}
+
+internal sealed record Seed(Client Client, Project Project, Ticket Ticket, UserAccount User);
 
 internal static class TestData
 {
@@ -173,9 +241,10 @@ internal static class TestData
         var db = new RtresDbContext(new DbContextOptionsBuilder<RtresDbContext>().UseInMemoryDatabase(Guid.NewGuid().ToString()).Options);
         var client = new Client { CompanyName = "Cabalgatas Andinas", Email = "c@example.com" };
         var project = new Project { ClientId = client.Id, Name = "Web", Slug = "cabalgatas-andinas-web", GithubRepoOwner = "rtres", GithubRepoName = "cabalgatas-andinas-web" };
+        var user = new UserAccount { ClientId = client.Id, Email = "roberto@example.com", Name = "Roberto Ramos" };
         var ticket = new Ticket { Code = "RT-108", ClientId = client.Id, ProjectId = project.Id, Title = "Botón", Description = "No responde", GithubIssueNumber = issueNumber };
-        db.AddRange(client, project, ticket); db.SaveChanges();
-        seed = new Seed(client, project, ticket);
+        db.AddRange(client, project, user, ticket); db.SaveChanges();
+        seed = new Seed(client, project, ticket, user);
         return db;
     }
 
@@ -194,6 +263,12 @@ internal static class TestData
 internal sealed class FakeGitHub : IGitHubIssuesClient
 {
     public int Calls { get; private set; }
+    public List<(int Issue, string Body)> Comments { get; } = [];
+    public Task<long> CreateCommentAsync(Project project, int issueNumber, string body, CancellationToken cancellationToken = default)
+    {
+        Comments.Add((issueNumber, body));
+        return Task.FromResult(5000L);
+    }
     public Task<GitHubIssue> CreateIssueAsync(Project project, Ticket ticket, CancellationToken cancellationToken = default)
     {
         Calls++;

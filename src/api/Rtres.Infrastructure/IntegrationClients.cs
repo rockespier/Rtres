@@ -171,13 +171,23 @@ public sealed class GitHubIssuesClient(IConfiguration configuration) : IGitHubIs
 {
     public async Task<GitHubIssue> CreateIssueAsync(Rtres.Domain.Project project, Ticket ticket, CancellationToken cancellationToken = default)
     {
-        var token = configuration["GitHub:Token"];
-        if (string.IsNullOrWhiteSpace(token)) throw new InvalidOperationException("GitHub:Token no está configurado.");
-        var client = new GitHubClient(new Octokit.ProductHeaderValue("rtres-portal")) { Credentials = new Credentials(token) };
         var newIssue = new NewIssue(BuildTitle(ticket)) { Body = BuildBody(ticket) };
         foreach (var label in BuildLabels(project, ticket)) newIssue.Labels.Add(label);
-        var issue = await client.Issue.Create(project.GithubRepoOwner, project.GithubRepoName, newIssue);
+        var issue = await Client().Issue.Create(project.GithubRepoOwner, project.GithubRepoName, newIssue);
         return new GitHubIssue(issue.Number, issue.HtmlUrl);
+    }
+
+    public async Task<long> CreateCommentAsync(Rtres.Domain.Project project, int issueNumber, string body, CancellationToken cancellationToken = default)
+        => (await Client().Issue.Comment.Create(project.GithubRepoOwner, project.GithubRepoName, issueNumber, body)).Id;
+
+    public static string BuildCommentBody(TicketComment comment, string authorName) =>
+        $"**{authorName}** (vía portal de clientes):\n\n{comment.Body.Trim()}\n\n{GitHubLabels.PortalCommentMarker}{comment.Id} -->";
+
+    private GitHubClient Client()
+    {
+        var token = configuration["GitHub:Token"];
+        if (string.IsNullOrWhiteSpace(token)) throw new InvalidOperationException("GitHub:Token no está configurado.");
+        return new GitHubClient(new Octokit.ProductHeaderValue("rtres-portal")) { Credentials = new Credentials(token) };
     }
 
     public static string BuildTitle(Ticket ticket) => $"[{ticket.Code}] {ticket.Title}";
@@ -189,14 +199,14 @@ public sealed class GitHubIssuesClient(IConfiguration configuration) : IGitHubIs
     {
         var body = new StringBuilder();
         body.Append("> Ticket **").Append(ticket.Code).Append("** creado desde el portal de clientes (")
-            .Append(ticket.Type == TicketType.Soporte ? "soporte" : "cambio").AppendLine(").");
+            .Append(ticket.Type switch { TicketType.Bug => "bug", TicketType.Funcionalidad => "funcionalidad", _ => "requerimiento" }).AppendLine(").");
         Section(body, "Descripción", ticket.Description);
         Section(body, "Comportamiento actual", ticket.CurrentBehavior);
         Section(body, "Comportamiento esperado", ticket.ExpectedBehavior);
         Section(body, "Pasos para reproducir", ticket.StepsToReproduce);
         Section(body, "Entorno", ticket.Environment);
         Section(body, "Criterios de aceptación", ticket.AcceptanceCriteria);
-        if (ticket.Type == TicketType.Cambio) Section(body, "Impacto estimado", ticket.EstimatedImpact);
+        if (ticket.Type != TicketType.Bug) Section(body, "Impacto estimado", ticket.EstimatedImpact);
         return body.ToString();
     }
 

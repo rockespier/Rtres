@@ -55,8 +55,9 @@ public sealed class GitHubWebhookProcessor(RtresDbContext db, INotificationSende
         var commentId = comment.GetProperty("id").GetInt64();
         var user = comment.GetProperty("user");
         if (user.GetProperty("type").GetString() == "Bot") return;
-        var existing = await db.TicketComments.SingleOrDefaultAsync(x => x.TicketId == ticket.Id && x.GithubCommentId == commentId, ct);
         var body = comment.GetProperty("body").GetString() ?? string.Empty;
+        if (body.Contains(GitHubLabels.PortalCommentMarker, StringComparison.Ordinal)) return; // eco de un comentario publicado desde el portal
+        var existing = await db.TicketComments.SingleOrDefaultAsync(x => x.TicketId == ticket.Id && x.GithubCommentId == commentId, ct);
         switch (action)
         {
             case "created" when existing is null:
