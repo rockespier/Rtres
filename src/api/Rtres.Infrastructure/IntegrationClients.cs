@@ -53,12 +53,41 @@ public sealed class PayPalClient(HttpClient httpClient, IConfiguration configura
 
 public sealed class GitHubIssuesClient(IConfiguration configuration) : IGitHubIssuesClient
 {
-    public async Task<GitHubIssue> CreateIssueAsync(Rtres.Domain.Project project, Ticket ticket, string clientSlug, CancellationToken cancellationToken = default)
+    public async Task<GitHubIssue> CreateIssueAsync(Rtres.Domain.Project project, Ticket ticket, CancellationToken cancellationToken = default)
     {
-        var client = new GitHubClient(new Octokit.ProductHeaderValue("rtres-portal")) { Credentials = new Credentials(configuration["GitHub:Token"]) };
-        var body = $"## Descripción\n{ticket.Description}\n\n## Comportamiento actual\n{ticket.CurrentBehavior}\n\n## Comportamiento esperado\n{ticket.ExpectedBehavior}\n\n## Pasos para reproducir\n{ticket.StepsToReproduce}\n\n## Entorno\n{ticket.Environment}\n\n## Criterios de aceptación\n{ticket.AcceptanceCriteria}\n\n## Impacto estimado\n{ticket.EstimatedImpact ?? "No aplica"}";
-        var issue = await client.Issue.Create(project.GithubRepoOwner, project.GithubRepoName, new NewIssue(ticket.Title) { Body = body, Labels = { ticket.Type == TicketType.Soporte ? "ticket-soporte" : "ticket-cambio", $"cliente:{clientSlug}" } });
+        var token = configuration["GitHub:Token"];
+        if (string.IsNullOrWhiteSpace(token)) throw new InvalidOperationException("GitHub:Token no está configurado.");
+        var client = new GitHubClient(new Octokit.ProductHeaderValue("rtres-portal")) { Credentials = new Credentials(token) };
+        var newIssue = new NewIssue(BuildTitle(ticket)) { Body = BuildBody(ticket) };
+        foreach (var label in BuildLabels(project, ticket)) newIssue.Labels.Add(label);
+        var issue = await client.Issue.Create(project.GithubRepoOwner, project.GithubRepoName, newIssue);
         return new GitHubIssue(issue.Number, issue.HtmlUrl);
+    }
+
+    public static string BuildTitle(Ticket ticket) => $"[{ticket.Code}] {ticket.Title}";
+
+    public static IReadOnlyList<string> BuildLabels(Rtres.Domain.Project project, Ticket ticket) =>
+        [GitHubLabels.ForType(ticket.Type), GitHubLabels.ForStatus(ticket.Status), GitHubLabels.ForProject(project.Slug)];
+
+    public static string BuildBody(Ticket ticket)
+    {
+        var body = new StringBuilder();
+        body.Append("> Ticket **").Append(ticket.Code).Append("** creado desde el portal de clientes (")
+            .Append(ticket.Type == TicketType.Soporte ? "soporte" : "cambio").AppendLine(").");
+        Section(body, "Descripción", ticket.Description);
+        Section(body, "Comportamiento actual", ticket.CurrentBehavior);
+        Section(body, "Comportamiento esperado", ticket.ExpectedBehavior);
+        Section(body, "Pasos para reproducir", ticket.StepsToReproduce);
+        Section(body, "Entorno", ticket.Environment);
+        Section(body, "Criterios de aceptación", ticket.AcceptanceCriteria);
+        if (ticket.Type == TicketType.Cambio) Section(body, "Impacto estimado", ticket.EstimatedImpact);
+        return body.ToString();
+    }
+
+    private static void Section(StringBuilder body, string heading, string? content)
+    {
+        if (string.IsNullOrWhiteSpace(content)) return;
+        body.AppendLine().Append("## ").AppendLine(heading).AppendLine(content.Trim());
     }
 }
 

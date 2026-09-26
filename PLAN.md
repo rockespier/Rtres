@@ -286,7 +286,12 @@ Las tareas T1.5–T1.8 (sitio) y T1.9–T1.13 (portal) son independientes entre 
 2. **Sitio público conectado a WordPress**: BFF consume `cms.rtres.net`, reemplaza los mocks de contenido de T1.6-T1.7; redirects 301 desde los otros 2 dominios; hreflang; Lighthouse SEO.
 3. **Portal — roles y alta de clientes**: pantallas de `Facturación`/`Perfil` (hoy stubs), gestión de usuarios por Admin.
 4. **Suscripciones PayPal**: Orders API (pagos únicos) + Subscriptions API (recurrentes), webhooks, botón "Renovar ahora"/"Gestionar suscripción" con acción real.
-5. **Tickets ↔ GitHub**: Octokit crea el Issue al enviar `TicketFormComponent`, labels, webhook de vuelta actualiza `TicketStatus` y dispara notificación.
+5. **Tickets ↔ GitHub** *(backend implementado)*: Octokit crea el Issue al enviar `TicketFormComponent`, labels, webhook de vuelta actualiza `TicketStatus` y dispara notificación.
+   - `POST /api/tickets` encola `GitHubIssueSyncJob` (Hangfire, 5 reintentos, idempotente). El issue se crea en `Project.GithubRepoOwner/GithubRepoName` con título `[RT-xxx] <título>`, cuerpo con solo las secciones completadas (Impacto solo en Cambio) y labels `tipo:soporte|tipo:cambio`, `estado:abierto`, `proyecto:<slug>`. Proyectos sin repo configurado se omiten con warning.
+   - `POST /api/webhooks/github` exige firma `X-Hub-Signature-256` con `GitHub:WebhookSecret` (sin secreto configurado rechaza todo con 401). Configurar en cada repo (o a nivel org) con eventos **Issues** e **Issue comments**, content type `application/json`.
+   - Estado del ticket: un label `estado:{abierto|en-progreso|resuelto|publicado|cerrado}` manda (si hay varios, el más avanzado); sin label, issue cerrado como *not planned* → `Cerrado`, cualquier otro cierre → `Resuelto`, abierto → `Abierto`. Cada cambio real de estado llama a `INotificationSender` (`ticket-status-changed`) y escribe `NotificationLog` (`TicketStatusChange`); el envío real de email llega en Fase 6.
+   - Comentarios de issues (no de bots) se replican como `TicketComment` con `FromGithub=true` (crear/editar/borrar, dedupe por `GithubCommentId`). **Ojo**: todo comentario humano del issue queda visible al cliente.
+   - `GET /api/tickets` ya filtra por `?status=&type=`. Pendiente en frontend: conectar filtros/tabla/detalle (`/tickets/:id`) a la API cuando se complete T1.15.
 6. **Notificaciones**: Hangfire job diario de vencimientos, emails de cambio de estado, plantillas ES/EN/IT.
 
 ## Supuestos a confirmar durante implementación
