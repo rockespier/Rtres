@@ -59,6 +59,10 @@ html[data-theme="dark"]{
 }
 html{transition:background-color .15s ease;}
 html[data-theme="dark"] .search-field, html[data-theme="dark"] .field{background:var(--surface);}
+/* Tailwind bakes .text-muted to the light-mode hex at build time (same trap as text-primary,
+   see note above) — it silently drops below AA against any dark-mode surface without this override. */
+html[data-theme="dark"] .text-muted{color:var(--muted);}
+html[data-theme="dark"] .text-red-600{color:#f87171;} /* red-600 (#dc2626) falls to ~3.4:1 on dark surfaces; red-400 clears AA */
 html[data-theme="dark"] .btn-ghost:hover{background:#212a17;}
 html[data-theme="dark"] .side-link:hover{background:rgba(255,255,255,.05);}
 html[data-theme="dark"] .p-table tbody tr:hover{background:rgba(255,255,255,.03);}
@@ -66,6 +70,7 @@ html[data-theme="dark"] .pagination-btn{background:var(--surface);}
 html[data-theme="dark"] .pagination-btn:hover:not(.active){background:rgba(255,255,255,.06);}
 
 *{box-sizing:border-box}
+input[type="checkbox"], input[type="radio"]{accent-color:var(--primary);}
 html{scroll-behavior:smooth}
 body{
   background:var(--bg);
@@ -149,7 +154,7 @@ body{
   padding:9px 12px; font-size:13.5px; color:var(--muted);
 }
 .search-field input{background:transparent; border:none; outline:none; width:100%; color:var(--ink); font-size:13.5px;}
-.search-field input::placeholder{color:var(--muted-2);}
+.search-field input::placeholder{color:var(--muted);} /* --muted-2 fails 4.5:1 for placeholder text in both themes */
 .kbd{
   font-size:11px; font-weight:600; color:var(--muted-2); background:var(--neutral-bg);
   border:1px solid var(--border); border-radius:5px; padding:1px 5px;
@@ -161,7 +166,8 @@ body{
   padding:11px 13px; font-size:14px; color:var(--ink);
 }
 .field:focus{border-color:var(--primary); box-shadow:0 0 0 3px var(--surface-tint);}
-.field::placeholder{color:var(--muted-2);}
+.field:read-only{background:var(--neutral-bg); color:var(--muted); cursor:not-allowed;}
+.field::placeholder{color:var(--muted);} /* --muted-2 fails 4.5:1 for placeholder text in both themes */
 .field-label{font-size:12.5px; font-weight:600; color:var(--muted); margin-bottom:6px; display:block;}
 
 /* Table */

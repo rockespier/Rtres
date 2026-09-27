@@ -74,6 +74,18 @@ export interface PaymentTransactionDto { id:string; createdAt:string; product:st
 export interface AdminClientDetailDto { id:string; companyName:string; contactName:string; email:string; phone:string|null; preferredLanguage:string; isActive:boolean; }
 export interface AdminClientProductDto { id:string; clientId:string; projectId:string; projectName:string|null; productId:string; productName:string|null; productType:string|null; billingCycle:string; isManualBilling:boolean; status:string; price:number|null; domainName:string|null; priceLabelOverride:string|null; }
 
+export interface TaxSettingsDto { igvRate:number; rentaRate:number; }
+export interface ExchangeRateDto { date:string; currencyCode:string; rateToPen:number; source:string; }
+export type TaxDocumentType = 'Factura'|'ReciboPorHonorarios';
+export interface TaxDocumentDto { id:string; paymentTransactionId:string|null; clientId:string; type:TaxDocumentType; series:string; number:number; issueDate:string; currency:string; baseAmount:number; igvAmount:number; totalAmount:number; notes:string|null; }
+export type ExpenseCategory = 'Hosting'|'Dominios'|'SuscripcionesIA'|'ApisPorUso'|'Sueldos'|'Otros';
+export type ExpenseType = 'Fijo'|'Variable';
+export interface ExpenseDto { id:string; description:string; category:ExpenseCategory; type:ExpenseType; amount:number; currency:string; amountPen:number; date:string; recurring:boolean; recurrenceCycle:string|null; }
+export interface SalesReportDto { baseImponible:number; igv:number; total:number; }
+export interface TaxSummaryReportDto { ventasGravadasPen:number; igvEstimado:number; rentaEstimada:number; tasa:{igvRate:number;rentaRate:number}; disclaimer:string; }
+export interface ExpensesReportDto { total:number; porCategoria:{categoria:string;monto:number}[]; }
+export interface NetReportDto { ventasPen:number; gastosPen:number; impuestosEstimadosPen:number; netoEstimadoPen:number; }
+
 @Injectable({ providedIn: 'root' })
 export class PortalApiService {
   private ui = inject(PortalUiService);
@@ -123,5 +135,20 @@ export class PortalApiService {
   adminProductTemplate() { return this.http.get(`${this.base}/admin/products/import/template`,{responseType:'blob'}); }
   assignClientProduct(clientId:string,body:unknown) { return this.http.post<{clientProduct:AdminClientProductDto;approvalUrl:string|null}>(`${this.base}/admin/clients/${clientId}/products`,body); }
   updateAdminClientProduct(id:string,body:unknown) { return this.http.patch<AdminClientProductDto>(`${this.base}/admin/client-products/${id}`,body); }
+
+  getTaxSettings() { return this.http.get<TaxSettingsDto>(`${this.base}/admin/tax-settings`); }
+  updateTaxSettings(body:Partial<TaxSettingsDto>) { return this.http.patch<TaxSettingsDto>(`${this.base}/admin/tax-settings`,body); }
+  syncExchangeRates() { return this.http.post<ExchangeRateDto[]>(`${this.base}/admin/exchange-rates/sync`,{}); }
+  getExchangeRates() { return this.http.get<ExchangeRateDto[]>(`${this.base}/admin/exchange-rates`); }
+  getTaxDocuments(params:{clientId?:string;month?:number;year?:number}={}) { return this.http.get<TaxDocumentDto[]>(`${this.base}/admin/tax-documents${query(params)}`); }
+  createTaxDocument(body:Omit<TaxDocumentDto,'id'>) { return this.http.post<TaxDocumentDto>(`${this.base}/admin/tax-documents`,body); }
+  getExpenses(params:{month?:number;year?:number;category?:string}={}) { return this.http.get<ExpenseDto[]>(`${this.base}/admin/expenses${query(params)}`); }
+  createExpense(body:Omit<ExpenseDto,'id'|'amountPen'>) { return this.http.post<ExpenseDto>(`${this.base}/admin/expenses`,body); }
+  updateExpense(id:string,body:Partial<Omit<ExpenseDto,'id'|'amountPen'>>) { return this.http.patch<ExpenseDto>(`${this.base}/admin/expenses/${id}`,body); }
+  getSalesReport(month:number,year:number,currency:string) { return this.http.get<SalesReportDto>(`${this.base}/admin/reports/sales${query({month,year,currency})}`); }
+  getTaxSummaryReport(month:number,year:number) { return this.http.get<TaxSummaryReportDto>(`${this.base}/admin/reports/tax-summary${query({month,year})}`); }
+  getExpensesReport(month:number,year:number) { return this.http.get<ExpensesReportDto>(`${this.base}/admin/reports/expenses${query({month,year})}`); }
+  getNetReport(month:number,year:number) { return this.http.get<NetReportDto>(`${this.base}/admin/reports/net${query({month,year})}`); }
 }
+function query(params:Record<string,string|number|undefined>) { const q=Object.entries(params).filter(([,v])=>v!=null&&v!=='').map(([k,v])=>`${k}=${encodeURIComponent(v!)}`).join('&'); return q?`?${q}`:''; }
 export interface ImportResult { created:number; skipped:number; errors:{row:number;reason:string}[]; }

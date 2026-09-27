@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
@@ -214,5 +215,55 @@ public sealed class GitHubIssuesClient(IConfiguration configuration) : IGitHubIs
     {
         if (string.IsNullOrWhiteSpace(content)) return;
         body.AppendLine().Append("## ").AppendLine(heading).AppendLine(content.Trim());
+    }
+}
+
+/// <summary>USD: TXT público de SUNAT (fecha|compra|venta). EUR: API pública del BCRP, serie PD04648PD (TC Euro venta) — ver T7.0 en el PLAN.</summary>
+public sealed class ExchangeRateClient(HttpClient httpClient) : IExchangeRateClient
+{
+    private static readonly Dictionary<string, int> SpanishMonths = new(StringComparer.OrdinalIgnoreCase)
+    { ["Ene"] = 1, ["Feb"] = 2, ["Mar"] = 3, ["Abr"] = 4, ["May"] = 5, ["Jun"] = 6, ["Jul"] = 7, ["Ago"] = 8, ["Set"] = 9, ["Oct"] = 10, ["Nov"] = 11, ["Dic"] = 12 };
+
+    public async Task<ExchangeRateQuote?> GetUsdAsync(CancellationToken cancellationToken = default)
+    {
+        var text = await httpClient.GetStringAsync("https://www.sunat.gob.pe/a/txt/tipoCambio.txt", cancellationToken);
+        var fields = text.Trim().Split('|', StringSplitOptions.RemoveEmptyEntries);
+        if (fields.Length < 3 || !DateOnly.TryParseExact(fields[0], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var date)
+            || !decimal.TryParse(fields[2], NumberStyles.Number, CultureInfo.InvariantCulture, out var venta)) return null;
+        return new ExchangeRateQuote(date, venta, "SUNAT");
+    }
+
+    public async Task<ExchangeRateQuote?> GetEurAsync(CancellationToken cancellationToken = default)
+    {
+        var end = DateOnly.FromDateTime(DateTime.UtcNow);
+        var start = end.AddDays(-10);
+        var url = $"https://estadisticas.bcrp.gob.pe/estadisticas/series/api/PD04648PD/json/{start:yyyy-MM-dd}/{end:yyyy-MM-dd}";
+        using var response = await httpClient.GetAsync(url, cancellationToken);
+        if (!response.IsSuccessStatusCode) return null;
+        // El WAF del BCRP (Imperva) a veces inyecta HTML extra tras el JSON válido; nos quedamos solo con el objeto balanceado.
+        using var json = JsonDocument.Parse(ExtractJsonObject(await response.Content.ReadAsStringAsync(cancellationToken)));
+        if (!json.RootElement.TryGetProperty("periods", out var periods)) return null;
+        foreach (var period in periods.EnumerateArray().Reverse())
+        {
+            var value = period.GetProperty("values")[0].GetString();
+            if (string.IsNullOrWhiteSpace(value) || value == "n.d." || !decimal.TryParse(value, NumberStyles.Number, CultureInfo.InvariantCulture, out var rate)) continue;
+            var parts = (period.GetProperty("name").GetString() ?? "").Split('.');
+            if (parts.Length != 3 || !int.TryParse(parts[0], out var day) || !SpanishMonths.TryGetValue(parts[1], out var month) || !int.TryParse(parts[2], out var yy)) continue;
+            return new ExchangeRateQuote(new DateOnly(2000 + yy, month, day), rate, "BCRP");
+        }
+        return null;
+    }
+
+    private static string ExtractJsonObject(string body)
+    {
+        var start = body.IndexOf('{');
+        if (start < 0) return body;
+        var depth = 0;
+        for (var i = start; i < body.Length; i++)
+        {
+            if (body[i] == '{') depth++;
+            else if (body[i] == '}' && --depth == 0) return body[start..(i + 1)];
+        }
+        return body[start..];
     }
 }
