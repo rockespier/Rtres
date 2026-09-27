@@ -1,7 +1,7 @@
 using System.Text;
 using System.Text.Json.Serialization;
 using Hangfire;
-using Hangfire.MemoryStorage;
+using Hangfire.SqlServer;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Rtres.Api.GitHub;
@@ -31,7 +31,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"] ?? "development-only-change-me-development-only-change-me"))
 });
 builder.Services.AddAuthorization();
-builder.Services.AddHangfire(config => config.UseMemoryStorage());
+// SqlServer (no MemoryStorage): los jobs encolados (recordatorios, sync de tipo de cambio) sobreviven a un reinicio de la API.
+builder.Services.AddHangfire(config => config.UseSqlServerStorage(builder.Configuration.GetConnectionString("SqlServer"), new SqlServerStorageOptions { PrepareSchemaIfNecessary = true }));
 builder.Services.AddHangfireServer();
 
 var app = builder.Build();

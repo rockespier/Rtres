@@ -614,7 +614,7 @@ T5.0–T5.6 completos. **T5.6 verificada 2026-09-26** contra GitHub real (repo d
 - [x] **T6.3** — Avisos de pago recibido/fallido desde el webhook de PayPal.
 - [x] **T6.4** — Verificación con el SMTP real: configurar `Smtp:*`, forzar el job `renewal-reminders` desde `/jobs` con un producto a ≤30 días, cambiar el estado de un ticket y comentar desde GitHub; confirmar la recepción (y que no caiga en spam: revisar SPF/DKIM del dominio remitente) y las filas en `NotificationLogs`. ✅ Verificado 2026-09-27 contra `mail.rtres.net` real: cierre de issue en GitHub → cambio de estado del ticket + email recibido; `renewal-reminders` forzado manualmente también entregó el correo. Bug real encontrado y corregido: MailKit rechazaba el TLS del servidor por `SslHandshakeException` (revocación de certificado incompleta) — se desactivó `CheckCertificateRevocation` en `SmtpEmailSender`.
 
-**Pendiente/riesgo conocido**: Hangfire usa `MemoryStorage`, así que los emails encolados se pierden si la API se reinicia antes de enviarlos. Para producción conviene pasar a `Hangfire.SqlServer` (también afecta a los jobs de GitHub de la Fase 5).
+**Resuelto 2026-09-27**: Hangfire pasó de `MemoryStorage` a `Hangfire.SqlServer` (misma base `ConnectionStrings:SqlServer`, esquema `HangFire.*` autogenerado) — los jobs encolados (emails, sync de GitHub, recordatorios, tipo de cambio) ya sobreviven a un reinicio de la API.
 
 ## Fase 7 — detalle (contabilidad Perú: multi-moneda, documentos tributarios, IGV/Renta, gastos)
 
