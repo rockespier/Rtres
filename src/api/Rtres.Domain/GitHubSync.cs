@@ -31,17 +31,20 @@ public static class GitHubLabels
     public static string ForProject(string projectSlug) => ProjectPrefix + projectSlug;
 
     /// <summary>
-    /// Resuelve el estado del ticket a partir del estado del issue. Un label <c>estado:*</c> manda sobre el
-    /// open/closed del issue; sin label, un issue cerrado como "not_planned" pasa a Cerrado y cualquier otro
-    /// cierre a Resuelto; un issue abierto sin label queda Abierto.
+    /// Resuelve el estado del ticket a partir del estado del issue. En un issue abierto manda el label <c>estado:*</c>
+    /// más avanzado (sin label → Abierto). En un issue cerrado solo cuentan los labels de cierre (resuelto/publicado/
+    /// cerrado): los de trabajo en curso (abierto/en-progreso) quedan obsoletos al cerrar — todo issue nace con
+    /// <c>estado:abierto</c> y no se puede exigir quitarlo a mano. Sin label de cierre, "not_planned" → Cerrado y
+    /// cualquier otro cierre → Resuelto.
     /// </summary>
     public static TicketStatus ResolveStatus(string issueState, string? stateReason, IEnumerable<string> labels)
     {
         var set = labels.Select(x => x.Trim().ToLowerInvariant()).ToHashSet();
+        var closed = string.Equals(issueState, "closed", StringComparison.OrdinalIgnoreCase);
         // Si hay varios labels de estado, gana el más avanzado.
         foreach (var (status, label) in StatusLabels.Reverse())
-            if (set.Contains(label)) return status;
-        if (!string.Equals(issueState, "closed", StringComparison.OrdinalIgnoreCase)) return TicketStatus.Abierto;
+            if (set.Contains(label) && (!closed || status >= TicketStatus.Resuelto)) return status;
+        if (!closed) return TicketStatus.Abierto;
         return string.Equals(stateReason, "not_planned", StringComparison.OrdinalIgnoreCase) ? TicketStatus.Cerrado : TicketStatus.Resuelto;
     }
 }
