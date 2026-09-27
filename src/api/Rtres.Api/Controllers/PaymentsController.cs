@@ -81,6 +81,8 @@ public sealed class PaymentsController(RtresDbContext db, IPayPalClient payPal, 
             if (amount is decimal value && !await db.PaymentTransactions.AnyAsync(x => x.PayPalOrderIdOrSubscriptionId == transactionId, ct))
             {
                 var transaction = new PaymentTransaction { ClientProductId = item.Id, PayPalOrderIdOrSubscriptionId = transactionId, Amount = value, Currency = currency ?? item.Product?.Currency ?? "USD", Status = "COMPLETED" };
+                transaction.InternalCode = $"RT-INT-{1 + await db.PaymentTransactions.CountAsync(ct):000000}";
+                transaction.AmountPen = value * await db.RateToPenAsync(transaction.Currency, DateOnly.FromDateTime(transaction.CreatedAt), ct);
                 db.PaymentTransactions.Add(transaction);
                 notification = new Notification(NotificationType.PaymentReceived, new() { ["product"] = item.Product?.Name ?? "", ["amount"] = value.ToString(CultureInfo.InvariantCulture), ["currency"] = transaction.Currency }, $"payment:{transactionId}");
             }

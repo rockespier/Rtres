@@ -9,6 +9,8 @@ public static class DbSeeder
     public static async Task SeedAsync(RtresDbContext db, CancellationToken ct = default)
     {
         await db.Database.MigrateAsync(ct);
+        if (!await db.TaxSettings.AnyAsync(ct)) { db.TaxSettings.Add(new TaxSettings()); await db.SaveChangesAsync(ct); }
+        await BackfillPaymentTransactionsAsync(db, ct);
         var hasher = new PasswordHasher<UserAccount>();
         var existingUser = await db.UserAccounts.SingleOrDefaultAsync(x => x.Email == "roberto.ramos@r3solucionesweb.com", ct);
         if (existingUser is not null)
@@ -58,6 +60,20 @@ public static class DbSeeder
         db.AddRange(tickets);
         await db.SaveChangesAsync(ct);
         await EnsurePhase3SeedAsync(db, hasher, ct);
+    }
+
+    /// <summary>Backfill de T7.1: PaymentTransaction de antes de la Fase 7 no traían AmountPen/InternalCode.</summary>
+    private static async Task BackfillPaymentTransactionsAsync(RtresDbContext db, CancellationToken ct)
+    {
+        var pending = await db.PaymentTransactions.Where(x => x.InternalCode == null).OrderBy(x => x.CreatedAt).ToListAsync(ct);
+        if (pending.Count == 0) return;
+        var next = 1 + await db.PaymentTransactions.CountAsync(x => x.InternalCode != null, ct);
+        foreach (var tx in pending)
+        {
+            tx.InternalCode = $"RT-INT-{next++:000000}";
+            tx.AmountPen = tx.Amount * await db.RateToPenAsync(tx.Currency, DateOnly.FromDateTime(tx.CreatedAt), ct);
+        }
+        await db.SaveChangesAsync(ct);
     }
 
     private static async Task EnsurePhase3SeedAsync(RtresDbContext db, PasswordHasher<UserAccount> hasher, CancellationToken ct)

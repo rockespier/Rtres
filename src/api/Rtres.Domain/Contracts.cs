@@ -5,6 +5,7 @@ public record WordPressProject(string Name, string Category, string? PhotoUrl);
 public record WordPressReview(string Author, string Quote);
 public record PayPalCheckout(string Id, string ApprovalUrl);
 public record GitHubIssue(int Number, string Url);
+public record ExchangeRateQuote(DateOnly Date, decimal RateToPen, string Source);
 
 public interface IWordPressContentClient
 {
@@ -26,6 +27,13 @@ public interface IGitHubIssuesClient
 {
     Task<GitHubIssue> CreateIssueAsync(Project project, Ticket ticket, CancellationToken cancellationToken = default);
     Task<long> CreateCommentAsync(Project project, int issueNumber, string body, CancellationToken cancellationToken = default);
+}
+
+/// <summary>USD desde el tipo de cambio oficial de SUNAT, EUR desde el BCRP — ver T7.0 en el PLAN para el detalle de cada fuente.</summary>
+public interface IExchangeRateClient
+{
+    Task<ExchangeRateQuote?> GetUsdAsync(CancellationToken cancellationToken = default);
+    Task<ExchangeRateQuote?> GetEurAsync(CancellationToken cancellationToken = default);
 }
 
 public interface INotificationSender

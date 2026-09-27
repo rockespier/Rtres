@@ -18,6 +18,7 @@ builder.Services.AddControllers().AddJsonOptions(o => o.JsonSerializerOptions.Co
 builder.Services.AddOpenApi();
 builder.Services.AddRtresInfrastructure(builder.Configuration);
 builder.Services.AddScoped<GitHubWebhookProcessor>();
+builder.Services.AddScoped<ExchangeRateSyncJob>();
 builder.Services.AddScoped<INotificationSender, QueuedNotificationSender>();
 builder.Services.AddScoped<PayPalCheckoutService>();
 builder.Services.AddCors(options => options.AddDefaultPolicy(policy => policy
@@ -47,6 +48,8 @@ app.UseAuthorization();
 app.UseHangfireDashboard("/jobs");
 // 13:00 UTC = 8:00 en Lima.
 RecurringJob.AddOrUpdate<RenewalReminderJob>("renewal-reminders", job => job.SendAsync(CancellationToken.None), Cron.Daily(13));
+// 11:00 UTC = 6:00 en Lima, antes que corra cualquier otro job del día.
+RecurringJob.AddOrUpdate<ExchangeRateSyncJob>("exchange-rate-sync", job => job.SyncAsync(CancellationToken.None), Cron.Daily(11));
 app.MapControllers();
 app.Run();
 

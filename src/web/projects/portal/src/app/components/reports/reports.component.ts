@@ -1,0 +1,15 @@
+import { Component, OnInit, inject } from '@angular/core'; import { CommonModule } from '@angular/common'; import { FormsModule } from '@angular/forms'; import { ExpensesReportDto, NetReportDto, PortalApiService, SalesReportDto, TaxSummaryReportDto } from '../../core/portal-api.service'; import { PortalUiService } from '../../core/portal-ui.service';
+@Component({selector:'app-reports',standalone:true,imports:[CommonModule,FormsModule],template:`<div class="flex justify-between gap-3 flex-wrap"><h1 class="font-display text-2xl font-semibold">Reportes</h1><div class="flex gap-3"><input class="field" type="month" [(ngModel)]="period" (ngModelChange)="load()"><select class="field" [(ngModel)]="currency" (ngModelChange)="load()"><option value="PEN">PEN</option><option value="USD">USD</option><option value="EUR">EUR</option></select></div></div><div class="grid gap-4 mt-6 md:grid-cols-2 xl:grid-cols-4" *ngIf="sales && taxSummary && expenses && net"><div class="card p-5"><span class="text-muted">Ventas ({{currency}})</span><p class="font-display text-2xl">{{sales.total|number:'1.2-2'}}</p><p class="text-muted text-sm">Base {{sales.baseImponible|number:'1.2-2'}} + IGV {{sales.igv|number:'1.2-2'}}</p></div><div class="card p-5"><span class="text-muted">Impuestos estimados (PEN)</span><p class="font-display text-2xl">{{(taxSummary.igvEstimado+taxSummary.rentaEstimada)|number:'1.2-2'}}</p><p class="text-muted text-sm">IGV {{taxSummary.igvEstimado|number:'1.2-2'}} · Renta {{taxSummary.rentaEstimada|number:'1.2-2'}}</p></div><div class="card p-5"><span class="text-muted">Gastos (PEN)</span><p class="font-display text-2xl">{{expenses.total|number:'1.2-2'}}</p><p class="text-muted text-sm" *ngFor="let c of expenses.porCategoria">{{c.categoria}}: {{c.monto|number:'1.2-2'}}</p></div><div class="card p-5"><span class="text-muted">Neto estimado (PEN)</span><p class="font-display text-2xl">{{net.netoEstimadoPen|number:'1.2-2'}}</p><p class="text-muted text-sm">Ventas {{net.ventasPen|number:'1.2-2'}} − Gastos {{net.gastosPen|number:'1.2-2'}} − Impuestos {{net.impuestosEstimadosPen|number:'1.2-2'}}</p></div></div><p class="text-muted text-sm mt-6 max-w-2xl" *ngIf="taxSummary">{{taxSummary.disclaimer}}</p>`})
+export class ReportsComponent implements OnInit {
+  api = inject(PortalApiService); ui = inject(PortalUiService);
+  period = new Date().toISOString().slice(0, 7); currency = 'PEN';
+  sales: SalesReportDto | null = null; taxSummary: TaxSummaryReportDto | null = null; expenses: ExpensesReportDto | null = null; net: NetReportDto | null = null;
+  ngOnInit() { this.ui.breadcrumb.set({ current: 'Reportes' }); this.load(); }
+  load() {
+    const [year, month] = this.period.split('-').map(Number);
+    this.api.getSalesReport(month, year, this.currency).subscribe(x => this.sales = x);
+    this.api.getTaxSummaryReport(month, year).subscribe(x => this.taxSummary = x);
+    this.api.getExpensesReport(month, year).subscribe(x => this.expenses = x);
+    this.api.getNetReport(month, year).subscribe(x => this.net = x);
+  }
+}

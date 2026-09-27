@@ -19,7 +19,7 @@ public sealed class SmtpEmailSender(IConfiguration configuration) : IEmailSender
         mime.Subject = message.Subject;
         mime.Body = new BodyBuilder { HtmlBody = message.Html, TextBody = message.Text }.ToMessageBody();
 
-        using var client = new SmtpClient();
+        using var client = new SmtpClient { CheckCertificateRevocation = false };
         var security = Enum.TryParse<SecureSocketOptions>(smtp["Security"], true, out var parsed) ? parsed : SecureSocketOptions.Auto;
         await client.ConnectAsync(smtp["Host"], int.TryParse(smtp["Port"], out var port) ? port : 587, security, cancellationToken);
         if (!string.IsNullOrEmpty(smtp["User"])) await client.AuthenticateAsync(smtp["User"], smtp["Password"], cancellationToken);
