@@ -28,6 +28,9 @@ public class GitHubLabelsTests
     [InlineData("closed", "completed", new string[0], TicketStatus.Resuelto)]
     [InlineData("closed", "not_planned", new string[0], TicketStatus.Cerrado)]
     [InlineData("closed", "completed", new[] { "Estado:Publicado" }, TicketStatus.Publicado)]
+    [InlineData("closed", "completed", new[] { "bug", "estado:abierto" }, TicketStatus.Resuelto)] // label con el que nace todo issue
+    [InlineData("closed", "not_planned", new[] { "estado:en-progreso" }, TicketStatus.Cerrado)]
+    [InlineData("closed", "completed", new[] { "estado:en-progreso", "estado:resuelto" }, TicketStatus.Resuelto)]
     public void ResolveStatus_maps_issue_state_and_labels(string state, string? reason, string[] labels, TicketStatus expected)
         => Assert.Equal(expected, GitHubLabels.ResolveStatus(state, reason, labels));
 
@@ -150,6 +153,11 @@ public class GitHubWebhookProcessorTests
         // Mismo estado otra vez: no se notifica de nuevo.
         await Processor(db, notifications).ProcessAsync("issues", TestData.IssueEvent("edited", 7, labels: ["estado:en-progreso"]), CancellationToken.None);
         Assert.Single(notifications.Sent);
+
+        // Cerrar el issue sin quitar los labels de trabajo en curso también cambia el estado y avisa.
+        await Processor(db, notifications).ProcessAsync("issues", TestData.IssueEvent("closed", 7, state: "closed", labels: ["estado:abierto", "estado:en-progreso"]), CancellationToken.None);
+        Assert.Equal(TicketStatus.Resuelto, (await db.Tickets.SingleAsync()).Status);
+        Assert.Equal(2, notifications.Sent.Count);
     }
 
     [Fact]
