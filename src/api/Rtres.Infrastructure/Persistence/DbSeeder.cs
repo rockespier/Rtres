@@ -11,6 +11,7 @@ public static class DbSeeder
         await db.Database.MigrateAsync(ct);
         if (!await db.TaxSettings.AnyAsync(ct)) { db.TaxSettings.Add(new TaxSettings()); await db.SaveChangesAsync(ct); }
         await BackfillPaymentTransactionsAsync(db, ct);
+        await BackfillClientProductBillingCycleAsync(db, ct);
         var hasher = new PasswordHasher<UserAccount>();
         var existingUser = await db.UserAccounts.SingleOrDefaultAsync(x => x.Email == "roberto.ramos@r3solucionesweb.com", ct);
         if (existingUser is not null)
@@ -40,11 +41,11 @@ public static class DbSeeder
         var renewsAt = new DateTime(2026, 10, 14, 0, 0, 0, DateTimeKind.Utc);
         var clientProducts = new[]
         {
-            new ClientProduct { ClientId = client.Id, ProjectId = project.Id, ProductId = hosting.Id, Status = ClientProductStatus.Activo, RenewsAt = renewsAt, Price = hosting.BasePrice },
-            new ClientProduct { ClientId = client.Id, ProjectId = project.Id, ProductId = dominio.Id, Status = ClientProductStatus.Activo, RenewsAt = renewsAt, Price = dominio.BasePrice, DomainName = "cabalgatasandinas.com" },
-            new ClientProduct { ClientId = client.Id, ProjectId = project.Id, ProductId = ssl.Id, Status = ClientProductStatus.PorVencer, RenewsAt = renewsAt, PriceLabelOverride = "Incluido en plan" },
-            new ClientProduct { ClientId = client.Id, ProjectId = project.Id, ProductId = backup.Id, Status = ClientProductStatus.Activo, LastBackupAt = DateTime.UtcNow },
-            new ClientProduct { ClientId = client.Id, ProjectId = project.Id, ProductId = soporte.Id, Status = ClientProductStatus.Activo, NextChargeAt = new DateTime(2026, 10, 1, 0, 0, 0, DateTimeKind.Utc), Price = soporte.BasePrice },
+            new ClientProduct { ClientId = client.Id, ProjectId = project.Id, ProductId = hosting.Id, BillingCycle = hosting.BillingCycle, Status = ClientProductStatus.Activo, RenewsAt = renewsAt, Price = hosting.BasePrice },
+            new ClientProduct { ClientId = client.Id, ProjectId = project.Id, ProductId = dominio.Id, BillingCycle = dominio.BillingCycle, Status = ClientProductStatus.Activo, RenewsAt = renewsAt, Price = dominio.BasePrice, DomainName = "cabalgatasandinas.com" },
+            new ClientProduct { ClientId = client.Id, ProjectId = project.Id, ProductId = ssl.Id, BillingCycle = ssl.BillingCycle, Status = ClientProductStatus.PorVencer, RenewsAt = renewsAt, PriceLabelOverride = "Incluido en plan" },
+            new ClientProduct { ClientId = client.Id, ProjectId = project.Id, ProductId = backup.Id, BillingCycle = backup.BillingCycle, Status = ClientProductStatus.Activo, LastBackupAt = DateTime.UtcNow },
+            new ClientProduct { ClientId = client.Id, ProjectId = project.Id, ProductId = soporte.Id, BillingCycle = soporte.BillingCycle, Status = ClientProductStatus.Activo, NextChargeAt = new DateTime(2026, 10, 1, 0, 0, 0, DateTimeKind.Utc), Price = soporte.BasePrice },
         };
 
         var tickets = new[]
@@ -76,6 +77,17 @@ public static class DbSeeder
         await db.SaveChangesAsync(ct);
     }
 
+    /// <summary>Filas de antes de que se empezara a poblar ClientProduct.BillingCycle al asociar un producto (quedaban en el valor por defecto, Unico) — heredan el ciclo de su Product.</summary>
+    private static async Task BackfillClientProductBillingCycleAsync(RtresDbContext db, CancellationToken ct)
+    {
+        var mismatched = await db.ClientProducts.Include(x => x.Product)
+            .Where(x => x.BillingCycle == BillingCycle.Unico && x.Product!.BillingCycle != BillingCycle.Unico)
+            .ToListAsync(ct);
+        if (mismatched.Count == 0) return;
+        foreach (var item in mismatched) item.BillingCycle = item.Product!.BillingCycle;
+        await db.SaveChangesAsync(ct);
+    }
+
     private static async Task EnsurePhase3SeedAsync(RtresDbContext db, PasswordHasher<UserAccount> hasher, CancellationToken ct)
     {
         if (!await db.UserAccounts.AnyAsync(x => x.Email == "admin@rtres.net", ct))
@@ -93,7 +105,7 @@ public static class DbSeeder
             var project = new Project { ClientId = client.Id, Name = "Selva Viva Web", Slug = "selva-viva-web", GithubRepoOwner = "rtres-web", GithubRepoName = "selva-viva-web" };
             var product = new Product { Type = ProductType.Hosting, Name = "Hosting anual", BillingCycle = BillingCycle.Anual, BasePrice = 120m, Currency = "USD" };
             db.AddRange(client, user, project, product,
-                new ClientProduct { ClientId = client.Id, ProjectId = project.Id, ProductId = product.Id, Status = ClientProductStatus.Activo, RenewsAt = DateTime.UtcNow.AddMonths(5), Price = 120m },
+                new ClientProduct { ClientId = client.Id, ProjectId = project.Id, ProductId = product.Id, BillingCycle = product.BillingCycle, Status = ClientProductStatus.Activo, RenewsAt = DateTime.UtcNow.AddMonths(5), Price = 120m },
                 new Ticket { Code = "RT-201", ClientId = client.Id, ProjectId = project.Id, CreatedByUserId = user.Id, Type = TicketType.Bug, Status = TicketStatus.EnProgreso, Title = "Actualizar imágenes", Description = "Actualizar las fotografías de portada." });
         }
         await db.SaveChangesAsync(ct);
