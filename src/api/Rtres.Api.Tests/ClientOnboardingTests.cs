@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 using Rtres.Api.Controllers;
 using Rtres.Api.Notifications;
+using Rtres.Api.Services;
 using System.Security.Claims;
 using Rtres.Domain;
 using Rtres.Infrastructure.Persistence;
@@ -160,7 +161,7 @@ public class ClientOnboardingTests
         new(NotificationJobTests.Job(db, email), new ConfigurationBuilder().Build(), NullLogger<AccessEmailService>.Instance);
 
     private static Task<ActionResult> Login(RtresDbContext db, string email, string password) =>
-        new AuthController(db, new ConfigurationBuilder().Build()).Login(new LoginRequest(email, password), CancellationToken.None);
+        new AuthController(db, AuthTests.Jwt, new LoginThrottle(TimeProvider.System)) { ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() } }.Login(new LoginRequest(email, password), CancellationToken.None);
 
     private static T Prop<T>(object value, string name) => (T)value.GetType().GetProperty(name, BindingFlags.Public | BindingFlags.Instance)!.GetValue(value)!;
 }

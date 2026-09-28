@@ -11,6 +11,15 @@ export interface LoginResponse {
 const TOKEN_KEY = 'rtres_portal_token';
 const USER_KEY = 'rtres_portal_user';
 
+/** Lee el vencimiento (claim exp) del JWT; si no se puede leer, lo da por vigente y decide la API (401). */
+function tokenExpired(token: string): boolean {
+  try {
+    const payload = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+    const exp = JSON.parse(atob(payload)).exp;
+    return typeof exp === 'number' && exp * 1000 <= Date.now();
+  } catch { return false; }
+}
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readTokenFromStorage(): string | null {
@@ -30,7 +39,14 @@ export class AuthService {
   }
 
   isAuthenticated(): boolean {
-    return !!this.token();
+    const token = this.token();
+    return !!token && !tokenExpired(token);
+  }
+
+  /** Hay una sesión guardada pero su token ya venció (dura 8 horas). */
+  sessionExpired(): boolean {
+    const token = this.token();
+    return !!token && tokenExpired(token);
   }
 
   async login(email: string, password: string): Promise<void> {
