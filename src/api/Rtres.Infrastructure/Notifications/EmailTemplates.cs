@@ -13,6 +13,7 @@ namespace Rtres.Infrastructure.Notifications;
 /// <item><c>TicketReply</c>: ticketId, code, title, author, body</item>
 /// <item><c>PaymentReceived</c>: product, amount, currency</item>
 /// <item><c>PaymentFailed</c>: product</item>
+/// <item><c>AccountAccess</c>: name, company, email, password (se envía en el momento, nunca por la cola de Hangfire)</item>
 /// </list>
 /// </summary>
 public static class EmailTemplates
@@ -42,6 +43,10 @@ public static class EmailTemplates
                 string.Format(t["paid.subject"], V("product")),
                 new[] { string.Format(t["paid.body"], Money(lang, V("amount"), V("currency")), V("product")) },
                 t["cta.billing"], $"{portal}/billing"),
+            NotificationType.AccountAccess => (
+                string.Format(t["access.subject"], V("company")),
+                new[] { string.Format(t["access.body"], V("name"), V("company")), string.Format(t["access.credentials"], V("email"), V("password")), t["access.change"] },
+                t["cta.login"], $"{portal}/login"),
             NotificationType.PaymentFailed => (
                 string.Format(t["failed.subject"], V("product")),
                 new[] { string.Format(t["failed.body"], V("product")) },
@@ -122,6 +127,11 @@ public static class EmailTemplates
             ["paid.body"] = "Recibimos tu pago de {0} por {1}. ¡Gracias!",
             ["failed.subject"] = "No se pudo procesar el pago de {0}",
             ["failed.body"] = "PayPal no pudo completar el pago de {0}. Revisa tu método de pago en PayPal o renueva el servicio desde el portal para evitar que se suspenda.",
+            ["access.subject"] = "Tu acceso al portal de clientes de Rtres ({0})",
+            ["access.body"] = "Hola {0}: te dimos acceso al portal de clientes de Rtres Web Solutions para {1}, donde puedes ver tus productos, pagos y tickets de soporte.",
+            ["access.credentials"] = "Usuario: {0}\nContraseña temporal: {1}",
+            ["access.change"] = "Por seguridad, cámbiala en Perfil después de tu primer ingreso. Si no esperabas este correo, avísanos respondiendo a este mensaje.",
+            ["cta.login"] = "Entrar al portal",
             ["cta.dashboard"] = "Ver mis productos",
             ["cta.ticket"] = "Ver ticket",
             ["cta.reply"] = "Ver y responder",
@@ -145,6 +155,11 @@ public static class EmailTemplates
             ["paid.body"] = "We received your payment of {0} for {1}. Thank you!",
             ["failed.subject"] = "Payment for {0} could not be processed",
             ["failed.body"] = "PayPal could not complete the payment for {0}. Please check your PayPal payment method or renew the service from the portal to avoid suspension.",
+            ["access.subject"] = "Your access to the Rtres client portal ({0})",
+            ["access.body"] = "Hi {0}: you now have access to the Rtres Web Solutions client portal for {1}, where you can see your products, payments and support tickets.",
+            ["access.credentials"] = "User: {0}\nTemporary password: {1}",
+            ["access.change"] = "For security, change it in Profile after your first sign-in. If you weren't expecting this email, let us know by replying to it.",
+            ["cta.login"] = "Sign in to the portal",
             ["cta.dashboard"] = "View my products",
             ["cta.ticket"] = "View ticket",
             ["cta.reply"] = "View and reply",
@@ -168,6 +183,11 @@ public static class EmailTemplates
             ["paid.body"] = "Abbiamo ricevuto il tuo pagamento di {0} per {1}. Grazie!",
             ["failed.subject"] = "Impossibile elaborare il pagamento di {0}",
             ["failed.body"] = "PayPal non è riuscito a completare il pagamento di {0}. Controlla il tuo metodo di pagamento su PayPal o rinnova il servizio dal portale per evitarne la sospensione.",
+            ["access.subject"] = "Il tuo accesso al portale clienti di Rtres ({0})",
+            ["access.body"] = "Ciao {0}: ora hai accesso al portale clienti di Rtres Web Solutions per {1}, dove puoi vedere i tuoi prodotti, pagamenti e ticket di assistenza.",
+            ["access.credentials"] = "Utente: {0}\nPassword temporanea: {1}",
+            ["access.change"] = "Per sicurezza, cambiala in Profilo dopo il primo accesso. Se non ti aspettavi questa email, faccelo sapere rispondendo a questo messaggio.",
+            ["cta.login"] = "Accedi al portale",
             ["cta.dashboard"] = "Vedi i miei prodotti",
             ["cta.ticket"] = "Vedi ticket",
             ["cta.reply"] = "Vedi e rispondi",

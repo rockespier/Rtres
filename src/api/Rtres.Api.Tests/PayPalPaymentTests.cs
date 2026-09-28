@@ -189,7 +189,7 @@ public class PayPalPaymentTests
 
         async Task<int> Count(ClaimsPrincipal user, Guid? clientId)
         {
-            var controller = new AccountController(db) { ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext { User = user } } };
+            var controller = new AccountController(db, ClientOnboardingTests.AccessEmail(db, new FakeEmail())) { ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext { User = user } } };
             var ok = Assert.IsType<OkObjectResult>(await controller.Transactions(clientId, CancellationToken.None));
             return ((System.Collections.IEnumerable)ok.Value!).Cast<object>().Count();
         }

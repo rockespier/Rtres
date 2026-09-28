@@ -20,6 +20,8 @@ builder.Services.AddRtresInfrastructure(builder.Configuration);
 builder.Services.AddScoped<GitHubWebhookProcessor>();
 builder.Services.AddScoped<ExchangeRateSyncJob>();
 builder.Services.AddScoped<INotificationSender, QueuedNotificationSender>();
+builder.Services.AddScoped<NotificationJob>();
+builder.Services.AddScoped<AccessEmailService>();
 builder.Services.AddScoped<PayPalCheckoutService>();
 builder.Services.AddScoped<PayPalPaymentService>();
 builder.Services.AddCors(options => options.AddDefaultPolicy(policy => policy
