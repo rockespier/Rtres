@@ -11,7 +11,8 @@ export interface DashboardSummary {
 }
 
 export interface ProductDto { id: string; type: string; name: string; billingCycle: string; basePrice: number | null; currency: string; description?:string|null; isActive?:boolean; }
-export interface ProjectDto { id: string; name: string; slug: string; }
+export interface ProjectDto { id: string; name: string; slug: string; githubRepoOwner?: string; githubRepoName?: string; }
+export interface ClientAccessDto { clientName: string; email: string; temporaryPassword: string; }
 
 export interface ClientProductApiDto {
   id: string;
@@ -125,7 +126,10 @@ export class PortalApiService {
   updateTeam(id:string, body:{role?:string;isActive?:boolean}) { return this.http.patch(`${this.base}/team/users/${id}`,body); }
   getAdminClients() { return this.http.get<AdminClientDto[]>(`${this.base}/admin/clients`); }
   getAdminClient(id:string) { return this.http.get<{client:AdminClientDetailDto;products:AdminClientProductDto[]}>(`${this.base}/admin/clients/${id}`); }
-  createAdminClient(body: Omit<AdminClientDetailDto,'id'>) { return this.http.post<AdminClientDetailDto>(`${this.base}/admin/clients`, body); }
+  createAdminClient(body: Omit<AdminClientDetailDto,'id'>) { return this.http.post<{client:AdminClientDetailDto;access:ClientAccessDto}>(`${this.base}/admin/clients`, body); }
+  generateClientAccess(clientId:string) { return this.http.post<ClientAccessDto>(`${this.base}/admin/clients/${clientId}/access`, {}); }
+  createProject(clientId:string, body:{name:string;slug?:string;githubRepoOwner?:string;githubRepoName?:string}) { return this.http.post<ProjectDto>(`${this.base}/admin/clients/${clientId}/projects`, body); }
+  updateProject(id:string, body:{name?:string;githubRepoOwner?:string;githubRepoName?:string}) { return this.http.patch<ProjectDto>(`${this.base}/admin/projects/${id}`, body); }
   updateAdminClient(id:string,body:Partial<Omit<AdminClientDetailDto,'id'>>) { return this.http.patch<AdminClientDetailDto>(`${this.base}/admin/clients/${id}`,body); }
   importAdminClients(file:File) { const data=new FormData();data.append('file',file);return this.http.post<ImportResult>(`${this.base}/admin/clients/import`,data); }
   adminClientTemplate() { return this.http.get(`${this.base}/admin/clients/import/template`,{responseType:'blob'}); }
@@ -152,4 +156,4 @@ export class PortalApiService {
   getNetReport(month:number,year:number) { return this.http.get<NetReportDto>(`${this.base}/admin/reports/net${query({month,year})}`); }
 }
 function query(params:Record<string,string|number|undefined>) { const q=Object.entries(params).filter(([,v])=>v!=null&&v!=='').map(([k,v])=>`${k}=${encodeURIComponent(v!)}`).join('&'); return q?`?${q}`:''; }
-export interface ImportResult { created:number; skipped:number; errors:{row:number;reason:string}[]; }
+export interface ImportResult { created:number; skipped:number; errors:{row:number;reason:string}[]; accesses?:ClientAccessDto[]; }

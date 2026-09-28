@@ -17,7 +17,7 @@ public sealed class AccountController(RtresDbContext db) : ControllerBase
 {
     private Guid UserId => Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
     private bool TryGetClientId(out Guid clientId) => Guid.TryParse(User.FindFirstValue("client_id"), out clientId);
-    private static readonly PasswordHasher<UserAccount> Hasher = new();
+    internal static readonly PasswordHasher<UserAccount> Hasher = new();
 
     [HttpGet("profile")]
     public async Task<ActionResult> Profile(CancellationToken ct) { var user = await db.UserAccounts.FindAsync([UserId], ct); return user is null ? NotFound() : Ok(new { name = user.Name, email = user.Email }); }
@@ -25,6 +25,9 @@ public sealed class AccountController(RtresDbContext db) : ControllerBase
     public async Task<ActionResult> UpdateProfile(ProfileRequest request, CancellationToken ct) { if (string.IsNullOrWhiteSpace(request.Name)) return BadRequest(new { message = "El nombre es obligatorio." }); var user = await db.UserAccounts.FindAsync([UserId], ct); if (user is null) return NotFound(); user.Name = request.Name.Trim(); await db.SaveChangesAsync(ct); return Ok(); }
     [HttpPost("profile/change-password")]
     public async Task<ActionResult> ChangePassword(ChangePasswordRequest request, CancellationToken ct) { var user = await db.UserAccounts.FindAsync([UserId], ct); if (user is null) return NotFound(); if (Hasher.VerifyHashedPassword(user, user.PasswordHash, request.CurrentPassword) == PasswordVerificationResult.Failed) return BadRequest(new { message = "La contraseña actual no coincide." }); if (string.IsNullOrWhiteSpace(request.NewPassword)) return BadRequest(new { message = "La nueva contraseña es obligatoria." }); user.PasswordHash = Hasher.HashPassword(user, request.NewPassword); await db.SaveChangesAsync(ct); return Ok(); }
+    /// <summary>Contraseña temporal aleatoria: solo se devuelve una vez (en la respuesta que crea/restablece el acceso).</summary>
+    internal static string TemporaryPassword() => Convert.ToBase64String(RandomNumberGenerator.GetBytes(12)).Replace("+", "A").Replace("/", "B");
+
     [HttpGet("billing/transactions")]
     public async Task<ActionResult> Transactions(Guid? clientId, CancellationToken ct)
     {
@@ -44,7 +47,7 @@ public sealed class AccountController(RtresDbContext db) : ControllerBase
     [HttpGet("team/users"), Authorize(Roles = "Admin")]
     public async Task<ActionResult> Team(CancellationToken ct) { if (!TryGetClientId(out var clientId)) return Forbid(); return Ok(await db.UserAccounts.Where(x => x.ClientId == clientId).OrderBy(x => x.Name).Select(x => new { id = x.Id, name = x.Name, email = x.Email, role = x.Role.ToString(), isActive = x.IsActive }).ToListAsync(ct)); }
     [HttpPost("team/users"), Authorize(Roles = "Admin")]
-    public async Task<ActionResult> Invite(InviteRequest request, CancellationToken ct) { if (!TryGetClientId(out var clientId)) return Forbid(); if (string.IsNullOrWhiteSpace(request.Name) || string.IsNullOrWhiteSpace(request.Email)) return BadRequest(new { message = "Nombre y email son obligatorios." }); if (await db.UserAccounts.AnyAsync(x => x.Email == request.Email, ct)) return Conflict(new { message = "El email ya está registrado." }); var temporaryPassword = Convert.ToBase64String(RandomNumberGenerator.GetBytes(12)).Replace("+", "A").Replace("/", "B"); var user = new UserAccount { ClientId = clientId, Name = request.Name.Trim(), Email = request.Email.Trim(), Role = UserRole.Cliente }; user.PasswordHash = Hasher.HashPassword(user, temporaryPassword); db.UserAccounts.Add(user); await db.SaveChangesAsync(ct); return Created($"/api/team/users/{user.Id}", new { id = user.Id, temporaryPassword }); }
+    public async Task<ActionResult> Invite(InviteRequest request, CancellationToken ct) { if (!TryGetClientId(out var clientId)) return Forbid(); if (string.IsNullOrWhiteSpace(request.Name) || string.IsNullOrWhiteSpace(request.Email)) return BadRequest(new { message = "Nombre y email son obligatorios." }); if (await db.UserAccounts.AnyAsync(x => x.Email == request.Email, ct)) return Conflict(new { message = "El email ya está registrado." }); var temporaryPassword = TemporaryPassword(); var user = new UserAccount { ClientId = clientId, Name = request.Name.Trim(), Email = request.Email.Trim(), Role = UserRole.Cliente }; user.PasswordHash = Hasher.HashPassword(user, temporaryPassword); db.UserAccounts.Add(user); await db.SaveChangesAsync(ct); return Created($"/api/team/users/{user.Id}", new { id = user.Id, temporaryPassword }); }
     [HttpPatch("team/users/{id:guid}"), Authorize(Roles = "Admin")]
     public async Task<ActionResult> UpdateTeam(Guid id, UpdateTeamRequest request, CancellationToken ct) { if (!TryGetClientId(out var clientId)) return Forbid(); var user = await db.UserAccounts.SingleOrDefaultAsync(x => x.Id == id && x.ClientId == clientId, ct); if (user is null) return NotFound(); if (id == UserId && ((request.Role is UserRole.Cliente) || request.IsActive is false)) return BadRequest(new { message = "No puedes bajar tu rol ni desactivarte." }); if (request.Role is UserRole role && role is not (UserRole.Cliente or UserRole.Admin)) return BadRequest(); if (request.Role is UserRole validRole) user.Role = validRole; if (request.IsActive is bool active) user.IsActive = active; await db.SaveChangesAsync(ct); return Ok(); }
 }
@@ -190,9 +193,14 @@ public sealed class AdminController(RtresDbContext db, PayPalCheckoutService che
     public async Task<ActionResult> CreateClient(ClientRequest request, CancellationToken ct)
     {
         var error = ValidateClient(request); if (error is not null) return BadRequest(new { message = error });
-        if (await db.Clients.AnyAsync(x => x.Email == request.Email.Trim(), ct)) return Conflict(new { message = "El email ya está registrado." });
-        var client = new Client { CompanyName = request.CompanyName.Trim(), ContactName = request.ContactName.Trim(), Email = request.Email.Trim(), Phone = EmptyToNull(request.Phone), PreferredLanguage = request.PreferredLanguage.Trim().ToLowerInvariant() };
-        db.Clients.Add(client); await db.SaveChangesAsync(ct); return Created($"/api/admin/clients/{client.Id}", ClientDto(client));
+        var email = request.Email.Trim();
+        if (await db.Clients.AnyAsync(x => x.Email == email, ct) || await db.UserAccounts.AnyAsync(x => x.Email == email, ct)) return Conflict(new { message = "El email ya está registrado." });
+        var client = new Client { CompanyName = request.CompanyName.Trim(), ContactName = request.ContactName.Trim(), Email = email, Phone = EmptyToNull(request.Phone), PreferredLanguage = request.PreferredLanguage.Trim().ToLowerInvariant() };
+        db.Clients.Add(client);
+        // Sin usuario el cliente no podría entrar nunca: se crea su primer Admin con el contacto y email del cliente.
+        var access = AddAdminUser(client);
+        await db.SaveChangesAsync(ct);
+        return Created($"/api/admin/clients/{client.Id}", new { client = ClientDto(client), access });
     }
 
     [HttpPatch("clients/{id:guid}")]
@@ -212,12 +220,80 @@ public sealed class AdminController(RtresDbContext db, PayPalCheckoutService che
     public IActionResult ClientTemplate() => File(CreateWorkbook(["CompanyName", "ContactName", "Email", "Phone", "PreferredLanguage"]), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "clientes-plantilla.xlsx");
 
     [HttpPost("clients/import")]
-    public async Task<ActionResult> ImportClients(IFormFile file, CancellationToken ct) => await Import(file, "clientes", async (row, rowNumber, errors) =>
+    public async Task<ActionResult> ImportClients(IFormFile file, CancellationToken ct)
     {
-        var request = new ClientRequest(Cell(row, 1), Cell(row, 2), Cell(row, 3), Cell(row, 4), Cell(row, 5)); var error = ValidateClient(request);
-        if (error is not null || await db.Clients.AnyAsync(x => x.Email == request.Email.Trim(), ct)) { errors.Add(new(rowNumber, error ?? "El email ya está registrado.")); return false; }
-        db.Clients.Add(new Client { CompanyName = request.CompanyName.Trim(), ContactName = request.ContactName.Trim(), Email = request.Email.Trim(), Phone = EmptyToNull(request.Phone), PreferredLanguage = request.PreferredLanguage.Trim().ToLowerInvariant() }); return true;
-    }, ct);
+        var accesses = new List<ClientAccess>();
+        var (failure, created, errors) = await Import(file, "clientes", async (row, rowNumber, errors) =>
+        {
+            var request = new ClientRequest(Cell(row, 1), Cell(row, 2), Cell(row, 3), Cell(row, 4), Cell(row, 5)); var error = ValidateClient(request);
+            var email = request.Email.Trim();
+            if (error is not null || await db.Clients.AnyAsync(x => x.Email == email, ct) || await db.UserAccounts.AnyAsync(x => x.Email == email, ct)) { errors.Add(new(rowNumber, error ?? "El email ya está registrado.")); return false; }
+            var client = new Client { CompanyName = request.CompanyName.Trim(), ContactName = request.ContactName.Trim(), Email = email, Phone = EmptyToNull(request.Phone), PreferredLanguage = request.PreferredLanguage.Trim().ToLowerInvariant() };
+            db.Clients.Add(client); accesses.Add(AddAdminUser(client)); return true;
+        }, ct);
+        return failure ?? Ok(new { created, skipped = errors.Count, errors, accesses });
+    }
+
+    /// <summary>
+    /// Genera (o restablece) el acceso del cliente: crea su usuario Admin con el email del cliente si no existe, o le
+    /// asigna una contraseña temporal nueva y lo reactiva. Sirve para clientes creados antes de que el alta creara el usuario.
+    /// </summary>
+    [HttpPost("clients/{id:guid}/access")]
+    public async Task<ActionResult> ClientAccess(Guid id, CancellationToken ct)
+    {
+        var client = await db.Clients.FindAsync([id], ct); if (client is null) return NotFound();
+        var user = await db.UserAccounts.SingleOrDefaultAsync(x => x.Email == client.Email, ct);
+        if (user is not null && user.ClientId != client.Id) return Conflict(new { message = "El email del cliente ya lo usa un usuario de otra cuenta." });
+        ClientAccess access;
+        if (user is null) access = AddAdminUser(client);
+        else
+        {
+            var temporaryPassword = AccountController.TemporaryPassword();
+            user.PasswordHash = AccountController.Hasher.HashPassword(user, temporaryPassword); user.IsActive = true;
+            access = new ClientAccess(client.CompanyName, user.Email, temporaryPassword);
+        }
+        await db.SaveChangesAsync(ct);
+        return Ok(access);
+    }
+
+    [HttpPost("clients/{clientId:guid}/projects")]
+    public async Task<ActionResult> CreateProject(Guid clientId, ProjectRequest request, CancellationToken ct)
+    {
+        if (!await db.Clients.AnyAsync(x => x.Id == clientId, ct)) return NotFound();
+        if (string.IsNullOrWhiteSpace(request.Name)) return BadRequest(new { message = "El nombre del proyecto es obligatorio." });
+        var slug = Slugify(string.IsNullOrWhiteSpace(request.Slug) ? request.Name : request.Slug);
+        if (slug.Length == 0) return BadRequest(new { message = "Slug inválido." });
+        if (await db.Projects.AnyAsync(x => x.Slug == slug, ct)) return Conflict(new { message = $"Ya existe un proyecto con el slug «{slug}»." });
+        var project = new Project { ClientId = clientId, Name = request.Name.Trim(), Slug = slug, GithubRepoOwner = request.GithubRepoOwner?.Trim() ?? "", GithubRepoName = request.GithubRepoName?.Trim() ?? "" };
+        db.Projects.Add(project); await db.SaveChangesAsync(ct);
+        return Created($"/api/admin/projects/{project.Id}", ProjectDto(project));
+    }
+
+    [HttpPatch("projects/{id:guid}")]
+    public async Task<ActionResult> UpdateProject(Guid id, ProjectRequest request, CancellationToken ct)
+    {
+        var project = await db.Projects.FindAsync([id], ct); if (project is null) return NotFound();
+        if (request.Name is not null) { if (string.IsNullOrWhiteSpace(request.Name)) return BadRequest(new { message = "El nombre del proyecto es obligatorio." }); project.Name = request.Name.Trim(); }
+        if (request.GithubRepoOwner is not null) project.GithubRepoOwner = request.GithubRepoOwner.Trim();
+        if (request.GithubRepoName is not null) project.GithubRepoName = request.GithubRepoName.Trim();
+        await db.SaveChangesAsync(ct); return Ok(ProjectDto(project));
+    }
+
+    private ClientAccess AddAdminUser(Client client)
+    {
+        var temporaryPassword = AccountController.TemporaryPassword();
+        var user = new UserAccount { ClientId = client.Id, Name = client.ContactName, Email = client.Email, Role = UserRole.Admin };
+        user.PasswordHash = AccountController.Hasher.HashPassword(user, temporaryPassword);
+        db.UserAccounts.Add(user);
+        return new ClientAccess(client.CompanyName, user.Email, temporaryPassword);
+    }
+
+    internal static string Slugify(string value)
+    {
+        var normalized = value.Trim().ToLowerInvariant().Normalize(System.Text.NormalizationForm.FormD);
+        var chars = normalized.Where(c => System.Globalization.CharUnicodeInfo.GetUnicodeCategory(c) != System.Globalization.UnicodeCategory.NonSpacingMark).Select(c => char.IsLetterOrDigit(c) ? c : '-');
+        return System.Text.RegularExpressions.Regex.Replace(new string(chars.ToArray()), "-{2,}", "-").Trim('-');
+    }
 
     [HttpGet("products")]
     public async Task<ActionResult> Products(CancellationToken ct) => Ok((await db.Products.OrderBy(x => x.Name).ToListAsync(ct)).Select(ProductDto));
@@ -242,11 +318,15 @@ public sealed class AdminController(RtresDbContext db, PayPalCheckoutService che
     public IActionResult ProductTemplate() => File(CreateWorkbook(["Type", "Name", "BillingCycle", "BasePrice", "Currency", "Description", "IsActive"]), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "productos-plantilla.xlsx");
 
     [HttpPost("products/import")]
-    public async Task<ActionResult> ImportProducts(IFormFile file, CancellationToken ct) => await Import(file, "productos", (row, rowNumber, errors) =>
+    public async Task<ActionResult> ImportProducts(IFormFile file, CancellationToken ct)
+    {
+        var (failure, created, errors) = await Import(file, "productos", (row, rowNumber, errors) =>
     {
         if (!Enum.TryParse<ProductType>(Cell(row, 1), true, out var type) || !Enum.TryParse<BillingCycle>(Cell(row, 3), true, out var cycle) || !decimal.TryParse(Cell(row, 4), out var price) || !bool.TryParse(Cell(row, 7), out var active) || string.IsNullOrWhiteSpace(Cell(row, 2)) || string.IsNullOrWhiteSpace(Cell(row, 5))) { errors.Add(new(rowNumber, "Fila inválida: revisa tipo, ciclo, precio, moneda y activo.")); return Task.FromResult(false); }
         db.Products.Add(new Product { Type = type, Name = Cell(row, 2).Trim(), BillingCycle = cycle, BasePrice = price, Currency = Cell(row, 5).Trim().ToUpperInvariant(), Description = EmptyToNull(Cell(row, 6)), IsActive = active }); return Task.FromResult(true);
-    }, ct);
+        }, ct);
+        return failure ?? Ok(new { created, skipped = errors.Count, errors });
+    }
 
     [HttpPost("clients/{clientId:guid}/products")]
     public async Task<ActionResult> AssignProduct(Guid clientId, AssignProductRequest request, CancellationToken ct)
@@ -277,13 +357,13 @@ public sealed class AdminController(RtresDbContext db, PayPalCheckoutService che
         await db.SaveChangesAsync(ct); return Ok(ClientProductDto(item));
     }
 
-    private async Task<ActionResult> Import(IFormFile file, string kind, Func<IXLRow, int, List<ImportError>, Task<bool>> addRow, CancellationToken ct)
+    private async Task<(ActionResult? Failure, int Created, List<ImportError> Errors)> Import(IFormFile file, string kind, Func<IXLRow, int, List<ImportError>, Task<bool>> addRow, CancellationToken ct)
     {
-        if (file is null || file.Length == 0) return BadRequest(new { message = "Selecciona un archivo .xlsx." });
         var errors = new List<ImportError>(); var created = 0;
+        if (file is null || file.Length == 0) return (BadRequest(new { message = "Selecciona un archivo .xlsx." }), 0, errors);
         try { using var stream = file.OpenReadStream(); using var book = new XLWorkbook(stream); var sheet = book.Worksheets.First(); foreach (var row in sheet.RowsUsed().Skip(1)) if (await addRow(row, row.RowNumber(), errors)) { await db.SaveChangesAsync(ct); created++; } }
-        catch (Exception ex) when (ex is not DbUpdateException) { return BadRequest(new { message = $"No se pudo leer la plantilla de {kind}." }); }
-        return Ok(new { created, skipped = errors.Count, errors });
+        catch (Exception ex) when (ex is not DbUpdateException) { return (BadRequest(new { message = $"No se pudo leer la plantilla de {kind}." }), 0, errors); }
+        return (null, created, errors);
     }
     private static string Cell(IXLRow row, int col) => row.Cell(col).GetString();
     private static byte[] CreateWorkbook(string[] headers) { using var book = new XLWorkbook(); var sheet = book.AddWorksheet("Plantilla"); for (var i = 0; i < headers.Length; i++) sheet.Cell(1, i + 1).Value = headers[i]; sheet.Row(1).Style.Font.Bold = true; sheet.Columns().AdjustToContents(); using var stream = new MemoryStream(); book.SaveAs(stream); return stream.ToArray(); }
@@ -292,6 +372,7 @@ public sealed class AdminController(RtresDbContext db, PayPalCheckoutService che
     private static string? ValidateProduct(ProductRequest request) => string.IsNullOrWhiteSpace(request.Name) || string.IsNullOrWhiteSpace(request.Currency) ? "Nombre y moneda son obligatorios." : null;
     private static Product ToProduct(ProductRequest r) => new() { Type = r.Type, Name = r.Name.Trim(), BillingCycle = r.BillingCycle, BasePrice = r.BasePrice, Currency = r.Currency.Trim().ToUpperInvariant(), Description = EmptyToNull(r.Description), IsActive = r.IsActive };
     private static object ClientDto(Client x) => new { id = x.Id, companyName = x.CompanyName, contactName = x.ContactName, email = x.Email, phone = x.Phone, preferredLanguage = x.PreferredLanguage, isActive = x.IsActive };
+    private static object ProjectDto(Project x) => new { id = x.Id, clientId = x.ClientId, name = x.Name, slug = x.Slug, githubRepoOwner = x.GithubRepoOwner, githubRepoName = x.GithubRepoName };
     private static object ProductDto(Product x) => new { id = x.Id, type = x.Type.ToString(), name = x.Name, billingCycle = x.BillingCycle.ToString(), basePrice = x.BasePrice, currency = x.Currency, description = x.Description, isActive = x.IsActive };
     private static object ClientProductDto(ClientProduct x) => new { id = x.Id, clientId = x.ClientId, projectId = x.ProjectId, projectName = x.Project?.Name, productId = x.ProductId, productName = x.Product?.Name, productType = x.Product?.Type.ToString(), billingCycle = x.BillingCycle.ToString(), isManualBilling = x.IsManualBilling, status = x.Status.ToString(), price = x.Price, domainName = x.DomainName, priceLabelOverride = x.PriceLabelOverride };
     private static object TaxDocumentDto(TaxDocument x) => new { id = x.Id, paymentTransactionId = x.PaymentTransactionId, clientId = x.ClientId, type = x.Type.ToString(), series = x.Series, number = x.Number, issueDate = x.IssueDate, currency = x.Currency, baseAmount = x.BaseAmount, igvAmount = x.IgvAmount, totalAmount = x.TotalAmount, notes = x.Notes };
@@ -309,6 +390,8 @@ public sealed record ProductPatchRequest(ProductType? Type, string? Name, Billin
 public sealed record AssignProductRequest(Guid ProductId, Guid ProjectId, BillingCycle BillingCycle, string BillingMode, decimal? Price, string? DomainName, string? PriceLabelOverride);
 public sealed record ClientProductPatchRequest(decimal? Price, ClientProductStatus? Status, BillingCycle? BillingCycle, bool? IsManualBilling, string? DomainName, string? PriceLabelOverride);
 public sealed record ImportError(int Row, string Reason);
+public sealed record ClientAccess(string ClientName, string Email, string TemporaryPassword);
+public sealed record ProjectRequest(string? Name, string? Slug, string? GithubRepoOwner, string? GithubRepoName);
 public sealed record TaxSettingsRequest(decimal? IgvRate, decimal? RentaRate);
 public sealed record TaxDocumentRequest(Guid? PaymentTransactionId, Guid ClientId, TaxDocumentType Type, string Series, int Number, DateOnly IssueDate, string Currency, decimal BaseAmount, decimal IgvAmount, decimal TotalAmount, string? Notes);
 public sealed record ExpenseRequest(string Description, ExpenseCategory Category, ExpenseType Type, decimal Amount, string Currency, DateOnly Date, bool Recurring, BillingCycle? RecurrenceCycle);
