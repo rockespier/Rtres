@@ -100,6 +100,7 @@ export class PortalApiService {
   subscribeProduct(body:{productId:string;projectId:string;billingCycle:string}) { return this.http.post<{clientProductId:string;approvalUrl:string}>(`${this.base}/subscriptions`, body); }
   renewProduct(id:string) { return this.http.post<{approvalUrl:string}>(this.scoped(`/client-products/${id}/renew`), {}); }
   cancelProduct(id:string) { return this.http.post(this.scoped(`/client-products/${id}/cancel`), {}); }
+  captureClientProduct(id:string) { return this.http.post<{status:string}>(this.scoped(`/client-products/${id}/capture`), {}); }
   getClientProduct(id:string) { return this.http.get<ClientProductApiDto>(this.scoped(`/client-products/${id}`)); }
   getProjects() { return this.http.get<ProjectDto[]>(this.scoped('/projects')); }
   getProjectsForClient(clientId:string) { return this.http.get<ProjectDto[]>(`${this.base}/projects?clientId=${encodeURIComponent(clientId)}`); }

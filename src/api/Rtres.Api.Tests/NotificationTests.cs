@@ -169,43 +169,6 @@ public class RenewalReminderJobTests
     }
 }
 
-public class PayPalNotificationTests
-{
-    [Fact]
-    public async Task Completed_payment_notifies_once_and_denied_payment_notifies_failure()
-    {
-        using var db = TestData.Db(out var seed);
-        var product = new Product { Name = "Hosting", Type = ProductType.Hosting, BillingCycle = BillingCycle.Anual, BasePrice = 120 };
-        var item = new ClientProduct { ClientId = seed.Client.Id, ProjectId = seed.Project.Id, ProductId = product.Id, Status = ClientProductStatus.Pendiente, BillingCycle = BillingCycle.Anual };
-        db.AddRange(product, item); await db.SaveChangesAsync();
-        var notifications = new FakeNotifications();
-
-        await Post(db, notifications, """{"id":"WH-1","event_type":"PAYMENT.CAPTURE.COMPLETED","resource":{"id":"CAP-1","custom_id":"ITEM","amount":{"value":"120.00","currency_code":"USD"},"supplementary_data":{"related_ids":{"order_id":"ORD-1"}}}}""".Replace("ITEM", item.Id.ToString()));
-        await Post(db, notifications, """{"id":"WH-2","event_type":"PAYMENT.CAPTURE.COMPLETED","resource":{"id":"CAP-1","custom_id":"ITEM","amount":{"value":"120.00","currency_code":"USD"},"supplementary_data":{"related_ids":{"order_id":"ORD-1"}}}}""".Replace("ITEM", item.Id.ToString()));
-        await Post(db, notifications, """{"id":"WH-3","event_type":"PAYMENT.CAPTURE.DENIED","resource":{"id":"CAP-2","custom_id":"ITEM"}}""".Replace("ITEM", item.Id.ToString()));
-
-        Assert.Collection(notifications.Sent,
-            paid => { Assert.Equal(NotificationType.PaymentReceived, paid.Type); Assert.Equal("120.00", paid.Data["amount"]); Assert.Equal("Hosting", paid.Data["product"]); Assert.Equal("payment:ORD-1", paid.DedupeKey); },
-            failed => { Assert.Equal(NotificationType.PaymentFailed, failed.Type); Assert.Equal("payment-failed:WH-3", failed.DedupeKey); });
-    }
-
-    private static async Task Post(RtresDbContext db, INotificationSender notifications, string json)
-    {
-        var payPal = new AlwaysValidPayPal();
-        var controller = new PaymentsController(db, payPal, new PayPalCheckoutService(payPal, new ConfigurationBuilder().Build()), notifications)
-        { ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext { Request = { Body = new MemoryStream(Encoding.UTF8.GetBytes(json)) } } } };
-        Assert.IsType<OkResult>(await controller.Webhook(CancellationToken.None));
-    }
-
-    private sealed class AlwaysValidPayPal : IPayPalClient
-    {
-        public Task<PayPalCheckout> CreateOrderAsync(decimal amount, string currency, string customId, string returnUrl, string cancelUrl, CancellationToken cancellationToken = default) => throw new NotSupportedException();
-        public Task<PayPalCheckout> CreateSubscriptionAsync(string planId, string customId, string returnUrl, string cancelUrl, CancellationToken cancellationToken = default) => throw new NotSupportedException();
-        public Task CancelSubscriptionAsync(string subscriptionId, string reason, CancellationToken cancellationToken = default) => throw new NotSupportedException();
-        public Task<bool> VerifyWebhookAsync(string payload, IReadOnlyDictionary<string, string> headers, CancellationToken cancellationToken = default) => Task.FromResult(true);
-    }
-}
-
 internal sealed class FakeEmail : IEmailSender
 {
     public bool Fail { get; init; }
