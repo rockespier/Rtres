@@ -70,7 +70,7 @@ export interface CreateTicketRequest {
 }
 export interface TeamUserDto { id:string; name:string; email:string; role:'Cliente'|'Admin'; isActive:boolean; }
 export interface AdminClientDto { id:string; companyName:string; isActive:boolean; activeProducts:number; openTickets:number; }
-export interface PaymentTransactionDto { id:string; createdAt:string; product:string; amount:number; currency:string; status:string; }
+export interface PaymentTransactionDto { id:string; createdAt:string; product:string; clientName:string; amount:number; currency:string; status:string; internalCode:string|null; }
 export interface AdminClientDetailDto { id:string; companyName:string; contactName:string; email:string; phone:string|null; preferredLanguage:string; isActive:boolean; }
 export interface AdminClientProductDto { id:string; clientId:string; projectId:string; projectName:string|null; productId:string; productName:string|null; productType:string|null; billingCycle:string; isManualBilling:boolean; status:string; price:number|null; domainName:string|null; priceLabelOverride:string|null; }
 
@@ -116,7 +116,7 @@ export class PortalApiService {
     form.append('file', file);
     return this.http.post(`${this.base}/tickets/${ticketId}/attachments`, form);
   }
-  getTransactions() { return this.http.get<PaymentTransactionDto[]>(`${this.base}/billing/transactions`); }
+  getTransactions() { return this.http.get<PaymentTransactionDto[]>(this.scoped('/billing/transactions')); }
   getProfile() { return this.http.get<{name:string;email:string}>(`${this.base}/profile`); }
   updateProfile(name:string) { return this.http.patch(`${this.base}/profile`, {name}); }
   changePassword(currentPassword:string,newPassword:string) { return this.http.post(`${this.base}/profile/change-password`, {currentPassword,newPassword}); }
