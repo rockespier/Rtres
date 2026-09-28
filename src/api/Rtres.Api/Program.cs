@@ -1,4 +1,3 @@
-using System.Text;
 using System.Text.Json.Serialization;
 using Hangfire;
 using Hangfire.SqlServer;
@@ -27,11 +26,14 @@ builder.Services.AddScoped<PayPalPaymentService>();
 builder.Services.AddCors(options => options.AddDefaultPolicy(policy => policy
     .WithOrigins(PayPalCheckoutService.AllowedOrigins(builder.Configuration))
     .AllowAnyHeader().AllowAnyMethod()));
+var jwt = JwtSettings.From(builder.Configuration, builder.Environment.IsDevelopment());
+builder.Services.AddSingleton(jwt);
+builder.Services.AddSingleton(TimeProvider.System);
+builder.Services.AddSingleton<LoginThrottle>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options => options.TokenValidationParameters = new TokenValidationParameters
 {
     ValidateIssuer = true, ValidateAudience = true, ValidateLifetime = true, ValidateIssuerSigningKey = true,
-    ValidIssuer = builder.Configuration["Jwt:Issuer"], ValidAudience = builder.Configuration["Jwt:Audience"],
-    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"] ?? "development-only-change-me-development-only-change-me"))
+    ValidIssuer = jwt.Issuer, ValidAudience = jwt.Audience, IssuerSigningKey = jwt.SigningKey,
 });
 builder.Services.AddAuthorization();
 // SqlServer (no MemoryStorage): los jobs encolados (recordatorios, sync de tipo de cambio) sobreviven a un reinicio de la API.

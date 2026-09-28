@@ -25,6 +25,7 @@ Decisiones ya confirmadas (no volver a preguntar): pasarela **PayPal**, **un rep
 - **DB portal**: SQL Server + EF Core (cambiado de PostgreSQL el 2026-09-25 — el usuario ya tiene SQL Server instalado localmente).
 - **Jobs**: Hangfire (recordatorios de vencimiento, sync GitHub, emails).
 - **Auth portal**: JWT, roles `Cliente` / `Admin` (admin del equipo de un cliente, ve solo su propio cliente) / **`SuperAdmin`** (staff de Rtres, ve y actúa sobre todos los clientes — ver "Rol SuperAdmin" más abajo).
+  - Seguridad de la sesión (2026-09-28): fuera de Development la API no arranca sin `Jwt:Key` propia (32+ caracteres; `Jwt__Key` o `appsettings.Production.local.json`) — la clave de ejemplo solo vale en Development. El login bloquea un correo 15 min tras 5 intentos fallidos (429 con `Retry-After`; por correo y no por IP porque detrás del proxy todas llegan con la misma IP; en memoria, se reinicia con la API). El token dura 8 h: el portal detecta el vencimiento (guard) o un 401 de la API (interceptor), cierra la sesión y vuelve al login con "Tu sesión expiró".
 
 ### Decisión de arquitectura: dos apps Angular, no una
 
