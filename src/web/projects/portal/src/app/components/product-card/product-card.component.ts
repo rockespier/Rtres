@@ -2,6 +2,10 @@ import { Component, Input, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ClientProductApiDto, PortalApiService } from '../../core/portal-api.service';
 
+const RENEWAL_WINDOW_DAYS = 30;
+
+const CYCLE_SUFFIX: Record<string, string> = { Mensual: ' / mes', Anual: ' / año', Unico: ' · pago único' };
+
 const TYPE_LABELS: Record<string, string> = {
   Hosting: 'Hosting',
   Dominio: 'Dominio',
@@ -35,9 +39,10 @@ const STATUS_PILL_CLASS: Record<string, string> = {
     <p class="text-muted text-sm">{{ typeLabel() }}</p>
     <h3 class="font-display text-lg font-semibold mt-2">{{ displayName() }}</h3>
     <span class="pill mt-4" [class]="pillClass()">{{ statusLabel() }}</span>
-    <p class="mt-4 text-sm">{{ dateLabel() }}</p>
+    <p class="mt-4 font-display text-lg font-semibold">{{ priceLabel() }}</p>
+    <p *ngIf="dateLabel()" class="mt-1 text-sm text-muted">{{ dateLabel() }}</p>
     <p *ngIf="error" class="text-sm text-red-600 mt-3">{{ error }}</p>
-    <div *ngIf="canPay() || canRenew() || canCancel()" class="flex gap-2 mt-5"><button *ngIf="canPay()" class="btn btn-primary btn-sm" [disabled]="busy" (click)="completePayment()">{{ busy ? 'Verificando…' : 'Completar pago' }}</button><button *ngIf="canRenew()" class="btn btn-primary btn-sm" (click)="renew()">Renovar ahora</button><button *ngIf="canCancel()" class="btn btn-ghost btn-sm" (click)="cancel()">Cancelar suscripción</button></div>
+    <div *ngIf="canPay() || canRenew() || canCancel()" class="flex gap-2 mt-5"><button *ngIf="canPay()" class="btn btn-primary btn-sm" [disabled]="busy" (click)="completePayment()">{{ busy ? 'Verificando…' : 'Completar pago' }}</button><button *ngIf="canRenew()" class="btn btn-primary btn-sm" (click)="renew()">Pagar renovación</button><button *ngIf="canCancel()" class="btn btn-ghost btn-sm" (click)="cancel()">Cancelar suscripción</button></div>
   </article>`,
 })
 export class ProductCardComponent {
@@ -48,7 +53,21 @@ export class ProductCardComponent {
   typeLabel = computed(() => TYPE_LABELS[this.product.product.type] ?? this.product.product.type);
   statusLabel = computed(() => STATUS_LABELS[this.product.status] ?? this.product.status);
   pillClass = computed(() => STATUS_PILL_CLASS[this.product.status] ?? 'pill-neutral');
-  canRenew = computed(() => !this.product.isManualBilling && (this.product.status === 'PorVencer' || this.product.status === 'Vencido') && (this.product.billingCycle === 'Anual' || this.product.billingCycle === 'Unico'));
+  /** Anual/Único que vence en 30 días o menos (o ya vencido): se puede pagar la renovación. Mismo criterio que el backend. */
+  canRenew = computed(() => {
+    const p = this.product;
+    if (p.isManualBilling || !(p.billingCycle === 'Anual' || p.billingCycle === 'Unico')) return false;
+    if (p.status === 'PorVencer' || p.status === 'Vencido') return true;
+    return p.status === 'Activo' && !!p.renewsAt && new Date(p.renewsAt).getTime() - Date.now() <= RENEWAL_WINDOW_DAYS * 86_400_000;
+  });
+  priceLabel = computed(() => {
+    const p = this.product;
+    if (p.priceLabelOverride) return p.priceLabelOverride;
+    const amount = p.price ?? p.product.basePrice;
+    if (amount == null) return '';
+    const money = new Intl.NumberFormat('es-PE', { style: 'currency', currency: p.product.currency || 'USD' }).format(amount);
+    return `${money}${CYCLE_SUFFIX[p.billingCycle] ?? ''}`;
+  });
   canCancel = computed(() => !this.product.isManualBilling && this.product.status === 'Activo' && this.product.billingCycle === 'Mensual' && !!this.product.payPalSubscriptionId);
   canPay = computed(() => !this.product.isManualBilling && this.product.status === 'Pendiente');
   busy = false;
@@ -59,7 +78,6 @@ export class ProductCardComponent {
   cancel(){if(confirm('¿Cancelar esta suscripción?'))this.api.cancelProduct(this.product.id).subscribe(()=>location.reload());}
   dateLabel = computed(() => {
     const p = this.product;
-    if (p.priceLabelOverride) return p.priceLabelOverride;
     if (p.renewsAt) return `Renueva el ${this.formatDate(p.renewsAt)}`;
     if (p.nextChargeAt) return `Próximo cobro: ${this.formatDate(p.nextChargeAt)}`;
     if (p.lastBackupAt) return `Último backup: ${this.formatDateTime(p.lastBackupAt)}`;

@@ -158,6 +158,49 @@ public class PayPalPaymentTests
         Assert.Equal(ClientProductStatus.Cancelado, cancelled.Status);
     }
 
+    [Theory]
+    [InlineData(20, true)]    // vence dentro de 30 días: se puede pagar la renovación aunque siga "Activo"
+    [InlineData(60, false)]   // aún falta mucho
+    public async Task Renewal_can_be_paid_within_30_days_of_expiry(int daysLeft, bool allowed)
+    {
+        using var db = TestData.Db(out var seed);
+        var item = AddProduct(db, seed, BillingCycle.Anual, orderId: "ORD-OLD");
+        item.Status = ClientProductStatus.Activo; item.RenewsAt = DateTime.UtcNow.AddDays(daysLeft); db.SaveChanges();
+        var controller = Controller(db, new FakePayPal(), new FakeNotifications());
+        controller.ControllerContext.HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity([new Claim("client_id", seed.Client.Id.ToString()), new Claim(ClaimTypes.Role, "Cliente")], "test"));
+
+        var result = await controller.Renew(item.Id, null, CancellationToken.None);
+
+        Assert.Equal(allowed, result is OkObjectResult);
+        Assert.Equal(allowed ? "ORD-NEW" : "ORD-OLD", item.PayPalOrderId);
+    }
+
+    [Fact]
+    public async Task Billing_shows_own_payments_to_clients_and_all_or_selected_to_superadmin()
+    {
+        using var db = TestData.Db(out var seed);
+        var mine = AddProduct(db, seed, BillingCycle.Anual, orderId: "ORD-A");
+        var otherClient = new Client { CompanyName = "Selva Viva", Email = "s@example.com" };
+        var otherProject = new Project { ClientId = otherClient.Id, Name = "Selva", Slug = "selva", GithubRepoOwner = "", GithubRepoName = "" };
+        db.AddRange(otherClient, otherProject); db.SaveChanges();
+        var theirs = AddProduct(db, new Seed(otherClient, otherProject, seed.Ticket, seed.User), BillingCycle.Anual, orderId: "ORD-B");
+        db.PaymentTransactions.AddRange(new PaymentTransaction { ClientProductId = mine.Id, PayPalOrderIdOrSubscriptionId = "ORD-A", Amount = 120, InternalCode = "RT-INT-000001" }, new PaymentTransaction { ClientProductId = theirs.Id, PayPalOrderIdOrSubscriptionId = "ORD-B", Amount = 120, InternalCode = "RT-INT-000002" });
+        db.SaveChanges();
+
+        async Task<int> Count(ClaimsPrincipal user, Guid? clientId)
+        {
+            var controller = new AccountController(db) { ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext { User = user } } };
+            var ok = Assert.IsType<OkObjectResult>(await controller.Transactions(clientId, CancellationToken.None));
+            return ((System.Collections.IEnumerable)ok.Value!).Cast<object>().Count();
+        }
+        var client = new ClaimsPrincipal(new ClaimsIdentity([new Claim("client_id", seed.Client.Id.ToString()), new Claim(ClaimTypes.Role, "Cliente")], "test"));
+        var superAdmin = new ClaimsPrincipal(new ClaimsIdentity([new Claim(ClaimTypes.Role, "SuperAdmin")], "test"));
+
+        Assert.Equal(1, await Count(client, otherClient.Id));   // un cliente no puede ver pagos ajenos pasando clientId
+        Assert.Equal(2, await Count(superAdmin, null));          // SuperAdmin sin selección: todos
+        Assert.Equal(1, await Count(superAdmin, otherClient.Id)); // SuperAdmin con cliente seleccionado
+    }
+
     private static ClientProduct AddProduct(RtresDbContext db, Seed seed, BillingCycle cycle, string? orderId)
     {
         var product = new Product { Name = "Hosting", Type = ProductType.Hosting, BillingCycle = cycle, BasePrice = 120 };
