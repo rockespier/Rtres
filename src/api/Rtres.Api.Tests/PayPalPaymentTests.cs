@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 using Rtres.Api.Controllers;
+using Rtres.Api.Jobs;
 using Rtres.Api.Services;
 using Rtres.Domain;
 using Rtres.Infrastructure;
@@ -115,6 +116,48 @@ public class PayPalPaymentTests
         Assert.Equal(new PayPalCapture("ORD-2", "APPROVED", null, null), PayPalClient.ParseCapture("ORD-2", """{"id":"ORD-2","status":"APPROVED"}"""));
     }
 
+    [Fact]
+    public async Task Reconciliation_records_the_first_charge_that_arrives_after_activation()
+    {
+        using var db = TestData.Db(out var seed);
+        var item = AddProduct(db, seed, BillingCycle.Mensual, orderId: null);
+        item.PayPalSubscriptionId = "SUB-7"; db.SaveChanges();
+        var next = new DateTime(2026, 10, 28, 10, 0, 0, DateTimeKind.Utc);
+        var payPal = new FakePayPal { Subscription = new PayPalSubscriptionInfo("SUB-7", "ACTIVE", next, []) };
+        var notifications = new FakeNotifications();
+        var service = new PayPalPaymentService(db, payPal, notifications, NullLogger<PayPalPaymentService>.Instance);
+
+        await service.ConfirmAsync(item, CancellationToken.None); // vuelta de PayPal: activa pero el cobro aún no existe
+        Assert.Equal(ClientProductStatus.Activo, item.Status);
+        Assert.Empty(db.PaymentTransactions);
+
+        payPal.Subscription = new PayPalSubscriptionInfo("SUB-7", "ACTIVE", next, [new("SALE-1", 90m, "USD")]); // minutos después
+        var job = new PayPalReconciliationJob(db, service, NullLogger<PayPalReconciliationJob>.Instance);
+        await job.ReconcileAsync(CancellationToken.None);
+        await job.ReconcileAsync(CancellationToken.None);
+        Assert.Equal("SALE-1", (await db.PaymentTransactions.SingleAsync()).PayPalOrderIdOrSubscriptionId);
+        Assert.Equal(next, item.NextChargeAt);
+        Assert.Single(notifications.Sent);
+    }
+
+    [Fact]
+    public async Task Reconciliation_cancels_subscriptions_cancelled_in_paypal_and_survives_errors()
+    {
+        using var db = TestData.Db(out var seed);
+        var broken = AddProduct(db, seed, BillingCycle.Mensual, orderId: null);
+        var cancelled = AddProduct(db, seed, BillingCycle.Mensual, orderId: null);
+        broken.PayPalSubscriptionId = "SUB-X"; cancelled.PayPalSubscriptionId = "SUB-C";
+        broken.Status = cancelled.Status = ClientProductStatus.Activo; db.SaveChanges();
+        var payPal = new FakePayPal();
+        payPal.Subscriptions["SUB-X"] = null; // PayPal falla para esta
+        payPal.Subscriptions["SUB-C"] = new PayPalSubscriptionInfo("SUB-C", "CANCELLED", null, []);
+
+        await new PayPalReconciliationJob(db, new PayPalPaymentService(db, payPal, new FakeNotifications(), NullLogger<PayPalPaymentService>.Instance), NullLogger<PayPalReconciliationJob>.Instance).ReconcileAsync(CancellationToken.None);
+
+        Assert.Equal(ClientProductStatus.Activo, broken.Status);
+        Assert.Equal(ClientProductStatus.Cancelado, cancelled.Status);
+    }
+
     private static ClientProduct AddProduct(RtresDbContext db, Seed seed, BillingCycle cycle, string? orderId)
     {
         var product = new Product { Name = "Hosting", Type = ProductType.Hosting, BillingCycle = cycle, BasePrice = 120 };
@@ -207,9 +250,11 @@ public class PayPalPaymentTests
         public int Captures { get; private set; }
         public int PlansCreated { get; private set; }
         public List<string> ReturnUrls { get; } = [];
-        public PayPalSubscriptionInfo? Subscription { get; init; }
+        public PayPalSubscriptionInfo? Subscription { get; set; }
+        public Dictionary<string, PayPalSubscriptionInfo?> Subscriptions { get; } = [];
         public Task<string> CreateMonthlyPlanAsync(string name, decimal price, string currency, CancellationToken cancellationToken = default) => Task.FromResult($"PLAN-{++PlansCreated}");
-        public Task<PayPalSubscriptionInfo> GetSubscriptionAsync(string subscriptionId, CancellationToken cancellationToken = default) => Task.FromResult(Subscription!);
+        public Task<PayPalSubscriptionInfo> GetSubscriptionAsync(string subscriptionId, CancellationToken cancellationToken = default) =>
+            Subscriptions.TryGetValue(subscriptionId, out var info) ? (info is null ? throw new HttpRequestException("PayPal caído") : Task.FromResult(info)) : Task.FromResult(Subscription!);
         public Task<PayPalCapture> CaptureOrderAsync(string orderId, CancellationToken cancellationToken = default)
         {
             Captures++;

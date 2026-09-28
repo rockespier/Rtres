@@ -52,6 +52,8 @@ app.UseHangfireDashboard("/jobs");
 RecurringJob.AddOrUpdate<RenewalReminderJob>("renewal-reminders", job => job.SendAsync(CancellationToken.None), Cron.Daily(13));
 // 11:00 UTC = 6:00 en Lima, antes que corra cualquier otro job del día.
 RecurringJob.AddOrUpdate<ExchangeRateSyncJob>("exchange-rate-sync", job => job.SyncAsync(CancellationToken.None), Cron.Daily(11));
+// Cobros de suscripciones PayPal que no llegaron por webhook (ver PayPalReconciliationJob).
+RecurringJob.AddOrUpdate<PayPalReconciliationJob>("paypal-reconciliation", job => job.ReconcileAsync(CancellationToken.None), Cron.Hourly);
 app.MapControllers();
 app.Run();
 
