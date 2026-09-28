@@ -343,7 +343,8 @@ public sealed class AdminController(RtresDbContext db, PayPalCheckoutService che
         if (!await db.Clients.AnyAsync(x => x.Id == clientId, ct) || !await db.Projects.AnyAsync(x => x.Id == request.ProjectId && x.ClientId == clientId, ct)) return NotFound();
         var product = await db.Products.FindAsync([request.ProductId], ct); if (product is null) return NotFound();
         if (request.BillingMode is not ("Manual" or "PayPal")) return BadRequest(new { message = "Modo de facturación inválido." });
-        var item = new ClientProduct { ClientId = clientId, ProjectId = request.ProjectId, ProductId = product.Id, BillingCycle = request.BillingCycle, IsManualBilling = request.BillingMode == "Manual", Status = request.BillingMode == "Manual" ? ClientProductStatus.Activo : ClientProductStatus.Pendiente, Price = request.Price ?? product.BasePrice, DomainName = EmptyToNull(request.DomainName), PriceLabelOverride = EmptyToNull(request.PriceLabelOverride), Product = product };
+        var item = new ClientProduct { ClientId = clientId, ProjectId = request.ProjectId, ProductId = product.Id, BillingCycle = request.BillingCycle, IsManualBilling = request.BillingMode == "Manual", Status = request.BillingMode == "Manual" ? ClientProductStatus.Activo : ClientProductStatus.Pendiente, Price = request.Price ?? product.BasePrice, DomainName = EmptyToNull(request.DomainName), PriceLabelOverride = EmptyToNull(request.PriceLabelOverride), RenewsAt = ToUtcDate(request.RenewsAt), NextChargeAt = ToUtcDate(request.NextChargeAt), Product = product };
+        item.Status = RenewalReminderJob.StatusFor(item.Status, item.RenewsAt, DateTime.UtcNow);
         db.ClientProducts.Add(item);
         if (request.BillingMode == "PayPal")
         {
@@ -366,6 +367,23 @@ public sealed class AdminController(RtresDbContext db, PayPalCheckoutService che
         await db.SaveChangesAsync(ct); return Ok(ClientProductDto(item));
     }
 
+    /// <summary>
+    /// Fija las fechas de un producto (null las borra): <c>RenewsAt</c> para Anual/Único, <c>NextChargeAt</c> para
+    /// Mensual. Es lo que permite que los productos de facturación manual reciban los avisos de vencimiento; el estado se
+    /// recalcula con la nueva fecha (Vencido, Por vencer o Activo).
+    /// </summary>
+    [HttpPut("client-products/{id:guid}/dates")]
+    public async Task<ActionResult> UpdateClientProductDates(Guid id, ClientProductDatesRequest request, CancellationToken ct)
+    {
+        var item = await db.ClientProducts.Include(x => x.Product).Include(x => x.Project).SingleOrDefaultAsync(x => x.Id == id, ct); if (item is null) return NotFound();
+        item.RenewsAt = ToUtcDate(request.RenewsAt); item.NextChargeAt = ToUtcDate(request.NextChargeAt);
+        item.Status = RenewalReminderJob.StatusFor(item.Status, item.RenewsAt, DateTime.UtcNow);
+        await db.SaveChangesAsync(ct); return Ok(ClientProductDto(item));
+    }
+
+    /// <summary>Una fecha elegida en el portal se guarda a las 12:00 UTC: así se ve el mismo día en cualquier zona horaria (Lima incluida).</summary>
+    internal static DateTime? ToUtcDate(DateOnly? date) => date?.ToDateTime(new TimeOnly(12, 0), DateTimeKind.Utc);
+
     private async Task<(ActionResult? Failure, int Created, List<ImportError> Errors)> Import(IFormFile file, string kind, Func<IXLRow, int, List<ImportError>, Task<bool>> addRow, CancellationToken ct)
     {
         var errors = new List<ImportError>(); var created = 0;
@@ -383,7 +401,7 @@ public sealed class AdminController(RtresDbContext db, PayPalCheckoutService che
     private static object ClientDto(Client x) => new { id = x.Id, companyName = x.CompanyName, contactName = x.ContactName, email = x.Email, phone = x.Phone, preferredLanguage = x.PreferredLanguage, isActive = x.IsActive };
     private static object ProjectDto(Project x) => new { id = x.Id, clientId = x.ClientId, name = x.Name, slug = x.Slug, githubRepoOwner = x.GithubRepoOwner, githubRepoName = x.GithubRepoName };
     private static object ProductDto(Product x) => new { id = x.Id, type = x.Type.ToString(), name = x.Name, billingCycle = x.BillingCycle.ToString(), basePrice = x.BasePrice, currency = x.Currency, description = x.Description, isActive = x.IsActive };
-    private static object ClientProductDto(ClientProduct x) => new { id = x.Id, clientId = x.ClientId, projectId = x.ProjectId, projectName = x.Project?.Name, productId = x.ProductId, productName = x.Product?.Name, productType = x.Product?.Type.ToString(), billingCycle = x.BillingCycle.ToString(), isManualBilling = x.IsManualBilling, status = x.Status.ToString(), price = x.Price, domainName = x.DomainName, priceLabelOverride = x.PriceLabelOverride };
+    private static object ClientProductDto(ClientProduct x) => new { id = x.Id, clientId = x.ClientId, projectId = x.ProjectId, projectName = x.Project?.Name, productId = x.ProductId, productName = x.Product?.Name, productType = x.Product?.Type.ToString(), billingCycle = x.BillingCycle.ToString(), isManualBilling = x.IsManualBilling, status = x.Status.ToString(), price = x.Price, domainName = x.DomainName, priceLabelOverride = x.PriceLabelOverride, renewsAt = x.RenewsAt, nextChargeAt = x.NextChargeAt };
     private static object TaxDocumentDto(TaxDocument x) => new { id = x.Id, paymentTransactionId = x.PaymentTransactionId, clientId = x.ClientId, type = x.Type.ToString(), series = x.Series, number = x.Number, issueDate = x.IssueDate, currency = x.Currency, baseAmount = x.BaseAmount, igvAmount = x.IgvAmount, totalAmount = x.TotalAmount, notes = x.Notes };
     private static object ExpenseDto(Expense x) => new { id = x.Id, description = x.Description, category = x.Category.ToString(), type = x.Type.ToString(), amount = x.Amount, currency = x.Currency, amountPen = x.AmountPen, date = x.Date, recurring = x.Recurring, recurrenceCycle = x.RecurrenceCycle?.ToString() };
 }
@@ -396,7 +414,8 @@ public sealed record ClientRequest(string CompanyName, string ContactName, strin
 public sealed record ClientPatchRequest(string? CompanyName, string? ContactName, string? Email, string? Phone, string? PreferredLanguage, bool? IsActive);
 public sealed record ProductRequest(ProductType Type, string Name, BillingCycle BillingCycle, decimal? BasePrice, string Currency, string? Description, bool IsActive);
 public sealed record ProductPatchRequest(ProductType? Type, string? Name, BillingCycle? BillingCycle, decimal? BasePrice, string? Currency, string? Description, bool? IsActive);
-public sealed record AssignProductRequest(Guid ProductId, Guid ProjectId, BillingCycle BillingCycle, string BillingMode, decimal? Price, string? DomainName, string? PriceLabelOverride);
+public sealed record AssignProductRequest(Guid ProductId, Guid ProjectId, BillingCycle BillingCycle, string BillingMode, decimal? Price, string? DomainName, string? PriceLabelOverride, DateOnly? RenewsAt = null, DateOnly? NextChargeAt = null);
+public sealed record ClientProductDatesRequest(DateOnly? RenewsAt, DateOnly? NextChargeAt);
 public sealed record ClientProductPatchRequest(decimal? Price, ClientProductStatus? Status, BillingCycle? BillingCycle, bool? IsManualBilling, string? DomainName, string? PriceLabelOverride);
 public sealed record ImportError(int Row, string Reason);
 public sealed record ClientAccess(string ClientName, string Email, string TemporaryPassword, bool EmailSent = false);

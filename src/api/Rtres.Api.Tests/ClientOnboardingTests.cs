@@ -130,6 +130,29 @@ public class ClientOnboardingTests
         Assert.Contains("Hola Pedro", message.Text);
     }
 
+    [Fact]
+    public async Task Admin_sets_the_dates_of_a_manual_product_and_its_status_follows()
+    {
+        using var db = TestData.Db(out var seed);
+        var product = new Product { Name = "Hosting", Type = ProductType.Hosting, BillingCycle = BillingCycle.Anual, BasePrice = 120 };
+        db.Products.Add(product); db.SaveChanges();
+        var admin = Admin(db);
+        var soon = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(10));
+
+        var created = Assert.IsType<CreatedResult>(await admin.AssignProduct(seed.Client.Id, new AssignProductRequest(product.Id, seed.Project.Id, BillingCycle.Anual, "Manual", null, null, null, soon), CancellationToken.None));
+        var item = await db.ClientProducts.SingleAsync(x => x.ProductId == product.Id);
+        Assert.Equal((new DateTime(soon, new TimeOnly(12, 0), DateTimeKind.Utc), ClientProductStatus.PorVencer), (item.RenewsAt!.Value, item.Status));
+
+        var past = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(-2));
+        Assert.IsType<OkObjectResult>(await admin.UpdateClientProductDates(item.Id, new ClientProductDatesRequest(past, null), CancellationToken.None));
+        Assert.Equal(ClientProductStatus.Vencido, item.Status);
+
+        var renewed = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(1));
+        Assert.IsType<OkObjectResult>(await admin.UpdateClientProductDates(item.Id, new ClientProductDatesRequest(renewed, null), CancellationToken.None));
+        Assert.Equal(ClientProductStatus.Activo, item.Status);
+        Assert.IsType<NotFoundResult>(await admin.UpdateClientProductDates(Guid.NewGuid(), new ClientProductDatesRequest(null, null), CancellationToken.None));
+    }
+
     private static AdminController Admin(RtresDbContext db, FakeEmail? email = null) =>
         new(db, null!, null!, AccessEmail(db, email ?? new FakeEmail())) { ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() } };
 
