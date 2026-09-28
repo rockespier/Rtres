@@ -13,22 +13,25 @@ namespace Rtres.Api.Notifications;
 public sealed class NotificationJob(RtresDbContext db, IEmailSender email, IConfiguration configuration, ILogger<NotificationJob> logger)
 {
     [AutomaticRetry(Attempts = 3)]
-    public async Task SendAsync(Guid clientId, Notification notification, CancellationToken cancellationToken)
+    /// <returns>Si el email se envió (false si se omitió: ya enviado, cliente inactivo o sin email).</returns>
+    public async Task<bool> SendAsync(Guid clientId, Notification notification, CancellationToken cancellationToken)
     {
-        if (notification.DedupeKey is not null && await AlreadySentAsync(db, notification.DedupeKey, cancellationToken)) return;
+        if (notification.DedupeKey is not null && await AlreadySentAsync(db, notification.DedupeKey, cancellationToken)) return false;
         var client = await db.Clients.SingleOrDefaultAsync(x => x.Id == clientId, cancellationToken);
         if (client is null || !client.IsActive || string.IsNullOrWhiteSpace(client.Email))
         {
             logger.LogInformation("Aviso {Type} omitido: cliente {ClientId} inexistente, inactivo o sin email", notification.Type, clientId);
-            return;
+            return false;
         }
 
-        var (subject, html, text) = EmailTemplates.Render(notification, client.PreferredLanguage, configuration["Frontend:PortalUrl"] ?? "https://portal.rtres.net");
-        var log = new NotificationLog { ClientId = client.Id, Type = notification.Type.ToString(), Channel = "email", Recipient = client.Email, DedupeKey = notification.DedupeKey };
+        var portalUrl = notification.Data.TryGetValue("portalUrl", out var url) ? url : configuration["Frontend:PortalUrl"] ?? "https://portal.rtres.net";
+        var (subject, html, text) = EmailTemplates.Render(notification, client.PreferredLanguage, portalUrl);
+        var recipient = notification.To ?? client.Email;
+        var log = new NotificationLog { ClientId = client.Id, Type = notification.Type.ToString(), Channel = "email", Recipient = recipient, DedupeKey = notification.DedupeKey };
         db.NotificationLogs.Add(log);
         try
         {
-            await email.SendAsync(new EmailMessage(client.Email, subject, html, text), cancellationToken);
+            await email.SendAsync(new EmailMessage(recipient, subject, html, text), cancellationToken);
             log.Success = true;
         }
         catch (Exception ex)
@@ -38,6 +41,7 @@ public sealed class NotificationJob(RtresDbContext db, IEmailSender email, IConf
             throw; // Hangfire reintenta
         }
         await db.SaveChangesAsync(cancellationToken);
+        return true;
     }
 
     public static Task<bool> AlreadySentAsync(RtresDbContext db, string dedupeKey, CancellationToken cancellationToken) =>
