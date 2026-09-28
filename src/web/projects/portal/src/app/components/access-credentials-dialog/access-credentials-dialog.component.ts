@@ -10,15 +10,16 @@ import { ClientAccessDto } from '../../core/portal-api.service';
   template: `<div class="fixed inset-0 z-50 bg-black/40 grid place-items-center p-4">
     <div class="card p-6 w-full max-w-2xl space-y-4">
       <h2 class="font-display text-xl">{{ accesses.length === 1 ? 'Acceso del cliente' : 'Accesos de los clientes' }}</h2>
-      <p class="text-sm text-muted">Entrega estos datos a cada cliente por un canal seguro. <strong>La contraseña temporal no se volverá a mostrar</strong>; el cliente puede cambiarla en Perfil. Portal: <code>{{ portalUrl }}</code></p>
+      <p class="text-sm text-muted">Cada cliente recibe por correo su usuario y contraseña temporal. Si el correo no salió, entrégaselos tú por un canal seguro: <strong>la contraseña no se volverá a mostrar</strong>. El cliente puede cambiarla en Perfil. Portal: <code>{{ portalUrl }}</code></p>
       <div class="overflow-x-auto">
         <table class="p-table w-full">
-          <thead><tr><th>Cliente</th><th>Usuario (email)</th><th>Contraseña temporal</th><th></th></tr></thead>
+          <thead><tr><th>Cliente</th><th>Usuario (email)</th><th>Contraseña temporal</th><th>Correo</th><th></th></tr></thead>
           <tbody>
             <tr *ngFor="let a of accesses">
               <td>{{ a.clientName }}</td>
               <td>{{ a.email }}</td>
               <td><code>{{ a.temporaryPassword }}</code></td>
+              <td><span class="pill" [class.pill-success]="a.emailSent" [class.pill-danger]="!a.emailSent">{{ a.emailSent ? 'Enviado' : 'No enviado' }}</span></td>
               <td><button type="button" class="btn btn-ghost btn-sm" (click)="copy(a)">{{ copied === a ? 'Copiado' : 'Copiar' }}</button></td>
             </tr>
           </tbody>

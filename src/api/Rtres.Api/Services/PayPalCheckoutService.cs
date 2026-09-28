@@ -12,7 +12,7 @@ public sealed class PayPalCheckoutService(IPayPalClient payPal, IConfiguration c
     /// </summary>
     public async Task<PayPalCheckout> StartAsync(ClientProduct item, Product product, HttpRequest? request, CancellationToken ct)
     {
-        var baseUrl = PortalBaseUrl(request);
+        var baseUrl = PortalBaseUrl(request, configuration);
         var returnUrl = $"{baseUrl}/billing/return?clientProductId={item.Id}";
         var cancelUrl = $"{baseUrl}/dashboard";
         var price = item.Price ?? product.BasePrice ?? throw new InvalidOperationException("El producto no tiene precio.");
@@ -47,7 +47,8 @@ public sealed class PayPalCheckoutService(IPayPalClient payPal, IConfiguration c
     public static string[] AllowedOrigins(IConfiguration configuration) =>
         [configuration["Frontend:PublicUrl"] ?? "https://rtres.net", configuration["Frontend:PortalUrl"] ?? "https://portal.rtres.net", "http://localhost:4200", "http://localhost:4201"];
 
-    private string PortalBaseUrl(HttpRequest? request)
+    /// <summary>URL del portal desde el que se hizo la petición (si es un origen permitido), o <c>Frontend:PortalUrl</c>.</summary>
+    public static string PortalBaseUrl(HttpRequest? request, IConfiguration configuration)
     {
         var origin = request?.Headers.Origin.ToString().TrimEnd('/');
         if (!string.IsNullOrEmpty(origin) && AllowedOrigins(configuration).Any(x => string.Equals(x.TrimEnd('/'), origin, StringComparison.OrdinalIgnoreCase))) return origin;

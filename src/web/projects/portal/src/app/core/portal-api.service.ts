@@ -12,7 +12,7 @@ export interface DashboardSummary {
 
 export interface ProductDto { id: string; type: string; name: string; billingCycle: string; basePrice: number | null; currency: string; description?:string|null; isActive?:boolean; }
 export interface ProjectDto { id: string; name: string; slug: string; githubRepoOwner?: string; githubRepoName?: string; }
-export interface ClientAccessDto { clientName: string; email: string; temporaryPassword: string; }
+export interface ClientAccessDto { clientName: string; email: string; temporaryPassword: string; emailSent: boolean; }
 
 export interface ClientProductApiDto {
   id: string;
@@ -122,7 +122,7 @@ export class PortalApiService {
   updateProfile(name:string) { return this.http.patch(`${this.base}/profile`, {name}); }
   changePassword(currentPassword:string,newPassword:string) { return this.http.post(`${this.base}/profile/change-password`, {currentPassword,newPassword}); }
   getTeam() { return this.http.get<TeamUserDto[]>(`${this.base}/team/users`); }
-  inviteTeam(name:string,email:string) { return this.http.post<{id:string;temporaryPassword:string}>(`${this.base}/team/users`,{name,email}); }
+  inviteTeam(name:string,email:string) { return this.http.post<{id:string;temporaryPassword:string;emailSent:boolean}>(`${this.base}/team/users`,{name,email}); }
   updateTeam(id:string, body:{role?:string;isActive?:boolean}) { return this.http.patch(`${this.base}/team/users/${id}`,body); }
   getAdminClients() { return this.http.get<AdminClientDto[]>(`${this.base}/admin/clients`); }
   getAdminClient(id:string) { return this.http.get<{client:AdminClientDetailDto;products:AdminClientProductDto[]}>(`${this.base}/admin/clients/${id}`); }
