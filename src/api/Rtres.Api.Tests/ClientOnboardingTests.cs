@@ -4,7 +4,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging.Abstractions;
 using Rtres.Api.Controllers;
+using Rtres.Api.Notifications;
+using System.Security.Claims;
 using Rtres.Domain;
 using Rtres.Infrastructure.Persistence;
 
@@ -81,7 +84,57 @@ public class ClientOnboardingTests
         Assert.Equal(("rtres-web", "tienda-v2"), (project.GithubRepoOwner, project.GithubRepoName));
     }
 
-    private static AdminController Admin(RtresDbContext db) => new(db, null!, null!);
+    [Fact]
+    public async Task New_client_receives_the_access_by_email_in_its_language()
+    {
+        using var db = TestData.Db(out _);
+        var email = new FakeEmail();
+        var result = Assert.IsType<CreatedResult>(await Admin(db, email).CreateClient(new ClientRequest("Andes Tours", "Ana Quispe", "ana@andes.pe", null, "it"), CancellationToken.None));
+        var access = Prop<ClientAccess>(result.Value!, "access");
+
+        Assert.True(access.EmailSent);
+        var message = Assert.Single(email.Sent);
+        Assert.Equal("ana@andes.pe", message.To);
+        Assert.Equal("Il tuo accesso al portale clienti di Rtres (Andes Tours)", message.Subject);
+        Assert.Contains(access.TemporaryPassword, message.Text);
+        Assert.Contains("/login", message.Html);
+        var log = await db.NotificationLogs.SingleAsync();
+        Assert.Equal(("AccountAccess", "ana@andes.pe", true), (log.Type, log.Recipient, log.Success));
+    }
+
+    [Fact]
+    public async Task If_the_email_fails_the_access_is_still_created_and_flagged_as_not_sent()
+    {
+        using var db = TestData.Db(out _);
+        var result = Assert.IsType<CreatedResult>(await Admin(db, new FakeEmail { Fail = true }).CreateClient(new ClientRequest("Andes Tours", "Ana", "ana@andes.pe", null, "es"), CancellationToken.None));
+        var access = Prop<ClientAccess>(result.Value!, "access");
+        Assert.False(access.EmailSent);
+        Assert.IsType<OkObjectResult>(await Login(db, "ana@andes.pe", access.TemporaryPassword));
+    }
+
+    [Fact]
+    public async Task Team_invitation_is_emailed_to_the_invited_person_not_to_the_client_contact()
+    {
+        using var db = TestData.Db(out var seed);
+        var email = new FakeEmail();
+        var controller = new AccountController(db, AccessEmail(db, email))
+        {
+            ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext { User = new ClaimsPrincipal(new ClaimsIdentity([new Claim(ClaimTypes.NameIdentifier, seed.User.Id.ToString()), new Claim("client_id", seed.Client.Id.ToString()), new Claim(ClaimTypes.Role, "Admin")], "test")) } },
+        };
+        var result = Assert.IsType<CreatedResult>(await controller.Invite(new InviteRequest("Pedro", "pedro@cabalgatas.pe"), CancellationToken.None));
+
+        Assert.True(Prop<bool>(result.Value!, "emailSent"));
+        var message = Assert.Single(email.Sent);
+        Assert.Equal("pedro@cabalgatas.pe", message.To);
+        Assert.Contains(Prop<string>(result.Value!, "temporaryPassword"), message.Text);
+        Assert.Contains("Hola Pedro", message.Text);
+    }
+
+    private static AdminController Admin(RtresDbContext db, FakeEmail? email = null) =>
+        new(db, null!, null!, AccessEmail(db, email ?? new FakeEmail())) { ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() } };
+
+    internal static AccessEmailService AccessEmail(RtresDbContext db, IEmailSender email) =>
+        new(NotificationJobTests.Job(db, email), new ConfigurationBuilder().Build(), NullLogger<AccessEmailService>.Instance);
 
     private static Task<ActionResult> Login(RtresDbContext db, string email, string password) =>
         new AuthController(db, new ConfigurationBuilder().Build()).Login(new LoginRequest(email, password), CancellationToken.None);

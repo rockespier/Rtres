@@ -18,7 +18,8 @@ import { PortalApiService } from '../../core/portal-api.service';
       </div>
     </div>
     <div *ngIf="temporaryPassword()">
-      <p class="text-sm text-muted">Comparte esta contraseña temporal con {{ name }} — no se volverá a mostrar.</p>
+      <p *ngIf="emailSent()" class="text-sm">Enviamos a <strong>{{ email }}</strong> un correo con su usuario y esta contraseña temporal. La tienes aquí por si no le llega — no se volverá a mostrar.</p>
+      <p *ngIf="!emailSent()" class="text-sm text-red-600">No se pudo enviar el correo a {{ email }}. Comparte esta contraseña temporal con {{ name }} — no se volverá a mostrar.</p>
       <div class="flex items-center gap-3 mt-3">
         <code class="field flex-1">{{ temporaryPassword() }}</code>
         <button type="button" class="btn btn-ghost btn-sm" (click)="copy()">Copiar</button>
@@ -40,13 +41,14 @@ export class TeamInviteDialogComponent {
   inviting = signal(false);
   error = signal('');
   temporaryPassword = signal('');
+  emailSent = signal(false);
 
   invite(): void {
     if (!this.name.trim() || !this.email.trim()) { this.error.set('Completa nombre y email.'); return; }
     this.inviting.set(true);
     this.error.set('');
     this.api.inviteTeam(this.name, this.email).subscribe({
-      next: r => { this.temporaryPassword.set(r.temporaryPassword); this.inviting.set(false); },
+      next: r => { this.temporaryPassword.set(r.temporaryPassword); this.emailSent.set(r.emailSent); this.inviting.set(false); },
       error: () => { this.error.set('No se pudo crear la invitación.'); this.inviting.set(false); },
     });
   }
