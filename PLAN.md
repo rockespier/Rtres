@@ -522,6 +522,13 @@ Todos bajo `/api`, JWT Bearer, scopeados al `client_id` del JWT (o `?clientId=` 
 - **Bug real de UX/datos**: cuando el SuperAdmin asocia un producto en modo PayPal (T4.5), el backend generaba una orden real de PayPal y devolvía su `approvalUrl`, pero el frontend (`AdminClientDetailComponent.assign()`) ignoraba la respuesta por completo — la orden quedaba creada en PayPal sin que nadie tuviera el link para completarla. Corregido: la respuesta de `POST /api/admin/clients/{clientId}/products` ahora siempre trae `{ clientProduct, approvalUrl }` (antes el shape difería entre modo Manual y PayPal), y el frontend muestra el link con `prompt()` para que el SuperAdmin lo copie y se lo envíe al cliente.
 - No se verificó el link de "Catálogo" en la navegación del cliente porque **no existía**: la ruta y el componente estaban completos pero ningún link del sidebar ni del drawer móvil apuntaba a `/catalog` — un cliente real nunca hubiera podido llegar a la página. Agregado en `SidebarComponent` y `PortalShellComponent`.
 
+**Corrección 2026-09-28 — cobro real de órdenes (encontrado en la revisión general)**: el webhook activaba el producto y sumaba 1 año con `CHECKOUT.ORDER.APPROVED`, pero nadie **capturaba** la orden, así que PayPal nunca cobraba (y si llegaba `PAYMENT.CAPTURE.COMPLETED`, sumaba otro año). Ahora:
+- `IPayPalClient.CaptureOrderAsync` (`POST v2/checkout/orders/{id}/capture`, idempotente con `PayPal-Request-Id`; si la orden ya estaba capturada lee la captura existente).
+- `PayPalPaymentService`: la orden aprobada se captura desde el webhook `CHECKOUT.ORDER.APPROVED` **y** desde la pantalla de retorno (`POST /api/client-products/{id}/capture`, no depende de que el webhook llegue). El producto pasa a `Activo` solo con la captura `COMPLETED`.
+- Cada cobro se aplica **una sola vez** (transacción, vigencia y email), por id de orden (o de venta en suscripciones), con índice único en `PaymentTransaction.PayPalOrderIdOrSubscriptionId` (migración `UniquePaymentTransactionKey`).
+- Vigencia según el ciclo: `Anual` suma 1 año desde el vencimiento actual si aún no pasó (desde hoy si ya venció); `Mensual` fija `NextChargeAt` a un mes; `Unico` no tiene vencimiento (antes recibía `RenewsAt` +1 año y, con la Fase 6, avisos de renovación).
+- **Pendiente**: probar un pago completo en el sandbox con una cuenta de comprador de prueba (no verificado contra PayPal real en esta corrección).
+
 ## Fase 5 — detalle (tickets: tipos, comentarios, GitHub)
 
 ### Contexto y alcance

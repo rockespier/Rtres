@@ -270,7 +270,8 @@ namespace Rtres.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("PayPalOrderIdOrSubscriptionId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -281,6 +282,9 @@ namespace Rtres.Infrastructure.Persistence.Migrations
                     b.HasIndex("InternalCode")
                         .IsUnique()
                         .HasFilter("[InternalCode] IS NOT NULL");
+
+                    b.HasIndex("PayPalOrderIdOrSubscriptionId")
+                        .IsUnique();
 
                     b.ToTable("PaymentTransactions");
                 });
