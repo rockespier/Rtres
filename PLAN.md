@@ -460,6 +460,14 @@ Todos bajo `/api/admin`, `[Authorize(Roles="SuperAdmin")]`.
   - **Bug real encontrado en el proceso**: la migración generada por `dotnet ef migrations add` puso `defaultValue: false` en el `ADD COLUMN` (EF no lee el inicializador `= true` de la propiedad C#, solo usa el default del tipo CLR) — esto **desactivó momentáneamente los 5 clientes ya existentes** en la base real al aplicar la migración. Detectado inmediatamente con `sqlcmd` antes de que impactara al usuario; corregido editando la migración a `defaultValue: true` y con un `UPDATE Clients SET IsActive = 1` de una sola vez sobre los datos ya afectados. **Lección para futuras migraciones de columnas booleanas con default `true`**: siempre verificar el `defaultValue` generado, EF no lo infiere del código C#.
 - **El selector de cliente del SuperAdmin (topbar) no actualizaba la pantalla.** Causa: `ClientSwitcherComponent.choose()` hace `router.navigateByUrl('/dashboard')`, que es un no-op si ya se está en `/dashboard` (la página de aterrizaje por defecto) — Angular no reactiva rutas idénticas. `DashboardComponent`, `BillingComponent`, `TicketsListComponent` y `TicketFormComponent` solo cargaban sus datos una vez en `ngOnInit`, sin reaccionar a cambios de `PortalUiService.viewingClientId`. Corregido envolviendo la carga de datos de los 4 componentes en un `effect()` que depende de `ui.viewingClientId()`, en vez de depender de la navegación del router. Verificado en navegador: seleccionar un cliente desde `/dashboard` ahora refresca los stat cards y la grilla de productos al instante.
 
+### Alta completa de clientes (revisión general, 2026-09-28)
+
+Un cliente creado o importado desde `/admin` **no podía usar el portal**: no se creaba ningún usuario (invitar requiere ser Admin *de ese* cliente) y no había forma de crear proyectos (sin proyecto no se le pueden asociar productos ni abrir tickets; el repo de GitHub solo se cambiaba por SQL). Ahora:
+- `POST /admin/clients` crea también el **usuario Admin** del cliente (contacto + email del cliente) y devuelve `{ client, access: { clientName, email, temporaryPassword } }`. Mismo criterio que la invitación de equipo: la contraseña temporal se muestra **una sola vez** en pantalla (no viaja por email). Rechaza el alta si el email ya lo usa un usuario.
+- `POST /admin/clients/import` hace lo mismo por fila y devuelve `accesses[]`; el diálogo muestra las credenciales al cerrarse.
+- `POST /admin/clients/{id}/access` ("Generar acceso"): crea el usuario si falta (clientes dados de alta antes de este cambio) o le asigna una contraseña temporal nueva (sirve también como "olvidé mi contraseña" gestionado por Rtres).
+- Proyectos: `POST /admin/clients/{id}/projects` (slug automático y único a partir del nombre, sin tildes) y `PATCH /admin/projects/{id}` (nombre y repo de GitHub). Sección "Proyectos" en el detalle del cliente.
+
 ## Fase 4 — detalle (suscripciones y facturación PayPal)
 
 ### Contexto y alcance
