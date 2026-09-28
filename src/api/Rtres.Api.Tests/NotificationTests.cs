@@ -161,6 +161,34 @@ public class RenewalReminderJobTests
         Assert.Equal(3, email.Sent.Count);
     }
 
+    [Theory]
+    [InlineData(ClientProductStatus.Activo, -1, ClientProductStatus.Vencido)]
+    [InlineData(ClientProductStatus.PorVencer, -3, ClientProductStatus.Vencido)]
+    [InlineData(ClientProductStatus.Activo, 0, ClientProductStatus.PorVencer)] // vence hoy: aún se puede renovar
+    [InlineData(ClientProductStatus.Cancelado, -1, ClientProductStatus.Cancelado)]
+    [InlineData(ClientProductStatus.Pendiente, -1, ClientProductStatus.Pendiente)]
+    public async Task Marks_products_past_their_date_as_expired(ClientProductStatus status, int daysLeft, ClientProductStatus expected)
+    {
+        using var db = TestData.Db(out var seed);
+        var item = AddProduct(db, seed, Now.Date.AddDays(daysLeft));
+        item.Status = status; db.SaveChanges();
+        await new RenewalReminderJob(db, new InlineNotifications(db, new FakeEmail())).SendAsync(Now, CancellationToken.None);
+        Assert.Equal(expected, (await db.ClientProducts.AsNoTracking().SingleAsync(x => x.Id == item.Id)).Status);
+    }
+
+    [Theory]
+    [InlineData(ClientProductStatus.Vencido, 60, ClientProductStatus.Activo)]
+    [InlineData(ClientProductStatus.Activo, 10, ClientProductStatus.PorVencer)]
+    [InlineData(ClientProductStatus.Activo, -2, ClientProductStatus.Vencido)]
+    [InlineData(ClientProductStatus.Pendiente, 10, ClientProductStatus.Pendiente)]
+    [InlineData(ClientProductStatus.Cancelado, -2, ClientProductStatus.Cancelado)]
+    public void Status_follows_the_renewal_date(ClientProductStatus current, int daysLeft, ClientProductStatus expected) =>
+        Assert.Equal(expected, RenewalReminderJob.StatusFor(current, Now.Date.AddDays(daysLeft), Now));
+
+    [Fact]
+    public void Status_is_unchanged_without_a_renewal_date() =>
+        Assert.Equal(ClientProductStatus.Vencido, RenewalReminderJob.StatusFor(ClientProductStatus.Vencido, null, Now));
+
     private static ClientProduct AddProduct(RtresDbContext db, Seed seed, DateTime renewsAt)
     {
         var product = new Product { Name = "Hosting", Type = ProductType.Hosting, BillingCycle = BillingCycle.Anual, BasePrice = 120 };
