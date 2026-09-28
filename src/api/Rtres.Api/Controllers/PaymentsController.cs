@@ -13,6 +13,9 @@ namespace Rtres.Api.Controllers;
 [ApiController, Route("api")]
 public sealed class PaymentsController(RtresDbContext db, IPayPalClient payPal, PayPalCheckoutService checkoutService, PayPalPaymentService payments, INotificationSender notifications, ILogger<PaymentsController> logger) : ControllerBase
 {
+    /// <summary>Días antes del vencimiento en que se puede pagar la renovación (igual que el primer recordatorio por email).</summary>
+    public const int RenewalWindowDays = 30;
+
     private IActionResult? ClientScope(Guid? requested, out Guid clientId)
     {
         clientId = Guid.Empty;
@@ -42,7 +45,7 @@ public sealed class PaymentsController(RtresDbContext db, IPayPalClient payPal, 
         var item = await db.ClientProducts.Include(x => x.Product).SingleOrDefaultAsync(x => x.Id == id && x.ClientId == owner, ct);
         if (item?.Product is null) return NotFound();
         // Renovar (Anual/Único por vencer o vencido) o reintentar un pago que quedó a medias (Pendiente, cualquier ciclo).
-        var renewable = item.BillingCycle is BillingCycle.Anual or BillingCycle.Unico && item.Status is ClientProductStatus.PorVencer or ClientProductStatus.Vencido;
+        var renewable = item.BillingCycle is BillingCycle.Anual or BillingCycle.Unico && (item.Status is ClientProductStatus.PorVencer or ClientProductStatus.Vencido || item.RenewsAt <= DateTime.UtcNow.AddDays(RenewalWindowDays));
         if (item.IsManualBilling || !(renewable || item.Status == ClientProductStatus.Pendiente)) return BadRequest(new { message = "Este producto no se puede renovar en línea." });
         try { var checkout = await checkoutService.StartAsync(item, item.Product, Request, ct); await db.SaveChangesAsync(ct); return Ok(new { approvalUrl = checkout.ApprovalUrl }); } catch (InvalidOperationException ex) { return BadRequest(new { message = ex.Message }); }
     }

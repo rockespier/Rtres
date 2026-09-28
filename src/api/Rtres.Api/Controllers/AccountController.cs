@@ -26,7 +26,21 @@ public sealed class AccountController(RtresDbContext db) : ControllerBase
     [HttpPost("profile/change-password")]
     public async Task<ActionResult> ChangePassword(ChangePasswordRequest request, CancellationToken ct) { var user = await db.UserAccounts.FindAsync([UserId], ct); if (user is null) return NotFound(); if (Hasher.VerifyHashedPassword(user, user.PasswordHash, request.CurrentPassword) == PasswordVerificationResult.Failed) return BadRequest(new { message = "La contraseña actual no coincide." }); if (string.IsNullOrWhiteSpace(request.NewPassword)) return BadRequest(new { message = "La nueva contraseña es obligatoria." }); user.PasswordHash = Hasher.HashPassword(user, request.NewPassword); await db.SaveChangesAsync(ct); return Ok(); }
     [HttpGet("billing/transactions")]
-    public async Task<ActionResult> Transactions(CancellationToken ct) { if (!TryGetClientId(out var clientId)) return Ok(Array.Empty<object>()); return Ok(await (from transaction in db.PaymentTransactions join clientProduct in db.ClientProducts.Include(x => x.Product) on transaction.ClientProductId equals clientProduct.Id where clientProduct.ClientId == clientId orderby transaction.CreatedAt descending select new { id = transaction.Id, createdAt = transaction.CreatedAt, product = clientProduct.Product!.Name, amount = transaction.Amount, currency = transaction.Currency, status = transaction.Status }).ToListAsync(ct)); }
+    public async Task<ActionResult> Transactions(Guid? clientId, CancellationToken ct)
+    {
+        // Cliente/Admin: siempre sus propios pagos. SuperAdmin: los del cliente seleccionado o, sin selección, los de todos.
+        Guid? scope;
+        if (User.IsInRole(nameof(UserRole.SuperAdmin))) scope = clientId;
+        else if (TryGetClientId(out var own)) scope = own;
+        else return Ok(Array.Empty<object>());
+        return Ok(await (from transaction in db.PaymentTransactions
+                         join clientProduct in db.ClientProducts on transaction.ClientProductId equals clientProduct.Id
+                         join product in db.Products on clientProduct.ProductId equals product.Id
+                         join client in db.Clients on clientProduct.ClientId equals client.Id
+                         where scope == null || clientProduct.ClientId == scope
+                         orderby transaction.CreatedAt descending
+                         select new { id = transaction.Id, createdAt = transaction.CreatedAt, product = product.Name, clientName = client.CompanyName, amount = transaction.Amount, currency = transaction.Currency, status = transaction.Status, internalCode = transaction.InternalCode }).ToListAsync(ct));
+    }
     [HttpGet("team/users"), Authorize(Roles = "Admin")]
     public async Task<ActionResult> Team(CancellationToken ct) { if (!TryGetClientId(out var clientId)) return Forbid(); return Ok(await db.UserAccounts.Where(x => x.ClientId == clientId).OrderBy(x => x.Name).Select(x => new { id = x.Id, name = x.Name, email = x.Email, role = x.Role.ToString(), isActive = x.IsActive }).ToListAsync(ct)); }
     [HttpPost("team/users"), Authorize(Roles = "Admin")]
