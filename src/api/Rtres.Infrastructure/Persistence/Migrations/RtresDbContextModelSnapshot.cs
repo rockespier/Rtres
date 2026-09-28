@@ -316,6 +316,13 @@ namespace Rtres.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("PayPalPlanId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("PayPalPlanPrice")
+                        .HasPrecision(12, 2)
+                        .HasColumnType("decimal(12,2)");
+
                     b.Property<int>("Type")
                         .HasColumnType("int");
 

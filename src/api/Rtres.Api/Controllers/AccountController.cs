@@ -246,7 +246,7 @@ public sealed class AdminController(RtresDbContext db, PayPalCheckoutService che
         {
             try
             {
-                var checkout = await checkoutService.StartAsync(item, product, ct);
+                var checkout = await checkoutService.StartAsync(item, product, Request, ct);
                 await db.SaveChangesAsync(ct);
                 return Created($"/api/admin/client-products/{item.Id}", new { clientProduct = ClientProductDto(item), approvalUrl = checkout.ApprovalUrl });
             }
