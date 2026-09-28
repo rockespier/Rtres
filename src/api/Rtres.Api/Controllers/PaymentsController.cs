@@ -32,7 +32,7 @@ public sealed class PaymentsController(RtresDbContext db, IPayPalClient payPal, 
         if (request.BillingCycle != product.BillingCycle) return BadRequest(new { message = "El ciclo debe coincidir con el producto seleccionado." });
         var item = new ClientProduct { ClientId = clientId, ProjectId = request.ProjectId, ProductId = product.Id, Product = product, BillingCycle = request.BillingCycle, Status = ClientProductStatus.Pendiente, Price = product.BasePrice };
         db.ClientProducts.Add(item);
-        try { var checkout = await checkoutService.StartAsync(item, product, ct); await db.SaveChangesAsync(ct); return Ok(new { clientProductId = item.Id, approvalUrl = checkout.ApprovalUrl }); } catch (InvalidOperationException ex) { return BadRequest(new { message = ex.Message }); }
+        try { var checkout = await checkoutService.StartAsync(item, product, Request, ct); await db.SaveChangesAsync(ct); return Ok(new { clientProductId = item.Id, approvalUrl = checkout.ApprovalUrl }); } catch (InvalidOperationException ex) { return BadRequest(new { message = ex.Message }); }
     }
 
     [Authorize(Roles = "Cliente,Admin"), HttpPost("client-products/{id:guid}/renew")]
@@ -41,8 +41,10 @@ public sealed class PaymentsController(RtresDbContext db, IPayPalClient payPal, 
         var scope = ClientScope(clientId, out var owner); if (scope is not null) return scope;
         var item = await db.ClientProducts.Include(x => x.Product).SingleOrDefaultAsync(x => x.Id == id && x.ClientId == owner, ct);
         if (item?.Product is null) return NotFound();
-        if (item.IsManualBilling || item.BillingCycle is not (BillingCycle.Anual or BillingCycle.Unico) || item.Status is not (ClientProductStatus.PorVencer or ClientProductStatus.Vencido)) return BadRequest(new { message = "Este producto no se puede renovar en línea." });
-        try { var checkout = await checkoutService.StartAsync(item, item.Product, ct); await db.SaveChangesAsync(ct); return Ok(new { approvalUrl = checkout.ApprovalUrl }); } catch (InvalidOperationException ex) { return BadRequest(new { message = ex.Message }); }
+        // Renovar (Anual/Único por vencer o vencido) o reintentar un pago que quedó a medias (Pendiente, cualquier ciclo).
+        var renewable = item.BillingCycle is BillingCycle.Anual or BillingCycle.Unico && item.Status is ClientProductStatus.PorVencer or ClientProductStatus.Vencido;
+        if (item.IsManualBilling || !(renewable || item.Status == ClientProductStatus.Pendiente)) return BadRequest(new { message = "Este producto no se puede renovar en línea." });
+        try { var checkout = await checkoutService.StartAsync(item, item.Product, Request, ct); await db.SaveChangesAsync(ct); return Ok(new { approvalUrl = checkout.ApprovalUrl }); } catch (InvalidOperationException ex) { return BadRequest(new { message = ex.Message }); }
     }
 
     [Authorize(Roles = "Cliente,Admin"), HttpPost("client-products/{id:guid}/cancel")]
@@ -62,7 +64,7 @@ public sealed class PaymentsController(RtresDbContext db, IPayPalClient payPal, 
         var scope = ClientScope(clientId, out var owner); if (scope is not null) return scope;
         var item = await db.ClientProducts.Include(x => x.Product).SingleOrDefaultAsync(x => x.Id == id && x.ClientId == owner, ct);
         if (item is null) return NotFound();
-        try { await payments.CaptureAsync(item, ct); }
+        try { await payments.ConfirmAsync(item, ct); }
         catch (HttpRequestException ex) { logger.LogWarning(ex, "Captura de {ClientProductId} fallida; queda a la espera del webhook", id); }
         return Ok(new { status = item.Status.ToString() });
     }
@@ -80,9 +82,11 @@ public sealed class PaymentsController(RtresDbContext db, IPayPalClient payPal, 
         using var reader = new StreamReader(Request.Body); var payload = await reader.ReadToEndAsync(ct); var headers = Request.Headers.ToDictionary(x => x.Key.ToLowerInvariant(), x => x.Value.ToString());
         if (!await payPal.VerifyWebhookAsync(payload, headers, ct)) return Unauthorized();
         using var json = JsonDocument.Parse(payload); var root = json.RootElement; var eventType = Find(root, "event_type"); if (!root.TryGetProperty("resource", out var resource)) return Ok();
-        var resourceId = Find(resource, "id"); var orderId = Nested(resource, "supplementary_data", "related_ids", "order_id") ?? resourceId; var customId = Find(resource, "custom_id") ?? Find(root, "custom_id") ?? PurchaseUnit(resource, "custom_id");
+        var resourceId = Find(resource, "id"); var orderId = Nested(resource, "supplementary_data", "related_ids", "order_id") ?? resourceId; var customId = Find(resource, "custom_id") ?? Find(resource, "custom") ?? Find(root, "custom_id") ?? PurchaseUnit(resource, "custom_id");
+        // En los cobros de una suscripción, el recurso es la venta y la suscripción viene en billing_agreement_id.
+        var subscriptionId = Find(resource, "billing_agreement_id") ?? resourceId;
         ClientProduct? item = Guid.TryParse(customId, out var customGuid) ? await db.ClientProducts.Include(x => x.Product).SingleOrDefaultAsync(x => x.Id == customGuid, ct) : null;
-        item ??= !string.IsNullOrWhiteSpace(orderId) ? await db.ClientProducts.Include(x => x.Product).SingleOrDefaultAsync(x => x.PayPalSubscriptionId == resourceId || x.PayPalOrderId == orderId, ct) : null;
+        item ??= !string.IsNullOrWhiteSpace(orderId) ? await db.ClientProducts.Include(x => x.Product).SingleOrDefaultAsync(x => x.PayPalSubscriptionId == subscriptionId || x.PayPalOrderId == orderId, ct) : null;
         if (item is null) return Ok();
         if (eventType is "BILLING.SUBSCRIPTION.ACTIVATED" or "BILLING.SUBSCRIPTION.CANCELLED") { item.Status = eventType.EndsWith("ACTIVATED") ? ClientProductStatus.Activo : ClientProductStatus.Cancelado; item.PayPalSubscriptionId ??= resourceId; }
         // Aprobar no es cobrar: con la orden aprobada se captura aquí (idempotente con la captura de la pantalla de retorno).
@@ -103,7 +107,8 @@ public sealed class PaymentsController(RtresDbContext db, IPayPalClient payPal, 
     private static string? PurchaseUnit(JsonElement resource, string property) => resource.TryGetProperty("purchase_units", out var units) && units.ValueKind == JsonValueKind.Array && units.GetArrayLength() > 0 ? Find(units[0], property) : null;
     private static (decimal? amount, string? currency) Amount(JsonElement resource)
     {
-        foreach (var name in new[] { "amount", "gross_amount" }) if (resource.TryGetProperty(name, out var value) && value.TryGetProperty("value", out var amount) && decimal.TryParse(amount.GetString(), System.Globalization.NumberStyles.Number, System.Globalization.CultureInfo.InvariantCulture, out var parsed)) return (parsed, Find(value, "currency_code") ?? Find(value, "currency"));
+        // Órdenes/capturas: amount.value + currency_code. Ventas de suscripción (PAYMENT.SALE.*): amount.total + currency.
+        foreach (var name in new[] { "amount", "gross_amount" }) if (resource.TryGetProperty(name, out var value) && (value.TryGetProperty("value", out var amount) || value.TryGetProperty("total", out amount)) && decimal.TryParse(amount.GetString(), System.Globalization.NumberStyles.Number, System.Globalization.CultureInfo.InvariantCulture, out var parsed)) return (parsed, Find(value, "currency_code") ?? Find(value, "currency"));
         if (resource.TryGetProperty("purchase_units", out var units) && units.ValueKind == JsonValueKind.Array && units.GetArrayLength() > 0) return Amount(units[0]);
         return (null, null);
     }
