@@ -162,6 +162,52 @@ public sealed class PayPalClient(HttpClient httpClient, IConfiguration configura
         return new PayPalCapture(orderId, status, null, null);
     }
 
+    public async Task<string> CreateMonthlyPlanAsync(string name, decimal price, string currency, CancellationToken cancellationToken = default)
+    {
+        using var productResponse = await SendAsync(new HttpRequestMessage(HttpMethod.Post, "v1/catalogs/products") { Content = JsonContent(new { name, type = "SERVICE" }) }, cancellationToken);
+        using var product = JsonDocument.Parse(await productResponse.Content.ReadAsStringAsync(cancellationToken));
+        var plan = new
+        {
+            product_id = product.RootElement.GetProperty("id").GetString(),
+            name = $"{name} — mensual",
+            billing_cycles = new[] { new { frequency = new { interval_unit = "MONTH", interval_count = 1 }, tenure_type = "REGULAR", sequence = 1, total_cycles = 0, pricing_scheme = new { fixed_price = new { value = price.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture), currency_code = currency } } } },
+            payment_preferences = new { auto_bill_outstanding = true, payment_failure_threshold = 3 },
+        };
+        using var planResponse = await SendAsync(new HttpRequestMessage(HttpMethod.Post, "v1/billing/plans") { Content = JsonContent(plan) }, cancellationToken);
+        using var created = JsonDocument.Parse(await planResponse.Content.ReadAsStringAsync(cancellationToken));
+        return created.RootElement.GetProperty("id").GetString()!;
+    }
+
+    public async Task<PayPalSubscriptionInfo> GetSubscriptionAsync(string subscriptionId, CancellationToken cancellationToken = default)
+    {
+        var path = $"v1/billing/subscriptions/{Uri.EscapeDataString(subscriptionId)}";
+        using var response = await SendAsync(new HttpRequestMessage(HttpMethod.Get, path), cancellationToken);
+        var subscriptionJson = await response.Content.ReadAsStringAsync(cancellationToken);
+        var now = DateTime.UtcNow;
+        var range = $"start_time={now.AddDays(-40):yyyy-MM-ddTHH:mm:ssZ}&end_time={now.AddMinutes(5):yyyy-MM-ddTHH:mm:ssZ}";
+        using var transactions = await SendAsync(new HttpRequestMessage(HttpMethod.Get, $"{path}/transactions?{range}"), cancellationToken);
+        return ParseSubscription(subscriptionJson, await transactions.Content.ReadAsStringAsync(cancellationToken));
+    }
+
+    public static PayPalSubscriptionInfo ParseSubscription(string subscriptionJson, string transactionsJson)
+    {
+        using var subscription = JsonDocument.Parse(subscriptionJson);
+        var root = subscription.RootElement;
+        DateTime? next = root.TryGetProperty("billing_info", out var billing) && billing.TryGetProperty("next_billing_time", out var time)
+            && DateTime.TryParse(time.GetString(), System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AdjustToUniversal, out var parsed) ? parsed : null;
+        var payments = new List<PayPalSubscriptionPayment>();
+        using var transactions = JsonDocument.Parse(transactionsJson);
+        if (transactions.RootElement.TryGetProperty("transactions", out var list) && list.ValueKind == JsonValueKind.Array)
+            foreach (var tx in list.EnumerateArray())
+            {
+                if (tx.TryGetProperty("status", out var status) && status.GetString() != "COMPLETED") continue;
+                if (!tx.TryGetProperty("amount_with_breakdown", out var breakdown) || !breakdown.TryGetProperty("gross_amount", out var gross)) continue;
+                if (!decimal.TryParse(gross.GetProperty("value").GetString(), System.Globalization.NumberStyles.Number, System.Globalization.CultureInfo.InvariantCulture, out var amount)) continue;
+                payments.Add(new PayPalSubscriptionPayment(tx.GetProperty("id").GetString()!, amount, gross.GetProperty("currency_code").GetString() ?? "USD"));
+            }
+        return new PayPalSubscriptionInfo(root.GetProperty("id").GetString()!, root.GetProperty("status").GetString() ?? "", next, payments);
+    }
+
     public async Task CancelSubscriptionAsync(string subscriptionId, string reason, CancellationToken cancellationToken = default)
     {
         await SendAsync(new HttpRequestMessage(HttpMethod.Post, $"v1/billing/subscriptions/{Uri.EscapeDataString(subscriptionId)}/cancel") { Content = JsonContent(new { reason }) }, cancellationToken);

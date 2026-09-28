@@ -529,6 +529,14 @@ Todos bajo `/api`, JWT Bearer, scopeados al `client_id` del JWT (o `?clientId=` 
 - Vigencia según el ciclo: `Anual` suma 1 año desde el vencimiento actual si aún no pasó (desde hoy si ya venció); `Mensual` fija `NextChargeAt` a un mes; `Unico` no tiene vencimiento (antes recibía `RenewsAt` +1 año y, con la Fase 6, avisos de renovación).
 - **Pendiente**: probar un pago completo en el sandbox con una cuenta de comprador de prueba (no verificado contra PayPal real en esta corrección).
 
+**Corrección 2026-09-28 (2) — suscripciones mensuales y pagos a medias (reportado por el usuario)**:
+- **Retorno de PayPal a producción en local**: la `return_url` salía siempre de `Frontend:PortalUrl`. Ahora PayPal vuelve al origen del portal que inició el pago (`Origin` de la petición, solo si es uno de los orígenes permitidos por CORS; si no, `Frontend:PortalUrl`).
+- **Pagos que quedaron a medias** (`Pendiente`): la tarjeta muestra "Completar pago" → primero intenta confirmar el pago ya aprobado (`POST /client-products/{id}/capture`); si no, inicia un pago nuevo (`/renew` ahora acepta productos `Pendiente` de cualquier ciclo). Se quitaron los botones decorativos ("Renovar ahora"/"Gestionar") que no hacían nada.
+- **Suscripciones mensuales**: fallaban siempre con "no tiene PayPalPlanId" (nada creaba el plan). Ahora `PayPalCheckoutService` crea en PayPal el producto de catálogo + plan mensual de precio fijo al primer uso y lo guarda en `Product.PayPalPlanId`/`PayPalPlanPrice` (migración `ProductPayPalPlan`); se recrea si cambia el precio base, y un precio especial de un cliente usa un plan propio. Precio 0 → error claro (asignar en modo Manual).
+- **Confirmación de suscripciones sin webhook**: `POST /client-products/{id}/capture` en una suscripción consulta su estado y cobros en PayPal (`GET v1/billing/subscriptions/{id}` + `/transactions`); si está `ACTIVE`, la activa, aplica los cobros (con el id de la venta, sin duplicar con el webhook) y toma `NextChargeAt` de PayPal.
+- **Cobros recurrentes por webhook**: `PAYMENT.SALE.COMPLETED` no encontraba el producto (buscaba la suscripción por el id de la venta, ahora usa `billing_agreement_id`) ni leía el importe (las ventas traen `amount.total`, no `amount.value`) — ningún cobro mensual se habría registrado.
+- **Pendiente**: probar contra el sandbox real una suscripción mensual completa (plan, aprobación, activación, primer cobro).
+
 ## Fase 5 — detalle (tickets: tipos, comentarios, GitHub)
 
 ### Contexto y alcance
