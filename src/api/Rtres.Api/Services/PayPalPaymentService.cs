@@ -26,6 +26,12 @@ public sealed class PayPalPaymentService(RtresDbContext db, IPayPalClient payPal
     public async Task SyncSubscriptionAsync(ClientProduct item, CancellationToken ct)
     {
         var subscription = await payPal.GetSubscriptionAsync(item.PayPalSubscriptionId!, ct);
+        if (subscription.Status is "CANCELLED" or "EXPIRED" && item.Status != ClientProductStatus.Cancelado)
+        {
+            item.Status = ClientProductStatus.Cancelado;
+            await db.SaveChangesAsync(ct);
+            return;
+        }
         if (subscription.Status != "ACTIVE")
         {
             logger.LogInformation("Suscripción {SubscriptionId} en estado {Status}; el producto {ClientProductId} no cambia", subscription.Id, subscription.Status, item.Id);
