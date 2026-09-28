@@ -12,6 +12,31 @@ namespace Rtres.Api.Services;
 /// </summary>
 public sealed class PayPalPaymentService(RtresDbContext db, IPayPalClient payPal, INotificationSender notifications, ILogger<PayPalPaymentService> logger)
 {
+    /// <summary>
+    /// Confirma el pago de un producto sin esperar al webhook (lo llama la pantalla de retorno de PayPal):
+    /// suscripción → consulta su estado y sus cobros; orden → la captura.
+    /// </summary>
+    public Task ConfirmAsync(ClientProduct item, CancellationToken ct) =>
+        item.BillingCycle == BillingCycle.Mensual && !string.IsNullOrWhiteSpace(item.PayPalSubscriptionId) ? SyncSubscriptionAsync(item, ct) : CaptureAsync(item, ct);
+
+    /// <summary>
+    /// Sincroniza una suscripción: si está activa, aplica sus cobros completados (con el id de la venta, el mismo
+    /// que trae el webhook PAYMENT.SALE.COMPLETED, así que no se duplican) y toma el próximo cobro de PayPal.
+    /// </summary>
+    public async Task SyncSubscriptionAsync(ClientProduct item, CancellationToken ct)
+    {
+        var subscription = await payPal.GetSubscriptionAsync(item.PayPalSubscriptionId!, ct);
+        if (subscription.Status != "ACTIVE")
+        {
+            logger.LogInformation("Suscripción {SubscriptionId} en estado {Status}; el producto {ClientProductId} no cambia", subscription.Id, subscription.Status, item.Id);
+            return;
+        }
+        foreach (var payment in subscription.Payments) await ApplyPaymentAsync(item, payment.Id, payment.Amount, payment.Currency, ct);
+        item.Status = ClientProductStatus.Activo;
+        if (subscription.NextBillingTime is DateTime next) item.NextChargeAt = next;
+        await db.SaveChangesAsync(ct);
+    }
+
     /// <summary>Captura la orden pendiente del producto (idempotente) y aplica el pago si el cobro quedó completado.</summary>
     public async Task CaptureAsync(ClientProduct item, CancellationToken ct)
     {

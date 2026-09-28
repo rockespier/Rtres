@@ -23,7 +23,7 @@ builder.Services.AddScoped<INotificationSender, QueuedNotificationSender>();
 builder.Services.AddScoped<PayPalCheckoutService>();
 builder.Services.AddScoped<PayPalPaymentService>();
 builder.Services.AddCors(options => options.AddDefaultPolicy(policy => policy
-    .WithOrigins(builder.Configuration["Frontend:PublicUrl"] ?? "https://rtres.net", builder.Configuration["Frontend:PortalUrl"] ?? "https://portal.rtres.net", "http://localhost:4200", "http://localhost:4201")
+    .WithOrigins(PayPalCheckoutService.AllowedOrigins(builder.Configuration))
     .AllowAnyHeader().AllowAnyMethod()));
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options => options.TokenValidationParameters = new TokenValidationParameters
 {
