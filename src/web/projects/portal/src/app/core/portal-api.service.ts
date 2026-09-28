@@ -73,7 +73,7 @@ export interface TeamUserDto { id:string; name:string; email:string; role:'Clien
 export interface AdminClientDto { id:string; companyName:string; isActive:boolean; activeProducts:number; openTickets:number; }
 export interface PaymentTransactionDto { id:string; createdAt:string; product:string; clientName:string; amount:number; currency:string; status:string; internalCode:string|null; }
 export interface AdminClientDetailDto { id:string; companyName:string; contactName:string; email:string; phone:string|null; preferredLanguage:string; isActive:boolean; }
-export interface AdminClientProductDto { id:string; clientId:string; projectId:string; projectName:string|null; productId:string; productName:string|null; productType:string|null; billingCycle:string; isManualBilling:boolean; status:string; price:number|null; domainName:string|null; priceLabelOverride:string|null; }
+export interface AdminClientProductDto { id:string; clientId:string; projectId:string; projectName:string|null; productId:string; productName:string|null; productType:string|null; billingCycle:string; isManualBilling:boolean; status:string; price:number|null; domainName:string|null; priceLabelOverride:string|null; renewsAt:string|null; nextChargeAt:string|null; }
 
 export interface TaxSettingsDto { igvRate:number; rentaRate:number; }
 export interface ExchangeRateDto { date:string; currencyCode:string; rateToPen:number; source:string; }
@@ -140,6 +140,8 @@ export class PortalApiService {
   adminProductTemplate() { return this.http.get(`${this.base}/admin/products/import/template`,{responseType:'blob'}); }
   assignClientProduct(clientId:string,body:unknown) { return this.http.post<{clientProduct:AdminClientProductDto;approvalUrl:string|null}>(`${this.base}/admin/clients/${clientId}/products`,body); }
   updateAdminClientProduct(id:string,body:unknown) { return this.http.patch<AdminClientProductDto>(`${this.base}/admin/client-products/${id}`,body); }
+  /** Fechas en formato yyyy-MM-dd; null borra la fecha. */
+  setClientProductDates(id:string,body:{renewsAt:string|null;nextChargeAt:string|null}) { return this.http.put<AdminClientProductDto>(`${this.base}/admin/client-products/${id}/dates`,body); }
 
   getTaxSettings() { return this.http.get<TaxSettingsDto>(`${this.base}/admin/tax-settings`); }
   updateTaxSettings(body:Partial<TaxSettingsDto>) { return this.http.patch<TaxSettingsDto>(`${this.base}/admin/tax-settings`,body); }
