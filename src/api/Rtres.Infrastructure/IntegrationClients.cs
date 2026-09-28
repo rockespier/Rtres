@@ -120,6 +120,48 @@ public sealed class PayPalClient(HttpClient httpClient, IConfiguration configura
         return await CreateAsync("v1/billing/subscriptions", body, cancellationToken);
     }
 
+    /// <summary>
+    /// Captura (cobra) una orden que el cliente ya aprobó en PayPal. Es idempotente: se envía con
+    /// <c>PayPal-Request-Id</c> fijo por orden, y si la orden ya estaba capturada se lee su captura existente.
+    /// </summary>
+    public async Task<PayPalCapture> CaptureOrderAsync(string orderId, CancellationToken cancellationToken = default)
+    {
+        var path = $"v2/checkout/orders/{Uri.EscapeDataString(orderId)}";
+        using var request = new HttpRequestMessage(HttpMethod.Post, $"{path}/capture") { Content = new StringContent("{}", Encoding.UTF8, "application/json") };
+        request.Headers.Add("PayPal-Request-Id", $"capture-{orderId}");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await AccessTokenAsync(cancellationToken));
+        using var response = await httpClient.SendAsync(request, cancellationToken);
+        var body = await response.Content.ReadAsStringAsync(cancellationToken);
+        if ((int)response.StatusCode == 422 && body.Contains("ORDER_ALREADY_CAPTURED", StringComparison.Ordinal))
+        {
+            using var existing = await SendAsync(new HttpRequestMessage(HttpMethod.Get, path), cancellationToken);
+            body = await existing.Content.ReadAsStringAsync(cancellationToken);
+        }
+        else if (!response.IsSuccessStatusCode) throw new HttpRequestException($"PayPal no pudo capturar la orden {orderId}: {(int)response.StatusCode} {body}");
+        return ParseCapture(orderId, body);
+    }
+
+    public static PayPalCapture ParseCapture(string orderId, string json)
+    {
+        using var document = JsonDocument.Parse(json);
+        var root = document.RootElement;
+        var status = root.TryGetProperty("status", out var orderStatus) ? orderStatus.GetString() ?? "" : "";
+        if (root.TryGetProperty("purchase_units", out var units) && units.ValueKind == JsonValueKind.Array && units.GetArrayLength() > 0
+            && units[0].TryGetProperty("payments", out var payments) && payments.TryGetProperty("captures", out var captures)
+            && captures.ValueKind == JsonValueKind.Array && captures.GetArrayLength() > 0)
+        {
+            var capture = captures[0];
+            decimal? amount = null; string? currency = null;
+            if (capture.TryGetProperty("amount", out var value))
+            {
+                if (decimal.TryParse(value.GetProperty("value").GetString(), System.Globalization.NumberStyles.Number, System.Globalization.CultureInfo.InvariantCulture, out var parsed)) amount = parsed;
+                currency = value.TryGetProperty("currency_code", out var code) ? code.GetString() : null;
+            }
+            return new PayPalCapture(orderId, capture.TryGetProperty("status", out var captureStatus) ? captureStatus.GetString() ?? status : status, amount, currency);
+        }
+        return new PayPalCapture(orderId, status, null, null);
+    }
+
     public async Task CancelSubscriptionAsync(string subscriptionId, string reason, CancellationToken cancellationToken = default)
     {
         await SendAsync(new HttpRequestMessage(HttpMethod.Post, $"v1/billing/subscriptions/{Uri.EscapeDataString(subscriptionId)}/cancel") { Content = JsonContent(new { reason }) }, cancellationToken);

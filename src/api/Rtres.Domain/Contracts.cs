@@ -4,6 +4,8 @@ public record WordPressPage(string Locale, string Slug, string Title, string Htm
 public record WordPressProject(string Name, string Category, string? PhotoUrl);
 public record WordPressReview(string Author, string Quote);
 public record PayPalCheckout(string Id, string ApprovalUrl);
+/// <summary>Resultado de capturar una orden aprobada. <c>Status</c> es el de la captura: COMPLETED, PENDING, DECLINED…</summary>
+public record PayPalCapture(string OrderId, string Status, decimal? Amount, string? Currency);
 public record GitHubIssue(int Number, string Url);
 public record ExchangeRateQuote(DateOnly Date, decimal RateToPen, string Source);
 
@@ -19,6 +21,7 @@ public interface IPayPalClient
 {
     Task<PayPalCheckout> CreateOrderAsync(decimal amount, string currency, string customId, string returnUrl, string cancelUrl, CancellationToken cancellationToken = default);
     Task<PayPalCheckout> CreateSubscriptionAsync(string planId, string customId, string returnUrl, string cancelUrl, CancellationToken cancellationToken = default);
+    Task<PayPalCapture> CaptureOrderAsync(string orderId, CancellationToken cancellationToken = default);
     Task CancelSubscriptionAsync(string subscriptionId, string reason, CancellationToken cancellationToken = default);
     Task<bool> VerifyWebhookAsync(string payload, IReadOnlyDictionary<string, string> headers, CancellationToken cancellationToken = default);
 }

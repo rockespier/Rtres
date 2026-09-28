@@ -11,7 +11,7 @@ using Rtres.Infrastructure.Persistence;
 namespace Rtres.Api.Controllers;
 
 [ApiController, Route("api")]
-public sealed class PaymentsController(RtresDbContext db, IPayPalClient payPal, PayPalCheckoutService checkoutService, INotificationSender notifications) : ControllerBase
+public sealed class PaymentsController(RtresDbContext db, IPayPalClient payPal, PayPalCheckoutService checkoutService, PayPalPaymentService payments, INotificationSender notifications, ILogger<PaymentsController> logger) : ControllerBase
 {
     private IActionResult? ClientScope(Guid? requested, out Guid clientId)
     {
@@ -55,6 +55,18 @@ public sealed class PaymentsController(RtresDbContext db, IPayPalClient payPal, 
         await payPal.CancelSubscriptionAsync(item.PayPalSubscriptionId, "Cancelada por el cliente desde el portal Rtres.", ct); item.Status = ClientProductStatus.Cancelado; await db.SaveChangesAsync(ct); return Ok();
     }
 
+    /// <summary>La llama la pantalla de retorno de PayPal: captura el cobro sin esperar al webhook (idempotente con él).</summary>
+    [Authorize(Roles = "Cliente,Admin"), HttpPost("client-products/{id:guid}/capture")]
+    public async Task<IActionResult> Capture(Guid id, Guid? clientId, CancellationToken ct)
+    {
+        var scope = ClientScope(clientId, out var owner); if (scope is not null) return scope;
+        var item = await db.ClientProducts.Include(x => x.Product).SingleOrDefaultAsync(x => x.Id == id && x.ClientId == owner, ct);
+        if (item is null) return NotFound();
+        try { await payments.CaptureAsync(item, ct); }
+        catch (HttpRequestException ex) { logger.LogWarning(ex, "Captura de {ClientProductId} fallida; queda a la espera del webhook", id); }
+        return Ok(new { status = item.Status.ToString() });
+    }
+
     [Authorize(Roles = "Cliente,Admin"), HttpGet("client-products/{id:guid}")]
     public async Task<IActionResult> ClientProduct(Guid id, Guid? clientId, CancellationToken ct)
     {
@@ -73,24 +85,16 @@ public sealed class PaymentsController(RtresDbContext db, IPayPalClient payPal, 
         item ??= !string.IsNullOrWhiteSpace(orderId) ? await db.ClientProducts.Include(x => x.Product).SingleOrDefaultAsync(x => x.PayPalSubscriptionId == resourceId || x.PayPalOrderId == orderId, ct) : null;
         if (item is null) return Ok();
         if (eventType is "BILLING.SUBSCRIPTION.ACTIVATED" or "BILLING.SUBSCRIPTION.CANCELLED") { item.Status = eventType.EndsWith("ACTIVATED") ? ClientProductStatus.Activo : ClientProductStatus.Cancelado; item.PayPalSubscriptionId ??= resourceId; }
-        if (eventType is "PAYMENT.CAPTURE.COMPLETED" or "CHECKOUT.ORDER.APPROVED") { item.PayPalOrderId ??= orderId; item.Status = ClientProductStatus.Activo; item.RenewsAt = (item.RenewsAt ?? DateTime.UtcNow).AddYears(1); }
-        Notification? notification = null;
-        if (eventType is "PAYMENT.SALE.COMPLETED" or "PAYMENT.CAPTURE.COMPLETED")
-        {
-            var (amount, currency) = Amount(resource); var transactionId = orderId ?? item.PayPalSubscriptionId ?? item.PayPalOrderId ?? item.Id.ToString();
-            if (amount is decimal value && !await db.PaymentTransactions.AnyAsync(x => x.PayPalOrderIdOrSubscriptionId == transactionId, ct))
-            {
-                var transaction = new PaymentTransaction { ClientProductId = item.Id, PayPalOrderIdOrSubscriptionId = transactionId, Amount = value, Currency = currency ?? item.Product?.Currency ?? "USD", Status = "COMPLETED" };
-                transaction.InternalCode = $"RT-INT-{1 + await db.PaymentTransactions.CountAsync(ct):000000}";
-                transaction.AmountPen = value * await db.RateToPenAsync(transaction.Currency, DateOnly.FromDateTime(transaction.CreatedAt), ct);
-                db.PaymentTransactions.Add(transaction);
-                notification = new Notification(NotificationType.PaymentReceived, new() { ["product"] = item.Product?.Name ?? "", ["amount"] = value.ToString(CultureInfo.InvariantCulture), ["currency"] = transaction.Currency }, $"payment:{transactionId}");
-            }
-        }
+        // Aprobar no es cobrar: con la orden aprobada se captura aquí (idempotente con la captura de la pantalla de retorno).
+        if (eventType is "CHECKOUT.ORDER.APPROVED") { item.PayPalOrderId ??= orderId; await db.SaveChangesAsync(ct); await payments.CaptureAsync(item, ct); }
+        // Cobro confirmado: el pago se aplica una sola vez por orden (o por venta, en suscripciones).
+        if (eventType is "PAYMENT.CAPTURE.COMPLETED" or "PAYMENT.SALE.COMPLETED" && Amount(resource) is (decimal amount, var currency) && orderId is not null)
+            await payments.ApplyPaymentAsync(item, orderId, amount, currency, ct);
+        Notification? failure = null;
         if (eventType is "PAYMENT.CAPTURE.DENIED" or "PAYMENT.SALE.DENIED" or "BILLING.SUBSCRIPTION.PAYMENT.FAILED")
-            notification = new Notification(NotificationType.PaymentFailed, new() { ["product"] = item.Product?.Name ?? "" }, $"payment-failed:{Find(root, "id") ?? resourceId}");
+            failure = new Notification(NotificationType.PaymentFailed, new() { ["product"] = item.Product?.Name ?? "" }, $"payment-failed:{Find(root, "id") ?? resourceId}");
         await db.SaveChangesAsync(ct);
-        if (notification is not null && await db.Clients.FindAsync([item.ClientId], ct) is Client client) await notifications.SendAsync(client, notification, ct);
+        if (failure is not null && await db.Clients.FindAsync([item.ClientId], ct) is Client client) await notifications.SendAsync(client, failure, ct);
         return Ok();
     }
 
