@@ -1,6 +1,7 @@
 import { Component, Input, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ClientProductApiDto, PortalApiService } from '../../core/portal-api.service';
+import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 
 const RENEWAL_WINDOW_DAYS = 30;
 
@@ -34,7 +35,7 @@ const STATUS_PILL_CLASS: Record<string, string> = {
 @Component({
   selector: 'app-product-card',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ConfirmDialogComponent],
   template: `<article class="card p-6">
     <p class="text-muted text-sm">{{ typeLabel() }}</p>
     <h3 class="font-display text-lg font-semibold mt-2">{{ displayName() }}</h3>
@@ -42,8 +43,9 @@ const STATUS_PILL_CLASS: Record<string, string> = {
     <p class="mt-4 font-display text-lg font-semibold">{{ priceLabel() }}</p>
     <p *ngIf="dateLabel()" class="mt-1 text-sm text-muted">{{ dateLabel() }}</p>
     <p *ngIf="error" class="text-sm text-red-600 mt-3">{{ error }}</p>
-    <div *ngIf="canPay() || canRenew() || canCancel()" class="flex gap-2 mt-5"><button *ngIf="canPay()" class="btn btn-primary btn-sm" [disabled]="busy" (click)="completePayment()">{{ busy ? 'Verificando…' : 'Completar pago' }}</button><button *ngIf="canRenew()" class="btn btn-primary btn-sm" (click)="renew()">Pagar renovación</button><button *ngIf="canCancel()" class="btn btn-ghost btn-sm" (click)="cancel()">Cancelar suscripción</button></div>
-  </article>`,
+    <div *ngIf="canPay() || canRenew() || canCancel()" class="flex gap-2 mt-5"><button *ngIf="canPay()" class="btn btn-primary btn-sm" [disabled]="busy" (click)="completePayment()">{{ busy ? 'Verificando…' : 'Completar pago' }}</button><button *ngIf="canRenew()" class="btn btn-primary btn-sm" (click)="renew()">Pagar renovación</button><button *ngIf="canCancel()" class="btn btn-ghost btn-sm" (click)="confirmingCancel=true;cancelError=''">Cancelar suscripción</button></div>
+  </article>
+  <app-confirm-dialog *ngIf="confirmingCancel" title="Cancelar suscripción" [message]="'Se cancelará la suscripción de ' + displayName() + ' en PayPal y no habrá más cobros. Esta acción no se puede deshacer.'" confirmLabel="Sí, cancelar suscripción" busyLabel="Cancelando…" [danger]="true" [busy]="cancelling" [error]="cancelError" (confirmed)="cancel()" (cancelled)="confirmingCancel=false"/>`,
 })
 export class ProductCardComponent {
   private api = inject(PortalApiService);
@@ -75,7 +77,10 @@ export class ProductCardComponent {
   renew(){this.api.renewProduct(this.product.id).subscribe({next:r=>location.assign(r.approvalUrl),error:e=>this.error=e?.error?.message??'No se pudo iniciar el pago.'});}
   /** Pago que quedó a medias: primero intenta confirmarlo (ya aprobado en PayPal); si no, inicia un pago nuevo. */
   completePayment(){this.busy=true;this.error='';this.api.captureClientProduct(this.product.id).subscribe({next:r=>{if(r.status==='Activo'){location.reload();return;}this.renew();},error:()=>this.renew()});}
-  cancel(){if(confirm('¿Cancelar esta suscripción?'))this.api.cancelProduct(this.product.id).subscribe(()=>location.reload());}
+  confirmingCancel = false;
+  cancelling = false;
+  cancelError = '';
+  cancel(){this.cancelling=true;this.cancelError='';this.api.cancelProduct(this.product.id).subscribe({next:()=>location.reload(),error:e=>{this.cancelling=false;this.cancelError=e?.error?.message??'No se pudo cancelar la suscripción.';}});}
   dateLabel = computed(() => {
     const p = this.product;
     if (p.renewsAt) return `Renueva el ${this.formatDate(p.renewsAt)}`;
