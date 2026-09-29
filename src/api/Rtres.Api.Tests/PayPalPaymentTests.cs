@@ -17,6 +17,17 @@ namespace Rtres.Api.Tests;
 public class PayPalPaymentTests
 {
     [Fact]
+    public async Task Captured_prepaid_order_extends_the_years_it_was_created_for()
+    {
+        using var db = TestData.Db(out var seed);
+        var item = AddProduct(db, seed, BillingCycle.Anual, orderId: "ORD-3Y");
+        item.PayPalOrderYears = 3; db.SaveChanges();
+        await Webhook(db, new FakePayPal(), new FakeNotifications(), Event("WH-1", "CHECKOUT.ORDER.APPROVED", """{"id":"ORD-3Y"}""", item));
+        Assert.InRange(item.RenewsAt!.Value, DateTime.UtcNow.AddYears(3).AddMinutes(-1), DateTime.UtcNow.AddYears(3).AddMinutes(1));
+        Assert.Equal(3, (await db.PaymentTransactions.SingleAsync()).Years);
+    }
+
+    [Fact]
     public async Task Approved_order_is_captured_and_activated_once()
     {
         using var db = TestData.Db(out var seed);
@@ -125,7 +136,7 @@ public class PayPalPaymentTests
         var next = new DateTime(2026, 10, 28, 10, 0, 0, DateTimeKind.Utc);
         var payPal = new FakePayPal { Subscription = new PayPalSubscriptionInfo("SUB-7", "ACTIVE", next, []) };
         var notifications = new FakeNotifications();
-        var service = new PayPalPaymentService(db, payPal, notifications, NullLogger<PayPalPaymentService>.Instance);
+        var service = new PayPalPaymentService(db, payPal, notifications, TaxDocuments(db), NullLogger<PayPalPaymentService>.Instance);
 
         await service.ConfirmAsync(item, CancellationToken.None); // vuelta de PayPal: activa pero el cobro aún no existe
         Assert.Equal(ClientProductStatus.Activo, item.Status);
@@ -152,7 +163,7 @@ public class PayPalPaymentTests
         payPal.Subscriptions["SUB-X"] = null; // PayPal falla para esta
         payPal.Subscriptions["SUB-C"] = new PayPalSubscriptionInfo("SUB-C", "CANCELLED", null, []);
 
-        await new PayPalReconciliationJob(db, new PayPalPaymentService(db, payPal, new FakeNotifications(), NullLogger<PayPalPaymentService>.Instance), NullLogger<PayPalReconciliationJob>.Instance).ReconcileAsync(CancellationToken.None);
+        await new PayPalReconciliationJob(db, new PayPalPaymentService(db, payPal, new FakeNotifications(), TaxDocuments(db), NullLogger<PayPalPaymentService>.Instance), NullLogger<PayPalReconciliationJob>.Instance).ReconcileAsync(CancellationToken.None);
 
         Assert.Equal(ClientProductStatus.Activo, broken.Status);
         Assert.Equal(ClientProductStatus.Cancelado, cancelled.Status);
@@ -212,8 +223,10 @@ public class PayPalPaymentTests
     private static string Event(string id, string type, string resource, ClientProduct item) =>
         $$"""{"id":"{{id}}","event_type":"{{type}}","resource":{{resource.Replace("ITEM", item.Id.ToString())}}}""";
 
+    internal static PaymentsController PaymentsControllerFor(RtresDbContext db, INotificationSender? notifications = null) => Controller(db, new FakePayPal(), notifications ?? new FakeNotifications());
+
     private static PaymentsController Controller(RtresDbContext db, IPayPalClient payPal, INotificationSender notifications) =>
-        new(db, payPal, new PayPalCheckoutService(payPal, new ConfigurationBuilder().Build()), new PayPalPaymentService(db, payPal, notifications, NullLogger<PayPalPaymentService>.Instance), notifications, NullLogger<PaymentsController>.Instance)
+        new(db, payPal, new PayPalCheckoutService(payPal, new ConfigurationBuilder().Build()), new PayPalPaymentService(db, payPal, notifications, TaxDocuments(db), NullLogger<PayPalPaymentService>.Instance), notifications, new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?> { ["BankTransfer:Instructions"] = "BCP Soles 123-456", ["Notifications:StaffEmail"] = "equipo@rtres.net" }).Build(), NullLogger<PaymentsController>.Instance)
         { ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() } };
 
     private static async Task Webhook(RtresDbContext db, IPayPalClient payPal, INotificationSender notifications, string json)
@@ -242,13 +255,35 @@ public class PayPalPaymentTests
         Assert.Equal(1, payPal.PlansCreated); // mismo precio base → mismo plan
         Assert.Equal("PLAN-1", first.PayPalPlanId); Assert.Equal("PLAN-1", second.PayPalPlanId); Assert.Equal("SUB-1", first.PayPalSubscriptionId);
 
-        await checkout.StartAsync(new ClientProduct { BillingCycle = BillingCycle.Mensual, Price = 70 }, product, local, CancellationToken.None);
-        Assert.Equal(("PLAN-1", 2), (product.PayPalPlanId, payPal.PlansCreated)); // precio especial → plan propio, el del producto no cambia
+        await checkout.StartAsync(new ClientProduct { BillingCycle = BillingCycle.Mensual, Discount = 20 }, product, local, CancellationToken.None);
+        Assert.Equal(("PLAN-1", 2), (product.PayPalPlanId, payPal.PlansCreated)); // descuento → plan propio, el del producto no cambia
+        Assert.Equal((90m, (decimal?)70m), payPal.Plans[^1]); // solo el primer mes rebajado, luego precio de catálogo
         product.BasePrice = 95;
         await checkout.StartAsync(new ClientProduct { BillingCycle = BillingCycle.Mensual }, product, local, CancellationToken.None);
         Assert.Equal(("PLAN-3", 95m), (product.PayPalPlanId, product.PayPalPlanPrice)); // cambió el precio base → plan nuevo
 
-        await Assert.ThrowsAsync<InvalidOperationException>(() => checkout.StartAsync(new ClientProduct { BillingCycle = BillingCycle.Mensual, Price = 0 }, product, local, CancellationToken.None));
+        await Assert.ThrowsAsync<InvalidOperationException>(() => checkout.StartAsync(new ClientProduct { BillingCycle = BillingCycle.Mensual, Discount = 95 }, product, local, CancellationToken.None));
+    }
+
+    [Fact]
+    public async Task Paypal_charges_add_igv_for_peruvian_invoices()
+    {
+        using var db = TestData.Db(out _);
+        var payPal = new FakePayPal();
+        var checkout = new PayPalCheckoutService(payPal, new ConfigurationBuilder().Build());
+        var annual = new Product { Name = "Hosting", BillingCycle = BillingCycle.Anual, BasePrice = 120 };
+        await checkout.StartAsync(new ClientProduct { BillingCycle = BillingCycle.Anual }, annual, null, CancellationToken.None, 0.18m);
+        Assert.Equal(141.60m, payPal.OrderAmounts.Single());
+
+        // Tres años por adelantado: una sola orden por el total, y la orden recuerda los años para cuando se capture.
+        var prepaid = new ClientProduct { BillingCycle = BillingCycle.Anual };
+        await checkout.StartAsync(prepaid, annual, null, CancellationToken.None, 0.18m, years: 3);
+        Assert.Equal((424.80m, (int?)3), (payPal.OrderAmounts[^1], prepaid.PayPalOrderYears));
+
+        // Mensual con descuento de 20: primer mes (100 + IGV) = 118, luego catálogo (120 + IGV) = 141.60.
+        var monthly = new Product { Name = "Soporte", BillingCycle = BillingCycle.Mensual, BasePrice = 120 };
+        await checkout.StartAsync(new ClientProduct { BillingCycle = BillingCycle.Mensual, Discount = 20 }, monthly, null, CancellationToken.None, 0.18m);
+        Assert.Equal((141.60m, (decimal?)118m), payPal.Plans[^1]);
     }
 
     [Fact]
@@ -295,7 +330,8 @@ public class PayPalPaymentTests
         public List<string> ReturnUrls { get; } = [];
         public PayPalSubscriptionInfo? Subscription { get; set; }
         public Dictionary<string, PayPalSubscriptionInfo?> Subscriptions { get; } = [];
-        public Task<string> CreateMonthlyPlanAsync(string name, decimal price, string currency, CancellationToken cancellationToken = default) => Task.FromResult($"PLAN-{++PlansCreated}");
+        public List<(decimal Price, decimal? FirstCycle)> Plans { get; } = [];
+        public Task<string> CreateMonthlyPlanAsync(string name, decimal price, string currency, decimal? firstCyclePrice = null, CancellationToken cancellationToken = default) { Plans.Add((price, firstCyclePrice)); return Task.FromResult($"PLAN-{++PlansCreated}"); }
         public Task<PayPalSubscriptionInfo> GetSubscriptionAsync(string subscriptionId, CancellationToken cancellationToken = default) =>
             Subscriptions.TryGetValue(subscriptionId, out var info) ? (info is null ? throw new HttpRequestException("PayPal caído") : Task.FromResult(info)) : Task.FromResult(Subscription!);
         public Task<PayPalCapture> CaptureOrderAsync(string orderId, CancellationToken cancellationToken = default)
@@ -303,9 +339,12 @@ public class PayPalPaymentTests
             Captures++;
             return Task.FromResult(new PayPalCapture(orderId, CaptureStatus, CaptureStatus == "COMPLETED" ? 120m : null, "USD"));
         }
-        public Task<PayPalCheckout> CreateOrderAsync(decimal amount, string currency, string customId, string returnUrl, string cancelUrl, CancellationToken cancellationToken = default) { ReturnUrls.Add(returnUrl); return Task.FromResult(new PayPalCheckout("ORD-NEW", "https://paypal/approve")); }
+        public List<decimal> OrderAmounts { get; } = [];
+        public Task<PayPalCheckout> CreateOrderAsync(decimal amount, string currency, string customId, string returnUrl, string cancelUrl, CancellationToken cancellationToken = default) { ReturnUrls.Add(returnUrl); OrderAmounts.Add(amount); return Task.FromResult(new PayPalCheckout("ORD-NEW", "https://paypal/approve")); }
         public Task<PayPalCheckout> CreateSubscriptionAsync(string planId, string customId, string returnUrl, string cancelUrl, CancellationToken cancellationToken = default) { ReturnUrls.Add(returnUrl); return Task.FromResult(new PayPalCheckout($"SUB-{ReturnUrls.Count}", "https://paypal/approve")); }
         public Task CancelSubscriptionAsync(string subscriptionId, string reason, CancellationToken cancellationToken = default) => throw new NotSupportedException();
         public Task<bool> VerifyWebhookAsync(string payload, IReadOnlyDictionary<string, string> headers, CancellationToken cancellationToken = default) => Task.FromResult(true);
     }
+
+    internal static TaxDocumentService TaxDocuments(RtresDbContext db) => new(db, NullLogger<TaxDocumentService>.Instance);
 }

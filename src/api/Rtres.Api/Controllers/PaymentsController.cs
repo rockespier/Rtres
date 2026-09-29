@@ -11,7 +11,7 @@ using Rtres.Infrastructure.Persistence;
 namespace Rtres.Api.Controllers;
 
 [ApiController, Route("api")]
-public sealed class PaymentsController(RtresDbContext db, IPayPalClient payPal, PayPalCheckoutService checkoutService, PayPalPaymentService payments, INotificationSender notifications, ILogger<PaymentsController> logger) : ControllerBase
+public sealed class PaymentsController(RtresDbContext db, IPayPalClient payPal, PayPalCheckoutService checkoutService, PayPalPaymentService payments, INotificationSender notifications, IConfiguration configuration, ILogger<PaymentsController> logger) : ControllerBase
 {
     /// <summary>Días antes del vencimiento en que se puede pagar la renovación (igual que el primer recordatorio por email).</summary>
     public const int RenewalWindowDays = 30;
@@ -24,7 +24,14 @@ public sealed class PaymentsController(RtresDbContext db, IPayPalClient payPal, 
     }
 
     [Authorize, HttpGet("catalog/products")]
-    public async Task<IActionResult> Catalog(CancellationToken ct) => Ok(await db.Products.Where(x => x.IsActive).OrderBy(x => x.Name).Select(x => new { id = x.Id, type = x.Type, name = x.Name, billingCycle = x.BillingCycle, basePrice = x.BasePrice, currency = x.Currency, description = x.Description, isActive = x.IsActive }).ToListAsync(ct));
+    public async Task<IActionResult> Catalog(CancellationToken ct)
+    {
+        // Precios sin IGV; igvRate indica si a este cliente se le suma (Perú + Factura) para mostrar "+ IGV".
+        var client = Guid.TryParse(User.FindFirstValue("client_id"), out var clientId) ? await db.Clients.SingleOrDefaultAsync(x => x.Id == clientId, ct) : null;
+        var igvRate = await db.IgvRateAsync(ct);
+        var products = await db.Products.Where(x => x.IsActive).OrderBy(x => x.Name).ToListAsync(ct);
+        return Ok(products.Select(x => new { id = x.Id, type = x.Type, name = x.Name, billingCycle = x.BillingCycle, basePrice = x.BasePrice, currency = x.Currency, description = x.Description, isActive = x.IsActive, igvRate = client is null ? 0m : ClientProductPricing.IgvRateFor(client, x, igvRate) }));
+    }
 
     [Authorize(Roles = "Cliente,Admin"), HttpPost("subscriptions")]
     public async Task<IActionResult> Subscribe(SubscribeRequest request, CancellationToken ct)
@@ -33,13 +40,59 @@ public sealed class PaymentsController(RtresDbContext db, IPayPalClient payPal, 
         var product = await db.Products.SingleOrDefaultAsync(x => x.Id == request.ProductId && x.IsActive, ct);
         if (product is null || !await db.Projects.AnyAsync(x => x.Id == request.ProjectId && x.ClientId == clientId, ct)) return NotFound();
         if (request.BillingCycle != product.BillingCycle) return BadRequest(new { message = "El ciclo debe coincidir con el producto seleccionado." });
-        var item = new ClientProduct { ClientId = clientId, ProjectId = request.ProjectId, ProductId = product.Id, Product = product, BillingCycle = request.BillingCycle, Status = ClientProductStatus.Pendiente, Price = product.BasePrice };
+        if (request.PaymentMethod is not (PaymentMethods.PayPal or PaymentMethods.Transferencia)) return BadRequest(new { message = "Método de pago inválido." });
+        var transfer = request.PaymentMethod == PaymentMethods.Transferencia;
+        var item = new ClientProduct { ClientId = clientId, ProjectId = request.ProjectId, ProductId = product.Id, Product = product, BillingCycle = request.BillingCycle, Status = ClientProductStatus.Pendiente, Price = product.BasePrice, IsManualBilling = transfer };
+        if (item.ValidateYears(request.Years) is string yearsError) return BadRequest(new { message = yearsError });
         db.ClientProducts.Add(item);
-        try { var checkout = await checkoutService.StartAsync(item, product, Request, ct); await db.SaveChangesAsync(ct); return Ok(new { clientProductId = item.Id, approvalUrl = checkout.ApprovalUrl }); } catch (InvalidOperationException ex) { return BadRequest(new { message = ex.Message }); }
+        var igvRate = await db.IgvRateForAsync(clientId, product, ct);
+        // Transferencia: queda Pendiente hasta que Rtres registre el pago (Detalle del cliente → Registrar pago).
+        if (transfer)
+        {
+            await db.SaveChangesAsync(ct);
+            await NotifyTransferRequestAsync(item, product, igvRate, request.Years, ct);
+            return Ok(new { clientProductId = item.Id, approvalUrl = (string?)null, bankTransfer = BankTransferInfo(configuration, item, igvRate, request.Years) });
+        }
+        try { var checkout = await checkoutService.StartAsync(item, product, Request, ct, igvRate, request.Years); await db.SaveChangesAsync(ct); return Ok(new { clientProductId = item.Id, approvalUrl = checkout.ApprovalUrl }); } catch (InvalidOperationException ex) { return BadRequest(new { message = ex.Message }); }
     }
 
+    /// <summary>Datos para pagar por transferencia (cuentas de <c>BankTransfer:Instructions</c>) y el monto a transferir por <paramref name="years"/> años.</summary>
+    [Authorize, HttpGet("client-products/{id:guid}/bank-transfer")]
+    public async Task<IActionResult> BankTransfer(Guid id, Guid? clientId, CancellationToken ct, int years = 1)
+    {
+        var scope = ClientScope(clientId, out var owner); if (scope is not null) return scope;
+        var item = await db.ClientProducts.Include(x => x.Product).SingleOrDefaultAsync(x => x.Id == id && x.ClientId == owner, ct);
+        if (item?.Product is null) return NotFound();
+        if (item.ValidateYears(years) is string yearsError) return BadRequest(new { message = yearsError });
+        return Ok(BankTransferInfo(configuration, item, await db.IgvRateForAsync(owner, item.Product, ct), years));
+    }
+
+    /// <summary>
+    /// Avisa a Rtres (<c>Notifications:StaffEmail</c>, o el remitente <c>Smtp:From</c> si no está) que hay un pedido por
+    /// transferencia esperando el pago. Va por la cola como el resto de avisos: un SMTP caído no frena el pedido.
+    /// </summary>
+    private async Task NotifyTransferRequestAsync(ClientProduct item, Product product, decimal igvRate, int years, CancellationToken ct)
+    {
+        var staffEmail = configuration["Notifications:StaffEmail"] is { Length: > 0 } configured ? configured : configuration["Smtp:From"];
+        if (string.IsNullOrWhiteSpace(staffEmail)) { logger.LogWarning("Pedido por transferencia {ClientProductId} sin aviso: falta Notifications:StaffEmail", item.Id); return; }
+        var client = await db.Clients.SingleAsync(x => x.Id == item.ClientId, ct);
+        var project = await db.Projects.Where(x => x.Id == item.ProjectId).Select(x => x.Name).SingleAsync(ct);
+        var data = new Dictionary<string, string> { ["clientId"] = client.Id.ToString(), ["company"] = client.CompanyName, ["product"] = years > 1 ? $"{product.Name} ({years} años)" : product.Name, ["project"] = project, ["currency"] = product.Currency };
+        if (item.ChargeTotal(igvRate, years) is decimal amount) data["amount"] = amount.ToString(CultureInfo.InvariantCulture);
+        await notifications.SendAsync(client, new Notification(NotificationType.TransferRequested, data, $"transfer-request:{item.Id}", staffEmail), ct);
+    }
+
+    internal static object BankTransferInfo(IConfiguration configuration, ClientProduct item, decimal igvRate, int years = 1) => new
+    {
+        instructions = configuration["BankTransfer:Instructions"] ?? "",
+        amount = item.ChargeTotal(igvRate, years),
+        years,
+        currency = item.Product?.Currency ?? "USD",
+        includesIgv = igvRate > 0,
+    };
+
     [Authorize(Roles = "Cliente,Admin"), HttpPost("client-products/{id:guid}/renew")]
-    public async Task<IActionResult> Renew(Guid id, Guid? clientId, CancellationToken ct)
+    public async Task<IActionResult> Renew(Guid id, Guid? clientId, CancellationToken ct, int years = 1)
     {
         var scope = ClientScope(clientId, out var owner); if (scope is not null) return scope;
         var item = await db.ClientProducts.Include(x => x.Product).SingleOrDefaultAsync(x => x.Id == id && x.ClientId == owner, ct);
@@ -47,7 +100,7 @@ public sealed class PaymentsController(RtresDbContext db, IPayPalClient payPal, 
         // Renovar (Anual/Único por vencer o vencido) o reintentar un pago que quedó a medias (Pendiente, cualquier ciclo).
         var renewable = item.BillingCycle is BillingCycle.Anual or BillingCycle.Unico && (item.Status is ClientProductStatus.PorVencer or ClientProductStatus.Vencido || item.RenewsAt <= DateTime.UtcNow.AddDays(RenewalWindowDays));
         if (item.IsManualBilling || !(renewable || item.Status == ClientProductStatus.Pendiente)) return BadRequest(new { message = "Este producto no se puede renovar en línea." });
-        try { var checkout = await checkoutService.StartAsync(item, item.Product, Request, ct); await db.SaveChangesAsync(ct); return Ok(new { approvalUrl = checkout.ApprovalUrl }); } catch (InvalidOperationException ex) { return BadRequest(new { message = ex.Message }); }
+        try { var checkout = await checkoutService.StartAsync(item, item.Product, Request, ct, await db.IgvRateForAsync(owner, item.Product, ct), years); await db.SaveChangesAsync(ct); return Ok(new { approvalUrl = checkout.ApprovalUrl }); } catch (InvalidOperationException ex) { return BadRequest(new { message = ex.Message }); }
     }
 
     [Authorize(Roles = "Cliente,Admin"), HttpPost("client-products/{id:guid}/cancel")]
@@ -117,4 +170,4 @@ public sealed class PaymentsController(RtresDbContext db, IPayPalClient payPal, 
     }
 }
 
-public sealed record SubscribeRequest(Guid ProductId, Guid ProjectId, BillingCycle BillingCycle);
+public sealed record SubscribeRequest(Guid ProductId, Guid ProjectId, BillingCycle BillingCycle, string PaymentMethod = PaymentMethods.PayPal, int Years = 1);

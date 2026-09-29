@@ -30,6 +30,7 @@ public sealed class RenewalReminderJob(RtresDbContext db, INotificationSender no
             .Join(db.Clients.Where(c => c.IsActive), product => product.ClientId, client => client.Id, (product, client) => new { product, client })
             .ToListAsync(cancellationToken);
 
+        var igvRate = await db.IgvRateAsync(cancellationToken);
         foreach (var (item, client) in due.Select(x => (x.product, x.client)))
         {
             var renewsAt = item.RenewsAt!.Value;
@@ -46,7 +47,8 @@ public sealed class RenewalReminderJob(RtresDbContext db, INotificationSender no
                 ["autoRenew"] = item.PayPalSubscriptionId is null ? "false" : "true",
             };
             if (!string.IsNullOrWhiteSpace(item.DomainName)) data["domain"] = item.DomainName;
-            if ((item.Price ?? item.Product?.BasePrice) is decimal price)
+            // La renovación va a precio de catálogo si el descuento ya se usó, más IGV si es Factura a un cliente en Perú.
+            if (item.NextChargeTotal(item.Product is null ? 0m : ClientProductPricing.IgvRateFor(client, item.Product, igvRate)) is decimal price)
             {
                 data["amount"] = price.ToString(CultureInfo.InvariantCulture);
                 data["currency"] = item.Product?.Currency ?? "USD";

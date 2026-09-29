@@ -14,6 +14,7 @@ namespace Rtres.Infrastructure.Notifications;
 /// <item><c>PaymentReceived</c>: product, amount, currency</item>
 /// <item><c>PaymentFailed</c>: product</item>
 /// <item><c>AccountAccess</c>: name, company, email, password (se envía en el momento, nunca por la cola de Hangfire)</item>
+/// <item><c>TransferRequested</c>: clientId, company, product, project, amount?, currency — aviso interno para Rtres, siempre en español</item>
 /// </list>
 /// </summary>
 public static class EmailTemplates
@@ -22,7 +23,8 @@ public static class EmailTemplates
 
     public static (string Subject, string Html, string Text) Render(Notification notification, string? language, string portalUrl)
     {
-        var lang = Languages.Contains(language) ? language! : "es";
+        // Los avisos internos van al equipo de Rtres: el idioma del cliente no aplica.
+        var lang = notification.Type == NotificationType.TransferRequested ? "es" : Languages.Contains(language) ? language! : "es";
         var d = notification.Data;
         var t = Texts[lang];
         var portal = portalUrl.TrimEnd('/');
@@ -51,9 +53,16 @@ public static class EmailTemplates
                 string.Format(t["failed.subject"], V("product")),
                 new[] { string.Format(t["failed.body"], V("product")) },
                 t["cta.dashboard"], $"{portal}/dashboard"),
+            NotificationType.TransferRequested => (
+                string.Format(t["transfer.subject"], V("company"), V("product")),
+                string.IsNullOrWhiteSpace(V("amount"))
+                    ? new[] { string.Format(t["transfer.body"], V("company"), V("product"), V("project")), t["transfer.next"] }
+                    : new[] { string.Format(t["transfer.body"], V("company"), V("product"), V("project")), string.Format(t["transfer.amount"], Money(lang, V("amount"), V("currency"))), t["transfer.next"] },
+                t["cta.client"], $"{portal}/admin/clients/{V("clientId")}"),
             _ => throw new ArgumentOutOfRangeException(nameof(notification), notification.Type, null),
         };
-        return (subject, Html(t, paragraphs, cta, link), Text(t, paragraphs, cta, link));
+        var footer = notification.Type == NotificationType.TransferRequested ? t["footer.staff"] : t["footer"];
+        return (subject, Html(footer, paragraphs, cta, link), Text(footer, paragraphs, cta, link));
     }
 
     private static (string, string[], string, string) RenewalReminder(Dictionary<string, string> t, string lang, Func<string, string> v, string portal)
@@ -81,7 +90,7 @@ public static class EmailTemplates
 
     private static string Quote(string body) => body.Length > 600 ? body[..600].TrimEnd() + "…" : body;
 
-    private static string Html(Dictionary<string, string> t, IEnumerable<string> paragraphs, string cta, string link)
+    private static string Html(string footer, IEnumerable<string> paragraphs, string cta, string link)
     {
         var html = new StringBuilder();
         html.Append("<!doctype html><html><body style=\"margin:0;background:#f5f5f0;font-family:Arial,Helvetica,sans-serif;color:#1a1a1a\">")
@@ -93,13 +102,13 @@ public static class EmailTemplates
         html.Append("<tr><td style=\"padding:12px 0 24px\"><a href=\"").Append(WebUtility.HtmlEncode(link))
             .Append("\" style=\"display:inline-block;background:#5b7a2a;color:#ffffff;text-decoration:none;font-weight:bold;padding:12px 22px;border-radius:8px\">")
             .Append(WebUtility.HtmlEncode(cta)).Append("</a></td></tr>")
-            .Append("<tr><td style=\"font-size:12px;color:#777777;border-top:1px solid #eeeeee;padding-top:16px\">").Append(WebUtility.HtmlEncode(t["footer"])).Append("</td></tr>")
+            .Append("<tr><td style=\"font-size:12px;color:#777777;border-top:1px solid #eeeeee;padding-top:16px\">").Append(WebUtility.HtmlEncode(footer)).Append("</td></tr>")
             .Append("</table></td></tr></table></body></html>");
         return html.ToString();
     }
 
-    private static string Text(Dictionary<string, string> t, IEnumerable<string> paragraphs, string cta, string link) =>
-        $"{string.Join("\n\n", paragraphs)}\n\n{cta}: {link}\n\n--\n{t["footer"]}";
+    private static string Text(string footer, IEnumerable<string> paragraphs, string cta, string link) =>
+        $"{string.Join("\n\n", paragraphs)}\n\n{cta}: {link}\n\n--\n{footer}";
 
     private static readonly Dictionary<string, Dictionary<string, string>> StatusLabels = new()
     {
@@ -137,6 +146,12 @@ public static class EmailTemplates
             ["cta.reply"] = "Ver y responder",
             ["cta.billing"] = "Ver facturación",
             ["footer"] = "Recibes este correo porque tienes servicios contratados con Rtres Web Solutions.",
+            ["transfer.subject"] = "Pedido por transferencia: {0} — {1}",
+            ["transfer.body"] = "{0} agregó {1} (proyecto {2}) desde el catálogo y eligió pagar por transferencia bancaria.",
+            ["transfer.amount"] = "Monto a recibir: {0}.",
+            ["transfer.next"] = "El producto queda Pendiente. Cuando llegue la transferencia, regístrala en el detalle del cliente con \"Registrar pago\" para activarlo.",
+            ["cta.client"] = "Ver cliente",
+            ["footer.staff"] = "Aviso interno del portal de clientes de Rtres.",
         },
         ["en"] = new()
         {

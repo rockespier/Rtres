@@ -1,9 +1,11 @@
-using System.Text;
 using System.Text.Json.Serialization;
+using System.Threading.RateLimiting;
 using Hangfire;
 using Hangfire.SqlServer;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.IdentityModel.Tokens;
+using Rtres.Api.Controllers;
 using Rtres.Api.GitHub;
 using Rtres.Api.Jobs;
 using Rtres.Api.Notifications;
@@ -24,21 +26,41 @@ builder.Services.AddScoped<NotificationJob>();
 builder.Services.AddScoped<AccessEmailService>();
 builder.Services.AddScoped<PayPalCheckoutService>();
 builder.Services.AddScoped<PayPalPaymentService>();
+builder.Services.AddScoped<TaxDocumentService>();
 builder.Services.AddCors(options => options.AddDefaultPolicy(policy => policy
     .WithOrigins(PayPalCheckoutService.AllowedOrigins(builder.Configuration))
     .AllowAnyHeader().AllowAnyMethod()));
+// Falla al arrancar si Jwt:Key no está definida o es insegura: nunca se firma con una clave conocida.
+var jwt = JwtSettings.FromConfiguration(builder.Configuration);
+builder.Services.AddSingleton(jwt);
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options => options.TokenValidationParameters = new TokenValidationParameters
 {
     ValidateIssuer = true, ValidateAudience = true, ValidateLifetime = true, ValidateIssuerSigningKey = true,
-    ValidIssuer = builder.Configuration["Jwt:Issuer"], ValidAudience = builder.Configuration["Jwt:Audience"],
-    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"] ?? "development-only-change-me-development-only-change-me"))
+    ValidIssuer = jwt.Issuer, ValidAudience = jwt.Audience, IssuerSigningKey = jwt.SigningKey,
+    ClockSkew = TimeSpan.FromMinutes(1)
 });
 builder.Services.AddAuthorization();
+builder.Services.AddMemoryCache();
+// Detrás de nginx la IP real llega en X-Forwarded-For; sin esto todos los logins compartirían el límite del proxy.
+builder.Services.Configure<ForwardedHeadersOptions>(o =>
+{
+    o.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    o.KnownIPNetworks.Clear(); o.KnownProxies.Clear();
+});
+builder.Services.AddRateLimiter(o =>
+{
+    o.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    o.OnRejected = (ctx, ct) => new ValueTask(ctx.HttpContext.Response.WriteAsJsonAsync(new { message = "Demasiados intentos de inicio de sesión. Espera un minuto e inténtalo de nuevo." }, ct));
+    o.AddPolicy(AuthController.LoginRateLimitPolicy, http => RateLimitPartition.GetFixedWindowLimiter(
+        http.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+        _ => new FixedWindowRateLimiterOptions { PermitLimit = 10, Window = TimeSpan.FromMinutes(1), QueueLimit = 0 }));
+});
 // SqlServer (no MemoryStorage): los jobs encolados (recordatorios, sync de tipo de cambio) sobreviven a un reinicio de la API.
 builder.Services.AddHangfire(config => config.UseSqlServerStorage(builder.Configuration.GetConnectionString("SqlServer"), new SqlServerStorageOptions { PrepareSchemaIfNecessary = true }));
 builder.Services.AddHangfireServer();
 
 var app = builder.Build();
+app.UseForwardedHeaders();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
@@ -47,6 +69,7 @@ if (app.Environment.IsDevelopment())
 }
 app.UseHttpsRedirection();
 app.UseCors();
+app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseHangfireDashboard("/jobs");

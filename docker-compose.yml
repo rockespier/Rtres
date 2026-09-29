@@ -6,7 +6,7 @@ services:
     ports: ["1433:1433"]
   api:
     build: ./src/api/Rtres.Api
-    environment: { ConnectionStrings__SqlServer: "Server=sqlserver;Database=rtres;User Id=sa;Password=Change-me-2026!;TrustServerCertificate=True" }
+    environment: { ConnectionStrings__SqlServer: "Server=sqlserver;Database=rtres;User Id=sa;Password=Change-me-2026!;TrustServerCertificate=True", Jwt__Key: "${JWT_KEY:?Define JWT_KEY en .env (openssl rand -base64 48)}" }
     depends_on: [sqlserver]
   web: { build: ./src/web, depends_on: [api] }
   nginx:

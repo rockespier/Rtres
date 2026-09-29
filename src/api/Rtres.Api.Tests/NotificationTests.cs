@@ -64,6 +64,7 @@ public class EmailTemplatesTests
         NotificationType.TicketReply => new() { ["ticketId"] = "t-1", ["code"] = "RT-108", ["title"] = "Botón", ["author"] = "dev", ["body"] = "Listo" },
         NotificationType.PaymentReceived => new() { ["product"] = "Hosting", ["amount"] = "120", ["currency"] = "USD" },
         NotificationType.AccountAccess => new() { ["name"] = "Ana", ["company"] = "Andes Tours", ["email"] = "ana@andes.pe", ["password"] = "Xk3pQ9" },
+        NotificationType.TransferRequested => new() { ["clientId"] = "c-1", ["company"] = "Andes Tours", ["product"] = "Hosting anual", ["project"] = "Web", ["amount"] = "120", ["currency"] = "USD" },
         _ => new() { ["product"] = "Hosting" },
     });
 }

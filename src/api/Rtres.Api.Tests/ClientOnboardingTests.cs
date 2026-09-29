@@ -3,10 +3,12 @@ using ClosedXML.Excel;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 using Rtres.Api.Controllers;
 using Rtres.Api.Notifications;
+using Rtres.Api.Services;
 using System.Security.Claims;
 using Rtres.Domain;
 using Rtres.Infrastructure.Persistence;
@@ -59,7 +61,7 @@ public class ClientOnboardingTests
         using var db = TestData.Db(out var seed);
         using var book = new XLWorkbook();
         var sheet = book.AddWorksheet("Plantilla");
-        string[][] rows = [["CompanyName", "ContactName", "Email", "Phone", "PreferredLanguage"], ["Uno", "Ana", "ana@uno.pe", "", "es"], ["Dos", "Bea", seed.User.Email, "", "es"], ["Tres", "Caro", "caro@tres.it", "", "it"]];
+        string[][] rows = [["CompanyName", "ContactName", "Email", "Phone", "PreferredLanguage", "RequiresTaxDocument"], ["Uno", "Ana", "ana@uno.pe", "", "es", "SI"], ["Dos", "Bea", seed.User.Email, "", "es", ""], ["Tres", "Caro", "caro@tres.it", "", "it", ""], ["Cuatro", "Dani", "dani@cuatro.pe", "", "es", "quizás"]];
         for (var r = 0; r < rows.Length; r++) for (var c = 0; c < rows[r].Length; c++) sheet.Cell(r + 1, c + 1).Value = rows[r][c];
         using var stream = new MemoryStream(); book.SaveAs(stream); stream.Position = 0;
 
@@ -67,6 +69,9 @@ public class ClientOnboardingTests
         Assert.Equal(2, Prop<int>(ok.Value!, "created"));
         Assert.Equal(["ana@uno.pe", "caro@tres.it"], Prop<List<ClientAccess>>(ok.Value!, "accesses").Select(x => x.Email));
         Assert.Equal(2, await db.UserAccounts.CountAsync(x => x.Email == "ana@uno.pe" || x.Email == "caro@tres.it"));
+        // Solo el cliente peruano marcado emite comprobante; un valor que no es SI/NO rechaza la fila.
+        Assert.Equal(["Uno"], await db.Clients.Where(x => x.RequiresTaxDocument).Select(x => x.CompanyName).ToListAsync());
+        Assert.False(await db.Clients.AnyAsync(x => x.CompanyName == "Cuatro"));
     }
 
     [Fact]
@@ -154,13 +159,16 @@ public class ClientOnboardingTests
     }
 
     private static AdminController Admin(RtresDbContext db, FakeEmail? email = null) =>
-        new(db, null!, null!, AccessEmail(db, email ?? new FakeEmail())) { ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() } };
+        new(db, null!, null!, AccessEmail(db, email ?? new FakeEmail()), PayPalPaymentTests.TaxDocuments(db)) { ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() } };
 
     internal static AccessEmailService AccessEmail(RtresDbContext db, IEmailSender email) =>
         new(NotificationJobTests.Job(db, email), new ConfigurationBuilder().Build(), NullLogger<AccessEmailService>.Instance);
 
-    private static Task<ActionResult> Login(RtresDbContext db, string email, string password) =>
-        new AuthController(db, new ConfigurationBuilder().Build()).Login(new LoginRequest(email, password), CancellationToken.None);
+    private static Task<ActionResult> Login(RtresDbContext db, string email, string password, IMemoryCache? cache = null) =>
+        new AuthController(db, TestJwt, cache ?? new MemoryCache(new MemoryCacheOptions())).Login(new LoginRequest(email, password), CancellationToken.None);
+
+    internal static readonly JwtSettings TestJwt = JwtSettings.FromConfiguration(
+        new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?> { ["Jwt:Key"] = new string('k', 48) }).Build());
 
     private static T Prop<T>(object value, string name) => (T)value.GetType().GetProperty(name, BindingFlags.Public | BindingFlags.Instance)!.GetValue(value)!;
 }

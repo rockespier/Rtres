@@ -53,6 +53,9 @@ namespace Rtres.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("RequiresTaxDocument")
+                        .HasColumnType("bit");
+
                     b.HasKey("Id");
 
                     b.HasIndex("Email")
@@ -73,6 +76,13 @@ namespace Rtres.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("ClientId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<decimal?>("Discount")
+                        .HasPrecision(12, 2)
+                        .HasColumnType("decimal(12,2)");
+
+                    b.Property<DateTime?>("DiscountEndsAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("DomainName")
                         .HasColumnType("nvarchar(max)");
 
@@ -87,6 +97,9 @@ namespace Rtres.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("PayPalOrderId")
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<int?>("PayPalOrderYears")
+                        .HasColumnType("int");
 
                     b.Property<string>("PayPalPlanId")
                         .HasColumnType("nvarchar(max)");
@@ -268,6 +281,11 @@ namespace Rtres.Infrastructure.Persistence.Migrations
                     b.Property<string>("InternalCode")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("Method")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
                     b.Property<string>("PayPalOrderIdOrSubscriptionId")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -276,6 +294,9 @@ namespace Rtres.Infrastructure.Persistence.Migrations
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Years")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -322,6 +343,9 @@ namespace Rtres.Infrastructure.Persistence.Migrations
                     b.Property<decimal?>("PayPalPlanPrice")
                         .HasPrecision(12, 2)
                         .HasColumnType("decimal(12,2)");
+
+                    b.Property<int>("TaxDocumentType")
+                        .HasColumnType("int");
 
                     b.Property<int>("Type")
                         .HasColumnType("int");
@@ -410,6 +434,10 @@ namespace Rtres.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("PaymentTransactionId")
+                        .IsUnique()
+                        .HasFilter("[PaymentTransactionId] IS NOT NULL");
+
                     b.HasIndex("Series", "Number")
                         .IsUnique();
 
@@ -422,9 +450,25 @@ namespace Rtres.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int>("FacturaNextNumber")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FacturaSeries")
+                        .IsRequired()
+                        .HasMaxLength(4)
+                        .HasColumnType("nvarchar(4)");
+
                     b.Property<decimal>("IgvRate")
                         .HasPrecision(5, 4)
                         .HasColumnType("decimal(5,4)");
+
+                    b.Property<int>("ReciboNextNumber")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ReciboSeries")
+                        .IsRequired()
+                        .HasMaxLength(4)
+                        .HasColumnType("nvarchar(4)");
 
                     b.Property<decimal>("RentaRate")
                         .HasPrecision(5, 4)
