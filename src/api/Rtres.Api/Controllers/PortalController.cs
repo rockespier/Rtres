@@ -33,9 +33,20 @@ public sealed class PortalController(RtresDbContext db, IBackgroundJobClient job
     {
         var error = ResolveClientId(clientId, out var id); if (error is not null) return error;
         var p = db.ClientProducts.Where(x => x.ClientId == id);
-        return Ok(new { activeProducts = await p.CountAsync(x => x.Status == ClientProductStatus.Activo, ct), expiringSoon = await p.CountAsync(x => x.Status == ClientProductStatus.PorVencer, ct), openTickets = await db.Tickets.CountAsync(x => x.ClientId == id && (x.Status == TicketStatus.Abierto || x.Status == TicketStatus.EnProgreso), ct), nextPaymentAmount = await p.Where(x => x.NextChargeAt != null).OrderBy(x => x.NextChargeAt).Select(x => x.Price).FirstOrDefaultAsync(ct) });
+        var next = await p.Include(x => x.Product).Where(x => x.NextChargeAt != null).OrderBy(x => x.NextChargeAt).FirstOrDefaultAsync(ct);
+        var nextPaymentAmount = next?.Product is null ? null : next.NextChargeTotal(await db.IgvRateForAsync(id, next.Product, ct));
+        return Ok(new { activeProducts = await p.CountAsync(x => x.Status == ClientProductStatus.Activo, ct), expiringSoon = await p.CountAsync(x => x.Status == ClientProductStatus.PorVencer, ct), openTickets = await db.Tickets.CountAsync(x => x.ClientId == id && (x.Status == TicketStatus.Abierto || x.Status == TicketStatus.EnProgreso), ct), nextPaymentAmount });
     }
-    [HttpGet("client-products")] public async Task<IActionResult> Products(Guid? clientId, CancellationToken ct) { var error = ResolveClientId(clientId, out var id); if (error is not null) return error; return Ok(await db.ClientProducts.Include(x => x.Product).Include(x => x.Project).Where(x => x.ClientId == id).ToListAsync(ct)); }
+    [HttpGet("client-products")]
+    public async Task<IActionResult> Products(Guid? clientId, CancellationToken ct)
+    {
+        var error = ResolveClientId(clientId, out var id); if (error is not null) return error;
+        var items = await db.ClientProducts.Include(x => x.Product).Include(x => x.Project).Where(x => x.ClientId == id).ToListAsync(ct);
+        // Precios sin IGV: se indica cuánto IGV se suma a cada producto para que el portal muestre "+ IGV".
+        var client = await db.Clients.SingleOrDefaultAsync(x => x.Id == id, ct); var igvRate = await db.IgvRateAsync(ct);
+        foreach (var item in items) item.AppliedIgvRate = client is null || item.Product is null ? 0m : ClientProductPricing.IgvRateFor(client, item.Product, igvRate);
+        return Ok(items);
+    }
     [HttpGet("projects")] public async Task<IActionResult> Projects(Guid? clientId, CancellationToken ct) { var error = ResolveClientId(clientId, out var id); if (error is not null) return error; return Ok(await db.Projects.Where(x => x.ClientId == id).ToListAsync(ct)); }
     [HttpGet("tickets")] public async Task<IActionResult> Tickets(Guid? clientId, TicketStatus? status = null, TicketType? type = null, int page = 1, CancellationToken ct = default) { var error = ResolveClientId(clientId, out var id); if (error is not null) return error; page = Math.Max(page, 1); var q = db.Tickets.Where(x => x.ClientId == id && (status == null || x.Status == status) && (type == null || x.Type == type)).OrderByDescending(x => x.UpdatedAt); var n = await q.CountAsync(ct); return Ok(new { items = await q.Skip((page - 1) * 20).Take(20).ToListAsync(ct), page, totalPages = (int)Math.Ceiling(n / 20d) }); }
     [HttpGet("tickets/{id:guid}")] public async Task<IActionResult> Ticket(Guid id, Guid? clientId, CancellationToken ct) { var error = ResolveClientId(clientId, out var client); if (error is not null) return error; var t = await db.Tickets.SingleOrDefaultAsync(x => x.Id == id && x.ClientId == client, ct); return t is null ? NotFound() : Ok(new { ticket = t, comments = await ToCommentDtos(db, db.TicketComments.Where(x => x.TicketId == id).OrderBy(x => x.CreatedAt)).ToListAsync(ct) }); }

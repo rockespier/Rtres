@@ -162,7 +162,7 @@ public sealed class PayPalClient(HttpClient httpClient, IConfiguration configura
         return new PayPalCapture(orderId, status, null, null);
     }
 
-    public async Task<string> CreateMonthlyPlanAsync(string name, decimal price, string currency, CancellationToken cancellationToken = default)
+    public async Task<string> CreateMonthlyPlanAsync(string name, decimal price, string currency, decimal? firstCyclePrice = null, CancellationToken cancellationToken = default)
     {
         using var productResponse = await SendAsync(new HttpRequestMessage(HttpMethod.Post, "v1/catalogs/products") { Content = JsonContent(new { name, type = "SERVICE" }) }, cancellationToken);
         using var product = JsonDocument.Parse(await productResponse.Content.ReadAsStringAsync(cancellationToken));
@@ -170,13 +170,19 @@ public sealed class PayPalClient(HttpClient httpClient, IConfiguration configura
         {
             product_id = product.RootElement.GetProperty("id").GetString(),
             name = $"{name} — mensual",
-            billing_cycles = new[] { new { frequency = new { interval_unit = "MONTH", interval_count = 1 }, tenure_type = "REGULAR", sequence = 1, total_cycles = 0, pricing_scheme = new { fixed_price = new { value = price.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture), currency_code = currency } } } },
+            // Con descuento, un ciclo TRIAL de un mes al precio rebajado y luego el precio regular.
+            billing_cycles = firstCyclePrice is decimal first
+                ? new[] { Cycle("TRIAL", 1, 1, first, currency), Cycle("REGULAR", 2, 0, price, currency) }
+                : new[] { Cycle("REGULAR", 1, 0, price, currency) },
             payment_preferences = new { auto_bill_outstanding = true, payment_failure_threshold = 3 },
         };
         using var planResponse = await SendAsync(new HttpRequestMessage(HttpMethod.Post, "v1/billing/plans") { Content = JsonContent(plan) }, cancellationToken);
         using var created = JsonDocument.Parse(await planResponse.Content.ReadAsStringAsync(cancellationToken));
         return created.RootElement.GetProperty("id").GetString()!;
     }
+
+    private static object Cycle(string tenure, int sequence, int totalCycles, decimal price, string currency) =>
+        new { frequency = new { interval_unit = "MONTH", interval_count = 1 }, tenure_type = tenure, sequence, total_cycles = totalCycles, pricing_scheme = new { fixed_price = new { value = price.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture), currency_code = currency } } };
 
     public async Task<PayPalSubscriptionInfo> GetSubscriptionAsync(string subscriptionId, CancellationToken cancellationToken = default)
     {

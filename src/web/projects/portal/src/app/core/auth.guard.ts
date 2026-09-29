@@ -5,5 +5,6 @@ import { AuthService } from './auth.service';
 export const authGuard: CanActivateFn = () => {
   const auth = inject(AuthService);
   if (auth.isAuthenticated()) return true;
+  if (auth.hasExpiredToken()) { auth.logout(); auth.sessionExpired.set(true); }
   return inject(Router).createUrlTree(['/login']);
 };

@@ -26,7 +26,8 @@ public interface IPayPalClient
     Task<PayPalCheckout> CreateSubscriptionAsync(string planId, string customId, string returnUrl, string cancelUrl, CancellationToken cancellationToken = default);
     Task<PayPalCapture> CaptureOrderAsync(string orderId, CancellationToken cancellationToken = default);
     /// <summary>Crea en PayPal un producto de catálogo y un plan de cobro mensual a precio fijo; devuelve el id del plan.</summary>
-    Task<string> CreateMonthlyPlanAsync(string name, decimal price, string currency, CancellationToken cancellationToken = default);
+    /// <summary>Plan mensual; con <paramref name="firstCyclePrice"/> el primer mes se cobra a ese precio y los siguientes a <paramref name="price"/>.</summary>
+    Task<string> CreateMonthlyPlanAsync(string name, decimal price, string currency, decimal? firstCyclePrice = null, CancellationToken cancellationToken = default);
     Task<PayPalSubscriptionInfo> GetSubscriptionAsync(string subscriptionId, CancellationToken cancellationToken = default);
     Task CancelSubscriptionAsync(string subscriptionId, string reason, CancellationToken cancellationToken = default);
     Task<bool> VerifyWebhookAsync(string payload, IReadOnlyDictionary<string, string> headers, CancellationToken cancellationToken = default);

@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using System.Security.Cryptography;
+using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -54,7 +55,7 @@ public sealed class AccountController(RtresDbContext db, AccessEmailService acce
 }
 
 [ApiController, Authorize(Roles = "SuperAdmin"), Route("api/admin")]
-public sealed class AdminController(RtresDbContext db, PayPalCheckoutService checkoutService, ExchangeRateSyncJob exchangeRateSync, AccessEmailService accessEmail) : ControllerBase
+public sealed class AdminController(RtresDbContext db, PayPalCheckoutService checkoutService, ExchangeRateSyncJob exchangeRateSync, AccessEmailService accessEmail, TaxDocumentService taxDocuments) : ControllerBase
 {
     [HttpGet("exchange-rates")]
     public async Task<ActionResult> ExchangeRates(DateOnly? from, DateOnly? to, CancellationToken ct) => Ok(await db.ExchangeRates
@@ -69,19 +70,30 @@ public sealed class AdminController(RtresDbContext db, PayPalCheckoutService che
     }
 
     [HttpGet("tax-settings")]
-    public async Task<ActionResult> TaxSettings(CancellationToken ct) { var settings = await TaxSettingsRow(ct); return Ok(new { igvRate = settings.IgvRate, rentaRate = settings.RentaRate }); }
+    public async Task<ActionResult> TaxSettings(CancellationToken ct) => Ok(TaxSettingsDto(await TaxSettingsRow(ct)));
 
     [HttpPatch("tax-settings")]
     public async Task<ActionResult> UpdateTaxSettings(TaxSettingsRequest request, CancellationToken ct)
     {
         if (request.IgvRate is decimal igv && (igv < 0 || igv > 1) || request.RentaRate is decimal renta0 && (renta0 < 0 || renta0 > 1)) return BadRequest(new { message = "Las tasas deben estar entre 0 y 1 (ej. 0.18 para 18%)." });
         var settings = await TaxSettingsRow(ct);
+        var facturaSeries = request.FacturaSeries?.Trim().ToUpperInvariant() ?? settings.FacturaSeries; var reciboSeries = request.ReciboSeries?.Trim().ToUpperInvariant() ?? settings.ReciboSeries;
+        if (!Regex.IsMatch(facturaSeries, "^F[A-Z0-9]{3}$") || !Regex.IsMatch(reciboSeries, "^E[A-Z0-9]{3}$")) return BadRequest(new { message = "La serie tiene 4 caracteres: la de facturas empieza con F (ej. F001) y la de recibos por honorarios con E (ej. E001)." });
+        var facturaNext = request.FacturaNextNumber ?? settings.FacturaNextNumber; var reciboNext = request.ReciboNextNumber ?? settings.ReciboNextNumber;
+        if (facturaNext < 1 || reciboNext < 1) return BadRequest(new { message = "El próximo correlativo debe ser mayor a 0." });
+        // Bajar el correlativo por debajo de lo ya emitido repetiría números: la serie solo puede avanzar.
+        if (await LastNumberAsync(facturaSeries, ct) is int lastF && facturaNext <= lastF) return BadRequest(new { message = $"La serie {facturaSeries} ya llegó al {lastF}: el próximo correlativo debe ser mayor." });
+        if (await LastNumberAsync(reciboSeries, ct) is int lastR && reciboNext <= lastR) return BadRequest(new { message = $"La serie {reciboSeries} ya llegó al {lastR}: el próximo correlativo debe ser mayor." });
         if (request.IgvRate is decimal igvRate) settings.IgvRate = igvRate;
         if (request.RentaRate is decimal rentaRate) settings.RentaRate = rentaRate;
+        (settings.FacturaSeries, settings.FacturaNextNumber, settings.ReciboSeries, settings.ReciboNextNumber) = (facturaSeries, facturaNext, reciboSeries, reciboNext);
         settings.UpdatedAt = DateTime.UtcNow;
         await db.SaveChangesAsync(ct);
-        return Ok(new { igvRate = settings.IgvRate, rentaRate = settings.RentaRate });
+        return Ok(TaxSettingsDto(settings));
     }
+
+    private Task<int?> LastNumberAsync(string series, CancellationToken ct) => db.TaxDocuments.Where(x => x.Series == series).MaxAsync(x => (int?)x.Number, ct);
+    private static object TaxSettingsDto(TaxSettings x) => new { igvRate = x.IgvRate, rentaRate = x.RentaRate, facturaSeries = x.FacturaSeries, facturaNextNumber = x.FacturaNextNumber, reciboSeries = x.ReciboSeries, reciboNextNumber = x.ReciboNextNumber };
 
     private async Task<TaxSettings> TaxSettingsRow(CancellationToken ct)
     {
@@ -93,17 +105,18 @@ public sealed class AdminController(RtresDbContext db, PayPalCheckoutService che
     [HttpGet("tax-documents")]
     public async Task<ActionResult> TaxDocuments(Guid? clientId, int? month, int? year, CancellationToken ct) => Ok(await db.TaxDocuments
         .Where(x => (clientId == null || x.ClientId == clientId) && (month == null || x.IssueDate.Month == month) && (year == null || x.IssueDate.Year == year))
-        .OrderByDescending(x => x.IssueDate).Select(x => TaxDocumentDto(x)).ToListAsync(ct));
+        .OrderByDescending(x => x.IssueDate).ThenByDescending(x => x.Number).Select(x => TaxDocumentDto(x)).ToListAsync(ct));
 
+    /// <summary>Emisión manual (cobros fuera de PayPal): el tipo sale del producto y la serie/correlativo se asignan solos.</summary>
     [HttpPost("tax-documents")]
     public async Task<ActionResult> CreateTaxDocument(TaxDocumentRequest request, CancellationToken ct)
     {
-        if (string.IsNullOrWhiteSpace(request.Series) || request.Number <= 0 || string.IsNullOrWhiteSpace(request.Currency)) return BadRequest(new { message = "Serie, correlativo y moneda son obligatorios." });
-        if (!await db.Clients.AnyAsync(x => x.Id == request.ClientId, ct)) return NotFound(new { message = "Cliente no encontrado." });
-        if (request.PaymentTransactionId is Guid txId && !await db.PaymentTransactions.AnyAsync(x => x.Id == txId, ct)) return NotFound(new { message = "Transacción de pago no encontrada." });
-        if (await db.TaxDocuments.AnyAsync(x => x.Series == request.Series.Trim() && x.Number == request.Number, ct)) return Conflict(new { message = "Ya existe un documento con esa serie y correlativo." });
-        var document = new TaxDocument { PaymentTransactionId = request.PaymentTransactionId, ClientId = request.ClientId, Type = request.Type, Series = request.Series.Trim(), Number = request.Number, IssueDate = request.IssueDate, Currency = request.Currency.Trim().ToUpperInvariant(), BaseAmount = request.BaseAmount, IgvAmount = request.IgvAmount, TotalAmount = request.TotalAmount, Notes = EmptyToNull(request.Notes) };
-        db.TaxDocuments.Add(document); await db.SaveChangesAsync(ct);
+        if (string.IsNullOrWhiteSpace(request.Currency) || request.TotalAmount <= 0) return BadRequest(new { message = "Moneda y un total mayor a 0 son obligatorios." });
+        var item = await db.ClientProducts.Include(x => x.Product).SingleOrDefaultAsync(x => x.Id == request.ClientProductId, ct);
+        if (item?.Product is null) return NotFound(new { message = "Producto del cliente no encontrado." });
+        var client = await db.Clients.FindAsync([item.ClientId], ct);
+        if (client is null || !client.RequiresTaxDocument) return BadRequest(new { message = "Este cliente no requiere comprobante tributario (solo se emite a clientes en Perú)." });
+        var document = await taxDocuments.IssueAsync(client.Id, item.Product.TaxDocumentType, request.IssueDate, request.Currency.Trim().ToUpperInvariant(), request.TotalAmount, EmptyToNull(request.Notes), null, ct);
         return Created($"/api/admin/tax-documents/{document.Id}", TaxDocumentDto(document));
     }
 
@@ -122,6 +135,92 @@ public sealed class AdminController(RtresDbContext db, PayPalCheckoutService che
         return Created($"/api/admin/expenses/{expense.Id}", ExpenseDto(expense));
     }
 
+    [HttpGet("expenses/import/template")]
+    public IActionResult ExpenseTemplate() => File(CreateWorkbook(
+        new("Description", true, "Texto libre, ej. Servidor VPS"),
+        new("Category", true, "Una de la lista", Enum.GetNames<ExpenseCategory>()),
+        new("Type", true, "Fijo o Variable", Enum.GetNames<ExpenseType>()),
+        new("Amount", true, "Número mayor a 0 con punto decimal, ej. 49.90"),
+        new("Currency", true, "PEN, USD o EUR", ["PEN", "USD", "EUR"]),
+        new("Date", true, "Fecha de Excel, o texto 2026-09-28 o 28/09/2026"),
+        new("Recurring", false, "SI o NO (vacío = NO)", ["SI", "NO"]),
+        new("RecurrenceCycle", false, "Mensual o Anual — obligatorio si Recurring es SI", ["Mensual", "Anual"])),
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "gastos-plantilla.xlsx");
+
+    /// <summary>Importa gastos desde la plantilla: cada fila válida se guarda con su monto en PEN al tipo de cambio de su fecha; las inválidas se informan.</summary>
+    [HttpPost("expenses/import")]
+    public async Task<ActionResult> ImportExpenses(IFormFile file, CancellationToken ct)
+    {
+        var (failure, created, errors) = await Import(file, "gastos", async (row, rowNumber, errors) =>
+        {
+            var error = ParseExpenseRow(row, out var expense);
+            if (error is not null) { errors.Add(new(rowNumber, error)); return false; }
+            expense!.AmountPen = expense.Amount * await db.RateToPenAsync(expense.Currency, expense.Date, ct);
+            db.Expenses.Add(expense); return true;
+        }, ct);
+        return failure ?? Ok(new { created, skipped = errors.Count, errors });
+    }
+
+    private static string? ParseProductRow(IXLRow row, out Product? product)
+    {
+        product = null;
+        if (!TryEnum<ProductType>(Cell(row, 1), out var type)) return $"Type inválido: usa {string.Join(", ", Enum.GetNames<ProductType>())}.";
+        var name = Cell(row, 2).Trim();
+        if (string.IsNullOrWhiteSpace(name)) return "El nombre es obligatorio.";
+        if (!TryEnum<BillingCycle>(Cell(row, 3), out var cycle)) return "BillingCycle inválido: usa Unico, Mensual o Anual.";
+        if (ReadDecimal(row.Cell(4)) is not decimal price || price < 0) return "BasePrice debe ser un número mayor o igual a 0.";
+        var currency = Cell(row, 5).Trim().ToUpperInvariant();
+        if (currency is not ("PEN" or "USD" or "EUR")) return "Moneda inválida: usa PEN, USD o EUR.";
+        if (ReadYesNo(Cell(row, 7), defaultValue: true) is not bool active) return "IsActive inválido: usa SI o NO.";
+        var taxText = Cell(row, 8).Trim(); var taxType = TaxDocumentType.Factura;
+        if (taxText != "" && !TryEnum(taxText, out taxType)) return "TaxDocumentType inválido: usa Factura o ReciboPorHonorarios.";
+        product = new Product { Type = type, Name = name, BillingCycle = cycle, BasePrice = price, Currency = currency, Description = EmptyToNull(Cell(row, 6)), IsActive = active, TaxDocumentType = taxType };
+        return null;
+    }
+
+    // Enum.TryParse acepta números ("7") aunque no sean un valor del enum: se exige que exista.
+    private static bool TryEnum<T>(string value, out T result) where T : struct, Enum => Enum.TryParse(value.Trim(), true, out result) && Enum.IsDefined(result) && !int.TryParse(value.Trim(), out _);
+
+    /// <summary>SI/NO (también TRUE/FALSE, VERDADERO/FALSO o 1/0, como los escribe Excel); vacío = <paramref name="defaultValue"/>; otro valor = null.</summary>
+    private static bool? ReadYesNo(string value, bool defaultValue) => value.Trim().ToUpperInvariant() switch
+    {
+        "" => defaultValue,
+        "SI" or "SÍ" or "TRUE" or "VERDADERO" or "1" => true,
+        "NO" or "FALSE" or "FALSO" or "0" => false,
+        _ => null,
+    };
+
+    private static string? ParseExpenseRow(IXLRow row, out Expense? expense)
+    {
+        expense = null;
+        var description = Cell(row, 1).Trim();
+        if (string.IsNullOrWhiteSpace(description)) return "La descripción es obligatoria.";
+        if (!TryEnum<ExpenseCategory>(Cell(row, 2), out var category)) return $"Categoría inválida: usa {string.Join(", ", Enum.GetNames<ExpenseCategory>())}.";
+        if (!TryEnum<ExpenseType>(Cell(row, 3), out var type)) return "Tipo inválido: usa Fijo o Variable.";
+        if (ReadDecimal(row.Cell(4)) is not decimal amount || amount <= 0) return "El monto debe ser un número mayor a 0.";
+        var currency = Cell(row, 5).Trim().ToUpperInvariant();
+        if (currency is not ("PEN" or "USD" or "EUR")) return "Moneda inválida: usa PEN, USD o EUR.";
+        if (ReadDate(row.Cell(6)) is not DateOnly date) return "Fecha inválida: usa 2026-09-28 o 28/09/2026.";
+        if (ReadYesNo(Cell(row, 7), defaultValue: false) is not bool recurring) return "Recurring inválido: usa SI o NO.";
+        BillingCycle? cycle = null;
+        if (recurring)
+        {
+            if (!TryEnum<BillingCycle>(Cell(row, 8), out var parsed) || parsed is not (BillingCycle.Mensual or BillingCycle.Anual)) return "Un gasto recurrente necesita RecurrenceCycle: Mensual o Anual.";
+            cycle = parsed;
+        }
+        expense = new Expense { Description = description, Category = category, Type = type, Amount = amount, Currency = currency, Date = date, Recurring = recurring, RecurrenceCycle = cycle };
+        return null;
+    }
+
+    // Excel guarda números y fechas con tipo propio; si vienen como texto se aceptan los formatos habituales.
+    private static decimal? ReadDecimal(IXLCell cell) =>
+        cell.DataType == XLDataType.Number ? (decimal)cell.GetDouble()
+        : decimal.TryParse(cell.GetString().Trim(), System.Globalization.NumberStyles.Number, System.Globalization.CultureInfo.InvariantCulture, out var value) ? value : null;
+
+    private static DateOnly? ReadDate(IXLCell cell) =>
+        cell.DataType == XLDataType.DateTime ? DateOnly.FromDateTime(cell.GetDateTime())
+        : DateOnly.TryParseExact(cell.GetString().Trim(), ["yyyy-MM-dd", "dd/MM/yyyy", "d/M/yyyy"], System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out var date) ? date : null;
+
     [HttpPatch("expenses/{id:guid}")]
     public async Task<ActionResult> UpdateExpense(Guid id, ExpensePatchRequest request, CancellationToken ct)
     {
@@ -139,15 +238,37 @@ public sealed class AdminController(RtresDbContext db, PayPalCheckoutService che
         await db.SaveChangesAsync(ct); return Ok(ExpenseDto(expense));
     }
 
-    private const string TaxDisclaimer = "Estimación calculada con las tasas configuradas por el usuario en Configuración de tasas — no es una liquidación oficial ante SUNAT. El régimen tributario real (RER/MYPE/General) puede calcular la Renta sobre una base distinta (utilidad neta, no ventas brutas); confirma con tu contador antes de declarar.";
+    private const string TaxDisclaimer = "Estimación calculada con las tasas configuradas por el usuario en Configuración de tasas — no es una liquidación oficial ante SUNAT. El IGV sale de las facturas emitidas a clientes en Perú; las ventas al exterior y los recibos por honorarios no llevan IGV. El régimen tributario real (RER/MYPE/General) puede calcular la Renta sobre una base distinta (utilidad neta, no ventas brutas); confirma con tu contador antes de declarar.";
+
+    /// <summary>
+    /// Ventas del mes en PEN. Lo cobrado ya incluye el IGV cuando hay Factura (se desglosa con la proporción base/total
+    /// del comprobante); sin comprobante (cliente del exterior) o con Recibo por honorarios, todo lo cobrado es base sin IGV.
+    /// Incluye los comprobantes emitidos a mano (cobros fuera del portal), que no tienen transacción.
+    /// </summary>
+    private async Task<(decimal BasePen, decimal IgvPen, decimal GravadasPen)> MonthlySalesAsync(int month, int year, CancellationToken ct)
+    {
+        var payments = await db.PaymentTransactions.Where(x => x.CreatedAt.Month == month && x.CreatedAt.Year == year)
+            .Select(x => new { x.AmountPen, Document = db.TaxDocuments.FirstOrDefault(d => d.PaymentTransactionId == x.Id) }).ToListAsync(ct);
+        var sales = payments.Select(x => (TotalPen: x.AmountPen, x.Document)).ToList();
+        foreach (var document in await db.TaxDocuments.Where(x => x.PaymentTransactionId == null && x.IssueDate.Month == month && x.IssueDate.Year == year).ToListAsync(ct))
+            sales.Add((document.TotalAmount * await db.RateToPenAsync(document.Currency, document.IssueDate, ct), document));
+
+        decimal basePen = 0, igvPen = 0, gravadasPen = 0;
+        foreach (var (totalPen, document) in sales)
+        {
+            var isFactura = document is { Type: TaxDocumentType.Factura, TotalAmount: > 0 };
+            var saleBase = isFactura ? totalPen * document!.BaseAmount / document.TotalAmount : totalPen;
+            basePen += saleBase; igvPen += totalPen - saleBase;
+            if (isFactura) gravadasPen += saleBase;
+        }
+        return (basePen, igvPen, gravadasPen);
+    }
 
     [HttpGet("reports/sales")]
     public async Task<ActionResult> SalesReport(int month, int year, string currency, CancellationToken ct)
     {
         if (currency is not ("PEN" or "USD" or "EUR")) return BadRequest(new { message = "Moneda inválida." });
-        var settings = await TaxSettingsRow(ct);
-        var basePen = await db.PaymentTransactions.Where(x => x.CreatedAt.Month == month && x.CreatedAt.Year == year).SumAsync(x => (decimal?)x.AmountPen, ct) ?? 0m;
-        var igvPen = basePen * settings.IgvRate;
+        var (basePen, igvPen, _) = await MonthlySalesAsync(month, year, ct);
         var rate = currency == "PEN" ? 1m : await db.RateToPenAsync(currency, new DateOnly(year, month, DateTime.DaysInMonth(year, month)), ct);
         return Ok(new { baseImponible = Math.Round(basePen / rate, 2), igv = Math.Round(igvPen / rate, 2), total = Math.Round((basePen + igvPen) / rate, 2) });
     }
@@ -156,8 +277,9 @@ public sealed class AdminController(RtresDbContext db, PayPalCheckoutService che
     public async Task<ActionResult> TaxSummaryReport(int month, int year, CancellationToken ct)
     {
         var settings = await TaxSettingsRow(ct);
-        var ventasGravadasPen = await db.PaymentTransactions.Where(x => x.CreatedAt.Month == month && x.CreatedAt.Year == year).SumAsync(x => (decimal?)x.AmountPen, ct) ?? 0m;
-        return Ok(new { ventasGravadasPen = Math.Round(ventasGravadasPen, 2), igvEstimado = Math.Round(ventasGravadasPen * settings.IgvRate, 2), rentaEstimada = Math.Round(ventasGravadasPen * settings.RentaRate, 2), tasa = new { igvRate = settings.IgvRate, rentaRate = settings.RentaRate }, disclaimer = TaxDisclaimer });
+        var (basePen, igvPen, gravadasPen) = await MonthlySalesAsync(month, year, ct);
+        // La Renta se estima sobre todas las ventas sin IGV (gravadas y no gravadas).
+        return Ok(new { ventasGravadasPen = Math.Round(gravadasPen, 2), ventasNoGravadasPen = Math.Round(basePen - gravadasPen, 2), igvEstimado = Math.Round(igvPen, 2), rentaEstimada = Math.Round(basePen * settings.RentaRate, 2), tasa = new { igvRate = settings.IgvRate, rentaRate = settings.RentaRate }, disclaimer = TaxDisclaimer });
     }
 
     [HttpGet("reports/expenses")]
@@ -171,7 +293,7 @@ public sealed class AdminController(RtresDbContext db, PayPalCheckoutService che
     public async Task<ActionResult> NetReport(int month, int year, CancellationToken ct)
     {
         var settings = await TaxSettingsRow(ct);
-        var ventasPen = await db.PaymentTransactions.Where(x => x.CreatedAt.Month == month && x.CreatedAt.Year == year).SumAsync(x => (decimal?)x.AmountPen, ct) ?? 0m;
+        var (ventasPen, _, _) = await MonthlySalesAsync(month, year, ct); // sin IGV: no es ingreso de la empresa
         var gastosPen = await db.Expenses.Where(x => x.Date.Month == month && x.Date.Year == year).SumAsync(x => (decimal?)x.AmountPen, ct) ?? 0m;
         // El IGV no es costo de la empresa (se cobra aparte y se traslada a SUNAT): solo la Renta reduce la utilidad.
         var impuestosEstimadosPen = ventasPen * settings.RentaRate;
@@ -179,7 +301,7 @@ public sealed class AdminController(RtresDbContext db, PayPalCheckoutService che
     }
 
     [HttpGet("clients")]
-    public async Task<ActionResult> Clients(CancellationToken ct) => Ok(await db.Clients.OrderBy(x => x.CompanyName).Select(x => new { id = x.Id, companyName = x.CompanyName, isActive = x.IsActive, activeProducts = db.ClientProducts.Count(p => p.ClientId == x.Id && p.Status == ClientProductStatus.Activo), openTickets = db.Tickets.Count(t => t.ClientId == x.Id && (t.Status == TicketStatus.Abierto || t.Status == TicketStatus.EnProgreso)) }).ToListAsync(ct));
+    public async Task<ActionResult> Clients(CancellationToken ct) => Ok(await db.Clients.OrderBy(x => x.CompanyName).Select(x => new { id = x.Id, companyName = x.CompanyName, isActive = x.IsActive, requiresTaxDocument = x.RequiresTaxDocument, activeProducts = db.ClientProducts.Count(p => p.ClientId == x.Id && p.Status == ClientProductStatus.Activo), openTickets = db.Tickets.Count(t => t.ClientId == x.Id && (t.Status == TicketStatus.Abierto || t.Status == TicketStatus.EnProgreso)) }).ToListAsync(ct));
 
     [HttpGet("clients/{id:guid}")]
     public async Task<ActionResult> Client(Guid id, CancellationToken ct)
@@ -187,7 +309,8 @@ public sealed class AdminController(RtresDbContext db, PayPalCheckoutService che
         var client = await db.Clients.FindAsync([id], ct);
         if (client is null) return NotFound();
         var products = await db.ClientProducts.Include(x => x.Product).Include(x => x.Project).Where(x => x.ClientId == id).ToListAsync(ct);
-        return Ok(new { client = ClientDto(client), products = products.Select(ClientProductDto) });
+        var igvRate = await db.IgvRateAsync(ct);
+        return Ok(new { client = ClientDto(client), products = products.Select(x => ClientProductDto(x, x.Product is null ? 0m : ClientProductPricing.IgvRateFor(client, x.Product, igvRate))) });
     }
 
     [HttpPost("clients")]
@@ -196,7 +319,7 @@ public sealed class AdminController(RtresDbContext db, PayPalCheckoutService che
         var error = ValidateClient(request); if (error is not null) return BadRequest(new { message = error });
         var email = request.Email.Trim();
         if (await db.Clients.AnyAsync(x => x.Email == email, ct) || await db.UserAccounts.AnyAsync(x => x.Email == email, ct)) return Conflict(new { message = "El email ya está registrado." });
-        var client = new Client { CompanyName = request.CompanyName.Trim(), ContactName = request.ContactName.Trim(), Email = email, Phone = EmptyToNull(request.Phone), PreferredLanguage = request.PreferredLanguage.Trim().ToLowerInvariant() };
+        var client = new Client { CompanyName = request.CompanyName.Trim(), ContactName = request.ContactName.Trim(), Email = email, Phone = EmptyToNull(request.Phone), PreferredLanguage = request.PreferredLanguage.Trim().ToLowerInvariant(), RequiresTaxDocument = request.RequiresTaxDocument };
         db.Clients.Add(client);
         // Sin usuario el cliente no podría entrar nunca: se crea su primer Admin con el contacto y email del cliente.
         var access = AddAdminUser(client);
@@ -215,11 +338,19 @@ public sealed class AdminController(RtresDbContext db, PayPalCheckoutService che
         if (request.PreferredLanguage is not null) { var lang = request.PreferredLanguage.Trim().ToLowerInvariant(); if (lang is not ("es" or "en" or "it")) return BadRequest(new { message = "Idioma inválido." }); client.PreferredLanguage = lang; }
         if (request.Email is not null) { var email = request.Email.Trim(); if (string.IsNullOrWhiteSpace(email)) return BadRequest(new { message = "El email es obligatorio." }); if (await db.Clients.AnyAsync(x => x.Email == email && x.Id != id, ct)) return Conflict(new { message = "El email ya está registrado." }); client.Email = email; }
         if (request.IsActive is bool active) client.IsActive = active;
+        if (request.RequiresTaxDocument is bool requiresTax) client.RequiresTaxDocument = requiresTax;
         await db.SaveChangesAsync(ct); return Ok(ClientDto(client));
     }
 
     [HttpGet("clients/import/template")]
-    public IActionResult ClientTemplate() => File(CreateWorkbook(["CompanyName", "ContactName", "Email", "Phone", "PreferredLanguage"]), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "clientes-plantilla.xlsx");
+    public IActionResult ClientTemplate() => File(CreateWorkbook(
+        new("CompanyName", true, "Razón social o nombre comercial"),
+        new("ContactName", true, "Nombre de la persona de contacto"),
+        new("Email", true, "Email válido y no registrado: será el usuario del portal y recibe el acceso por correo"),
+        new("Phone", false, "Texto libre, ej. +51 999 888 777"),
+        new("PreferredLanguage", true, "es (español), en (inglés) o it (italiano)", ["es", "en", "it"]),
+        new("RequiresTaxDocument", false, "SI solo para clientes en Perú: cada pago genera su Factura o Recibo por honorarios (vacío = NO)", ["SI", "NO"])),
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "clientes-plantilla.xlsx");
 
     [HttpPost("clients/import")]
     public async Task<ActionResult> ImportClients(IFormFile file, CancellationToken ct)
@@ -227,10 +358,11 @@ public sealed class AdminController(RtresDbContext db, PayPalCheckoutService che
         var created_ = new List<(Client Client, ClientAccess Access)>();
         var (failure, created, errors) = await Import(file, "clientes", async (row, rowNumber, errors) =>
         {
-            var request = new ClientRequest(Cell(row, 1), Cell(row, 2), Cell(row, 3), Cell(row, 4), Cell(row, 5)); var error = ValidateClient(request);
+            var requiresTax = ReadYesNo(Cell(row, 6), defaultValue: false);
+            var request = new ClientRequest(Cell(row, 1), Cell(row, 2), Cell(row, 3), Cell(row, 4), Cell(row, 5), requiresTax ?? false); var error = requiresTax is null ? "RequiresTaxDocument inválido: usa SI o NO." : ValidateClient(request);
             var email = request.Email.Trim();
             if (error is not null || await db.Clients.AnyAsync(x => x.Email == email, ct) || await db.UserAccounts.AnyAsync(x => x.Email == email, ct)) { errors.Add(new(rowNumber, error ?? "El email ya está registrado.")); return false; }
-            var client = new Client { CompanyName = request.CompanyName.Trim(), ContactName = request.ContactName.Trim(), Email = email, Phone = EmptyToNull(request.Phone), PreferredLanguage = request.PreferredLanguage.Trim().ToLowerInvariant() };
+            var client = new Client { CompanyName = request.CompanyName.Trim(), ContactName = request.ContactName.Trim(), Email = email, Phone = EmptyToNull(request.Phone), PreferredLanguage = request.PreferredLanguage.Trim().ToLowerInvariant(), RequiresTaxDocument = request.RequiresTaxDocument };
             db.Clients.Add(client); created_.Add((client, AddAdminUser(client))); return true;
         }, ct);
         if (failure is not null) return failure;
@@ -318,21 +450,31 @@ public sealed class AdminController(RtresDbContext db, PayPalCheckoutService che
     public async Task<ActionResult> UpdateProduct(Guid id, ProductPatchRequest request, CancellationToken ct)
     {
         var product = await db.Products.FindAsync([id], ct); if (product is null) return NotFound();
-        if (request.Type is ProductType type) product.Type = type; if (request.Name is not null) product.Name = request.Name.Trim(); if (request.BillingCycle is BillingCycle cycle) product.BillingCycle = cycle; if (request.BasePrice is not null) product.BasePrice = request.BasePrice; if (request.Currency is not null) product.Currency = request.Currency.Trim().ToUpperInvariant(); if (request.Description is not null) product.Description = EmptyToNull(request.Description); if (request.IsActive is bool active) product.IsActive = active;
+        if (request.Type is ProductType type) product.Type = type; if (request.Name is not null) product.Name = request.Name.Trim(); if (request.BillingCycle is BillingCycle cycle) product.BillingCycle = cycle; if (request.BasePrice is not null) product.BasePrice = request.BasePrice; if (request.Currency is not null) product.Currency = request.Currency.Trim().ToUpperInvariant(); if (request.Description is not null) product.Description = EmptyToNull(request.Description); if (request.IsActive is bool active) product.IsActive = active; if (request.TaxDocumentType is TaxDocumentType taxType) product.TaxDocumentType = taxType;
         if (string.IsNullOrWhiteSpace(product.Name) || string.IsNullOrWhiteSpace(product.Currency)) return BadRequest(new { message = "Nombre y moneda son obligatorios." });
         await db.SaveChangesAsync(ct); return Ok(ProductDto(product));
     }
 
     [HttpGet("products/import/template")]
-    public IActionResult ProductTemplate() => File(CreateWorkbook(["Type", "Name", "BillingCycle", "BasePrice", "Currency", "Description", "IsActive"]), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "productos-plantilla.xlsx");
+    public IActionResult ProductTemplate() => File(CreateWorkbook(
+        new("Type", true, "Una de la lista", Enum.GetNames<ProductType>()),
+        new("Name", true, "Nombre que ve el cliente, ej. Hosting anual"),
+        new("BillingCycle", true, "Unico, Mensual o Anual", Enum.GetNames<BillingCycle>()),
+        new("BasePrice", true, "Precio de catálogo SIN IGV (a clientes en Perú con Factura se les suma al cobrar), número mayor o igual a 0 con punto decimal, ej. 120.00"),
+        new("Currency", true, "PEN, USD o EUR", ["PEN", "USD", "EUR"]),
+        new("Description", false, "Texto libre"),
+        new("IsActive", false, "SI o NO (vacío = SI)", ["SI", "NO"]),
+        new("TaxDocumentType", false, "Comprobante que genera para clientes en Perú (vacío = Factura)", Enum.GetNames<TaxDocumentType>())),
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "productos-plantilla.xlsx");
 
     [HttpPost("products/import")]
     public async Task<ActionResult> ImportProducts(IFormFile file, CancellationToken ct)
     {
         var (failure, created, errors) = await Import(file, "productos", (row, rowNumber, errors) =>
     {
-        if (!Enum.TryParse<ProductType>(Cell(row, 1), true, out var type) || !Enum.TryParse<BillingCycle>(Cell(row, 3), true, out var cycle) || !decimal.TryParse(Cell(row, 4), out var price) || !bool.TryParse(Cell(row, 7), out var active) || string.IsNullOrWhiteSpace(Cell(row, 2)) || string.IsNullOrWhiteSpace(Cell(row, 5))) { errors.Add(new(rowNumber, "Fila inválida: revisa tipo, ciclo, precio, moneda y activo.")); return Task.FromResult(false); }
-        db.Products.Add(new Product { Type = type, Name = Cell(row, 2).Trim(), BillingCycle = cycle, BasePrice = price, Currency = Cell(row, 5).Trim().ToUpperInvariant(), Description = EmptyToNull(Cell(row, 6)), IsActive = active }); return Task.FromResult(true);
+        var error = ParseProductRow(row, out var product);
+        if (error is not null) { errors.Add(new(rowNumber, error)); return Task.FromResult(false); }
+        db.Products.Add(product!); return Task.FromResult(true);
         }, ct);
         return failure ?? Ok(new { created, skipped = errors.Count, errors });
     }
@@ -343,20 +485,47 @@ public sealed class AdminController(RtresDbContext db, PayPalCheckoutService che
         if (!await db.Clients.AnyAsync(x => x.Id == clientId, ct) || !await db.Projects.AnyAsync(x => x.Id == request.ProjectId && x.ClientId == clientId, ct)) return NotFound();
         var product = await db.Products.FindAsync([request.ProductId], ct); if (product is null) return NotFound();
         if (request.BillingMode is not ("Manual" or "PayPal")) return BadRequest(new { message = "Modo de facturación inválido." });
-        var item = new ClientProduct { ClientId = clientId, ProjectId = request.ProjectId, ProductId = product.Id, BillingCycle = request.BillingCycle, IsManualBilling = request.BillingMode == "Manual", Status = request.BillingMode == "Manual" ? ClientProductStatus.Activo : ClientProductStatus.Pendiente, Price = request.Price ?? product.BasePrice, DomainName = EmptyToNull(request.DomainName), PriceLabelOverride = EmptyToNull(request.PriceLabelOverride), RenewsAt = ToUtcDate(request.RenewsAt), NextChargeAt = ToUtcDate(request.NextChargeAt), Product = product };
+        var item = new ClientProduct { ClientId = clientId, ProjectId = request.ProjectId, ProductId = product.Id, BillingCycle = request.BillingCycle, IsManualBilling = request.BillingMode == "Manual", Status = request.BillingMode == "Manual" ? ClientProductStatus.Activo : ClientProductStatus.Pendiente, Price = product.BasePrice is null ? request.Price : null, DomainName = EmptyToNull(request.DomainName), PriceLabelOverride = EmptyToNull(request.PriceLabelOverride), RenewsAt = ToUtcDate(request.RenewsAt), NextChargeAt = ToUtcDate(request.NextChargeAt), Product = product };
         item.Status = RenewalReminderJob.StatusFor(item.Status, item.RenewsAt, DateTime.UtcNow);
+        if (item.SetDiscount(request.Discount) is string discountError) return BadRequest(new { message = discountError });
         db.ClientProducts.Add(item);
+        var igvRate = await db.IgvRateForAsync(clientId, product, ct);
         if (request.BillingMode == "PayPal")
         {
             try
             {
-                var checkout = await checkoutService.StartAsync(item, product, Request, ct);
+                var checkout = await checkoutService.StartAsync(item, product, Request, ct, igvRate);
                 await db.SaveChangesAsync(ct);
-                return Created($"/api/admin/client-products/{item.Id}", new { clientProduct = ClientProductDto(item), approvalUrl = checkout.ApprovalUrl });
+                return Created($"/api/admin/client-products/{item.Id}", new { clientProduct = ClientProductDto(item, igvRate), approvalUrl = checkout.ApprovalUrl });
             }
             catch (InvalidOperationException ex) { return BadRequest(new { message = ex.Message }); }
         }
-        await db.SaveChangesAsync(ct); return Created($"/api/admin/client-products/{item.Id}", new { clientProduct = ClientProductDto(item), approvalUrl = (string?)null });
+        await db.SaveChangesAsync(ct); return Created($"/api/admin/client-products/{item.Id}", new { clientProduct = ClientProductDto(item, igvRate), approvalUrl = (string?)null });
+    }
+
+    /// <summary>
+    /// Registra un pago por transferencia confirmado por Rtres: activa el producto, extiende su vigencia, consume o quita el
+    /// descuento, emite el comprobante (clientes en Perú) y avisa al cliente, igual que un cobro de PayPal. El N° de
+    /// operación evita registrar dos veces la misma transferencia.
+    /// </summary>
+    [HttpPost("client-products/{id:guid}/payments")]
+    public async Task<ActionResult> RegisterTransferPayment(Guid id, TransferPaymentRequest request, [FromServices] PayPalPaymentService payments, CancellationToken ct)
+    {
+        var item = await db.ClientProducts.Include(x => x.Product).Include(x => x.Project).SingleOrDefaultAsync(x => x.Id == id, ct); if (item is null) return NotFound();
+        if (!item.IsManualBilling) return BadRequest(new { message = "Este producto se cobra por PayPal: sus pagos se registran solos." });
+        if (item.ValidateYears(request.Years) is string yearsError) return BadRequest(new { message = yearsError });
+        var igvRate = item.Product is null ? 0m : await db.IgvRateForAsync(item.ClientId, item.Product, ct);
+        var amount = request.Amount ?? item.ChargeTotal(igvRate, request.Years); // lo transferido incluye el IGV si corresponde
+        if (amount is not decimal value || value <= 0) return BadRequest(new { message = "Indica un monto mayor a 0." });
+        var reference = request.Reference?.Trim();
+        var key = string.IsNullOrWhiteSpace(reference) ? $"TRF-{Guid.NewGuid():N}" : $"TRF-{reference}";
+        if (key.Length > 100) return BadRequest(new { message = "El N° de operación es demasiado largo." });
+        var paidAt = ToUtcDate(request.PaidAt);
+        if (paidAt > DateTime.UtcNow.AddDays(1)) return BadRequest(new { message = "La fecha de pago no puede ser futura." });
+        if (!await payments.ApplyPaymentAsync(item, key, value, item.Product?.Currency, ct, PaymentMethods.Transferencia, paidAt, request.Years)) return Conflict(new { message = "Esa transferencia (N° de operación) ya está registrada." });
+        // La vigencia pudo quedar en el pasado si el pago es antiguo: el estado sigue a la fecha de vencimiento.
+        item.Status = RenewalReminderJob.StatusFor(item.Status, item.RenewsAt, DateTime.UtcNow); await db.SaveChangesAsync(ct);
+        return Ok(ClientProductDto(item, igvRate));
     }
 
     [HttpPatch("client-products/{id:guid}")]
@@ -364,7 +533,8 @@ public sealed class AdminController(RtresDbContext db, PayPalCheckoutService che
     {
         var item = await db.ClientProducts.Include(x => x.Product).Include(x => x.Project).SingleOrDefaultAsync(x => x.Id == id, ct); if (item is null) return NotFound();
         if (request.Price is not null) item.Price = request.Price; if (request.Status is ClientProductStatus status) item.Status = status; if (request.BillingCycle is BillingCycle cycle) item.BillingCycle = cycle; if (request.DomainName is not null) item.DomainName = EmptyToNull(request.DomainName); if (request.PriceLabelOverride is not null) item.PriceLabelOverride = EmptyToNull(request.PriceLabelOverride); if (request.IsManualBilling is bool manual) item.IsManualBilling = manual;
-        await db.SaveChangesAsync(ct); return Ok(ClientProductDto(item));
+        if (request.Discount is not null && item.SetDiscount(request.Discount) is string discountError) return BadRequest(new { message = discountError });
+        await db.SaveChangesAsync(ct); return Ok(await ClientProductDtoAsync(item, ct));
     }
 
     /// <summary>
@@ -378,7 +548,8 @@ public sealed class AdminController(RtresDbContext db, PayPalCheckoutService che
         var item = await db.ClientProducts.Include(x => x.Product).Include(x => x.Project).SingleOrDefaultAsync(x => x.Id == id, ct); if (item is null) return NotFound();
         item.RenewsAt = ToUtcDate(request.RenewsAt); item.NextChargeAt = ToUtcDate(request.NextChargeAt);
         item.Status = RenewalReminderJob.StatusFor(item.Status, item.RenewsAt, DateTime.UtcNow);
-        await db.SaveChangesAsync(ct); return Ok(ClientProductDto(item));
+        item.OnDatesChanged();
+        await db.SaveChangesAsync(ct); return Ok(await ClientProductDtoAsync(item, ct));
     }
 
     /// <summary>Una fecha elegida en el portal se guarda a las 12:00 UTC: así se ve el mismo día en cualquier zona horaria (Lima incluida).</summary>
@@ -393,15 +564,44 @@ public sealed class AdminController(RtresDbContext db, PayPalCheckoutService che
         return (null, created, errors);
     }
     private static string Cell(IXLRow row, int col) => row.Cell(col).GetString();
-    private static byte[] CreateWorkbook(string[] headers) { using var book = new XLWorkbook(); var sheet = book.AddWorksheet("Plantilla"); for (var i = 0; i < headers.Length; i++) sheet.Cell(1, i + 1).Value = headers[i]; sheet.Row(1).Style.Font.Bold = true; sheet.Columns().AdjustToContents(); using var stream = new MemoryStream(); book.SaveAs(stream); return stream.ToArray(); }
+    /// <summary>
+    /// Plantilla de importación: encabezados (el importador lee por posición), una nota en cada encabezado y una lista
+    /// desplegable donde hay valores fijos, más la hoja "Valores válidos" con qué acepta cada columna.
+    /// </summary>
+    private static byte[] CreateWorkbook(params TemplateColumn[] columns)
+    {
+        const int LastDataRow = 1000;
+        using var book = new XLWorkbook(); var sheet = book.AddWorksheet("Plantilla");
+        var help = book.AddWorksheet("Valores válidos");
+        help.Cell(1, 1).Value = "Columna"; help.Cell(1, 2).Value = "Obligatoria"; help.Cell(1, 3).Value = "Valores aceptados"; help.Row(1).Style.Font.Bold = true;
+        for (var i = 0; i < columns.Length; i++)
+        {
+            var column = columns[i]; var accepted = column.Options is null ? column.Accepted : $"{column.Accepted}: {string.Join(", ", column.Options)}";
+            var header = sheet.Cell(1, i + 1); header.Value = column.Name;
+            header.CreateComment().AddText($"{(column.Required ? "Obligatoria" : "Opcional")}. {accepted}");
+            if (column.Required) header.Style.Fill.BackgroundColor = XLColor.FromHtml("#FFF2CC");
+            if (column.Options is not null)
+            {
+                var validation = sheet.Range(2, i + 1, LastDataRow, i + 1).CreateDataValidation();
+                validation.List($"\"{string.Join(",", column.Options)}\"", true);
+                validation.ErrorTitle = column.Name; validation.ErrorMessage = $"Valores aceptados: {string.Join(", ", column.Options)}";
+            }
+            help.Cell(i + 2, 1).Value = column.Name; help.Cell(i + 2, 2).Value = column.Required ? "Sí" : "No"; help.Cell(i + 2, 3).Value = accepted;
+        }
+        sheet.Row(1).Style.Font.Bold = true; sheet.Columns().AdjustToContents(); help.Columns().AdjustToContents();
+        help.Cell(columns.Length + 3, 1).Value = "Las columnas amarillas son obligatorias. El importador solo lee la hoja Plantilla, desde la fila 2.";
+        using var stream = new MemoryStream(); book.SaveAs(stream); return stream.ToArray();
+    }
     private static string? EmptyToNull(string? value) => string.IsNullOrWhiteSpace(value) ? null : value.Trim();
     private static string? ValidateClient(ClientRequest request) => string.IsNullOrWhiteSpace(request.CompanyName) || string.IsNullOrWhiteSpace(request.ContactName) || string.IsNullOrWhiteSpace(request.Email) || !request.Email.Contains('@') ? "Empresa, contacto y email válido son obligatorios." : request.PreferredLanguage.Trim().ToLowerInvariant() is not ("es" or "en" or "it") ? "Idioma inválido." : null;
     private static string? ValidateProduct(ProductRequest request) => string.IsNullOrWhiteSpace(request.Name) || string.IsNullOrWhiteSpace(request.Currency) ? "Nombre y moneda son obligatorios." : null;
-    private static Product ToProduct(ProductRequest r) => new() { Type = r.Type, Name = r.Name.Trim(), BillingCycle = r.BillingCycle, BasePrice = r.BasePrice, Currency = r.Currency.Trim().ToUpperInvariant(), Description = EmptyToNull(r.Description), IsActive = r.IsActive };
-    private static object ClientDto(Client x) => new { id = x.Id, companyName = x.CompanyName, contactName = x.ContactName, email = x.Email, phone = x.Phone, preferredLanguage = x.PreferredLanguage, isActive = x.IsActive };
+    private static Product ToProduct(ProductRequest r) => new() { Type = r.Type, Name = r.Name.Trim(), BillingCycle = r.BillingCycle, BasePrice = r.BasePrice, Currency = r.Currency.Trim().ToUpperInvariant(), Description = EmptyToNull(r.Description), IsActive = r.IsActive, TaxDocumentType = r.TaxDocumentType };
+    private static object ClientDto(Client x) => new { id = x.Id, companyName = x.CompanyName, contactName = x.ContactName, email = x.Email, phone = x.Phone, preferredLanguage = x.PreferredLanguage, isActive = x.IsActive, requiresTaxDocument = x.RequiresTaxDocument };
     private static object ProjectDto(Project x) => new { id = x.Id, clientId = x.ClientId, name = x.Name, slug = x.Slug, githubRepoOwner = x.GithubRepoOwner, githubRepoName = x.GithubRepoName };
-    private static object ProductDto(Product x) => new { id = x.Id, type = x.Type.ToString(), name = x.Name, billingCycle = x.BillingCycle.ToString(), basePrice = x.BasePrice, currency = x.Currency, description = x.Description, isActive = x.IsActive };
-    private static object ClientProductDto(ClientProduct x) => new { id = x.Id, clientId = x.ClientId, projectId = x.ProjectId, projectName = x.Project?.Name, productId = x.ProductId, productName = x.Product?.Name, productType = x.Product?.Type.ToString(), billingCycle = x.BillingCycle.ToString(), isManualBilling = x.IsManualBilling, status = x.Status.ToString(), price = x.Price, domainName = x.DomainName, priceLabelOverride = x.PriceLabelOverride, renewsAt = x.RenewsAt, nextChargeAt = x.NextChargeAt };
+    private static object ProductDto(Product x) => new { id = x.Id, type = x.Type.ToString(), name = x.Name, billingCycle = x.BillingCycle.ToString(), basePrice = x.BasePrice, currency = x.Currency, description = x.Description, isActive = x.IsActive, taxDocumentType = x.TaxDocumentType.ToString() };
+    private async Task<object> ClientProductDtoAsync(ClientProduct x, CancellationToken ct) => ClientProductDto(x, x.Product is null ? 0m : await db.IgvRateForAsync(x.ClientId, x.Product, ct));
+    /// <summary>Precios sin IGV; <c>nextChargeTotal</c> es lo que se cobra, con el IGV de <paramref name="igvRate"/> (Perú + Factura).</summary>
+    private static object ClientProductDto(ClientProduct x, decimal igvRate) => new { igvRate, nextChargeTotal = x.NextChargeTotal(igvRate), id = x.Id, clientId = x.ClientId, projectId = x.ProjectId, projectName = x.Project?.Name, productId = x.ProductId, productName = x.Product?.Name, productType = x.Product?.Type.ToString(), billingCycle = x.BillingCycle.ToString(), isManualBilling = x.IsManualBilling, status = x.Status.ToString(), price = x.Price, listPrice = x.ListPrice(), discount = x.Discount, discountEndsAt = x.DiscountEndsAt == ClientProductPricing.NoEnd ? null : x.DiscountEndsAt, currentPrice = x.CurrentPrice(DateTime.UtcNow), nextChargePrice = x.NextChargePrice(), domainName = x.DomainName, priceLabelOverride = x.PriceLabelOverride, renewsAt = x.RenewsAt, nextChargeAt = x.NextChargeAt };
     private static object TaxDocumentDto(TaxDocument x) => new { id = x.Id, paymentTransactionId = x.PaymentTransactionId, clientId = x.ClientId, type = x.Type.ToString(), series = x.Series, number = x.Number, issueDate = x.IssueDate, currency = x.Currency, baseAmount = x.BaseAmount, igvAmount = x.IgvAmount, totalAmount = x.TotalAmount, notes = x.Notes };
     private static object ExpenseDto(Expense x) => new { id = x.Id, description = x.Description, category = x.Category.ToString(), type = x.Type.ToString(), amount = x.Amount, currency = x.Currency, amountPen = x.AmountPen, date = x.Date, recurring = x.Recurring, recurrenceCycle = x.RecurrenceCycle?.ToString() };
 }
@@ -410,17 +610,20 @@ public sealed record ProfileRequest(string Name);
 public sealed record ChangePasswordRequest(string CurrentPassword, string NewPassword);
 public sealed record InviteRequest(string Name, string Email);
 public sealed record UpdateTeamRequest(UserRole? Role, bool? IsActive);
-public sealed record ClientRequest(string CompanyName, string ContactName, string Email, string? Phone, string PreferredLanguage);
-public sealed record ClientPatchRequest(string? CompanyName, string? ContactName, string? Email, string? Phone, string? PreferredLanguage, bool? IsActive);
-public sealed record ProductRequest(ProductType Type, string Name, BillingCycle BillingCycle, decimal? BasePrice, string Currency, string? Description, bool IsActive);
-public sealed record ProductPatchRequest(ProductType? Type, string? Name, BillingCycle? BillingCycle, decimal? BasePrice, string? Currency, string? Description, bool? IsActive);
-public sealed record AssignProductRequest(Guid ProductId, Guid ProjectId, BillingCycle BillingCycle, string BillingMode, decimal? Price, string? DomainName, string? PriceLabelOverride, DateOnly? RenewsAt = null, DateOnly? NextChargeAt = null);
+public sealed record ClientRequest(string CompanyName, string ContactName, string Email, string? Phone, string PreferredLanguage, bool RequiresTaxDocument = false);
+public sealed record ClientPatchRequest(string? CompanyName, string? ContactName, string? Email, string? Phone, string? PreferredLanguage, bool? IsActive, bool? RequiresTaxDocument = null);
+public sealed record ProductRequest(ProductType Type, string Name, BillingCycle BillingCycle, decimal? BasePrice, string Currency, string? Description, bool IsActive, TaxDocumentType TaxDocumentType = TaxDocumentType.Factura);
+public sealed record ProductPatchRequest(ProductType? Type, string? Name, BillingCycle? BillingCycle, decimal? BasePrice, string? Currency, string? Description, bool? IsActive, TaxDocumentType? TaxDocumentType = null);
+public sealed record AssignProductRequest(Guid ProductId, Guid ProjectId, BillingCycle BillingCycle, string BillingMode, decimal? Price, string? DomainName, string? PriceLabelOverride, DateOnly? RenewsAt = null, DateOnly? NextChargeAt = null, decimal? Discount = null);
+public sealed record TransferPaymentRequest(decimal? Amount, DateOnly? PaidAt, string? Reference, int Years = 1);
 public sealed record ClientProductDatesRequest(DateOnly? RenewsAt, DateOnly? NextChargeAt);
-public sealed record ClientProductPatchRequest(decimal? Price, ClientProductStatus? Status, BillingCycle? BillingCycle, bool? IsManualBilling, string? DomainName, string? PriceLabelOverride);
+public sealed record ClientProductPatchRequest(decimal? Price, ClientProductStatus? Status, BillingCycle? BillingCycle, bool? IsManualBilling, string? DomainName, string? PriceLabelOverride, decimal? Discount = null);
 public sealed record ImportError(int Row, string Reason);
+/// <summary>Columna de una plantilla de importación: <paramref name="Options"/> genera una lista desplegable en Excel.</summary>
+public sealed record TemplateColumn(string Name, bool Required, string Accepted, string[]? Options = null);
 public sealed record ClientAccess(string ClientName, string Email, string TemporaryPassword, bool EmailSent = false);
 public sealed record ProjectRequest(string? Name, string? Slug, string? GithubRepoOwner, string? GithubRepoName);
-public sealed record TaxSettingsRequest(decimal? IgvRate, decimal? RentaRate);
-public sealed record TaxDocumentRequest(Guid? PaymentTransactionId, Guid ClientId, TaxDocumentType Type, string Series, int Number, DateOnly IssueDate, string Currency, decimal BaseAmount, decimal IgvAmount, decimal TotalAmount, string? Notes);
+public sealed record TaxSettingsRequest(decimal? IgvRate, decimal? RentaRate, string? FacturaSeries = null, int? FacturaNextNumber = null, string? ReciboSeries = null, int? ReciboNextNumber = null);
+public sealed record TaxDocumentRequest(Guid ClientProductId, DateOnly IssueDate, string Currency, decimal TotalAmount, string? Notes);
 public sealed record ExpenseRequest(string Description, ExpenseCategory Category, ExpenseType Type, decimal Amount, string Currency, DateOnly Date, bool Recurring, BillingCycle? RecurrenceCycle);
 public sealed record ExpensePatchRequest(string? Description, ExpenseCategory? Category, ExpenseType? Type, decimal? Amount, string? Currency, DateOnly? Date, bool? Recurring, BillingCycle? RecurrenceCycle);

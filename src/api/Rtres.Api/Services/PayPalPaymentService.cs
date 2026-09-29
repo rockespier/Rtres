@@ -10,7 +10,7 @@ namespace Rtres.Api.Services;
 /// Un producto solo pasa a <see cref="ClientProductStatus.Activo"/> (y extiende su vigencia) cuando el cobro
 /// está COMPLETED — aprobar la orden en PayPal no es cobrarla.
 /// </summary>
-public sealed class PayPalPaymentService(RtresDbContext db, IPayPalClient payPal, INotificationSender notifications, ILogger<PayPalPaymentService> logger)
+public sealed class PayPalPaymentService(RtresDbContext db, IPayPalClient payPal, INotificationSender notifications, TaxDocumentService taxDocuments, ILogger<PayPalPaymentService> logger)
 {
     /// <summary>
     /// Confirma el pago de un producto sin esperar al webhook (lo llama la pantalla de retorno de PayPal):
@@ -59,16 +59,23 @@ public sealed class PayPalPaymentService(RtresDbContext db, IPayPalClient payPal
     /// Registra un cobro confirmado. <paramref name="transactionKey"/> identifica el cobro (id de la orden, o de la
     /// venta en suscripciones): el mismo cobro llega por varias vías (respuesta de la captura, webhook, reintentos) y
     /// solo el primero crea la transacción, extiende la vigencia y avisa al cliente. Devuelve si se aplicó.
+    /// <paramref name="years"/>: años pagados por adelantado (productos anuales); si no se indica y el cobro es la orden
+    /// de PayPal pendiente, se usan los años con los que se creó esa orden.
     /// </summary>
-    public async Task<bool> ApplyPaymentAsync(ClientProduct item, string transactionKey, decimal amount, string? currency, CancellationToken ct)
+    public async Task<bool> ApplyPaymentAsync(ClientProduct item, string transactionKey, decimal amount, string? currency, CancellationToken ct, string method = PaymentMethods.PayPal, DateTime? paidAt = null, int? years = null)
     {
         if (await PaymentExistsAsync(transactionKey, ct)) return false;
-        var transaction = new PaymentTransaction { ClientProductId = item.Id, PayPalOrderIdOrSubscriptionId = transactionKey, Amount = amount, Currency = currency ?? item.Product?.Currency ?? "USD", Status = "COMPLETED" };
+        var when = paidAt ?? DateTime.UtcNow;
+        var paidYears = item.BillingCycle == BillingCycle.Anual ? Math.Clamp(years ?? (transactionKey == item.PayPalOrderId ? item.PayPalOrderYears : null) ?? 1, 1, ClientProductPricing.MaxPrepaidYears) : 1;
+        var transaction = new PaymentTransaction { ClientProductId = item.Id, PayPalOrderIdOrSubscriptionId = transactionKey, Amount = amount, Currency = currency ?? item.Product?.Currency ?? "USD", Status = "COMPLETED", Method = method, CreatedAt = when, Years = paidYears };
         transaction.InternalCode = $"RT-INT-{1 + await db.PaymentTransactions.CountAsync(ct):000000}";
         transaction.AmountPen = amount * await db.RateToPenAsync(transaction.Currency, DateOnly.FromDateTime(transaction.CreatedAt), ct);
         db.PaymentTransactions.Add(transaction);
         item.Status = ClientProductStatus.Activo;
-        ExtendPeriod(item, DateTime.UtcNow);
+        // El descuento cubre solo el primer año pagado: se resuelve tras extender ese año y luego se suman los demás.
+        ExtendPeriod(item, when);
+        item.OnPaymentApplied();
+        for (var year = 1; year < paidYears; year++) ExtendPeriod(item, when);
         try { await db.SaveChangesAsync(ct); }
         catch (DbUpdateException)
         {
@@ -79,6 +86,7 @@ public sealed class PayPalPaymentService(RtresDbContext db, IPayPalClient payPal
             return false;
         }
 
+        await taxDocuments.IssueForPaymentAsync(transaction, ct);
         if (await db.Clients.FindAsync([item.ClientId], ct) is Client client)
             await notifications.SendAsync(client, new Notification(NotificationType.PaymentReceived, new()
             {
