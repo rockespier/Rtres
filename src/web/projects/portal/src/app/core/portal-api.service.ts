@@ -62,6 +62,8 @@ export interface TicketDto {
 }
 
 export interface TicketCommentDto { id: string; body: string; fromGithub: boolean; authorName: string | null; createdAt: string; }
+export interface AdminTicketDto { id:string; code:string; clientId:string; projectId:string; type:TicketType; status:TicketStatus; title:string; description:string; createdAt:string; updatedAt:string; githubIssueNumber:number|null; githubIssueUrl:string|null; client:{id:string;name:string}; project:{id:string;name:string}; managedIn:'GitHub'|'Portal'; }
+export interface AdminTicketsPage { items:AdminTicketDto[]; page:number; totalPages:number; }
 
 export interface TicketsPage { items: TicketDto[]; page: number; totalPages: number; }
 
@@ -78,7 +80,7 @@ export interface CreateTicketRequest {
   estimatedImpact?: string;
 }
 export interface TeamUserDto { id:string; name:string; email:string; role:'Cliente'|'Admin'; isActive:boolean; }
-export interface AdminClientDto { id:string; companyName:string; isActive:boolean; requiresTaxDocument:boolean; activeProducts:number; openTickets:number; }
+export interface AdminClientDto { id:string; companyName:string; isActive:boolean; requiresTaxDocument:boolean; activeProducts:number; expiringProducts:number; expiredProducts:number; openTickets:number; }
 export interface PaymentTransactionDto { id:string; createdAt:string; product:string; clientName:string; amount:number; currency:string; status:string; internalCode:string|null; }
 export interface AdminClientDetailDto { id:string; companyName:string; contactName:string; email:string; phone:string|null; preferredLanguage:string; isActive:boolean; requiresTaxDocument:boolean; }
 export interface AdminClientProductDto { id:string; clientId:string; projectId:string; projectName:string|null; productId:string; productName:string|null; productType:string|null; billingCycle:string; isManualBilling:boolean; status:string; price:number|null; listPrice:number|null; discount:number|null; discountEndsAt:string|null; currentPrice:number|null; nextChargePrice:number|null; igvRate:number; nextChargeTotal:number|null; domainName:string|null; priceLabelOverride:string|null; renewsAt:string|null; nextChargeAt:string|null; }
@@ -136,6 +138,9 @@ export class PortalApiService {
   inviteTeam(name:string,email:string) { return this.http.post<{id:string;temporaryPassword:string;emailSent:boolean}>(`${this.base}/team/users`,{name,email}); }
   updateTeam(id:string, body:{role?:string;isActive?:boolean}) { return this.http.patch(`${this.base}/team/users/${id}`,body); }
   getAdminClients() { return this.http.get<AdminClientDto[]>(`${this.base}/admin/clients`); }
+  getAdminTickets(params:{status?:string;clientId?:string;projectId?:string;page?:number}={}) { return this.http.get<AdminTicketsPage>(`${this.base}/admin/tickets${query(params)}`); }
+  updateAdminTicket(id:string,status:TicketStatus) { return this.http.patch<{status:TicketStatus}>(`${this.base}/admin/tickets/${id}`,{status}); }
+  addAdminTicketComment(id:string,body:string) { return this.http.post<TicketCommentDto>(`${this.base}/admin/tickets/${id}/comments`,{body}); }
   getAdminClient(id:string) { return this.http.get<{client:AdminClientDetailDto;products:AdminClientProductDto[]}>(`${this.base}/admin/clients/${id}`); }
   createAdminClient(body: Omit<AdminClientDetailDto,'id'>) { return this.http.post<{client:AdminClientDetailDto;access:ClientAccessDto}>(`${this.base}/admin/clients`, body); }
   generateClientAccess(clientId:string) { return this.http.post<ClientAccessDto>(`${this.base}/admin/clients/${clientId}/access`, {}); }

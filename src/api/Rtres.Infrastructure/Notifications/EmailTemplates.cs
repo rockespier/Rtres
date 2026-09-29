@@ -15,6 +15,7 @@ namespace Rtres.Infrastructure.Notifications;
 /// <item><c>PaymentFailed</c>: product</item>
 /// <item><c>AccountAccess</c>: name, company, email, password (se envía en el momento, nunca por la cola de Hangfire)</item>
 /// <item><c>TransferRequested</c>: clientId, company, product, project, amount?, currency — aviso interno para Rtres, siempre en español</item>
+/// <item><c>TicketCreated</c>: ticketId, code, title, company, project, body — aviso interno para Rtres, siempre en español</item>
 /// </list>
 /// </summary>
 public static class EmailTemplates
@@ -24,7 +25,7 @@ public static class EmailTemplates
     public static (string Subject, string Html, string Text) Render(Notification notification, string? language, string portalUrl)
     {
         // Los avisos internos van al equipo de Rtres: el idioma del cliente no aplica.
-        var lang = notification.Type == NotificationType.TransferRequested ? "es" : Languages.Contains(language) ? language! : "es";
+        var lang = notification.Type is NotificationType.TransferRequested or NotificationType.TicketCreated ? "es" : Languages.Contains(language) ? language! : "es";
         var d = notification.Data;
         var t = Texts[lang];
         var portal = portalUrl.TrimEnd('/');
@@ -59,9 +60,13 @@ public static class EmailTemplates
                     ? new[] { string.Format(t["transfer.body"], V("company"), V("product"), V("project")), t["transfer.next"] }
                     : new[] { string.Format(t["transfer.body"], V("company"), V("product"), V("project")), string.Format(t["transfer.amount"], Money(lang, V("amount"), V("currency"))), t["transfer.next"] },
                 t["cta.client"], $"{portal}/admin/clients/{V("clientId")}"),
+            NotificationType.TicketCreated => (
+                string.Format(t["ticket-created.subject"], V("code"), V("company")),
+                new[] { string.Format(t["ticket-created.body"], V("company"), V("project"), V("title")), Quote(V("body")) },
+                t["cta.ticket"], $"{portal}/admin/tickets?ticketId={V("ticketId")}"),
             _ => throw new ArgumentOutOfRangeException(nameof(notification), notification.Type, null),
         };
-        var footer = notification.Type == NotificationType.TransferRequested ? t["footer.staff"] : t["footer"];
+        var footer = notification.Type is NotificationType.TransferRequested or NotificationType.TicketCreated ? t["footer.staff"] : t["footer"];
         return (subject, Html(footer, paragraphs, cta, link), Text(footer, paragraphs, cta, link));
     }
 
@@ -150,6 +155,8 @@ public static class EmailTemplates
             ["transfer.body"] = "{0} agregó {1} (proyecto {2}) desde el catálogo y eligió pagar por transferencia bancaria.",
             ["transfer.amount"] = "Monto a recibir: {0}.",
             ["transfer.next"] = "El producto queda Pendiente. Cuando llegue la transferencia, regístrala en el detalle del cliente con \"Registrar pago\" para activarlo.",
+            ["ticket-created.subject"] = "Nuevo ticket sin GitHub: {0} — {1}",
+            ["ticket-created.body"] = "{0} abrió el ticket «{2}» para el proyecto {1}. Atiéndelo desde el portal de administración:",
             ["cta.client"] = "Ver cliente",
             ["footer.staff"] = "Aviso interno del portal de clientes de Rtres.",
         },

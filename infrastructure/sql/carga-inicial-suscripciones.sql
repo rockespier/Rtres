@@ -25,6 +25,7 @@
 */
 SET NOCOUNT ON;
 SET XACT_ABORT ON;
+SET DATEFORMAT dmy;
 
 DECLARE @Carga TABLE (
     Fila          INT IDENTITY(1,1),
@@ -41,9 +42,7 @@ DECLARE @Carga TABLE (
 INSERT INTO @Carga (ClienteEmail, Proyecto, Producto, Ciclo, Fecha, Dominio, PrecioFinal) VALUES
 (N'casob@rtres.net', N'Hosting Casob', N'Hosting Cloud Medium', N'Anual', '24/10/2026', N'casobtempus.com.pe', 110),
 (N'casob@rtres.net', N'Dominio Casob', N'Dominio .pe', N'Anual', '24/10/2026', N'casobtempus.com.pe', 40),
-(N'casob@rtres.net', N'SSL Casob', N'SSL Estandar', N'Anual', '24/10/2023', N'casobtempus.com.pe', 90),
-(N'casob@rtres.net', N'SSL Casob', N'SSL Estandar', N'Anual', '24/10/2024', N'casobtempus.com.pe', 90),
-(N'casob@rtres.net', N'SSL Casob', N'SSL Estandar', N'Anual', '24/10/2025', N'casobtempus.com.pe', 90),
+(N'casob@rtres.net', N'SSL Casob', N'SSL Estandar', N'Anual', '24/10/2025', N'casobtempus.com.pe', 90), -- 3 años pagados: vence al final del último
 (N'kawasaki@rtres.net', N'SSL WILCARD Taller', N'SSL WILCARD', N'Anual', '03/05/2026', N'tiendacrosland.pe', 231),
 (N'kawasaki@rtres.net', N'Hosting Sistema Taller', N'Hosting Cloud Empresa', N'Anual', '05/12/2025', N'tiendacrosland.pe', 594.96),
 (N'embarcate@rtres.net', N'Hosting Embarcate', N'Hosting Cloud Medium', N'Anual', '15/04/2026', N'embarcateseguro.com', 70),
@@ -74,12 +73,7 @@ INSERT INTO @Carga (ClienteEmail, Proyecto, Producto, Ciclo, Fecha, Dominio, Pre
 (N'tsa@rtres.net', N'Hosting TSA y SOS24', N'Hosting Cloud Medium', N'Anual', '28/11/2025', N'tsa.pe', 85),
 (N'tsa@rtres.net', N'SSL TSA', N'SSL WILCARD', N'Anual', '02/08/2026', N'tsa.pe', 148.31),
 (N'universal@rtres.net', N'Hosting UMED', N'Hosting Cloud Pro', N'Anual', '30/10/2026', N'', 150),
-(N'bajaj@rtres.net', N'Hosting Bajaj', N'Hosting Mensual', N'Mensual', '15/07/2026', N'postventabajajperu.com.pe', 50),
-(N'bajaj@rtres.net', N'Hosting Bajaj', N'Hosting Mensual', N'Mensual', '15/08/2026', N'postventabajajperu.com.pe', 50),
-(N'bajaj@rtres.net', N'Hosting Bajaj', N'Hosting Mensual', N'Mensual', '15/09/2026', N'postventabajajperu.com.pe', 50),
-(N'bajaj@rtres.net', N'Hosting Bajaj', N'Hosting Mensual', N'Mensual', '15/10/2026', N'postventabajajperu.com.pe', 50),
-(N'bajaj@rtres.net', N'Hosting Bajaj', N'Hosting Mensual', N'Mensual', '15/11/2026', N'postventabajajperu.com.pe', 50),
-(N'bajaj@rtres.net', N'Hosting Bajaj', N'Hosting Mensual', N'Mensual', '15/12/2026', N'postventabajajperu.com.pe', 50);
+(N'bajaj@rtres.net', N'Hosting Bajaj', N'Hosting Mensual', N'Mensual', '15/12/2026', N'postventabajajperu.com.pe', 50); -- 6 meses pagados: próximo cobro tras el último
 
 -- =========================================================
 
@@ -202,3 +196,28 @@ JOIN Clients cl ON cl.Id = cp.ClientId
 JOIN Projects pr ON pr.Id = cp.ProjectId
 JOIN Products p ON p.Id = cp.ProductId
 ORDER BY cl.CompanyName, pr.Name, p.Name;
+
+
+SELECT cl.Email, COUNT(cp.Id) AS Productos
+  FROM Clients cl LEFT JOIN ClientProducts cp ON cp.ClientId = cl.Id
+  GROUP BY cl.Email ORDER BY cl.Email;
+
+
+
+ BEGIN TRAN;
+
+  WITH d AS (
+      SELECT cp.Id,
+             ROW_NUMBER() OVER (PARTITION BY cp.ClientId, cp.ProjectId, cp.ProductId, ISNULL(cp.DomainName, N'')
+                                ORDER BY COALESCE(cp.RenewsAt, cp.NextChargeAt) DESC) AS rn
+      FROM ClientProducts cp
+      WHERE cp.ClientId IN (SELECT Id FROM Clients WHERE Email IN (N'casob@rtres.net', N'bajaj@rtres.net'))
+  )
+  DELETE cp
+  OUTPUT deleted.ClientId, COALESCE(deleted.RenewsAt, deleted.NextChargeAt) AS Fecha
+  FROM ClientProducts cp
+  JOIN d ON d.Id = cp.Id
+  WHERE d.rn > 1
+    AND NOT EXISTS (SELECT 1 FROM PaymentTransactions pt WHERE pt.ClientProductId = cp.Id);
+
+  commit; -- cambia a COMMIT si lo borrado es correcto

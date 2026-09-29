@@ -1,7 +1,7 @@
 namespace Rtres.Domain;
 
 /// <summary><see cref="TransferRequested"/> es un aviso interno para Rtres (no para el cliente).</summary>
-public enum NotificationType { RenewalReminder, TicketStatusChanged, TicketReply, PaymentReceived, PaymentFailed, AccountAccess, TransferRequested }
+public enum NotificationType { RenewalReminder, TicketStatusChanged, TicketReply, PaymentReceived, PaymentFailed, AccountAccess, TransferRequested, TicketCreated }
 
 /// <summary>
 /// Aviso para un cliente. <see cref="Data"/> lleva los valores que usa la plantilla (ver <c>EmailTemplates</c>);

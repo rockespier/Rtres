@@ -18,7 +18,7 @@ public sealed class GitHubIssueSyncJob(RtresDbContext db, IGitHubIssuesClient gi
         var ticket = await db.Tickets.SingleOrDefaultAsync(x => x.Id == ticketId, cancellationToken);
         if (ticket is null) { logger.LogWarning("Ticket {TicketId} no existe; no se crea issue", ticketId); return; }
         var project = await db.Projects.SingleAsync(x => x.Id == ticket.ProjectId, cancellationToken);
-        if (!HasRepo(project))
+        if (!project.HasRepo())
         {
             logger.LogWarning("Proyecto {Project} no tiene repo de GitHub configurado; ticket {Code} queda sin issue", project.Slug, ticket.Code);
             return;
@@ -44,16 +44,15 @@ public sealed class GitHubIssueSyncJob(RtresDbContext db, IGitHubIssuesClient gi
         var ticket = await db.Tickets.SingleAsync(x => x.Id == comment.TicketId, cancellationToken);
         if (ticket.GithubIssueNumber is null) return; // CreateIssueAsync lo publica al crear el issue
         var project = await db.Projects.SingleAsync(x => x.Id == ticket.ProjectId, cancellationToken);
-        if (!HasRepo(project)) return;
+        if (!project.HasRepo()) return;
         await PublishAsync(project, ticket, comment, cancellationToken);
     }
 
     private async Task PublishAsync(Project project, Ticket ticket, TicketComment comment, CancellationToken cancellationToken)
     {
-        var author = await db.UserAccounts.Where(x => x.Id == comment.AuthorUserId).Select(x => x.Name == "" ? x.Email : x.Name).SingleOrDefaultAsync(cancellationToken) ?? "Cliente";
+        var author = await db.UserAccounts.Where(x => x.Id == comment.AuthorUserId).Select(x => x.Role == UserRole.SuperAdmin ? "Rtres" : x.Name == "" ? x.Email : x.Name).SingleOrDefaultAsync(cancellationToken) ?? "Cliente";
         comment.GithubCommentId = await github.CreateCommentAsync(project, ticket.GithubIssueNumber!.Value, GitHubIssuesClient.BuildCommentBody(comment, author), cancellationToken);
         await db.SaveChangesAsync(cancellationToken);
     }
 
-    private static bool HasRepo(Project project) => !string.IsNullOrWhiteSpace(project.GithubRepoOwner) && !string.IsNullOrWhiteSpace(project.GithubRepoName);
 }

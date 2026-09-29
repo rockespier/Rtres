@@ -67,5 +67,5 @@ public class PrepaidYearsTests
         new(db, null!, new FakeNotifications(), PayPalPaymentTests.TaxDocuments(db), NullLogger<PayPalPaymentService>.Instance);
 
     private static AdminController Admin(RtresDbContext db) =>
-        new(db, null!, null!, ClientOnboardingTests.AccessEmail(db, new FakeEmail()), PayPalPaymentTests.TaxDocuments(db)) { ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() } };
+        new(db, null!, null!, ClientOnboardingTests.AccessEmail(db, new FakeEmail()), PayPalPaymentTests.TaxDocuments(db), null!, new FakeNotifications()) { ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() } };
 }

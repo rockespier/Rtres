@@ -159,7 +159,7 @@ public class ClientOnboardingTests
     }
 
     private static AdminController Admin(RtresDbContext db, FakeEmail? email = null) =>
-        new(db, null!, null!, AccessEmail(db, email ?? new FakeEmail()), PayPalPaymentTests.TaxDocuments(db)) { ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() } };
+        new(db, null!, null!, AccessEmail(db, email ?? new FakeEmail()), PayPalPaymentTests.TaxDocuments(db), null!, new FakeNotifications()) { ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() } };
 
     internal static AccessEmailService AccessEmail(RtresDbContext db, IEmailSender email) =>
         new(NotificationJobTests.Job(db, email), new ConfigurationBuilder().Build(), NullLogger<AccessEmailService>.Instance);
