@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
+using Hangfire;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -55,8 +56,45 @@ public sealed class AccountController(RtresDbContext db, AccessEmailService acce
 }
 
 [ApiController, Authorize(Roles = "SuperAdmin"), Route("api/admin")]
-public sealed class AdminController(RtresDbContext db, PayPalCheckoutService checkoutService, ExchangeRateSyncJob exchangeRateSync, AccessEmailService accessEmail, TaxDocumentService taxDocuments) : ControllerBase
+public sealed class AdminController(RtresDbContext db, PayPalCheckoutService checkoutService, ExchangeRateSyncJob exchangeRateSync, AccessEmailService accessEmail, TaxDocumentService taxDocuments, IBackgroundJobClient jobs, INotificationSender notifications) : ControllerBase
 {
+    private Guid UserId => Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+    [HttpGet("tickets")]
+    public async Task<ActionResult> Tickets(TicketStatus? status, Guid? clientId, Guid? projectId, int page = 1, CancellationToken ct = default)
+    {
+        page = Math.Max(page, 1);
+        var query = from ticket in db.Tickets
+                    join client in db.Clients on ticket.ClientId equals client.Id
+                    join project in db.Projects on ticket.ProjectId equals project.Id
+                    where (status == null || ticket.Status == status) && (clientId == null || ticket.ClientId == clientId) && (projectId == null || ticket.ProjectId == projectId)
+                    orderby ticket.UpdatedAt descending
+                    select new { ticket, client, project };
+        var total = await query.CountAsync(ct);
+        var items = await query.Skip((page - 1) * 20).Take(20).Select(x => new { id = x.ticket.Id, code = x.ticket.Code, clientId = x.ticket.ClientId, projectId = x.ticket.ProjectId, type = x.ticket.Type.ToString(), status = x.ticket.Status.ToString(), title = x.ticket.Title, description = x.ticket.Description, createdAt = x.ticket.CreatedAt, updatedAt = x.ticket.UpdatedAt, githubIssueNumber = x.ticket.GithubIssueNumber, githubIssueUrl = x.ticket.GithubIssueUrl, client = new { id = x.client.Id, name = x.client.CompanyName }, project = new { id = x.project.Id, name = x.project.Name }, managedIn = x.project.GithubRepoOwner.Trim() != "" && x.project.GithubRepoName.Trim() != "" ? "GitHub" : "Portal" }).ToListAsync(ct);
+        return Ok(new { items, page, totalPages = (int)Math.Ceiling(total / 20d) });
+    }
+    [HttpPatch("tickets/{id:guid}")]
+    public async Task<ActionResult> UpdateTicket(Guid id, UpdateTicketStatusRequest request, CancellationToken ct)
+    {
+        var entry = await (from ticket in db.Tickets join project in db.Projects on ticket.ProjectId equals project.Id where ticket.Id == id select new { ticket, project }).SingleOrDefaultAsync(ct); if (entry is null) return NotFound();
+        if (entry.project.HasRepo()) return Conflict(new { message = "El estado de este ticket se gestiona en GitHub" });
+        if (entry.ticket.Status == request.Status) return Ok(new { status = entry.ticket.Status.ToString() });
+        entry.ticket.Status = request.Status; entry.ticket.UpdatedAt = DateTime.UtcNow; await db.SaveChangesAsync(ct);
+        var client = await db.Clients.SingleAsync(x => x.Id == entry.ticket.ClientId, ct);
+        await notifications.SendAsync(client, new Notification(NotificationType.TicketStatusChanged, new() { ["ticketId"] = entry.ticket.Id.ToString(), ["code"] = entry.ticket.Code, ["title"] = entry.ticket.Title, ["status"] = entry.ticket.Status.ToString() }, $"ticket-status:{entry.ticket.Id}:{entry.ticket.UpdatedAt.Ticks}"), ct);
+        return Ok(new { status = entry.ticket.Status.ToString() });
+    }
+    [HttpPost("tickets/{id:guid}/comments")]
+    public async Task<ActionResult> AddTicketComment(Guid id, CreateTicketCommentRequest request, CancellationToken ct)
+    {
+        if (string.IsNullOrWhiteSpace(request.Body)) return BadRequest(new { message = "El comentario no puede estar vacío." });
+        var entry = await (from ticket in db.Tickets join project in db.Projects on ticket.ProjectId equals project.Id where ticket.Id == id select new { ticket, project }).SingleOrDefaultAsync(ct); if (entry is null) return NotFound();
+        var comment = new TicketComment { TicketId = id, AuthorUserId = UserId, Body = request.Body.Trim() }; db.TicketComments.Add(comment); entry.ticket.UpdatedAt = DateTime.UtcNow; await db.SaveChangesAsync(ct);
+        if (entry.project.HasRepo()) jobs.Enqueue<GitHubIssueSyncJob>(j => j.PostCommentAsync(comment.Id, CancellationToken.None));
+        var client = await db.Clients.SingleAsync(x => x.Id == entry.ticket.ClientId, ct);
+        await notifications.SendAsync(client, new Notification(NotificationType.TicketReply, new() { ["ticketId"] = entry.ticket.Id.ToString(), ["code"] = entry.ticket.Code, ["title"] = entry.ticket.Title, ["author"] = "Rtres", ["body"] = comment.Body }, $"ticket-reply:portal:{comment.Id}"), ct);
+        return Ok(await PortalController.ToCommentDtos(db, db.TicketComments.Where(x => x.Id == comment.Id)).SingleAsync(ct));
+    }
     [HttpGet("exchange-rates")]
     public async Task<ActionResult> ExchangeRates(DateOnly? from, DateOnly? to, CancellationToken ct) => Ok(await db.ExchangeRates
         .Where(x => (from == null || x.Date >= from) && (to == null || x.Date <= to)).OrderByDescending(x => x.Date)
@@ -301,7 +339,7 @@ public sealed class AdminController(RtresDbContext db, PayPalCheckoutService che
     }
 
     [HttpGet("clients")]
-    public async Task<ActionResult> Clients(CancellationToken ct) => Ok(await db.Clients.OrderBy(x => x.CompanyName).Select(x => new { id = x.Id, companyName = x.CompanyName, isActive = x.IsActive, requiresTaxDocument = x.RequiresTaxDocument, activeProducts = db.ClientProducts.Count(p => p.ClientId == x.Id && p.Status == ClientProductStatus.Activo), openTickets = db.Tickets.Count(t => t.ClientId == x.Id && (t.Status == TicketStatus.Abierto || t.Status == TicketStatus.EnProgreso)) }).ToListAsync(ct));
+    public async Task<ActionResult> Clients(CancellationToken ct) => Ok(await db.Clients.OrderBy(x => x.CompanyName).Select(x => new { id = x.Id, companyName = x.CompanyName, isActive = x.IsActive, requiresTaxDocument = x.RequiresTaxDocument, activeProducts = db.ClientProducts.Count(p => p.ClientId == x.Id && p.Status == ClientProductStatus.Activo), expiringProducts = db.ClientProducts.Count(p => p.ClientId == x.Id && p.Status == ClientProductStatus.PorVencer), expiredProducts = db.ClientProducts.Count(p => p.ClientId == x.Id && p.Status == ClientProductStatus.Vencido), openTickets = db.Tickets.Count(t => t.ClientId == x.Id && (t.Status == TicketStatus.Abierto || t.Status == TicketStatus.EnProgreso)) }).ToListAsync(ct));
 
     [HttpGet("clients/{id:guid}")]
     public async Task<ActionResult> Client(Guid id, CancellationToken ct)

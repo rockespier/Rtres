@@ -10,7 +10,7 @@ using Rtres.Infrastructure.Persistence;
 namespace Rtres.Api.Controllers;
 
 [ApiController, Authorize, Route("api")]
-public sealed class PortalController(RtresDbContext db, IBackgroundJobClient jobs) : ControllerBase
+public sealed class PortalController(RtresDbContext db, IBackgroundJobClient jobs, INotificationSender notifications, IConfiguration configuration, ILogger<PortalController> logger) : ControllerBase
 {
     private Guid UserId => Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
     private bool IsSuperAdmin => User.IsInRole(nameof(UserRole.SuperAdmin));
@@ -64,7 +64,24 @@ public sealed class PortalController(RtresDbContext db, IBackgroundJobClient job
     }
     // Filtrar siempre antes de proyectar: SQL Server no traduce filtros sobre el DTO construido por constructor.
     internal static IQueryable<TicketCommentDto> ToCommentDtos(RtresDbContext db, IQueryable<TicketComment> comments) => comments
-        .Select(x => new TicketCommentDto(x.Id, x.Body, x.FromGithub, x.FromGithub ? x.GithubAuthorLogin : db.UserAccounts.Where(u => u.Id == x.AuthorUserId).Select(u => u.Name == "" ? u.Email : u.Name).FirstOrDefault(), x.CreatedAt));
-    [HttpPost("tickets")] public async Task<IActionResult> CreateTicket(CreateTicketRequest r, Guid? clientId, CancellationToken ct) { var error = ResolveClientId(clientId, out var client); if (error is not null) return error; if (!await db.Projects.AnyAsync(x => x.Id == r.ProjectId && x.ClientId == client, ct)) return NotFound(); var t = new Ticket { Code = $"RT-{101 + await db.Tickets.CountAsync(ct)}", ClientId = client, ProjectId = r.ProjectId, CreatedByUserId = UserId, Type = r.Type, Title = r.Title, Description = r.Description, CurrentBehavior = r.CurrentBehavior, ExpectedBehavior = r.ExpectedBehavior, StepsToReproduce = r.StepsToReproduce, Environment = r.Environment, AcceptanceCriteria = r.AcceptanceCriteria, EstimatedImpact = r.EstimatedImpact }; db.Tickets.Add(t); await db.SaveChangesAsync(ct); jobs.Enqueue<GitHubIssueSyncJob>(j => j.CreateIssueAsync(t.Id, CancellationToken.None)); return Created($"/api/tickets/{t.Id}", t); }
+        .Select(x => new TicketCommentDto(x.Id, x.Body, x.FromGithub, x.FromGithub ? x.GithubAuthorLogin : db.UserAccounts.Where(u => u.Id == x.AuthorUserId).Select(u => u.Role == UserRole.SuperAdmin ? "Rtres" : u.Name == "" ? u.Email : u.Name).FirstOrDefault(), x.CreatedAt));
+    [HttpPost("tickets")]
+    public async Task<IActionResult> CreateTicket(CreateTicketRequest r, Guid? clientId, CancellationToken ct)
+    {
+        var error = ResolveClientId(clientId, out var clientIdValue); if (error is not null) return error;
+        var project = await db.Projects.SingleOrDefaultAsync(x => x.Id == r.ProjectId && x.ClientId == clientIdValue, ct); if (project is null) return NotFound();
+        var ticket = new Ticket { Code = $"RT-{101 + await db.Tickets.CountAsync(ct)}", ClientId = clientIdValue, ProjectId = r.ProjectId, CreatedByUserId = UserId, Type = r.Type, Title = r.Title, Description = r.Description, CurrentBehavior = r.CurrentBehavior, ExpectedBehavior = r.ExpectedBehavior, StepsToReproduce = r.StepsToReproduce, Environment = r.Environment, AcceptanceCriteria = r.AcceptanceCriteria, EstimatedImpact = r.EstimatedImpact };
+        db.Tickets.Add(ticket); await db.SaveChangesAsync(ct);
+        jobs.Enqueue<GitHubIssueSyncJob>(j => j.CreateIssueAsync(ticket.Id, CancellationToken.None));
+        if (!project.HasRepo()) await NotifyPortalTicketAsync(ticket, project, ct);
+        return Created($"/api/tickets/{ticket.Id}", ticket);
+    }
+    private async Task NotifyPortalTicketAsync(Ticket ticket, Project project, CancellationToken ct)
+    {
+        var staffEmail = configuration["Notifications:StaffEmail"] is { Length: > 0 } configured ? configured : configuration["Smtp:From"];
+        if (string.IsNullOrWhiteSpace(staffEmail)) { logger.LogWarning("Ticket {Code} sin aviso interno: falta Notifications:StaffEmail", ticket.Code); return; }
+        var client = await db.Clients.SingleAsync(x => x.Id == ticket.ClientId, ct);
+        await notifications.SendAsync(client, new Notification(NotificationType.TicketCreated, new() { ["ticketId"] = ticket.Id.ToString(), ["code"] = ticket.Code, ["title"] = ticket.Title, ["company"] = client.CompanyName, ["project"] = project.Name, ["body"] = ticket.Description }, $"ticket-created:{ticket.Id}", staffEmail), ct);
+    }
     [HttpPost("tickets/{id:guid}/attachments")] public async Task<IActionResult> Attachment(Guid id, IFormFile file, Guid? clientId, CancellationToken ct) { var error = ResolveClientId(clientId, out var client); if (error is not null) return error; if (!await db.Tickets.AnyAsync(x => x.Id == id && x.ClientId == client, ct)) return NotFound(); var a = new TicketAttachment { TicketId = id, FileName = file.FileName, Url = $"/uploads/{id}/{file.FileName}", SizeBytes = file.Length }; db.TicketAttachments.Add(a); await db.SaveChangesAsync(ct); return Ok(a); }
 }

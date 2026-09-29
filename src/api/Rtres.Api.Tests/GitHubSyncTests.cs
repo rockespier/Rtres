@@ -5,6 +5,7 @@ using System.Text.Json;
 using Hangfire;
 using Hangfire.Common;
 using Hangfire.States;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -225,7 +226,7 @@ public class TicketCommentsEndpointTests
         using var db = TestData.Db(out var seed, issueNumber: 7);
         var jobs = new FakeJobs();
         var identity = new ClaimsIdentity([new Claim(ClaimTypes.NameIdentifier, seed.User.Id.ToString()), new Claim("client_id", seed.Client.Id.ToString()), new Claim(ClaimTypes.Role, "Cliente")], "test");
-        var controller = new PortalController(db, jobs) { ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext { User = new ClaimsPrincipal(identity) } } };
+        var controller = new PortalController(db, jobs, new FakeNotifications(), new ConfigurationBuilder().Build(), NullLogger<PortalController>.Instance) { ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext { User = new ClaimsPrincipal(identity) } } };
 
         Assert.IsType<BadRequestObjectResult>(await controller.AddComment(seed.Ticket.Id, new CreateTicketCommentRequest("  "), CancellationToken.None));
         Assert.IsType<NotFoundResult>(await controller.AddComment(Guid.NewGuid(), new CreateTicketCommentRequest("Hola"), CancellationToken.None));
@@ -235,6 +236,63 @@ public class TicketCommentsEndpointTests
         Assert.Equal("Hola", dto.Body); Assert.Equal("Roberto Ramos", dto.AuthorName); Assert.False(dto.FromGithub);
         var job = Assert.Single(jobs.Created);
         Assert.Equal(nameof(GitHubIssueSyncJob.PostCommentAsync), job.Method.Name);
+    }
+}
+
+public class AdminTicketEndpointTests
+{
+    [Fact]
+    public async Task Updates_portal_ticket_notifies_client_and_rejects_github_ticket()
+    {
+        using var db = TestData.Db(out var seed);
+        var jobs = new FakeJobs(); var notifications = new FakeNotifications();
+        var controller = Admin(db, seed.User, jobs, notifications);
+        seed.Project.GithubRepoName = ""; await db.SaveChangesAsync();
+
+        var ok = Assert.IsType<OkObjectResult>(await controller.UpdateTicket(seed.Ticket.Id, new UpdateTicketStatusRequest(TicketStatus.EnProgreso), CancellationToken.None));
+        Assert.Equal(TicketStatus.EnProgreso, (await db.Tickets.SingleAsync()).Status);
+        var notification = Assert.Single(notifications.Sent); Assert.Equal(NotificationType.TicketStatusChanged, notification.Type); Assert.NotNull(notification.DedupeKey);
+
+        seed.Project.GithubRepoName = "repo"; await db.SaveChangesAsync();
+        var conflict = Assert.IsType<ConflictObjectResult>(await controller.UpdateTicket(seed.Ticket.Id, new UpdateTicketStatusRequest(TicketStatus.Resuelto), CancellationToken.None));
+        Assert.Equal("El estado de este ticket se gestiona en GitHub", ((dynamic)conflict.Value!).message);
+    }
+
+    [Fact]
+    public async Task Admin_comment_on_github_ticket_is_queued_and_client_cannot_use_admin_controller()
+    {
+        using var db = TestData.Db(out var seed, issueNumber: 7);
+        var jobs = new FakeJobs(); var notifications = new FakeNotifications();
+        var admin = Admin(db, seed.User, jobs, notifications);
+        var result = Assert.IsType<OkObjectResult>(await admin.AddTicketComment(seed.Ticket.Id, new CreateTicketCommentRequest("Lo revisamos"), CancellationToken.None));
+        var comment = Assert.IsType<TicketCommentDto>(result.Value); Assert.Equal("Lo revisamos", comment.Body); Assert.Equal("Rtres", comment.AuthorName);
+        Assert.Equal(nameof(GitHubIssueSyncJob.PostCommentAsync), Assert.Single(jobs.Created).Method.Name);
+        Assert.Equal(NotificationType.TicketReply, Assert.Single(notifications.Sent).Type);
+
+        var authorization = Assert.Single(typeof(AdminController).GetCustomAttributes(typeof(AuthorizeAttribute), true).Cast<AuthorizeAttribute>());
+        Assert.Equal(nameof(UserRole.SuperAdmin), authorization.Roles); // El pipeline devuelve 403 al cliente antes de ejecutar estos endpoints.
+    }
+
+    [Fact]
+    public async Task New_ticket_without_repo_notifies_rtres()
+    {
+        using var db = TestData.Db(out var seed);
+        seed.Project.GithubRepoName = ""; await db.SaveChangesAsync();
+        var notifications = new FakeNotifications(); var jobs = new FakeJobs();
+        var identity = new ClaimsIdentity([new Claim(ClaimTypes.NameIdentifier, seed.User.Id.ToString()), new Claim("client_id", seed.Client.Id.ToString()), new Claim(ClaimTypes.Role, "Cliente")], "test");
+        var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?> { ["Notifications:StaffEmail"] = "equipo@rtres.net" }).Build();
+        var portal = new PortalController(db, jobs, notifications, config, NullLogger<PortalController>.Instance) { ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext { User = new ClaimsPrincipal(identity) } } };
+
+        await portal.CreateTicket(new CreateTicketRequest(seed.Project.Id, TicketType.Bug, "Sin repo", "Necesito ayuda", null, null, null, null, null, null), null, CancellationToken.None);
+
+        var notification = Assert.Single(notifications.Sent); Assert.Equal(NotificationType.TicketCreated, notification.Type); Assert.Equal("equipo@rtres.net", notification.To); Assert.NotNull(notification.DedupeKey);
+    }
+
+    private static AdminController Admin(RtresDbContext db, UserAccount user, IBackgroundJobClient jobs, INotificationSender notifications)
+    {
+        user.Role = UserRole.SuperAdmin; db.SaveChanges();
+        var identity = new ClaimsIdentity([new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()), new Claim(ClaimTypes.Role, nameof(UserRole.SuperAdmin))], "test");
+        return new AdminController(db, null!, null!, null!, null!, jobs, notifications) { ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext { User = new ClaimsPrincipal(identity) } } };
     }
 }
 
