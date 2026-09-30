@@ -117,7 +117,7 @@ body{
 
 /* Badges / status pills — soft pastel bg + saturated text, per reference */
 .pill{
-  display:inline-flex; align-items:center; gap:6px;
+  display:inline-flex; align-items:center; gap:6px; white-space:nowrap;
   padding:4px 11px; border-radius:999px; font-size:12.5px; font-weight:600;
   border:1px solid transparent;
 }
@@ -180,6 +180,24 @@ body{
 .p-table tbody tr:last-child td{border-bottom:none;}
 .p-table tbody tr:hover{background:#fbfcf9;}
 .p-table tbody tr{cursor:pointer;}
+/* Columnas ordenables (core/sortable.ts): flecha tenue en reposo, verde la activa. */
+.p-table th.sortable{cursor:pointer; user-select:none; white-space:nowrap;}
+.p-table th.sortable:hover, .p-table th.sortable:focus-visible{color:var(--ink); outline:none;}
+.p-table th.sortable::after{content:'↕'; display:inline-block; margin-left:6px; font-size:10px; opacity:.35;}
+.p-table th.sort-asc::after{content:'▲'; opacity:1; color:var(--primary-strong);}
+.p-table th.sort-desc::after{content:'▼'; opacity:1; color:var(--primary-strong);}
+/* Importes y cifras: a la derecha y con dígitos de ancho fijo para que las columnas cuadren. */
+.p-table th.num, .p-table td.num{text-align:right; white-space:nowrap; font-variant-numeric:tabular-nums;}
+.p-table tfoot td{padding:14px 16px; border-top:2px solid var(--ink); font-weight:700;}
+
+/* Línea de diseño de reportes: etiqueta pequeña + cifra grande, notas y control segmentado. */
+.stat-label{font-size:11.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--muted);}
+.stat-value{font-family:'Space Grotesk','Inter',sans-serif; font-size:clamp(1.6rem,3vw,2.1rem); line-height:1.1; font-weight:600; letter-spacing:-.01em; font-variant-numeric:tabular-nums;}
+.neg{color:var(--danger-ink);}
+.note{font-size:12.5px; color:var(--muted); max-width:48rem; padding-left:12px; border-left:2px solid var(--border-strong);}
+.segmented{display:inline-flex; padding:3px; border-radius:12px; background:var(--neutral-bg); border:1px solid var(--border);}
+.segmented button{padding:6px 14px; border-radius:9px; font-size:13px; font-weight:600; color:var(--muted);}
+.segmented button.active{background:var(--surface); color:var(--ink); box-shadow:var(--shadow-card);}
 
 .pagination-btn{
   width:30px; height:30px; display:inline-flex; align-items:center; justify-content:center;

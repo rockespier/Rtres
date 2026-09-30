@@ -6,7 +6,7 @@ namespace Rtres.Api.Services;
 public sealed class PayPalCheckoutService(IPayPalClient payPal, IConfiguration configuration)
 {
     /// <summary>
-    /// Inicia el pago en PayPal: orden (Único/Anual) o suscripción (Mensual). <paramref name="request"/> es la petición
+    /// Inicia el pago en PayPal: orden (Único/Anual) o suscripción (Mensual, Bimestral, Trimestral, Semestral). <paramref name="request"/> es la petición
     /// del portal: PayPal vuelve al mismo origen desde el que se pagó (localhost en desarrollo), siempre que sea uno de
     /// los orígenes permitidos; si no, a <c>Frontend:PortalUrl</c>.
     /// </summary>
@@ -21,10 +21,10 @@ public sealed class PayPalCheckoutService(IPayPalClient payPal, IConfiguration c
         var listPrice = ClientProductPricing.WithIgv(item.ListPrice(product) ?? throw new InvalidOperationException("El producto no tiene precio."), igvRate);
         var price = item.NextChargeTotal(igvRate, product)!.Value;
         if (price <= 0) throw new InvalidOperationException("Un producto con precio 0 no se puede cobrar por PayPal; asígnalo en modo Manual.");
-        if (item.BillingCycle == BillingCycle.Mensual)
+        if (item.BillingCycle.SubscriptionMonths() is int months)
         {
-            // Descuento sin usar: solo el primer mes va rebajado, luego se cobra el precio de lista.
-            item.PayPalPlanId = price != listPrice ? await payPal.CreateMonthlyPlanAsync(product.Name, listPrice, product.Currency, price, ct) : await MonthlyPlanAsync(product, listPrice, ct);
+            // Descuento sin usar: solo el primer periodo va rebajado, luego se cobra el precio de lista.
+            item.PayPalPlanId = price != listPrice ? await payPal.CreatePlanAsync(product.Name, listPrice, product.Currency, months, price, ct) : await PlanAsync(product, item.BillingCycle, listPrice, ct);
             var subscription = await payPal.CreateSubscriptionAsync(item.PayPalPlanId, item.Id.ToString(), returnUrl, cancelUrl, ct);
             item.PayPalSubscriptionId = subscription.Id;
             return subscription;
@@ -36,15 +36,16 @@ public sealed class PayPalCheckoutService(IPayPalClient payPal, IConfiguration c
     }
 
     /// <summary>
-    /// Plan mensual de PayPal para el precio a cobrar. El del precio base se crea una vez y se guarda en el producto
-    /// (se recrea si el precio base cambia); un producto sin precio de catálogo usa un plan propio.
+    /// Plan de PayPal para el precio y ciclo a cobrar. El del precio base y ciclo del catálogo se crea una vez y se guarda
+    /// en el producto (se recrea si el precio base cambia); otro precio u otro ciclo usan un plan propio.
     /// </summary>
-    private async Task<string> MonthlyPlanAsync(Product product, decimal price, CancellationToken ct)
+    private async Task<string> PlanAsync(Product product, BillingCycle cycle, decimal price, CancellationToken ct)
     {
-        if (price != product.BasePrice) return await payPal.CreateMonthlyPlanAsync(product.Name, price, product.Currency, cancellationToken: ct);
+        var months = cycle.SubscriptionMonths()!.Value;
+        if (price != product.BasePrice || cycle != product.BillingCycle) return await payPal.CreatePlanAsync(product.Name, price, product.Currency, months, cancellationToken: ct);
         if (product.PayPalPlanId is null || product.PayPalPlanPrice != price)
         {
-            product.PayPalPlanId = await payPal.CreateMonthlyPlanAsync(product.Name, price, product.Currency, cancellationToken: ct);
+            product.PayPalPlanId = await payPal.CreatePlanAsync(product.Name, price, product.Currency, months, cancellationToken: ct);
             product.PayPalPlanPrice = price;
         }
         return product.PayPalPlanId;

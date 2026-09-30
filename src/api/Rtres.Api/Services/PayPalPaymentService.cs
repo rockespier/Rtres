@@ -17,7 +17,7 @@ public sealed class PayPalPaymentService(RtresDbContext db, IPayPalClient payPal
     /// suscripción → consulta su estado y sus cobros; orden → la captura.
     /// </summary>
     public Task ConfirmAsync(ClientProduct item, CancellationToken ct) =>
-        item.BillingCycle == BillingCycle.Mensual && !string.IsNullOrWhiteSpace(item.PayPalSubscriptionId) ? SyncSubscriptionAsync(item, ct) : CaptureAsync(item, ct);
+        item.BillingCycle.IsSubscription() && !string.IsNullOrWhiteSpace(item.PayPalSubscriptionId) ? SyncSubscriptionAsync(item, ct) : CaptureAsync(item, ct);
 
     /// <summary>
     /// Sincroniza una suscripción: si está activa, aplica sus cobros completados (con el id de la venta, el mismo
@@ -67,7 +67,7 @@ public sealed class PayPalPaymentService(RtresDbContext db, IPayPalClient payPal
         if (await PaymentExistsAsync(transactionKey, ct)) return false;
         var when = paidAt ?? DateTime.UtcNow;
         var paidYears = item.BillingCycle == BillingCycle.Anual ? Math.Clamp(years ?? (transactionKey == item.PayPalOrderId ? item.PayPalOrderYears : null) ?? 1, 1, ClientProductPricing.MaxPrepaidYears) : 1;
-        var transaction = new PaymentTransaction { ClientProductId = item.Id, PayPalOrderIdOrSubscriptionId = transactionKey, Amount = amount, Currency = currency ?? item.Product?.Currency ?? "USD", Status = "COMPLETED", Method = method, CreatedAt = when, Years = paidYears };
+        var transaction = new PaymentTransaction { ClientId = item.ClientId, ClientProductId = item.Id, PayPalOrderIdOrSubscriptionId = transactionKey, Amount = amount, Currency = currency ?? item.Product?.Currency ?? "USD", Status = "COMPLETED", Method = method, CreatedAt = when, Years = paidYears };
         transaction.InternalCode = $"RT-INT-{1 + await db.PaymentTransactions.CountAsync(ct):000000}";
         transaction.AmountPen = amount * await db.RateToPenAsync(transaction.Currency, DateOnly.FromDateTime(transaction.CreatedAt), ct);
         db.PaymentTransactions.Add(transaction);
@@ -99,7 +99,8 @@ public sealed class PayPalPaymentService(RtresDbContext db, IPayPalClient payPal
 
     /// <summary>
     /// Vigencia que compra un pago según el ciclo: Anual suma un año (desde el vencimiento actual si aún no pasó, para
-    /// no perder días al renovar antes; si ya venció, desde hoy); Mensual (suscripción) fija el próximo cobro a un mes;
+    /// no perder días al renovar antes; si ya venció, desde hoy); las suscripciones (Mensual, Bimestral, Trimestral,
+    /// Semestral) fijan el próximo cobro a 1, 2, 3 o 6 meses;
     /// Único no tiene vencimiento.
     /// </summary>
     public static void ExtendPeriod(ClientProduct item, DateTime now)
@@ -109,8 +110,8 @@ public sealed class PayPalPaymentService(RtresDbContext db, IPayPalClient payPal
             case BillingCycle.Anual:
                 item.RenewsAt = (item.RenewsAt is DateTime renewsAt && renewsAt > now ? renewsAt : now).AddYears(1);
                 break;
-            case BillingCycle.Mensual:
-                item.NextChargeAt = now.AddMonths(1);
+            case var cycle when cycle.SubscriptionMonths() is int months:
+                item.NextChargeAt = now.AddMonths(months);
                 break;
         }
     }

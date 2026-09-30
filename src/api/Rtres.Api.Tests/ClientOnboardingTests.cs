@@ -75,18 +75,30 @@ public class ClientOnboardingTests
     }
 
     [Fact]
-    public async Task Projects_are_created_with_a_unique_slug_and_their_repo_can_be_edited()
+    public async Task Projects_are_created_with_a_unique_slug_and_can_have_several_repos()
     {
         using var db = TestData.Db(out var seed);
         var admin = Admin(db);
         var created = Assert.IsType<CreatedResult>(await admin.CreateProject(seed.Client.Id, new ProjectRequest("Tienda Ñandú Online", null, "rockespier", "tienda"), CancellationToken.None));
-        var project = await db.Projects.SingleAsync(x => x.Name == "Tienda Ñandú Online");
-        Assert.Equal(("tienda-nandu-online", "rockespier", "tienda"), (project.Slug, project.GithubRepoOwner, project.GithubRepoName));
+        var project = await db.Projects.Include(x => x.Repositories).SingleAsync(x => x.Name == "Tienda Ñandú Online");
+        var main = Assert.Single(project.Repositories);
+        Assert.Equal(("tienda-nandu-online", "rockespier", "tienda", true), (project.Slug, main.Owner, main.Name, main.IsDefault));
         Assert.IsType<ConflictObjectResult>(await admin.CreateProject(seed.Client.Id, new ProjectRequest("Tienda ñandú online", null, null, null), CancellationToken.None));
         Assert.IsType<NotFoundResult>(await admin.CreateProject(Guid.NewGuid(), new ProjectRequest("X", null, null, null), CancellationToken.None));
 
-        Assert.IsType<OkObjectResult>(await admin.UpdateProject(project.Id, new ProjectRequest(null, null, "rtres-web", "tienda-v2"), CancellationToken.None));
-        Assert.Equal(("rtres-web", "tienda-v2"), (project.GithubRepoOwner, project.GithubRepoName));
+        Assert.IsType<OkObjectResult>(await admin.AddRepository(project.Id, new RepositoryRequest("rockespier", "tienda-api", "API", IsDefault: true), CancellationToken.None));
+        Assert.IsType<ConflictObjectResult>(await admin.AddRepository(project.Id, new RepositoryRequest("rockespier", "tienda"), CancellationToken.None)); // un repo, un proyecto
+        var api = await db.ProjectRepositories.SingleAsync(x => x.Name == "tienda-api");
+        Assert.Equal(("API", true, false), (api.Label, api.IsDefault, main.IsDefault)); // solo un principal
+
+        Assert.IsType<OkObjectResult>(await admin.UpdateRepository(main.Id, new RepositoryRequest(null, "tienda-v2", "Web", IsDefault: true), CancellationToken.None));
+        Assert.Equal(("tienda-v2", "Web", true, false), (main.Name, main.Label, main.IsDefault, api.IsDefault));
+
+        db.Tickets.Add(new Ticket { Code = "RT-900", ClientId = seed.Client.Id, ProjectId = project.Id, RepositoryId = api.Id, GithubIssueNumber = 3 }); await db.SaveChangesAsync();
+        Assert.IsType<ConflictObjectResult>(await admin.UpdateRepository(api.Id, new RepositoryRequest(null, "otro"), CancellationToken.None)); // ya tiene issues
+        Assert.IsType<ConflictObjectResult>(await admin.DeleteRepository(api.Id, CancellationToken.None));
+        Assert.IsType<OkObjectResult>(await admin.DeleteRepository(main.Id, CancellationToken.None));
+        Assert.True((await db.ProjectRepositories.SingleAsync(x => x.ProjectId == project.Id)).IsDefault); // el que queda pasa a ser el principal
     }
 
     [Fact]

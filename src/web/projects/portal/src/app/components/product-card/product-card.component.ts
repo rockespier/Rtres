@@ -1,3 +1,5 @@
+import { formatMoney } from '../../core/money.pipe';
+import { isSubscriptionCycle } from '../../core/enum-labels';
 import { Component, Input, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BankTransferInfo, ClientProductApiDto, PREPAID_YEARS, PortalApiService } from '../../core/portal-api.service';
@@ -6,7 +8,7 @@ import { BankTransferInfoComponent } from '../bank-transfer-info/bank-transfer-i
 
 const RENEWAL_WINDOW_DAYS = 30;
 
-const CYCLE_SUFFIX: Record<string, string> = { Mensual: ' / mes', Anual: ' / año', Unico: ' · pago único' };
+const CYCLE_SUFFIX: Record<string, string> = { Mensual: ' / mes', Bimestral: ' / 2 meses', Trimestral: ' / 3 meses', Semestral: ' / 6 meses', Anual: ' / año', Unico: ' · pago único' };
 
 const TYPE_LABELS: Record<string, string> = {
   Hosting: 'Hosting',
@@ -80,25 +82,25 @@ export class ProductCardComponent {
     if (p.priceLabelOverride) return p.priceLabelOverride;
     const amount = currentPrice(p);
     if (amount == null) return '';
-    const money = new Intl.NumberFormat('es-PE', { style: 'currency', currency: p.product.currency || 'USD' }).format(amount);
+    const money = formatMoney(amount, p.product.currency || 'USD');
     return `${money}${igvSuffix(p)}${CYCLE_SUFFIX[p.billingCycle] ?? ''}`;
   });
   /** Precio especial del periodo actual: se avisa que la renovación va a precio de catálogo. */
   discountLabel = computed(() => {
     const p = this.product, list = listPrice(p);
     if (!discountActive(p) || list == null) return '';
-    const money = new Intl.NumberFormat('es-PE', { style: 'currency', currency: p.product.currency || 'USD' }).format(list);
+    const money = formatMoney(list, p.product.currency || 'USD');
     const end = endDate(p.discountEndsAt);
     return end ? `Precio especial hasta el ${end.toLocaleDateString('es-PE')}; luego ${money}${igvSuffix(p)}.` : `Precio especial (catálogo: ${money}${igvSuffix(p)}).`;
   });
-  canCancel = computed(() => !this.product.isManualBilling && this.product.status === 'Activo' && this.product.billingCycle === 'Mensual' && !!this.product.payPalSubscriptionId);
+  canCancel = computed(() => !this.product.isManualBilling && this.product.status === 'Activo' && isSubscriptionCycle(this.product.billingCycle) && !!this.product.payPalSubscriptionId);
   canPay = computed(() => !this.product.isManualBilling && this.product.status === 'Pendiente');
   /** Pago por transferencia: pendiente o por renovar (Anual/Único dentro de los 30 días, o Mensual por cobrar). Lo confirma Rtres. */
   canPayByTransfer = computed(() => {
     const p = this.product;
     if (!p.isManualBilling || p.status === 'Cancelado') return false;
     if (p.status === 'Pendiente' || p.status === 'PorVencer' || p.status === 'Vencido') return true;
-    const due = p.billingCycle === 'Mensual' ? p.nextChargeAt : p.renewsAt;
+    const due = isSubscriptionCycle(p.billingCycle) ? p.nextChargeAt : p.renewsAt;
     return !!due && new Date(due).getTime() - Date.now() <= RENEWAL_WINDOW_DAYS * 86_400_000;
   });
   transferInfo: BankTransferInfo | null = null;

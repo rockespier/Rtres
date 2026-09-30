@@ -184,8 +184,15 @@ public class UserAccount {
 
 public class Project { // = "cabalgatas-andinas-web" en el mockup
     public Guid Id; public Guid ClientId; public string Name; public string Slug;
-    public string GithubRepoOwner; public string GithubRepoName;
+    public List<ProjectRepository> Repositories; // 0..n repos de GitHub (ej. web y API)
 }
+
+public class ProjectRepository { // repo único en todo el sistema (el webhook lo ubica por dueño/nombre)
+    public Guid Id; public Guid ProjectId; public string Owner; public string Name;
+    public string? Label;   // lo que ve el cliente al elegir dónde va su ticket
+    public bool IsDefault;  // recibe los tickets que no indican repo
+}
+// Ticket.RepositoryId: repo donde se creó el issue (null = el principal, se fija al crear el issue)
 
 public enum ProductType { Hosting, Dominio, Ssl, BackupBd, SoporteMensual, DesarrolloWeb }
 public enum BillingCycle { Unico, Mensual, Anual }

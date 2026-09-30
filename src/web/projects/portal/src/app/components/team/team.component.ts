@@ -1,3 +1,4 @@
+import { SORTABLE } from '../../core/sortable';
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -8,7 +9,7 @@ import { TeamInviteDialogComponent } from '../team-invite-dialog/team-invite-dia
 @Component({
   selector: 'app-team',
   standalone: true,
-  imports: [CommonModule, FormsModule, TeamInviteDialogComponent],
+  imports: [...SORTABLE,CommonModule, FormsModule, TeamInviteDialogComponent],
   template: `<div class="flex items-center justify-between">
     <h1 class="font-display text-2xl font-semibold">Equipo</h1>
     <button type="button" class="btn btn-primary btn-sm" *ngIf="!showInvite" (click)="showInvite = true">+ Invitar</button>
@@ -18,10 +19,10 @@ import { TeamInviteDialogComponent } from '../team-invite-dialog/team-invite-dia
   <app-team-invite-dialog *ngIf="showInvite" (closed)="showInvite = false" (done)="showInvite = false; load()"/>
 
   <div class="card mt-6 overflow-x-auto">
-    <table class="p-table w-full">
-      <thead><tr><th>Nombre</th><th>Email</th><th>Rol</th><th>Estado</th><th></th></tr></thead>
+    <table class="p-table w-full" appSort #s="appSort">
+      <thead><tr><th sortKey="name">Nombre</th><th sortKey="email">Email</th><th sortKey="role">Rol</th><th sortKey="isActive">Estado</th><th></th></tr></thead>
       <tbody>
-        <tr *ngFor="let x of users">
+        <tr *ngFor="let x of users | sortBy:s.key():s.dir()">
           <td>{{ x.name }}</td>
           <td class="text-muted">{{ x.email }}</td>
           <td><select class="field" [(ngModel)]="x.role" (change)="updateRole(x)"><option value="Cliente">Cliente</option><option value="Admin">Admin</option></select></td>

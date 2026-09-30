@@ -32,7 +32,7 @@ DECLARE @Carga TABLE (
     ClienteEmail  NVARCHAR(256)  NOT NULL, -- email del cliente, tal como se importó
     Proyecto      NVARCHAR(200)  NOT NULL, -- se crea si el cliente no tiene un proyecto con ese nombre
     Producto      NVARCHAR(200)  NOT NULL, -- nombre exacto del producto en el catálogo
-    Ciclo         NVARCHAR(10)   NULL,     -- Unico / Mensual / Anual (vacío = el del producto)
+    Ciclo         NVARCHAR(10)   NULL,     -- Unico / Mensual / Bimestral / Trimestral / Semestral / Anual (vacío = el del producto)
     Fecha         DATE           NULL,     -- Anual/Único: vence el · Mensual: próximo cobro (obligatoria salvo Único)
     Dominio       NVARCHAR(200)  NULL,     -- opcional (dominios, hosting…)
     PrecioFinal   DECIMAL(12,2)  NULL      -- opcional, SIN IGV: lo que paga hoy el cliente si es menor al catálogo
@@ -88,7 +88,7 @@ SELECT c.Fila,
        p.Id,
        (SELECT COUNT(*) FROM Products x WHERE x.Name = LTRIM(RTRIM(c.Producto))),
        p.BasePrice,
-       CASE LTRIM(RTRIM(ISNULL(c.Ciclo, N''))) WHEN N'' THEN p.BillingCycle WHEN N'Unico' THEN 0 WHEN N'Único' THEN 0 WHEN N'Mensual' THEN 1 WHEN N'Anual' THEN 2 END,
+       CASE LTRIM(RTRIM(ISNULL(c.Ciclo, N''))) WHEN N'' THEN p.BillingCycle WHEN N'Unico' THEN 0 WHEN N'Único' THEN 0 WHEN N'Mensual' THEN 1 WHEN N'Anual' THEN 2 WHEN N'Bimestral' THEN 3 WHEN N'Trimestral' THEN 4 WHEN N'Semestral' THEN 5 END,
        LTRIM(RTRIM(c.Proyecto)), c.Fecha, NULLIF(LTRIM(RTRIM(c.Dominio)), N''), c.PrecioFinal
 FROM @Carga c
 LEFT JOIN Clients cl ON cl.Email = LTRIM(RTRIM(c.ClienteEmail))
@@ -103,7 +103,7 @@ CROSS APPLY (VALUES
     (CASE WHEN r.ClientId IS NULL THEN N'Cliente no encontrado (revisa el email).' END),
     (CASE WHEN r.ProductId IS NULL THEN N'Producto no encontrado (revisa el nombre exacto del catálogo).' END),
     (CASE WHEN r.ProductosConEseNombre > 1 THEN N'Hay varios productos con ese nombre: renómbralos para que sean únicos.' END),
-    (CASE WHEN r.ProductId IS NOT NULL AND r.Ciclo IS NULL THEN N'Ciclo inválido: usa Unico, Mensual o Anual.' END),
+    (CASE WHEN r.ProductId IS NOT NULL AND r.Ciclo IS NULL THEN N'Ciclo inválido: usa Unico, Mensual, Bimestral, Trimestral, Semestral o Anual.' END),
     (CASE WHEN r.Ciclo IN (1, 2) AND r.Fecha IS NULL THEN N'Falta la fecha (vencimiento o próximo cobro).' END),
     (CASE WHEN r.Proyecto = N'' THEN N'Falta el proyecto.' END),
     (CASE WHEN r.PrecioFinal < 0 THEN N'PrecioFinal no puede ser negativo.' END),
@@ -140,8 +140,9 @@ FROM @NuevosProyectos n
 WHERE EXISTS (SELECT 1 FROM Projects pr WHERE pr.Slug = n.Slug)
    OR (SELECT COUNT(*) FROM @NuevosProyectos o WHERE o.Slug = n.Slug) > 1;
 
-INSERT INTO Projects (Id, ClientId, Name, Slug, GithubRepoOwner, GithubRepoName)
-SELECT NEWID(), ClientId, Nombre, Slug, N'', N'' FROM @NuevosProyectos;
+-- Sin repositorios de GitHub: se agregan después desde el portal (un proyecto puede tener varios).
+INSERT INTO Projects (Id, ClientId, Name, Slug)
+SELECT NEWID(), ClientId, Nombre, Slug FROM @NuevosProyectos;
 
 -- 4. Productos de los clientes
 DECLARE @Hoy DATE = CAST(SYSUTCDATETIME() AS DATE);
@@ -157,13 +158,13 @@ DECLARE @Hoy DATE = CAST(SYSUTCDATETIME() AS DATE);
 INSERT INTO ClientProducts (Id, ClientId, ProjectId, ProductId, Status, BillingCycle, IsManualBilling, RenewsAt, NextChargeAt, LastBackupAt,
                             Price, PriceLabelOverride, PayPalOrderId, PayPalSubscriptionId, PayPalPlanId, DomainName, Discount, DiscountEndsAt)
 SELECT NEWID(), f.ClientId, f.ProjectId, f.ProductId,
-       CASE WHEN f.Ciclo = 1 OR f.Fecha IS NULL THEN 0            -- Activo
+       CASE WHEN f.Ciclo IN (1, 3, 4, 5) OR f.Fecha IS NULL THEN 0 -- Activo (suscripciones: la fecha es el próximo cobro)
             WHEN f.Fecha < @Hoy THEN 2                             -- Vencido
             WHEN f.Fecha <= DATEADD(DAY, 30, @Hoy) THEN 1          -- Por vencer
             ELSE 0 END,
        f.Ciclo, 1,
-       CASE WHEN f.Ciclo <> 1 THEN f.FechaUtc END,                 -- Anual/Único: vencimiento
-       CASE WHEN f.Ciclo = 1 THEN f.FechaUtc END,                  -- Mensual: próximo cobro
+       CASE WHEN f.Ciclo IN (0, 2) THEN f.FechaUtc END,            -- Anual/Único: vencimiento
+       CASE WHEN f.Ciclo IN (1, 3, 4, 5) THEN f.FechaUtc END,      -- Mensual/Bimestral/Trimestral/Semestral: próximo cobro
        NULL,
        CASE WHEN f.BasePrice IS NULL THEN f.PrecioFinal END,       -- precio propio solo si el producto no tiene precio de catálogo
        NULL, NULL, NULL, NULL, f.Dominio,
@@ -186,7 +187,7 @@ SELECT (SELECT COUNT(*) FROM @Carga) AS FilasEnCarga,
        (SELECT COUNT(*) FROM @Carga) - @Insertados AS OmitidosPorYaExistir;
 
 SELECT cl.CompanyName AS Cliente, pr.Name AS Proyecto, p.Name AS Producto, cp.DomainName AS Dominio,
-       CASE cp.BillingCycle WHEN 0 THEN 'Unico' WHEN 1 THEN 'Mensual' ELSE 'Anual' END AS Ciclo,
+       CASE cp.BillingCycle WHEN 0 THEN 'Unico' WHEN 1 THEN 'Mensual' WHEN 2 THEN 'Anual' WHEN 3 THEN 'Bimestral' WHEN 4 THEN 'Trimestral' WHEN 5 THEN 'Semestral' END AS Ciclo,
        CASE cp.Status WHEN 0 THEN 'Activo' WHEN 1 THEN 'PorVencer' WHEN 2 THEN 'Vencido' ELSE CAST(cp.Status AS VARCHAR) END AS Estado,
        CAST(COALESCE(cp.RenewsAt, cp.NextChargeAt) AS DATE) AS Fecha,
        COALESCE(p.BasePrice, cp.Price) AS PrecioCatalogo, cp.Discount AS Descuento,

@@ -27,7 +27,8 @@ public interface IPayPalClient
     Task<PayPalCapture> CaptureOrderAsync(string orderId, CancellationToken cancellationToken = default);
     /// <summary>Crea en PayPal un producto de catálogo y un plan de cobro mensual a precio fijo; devuelve el id del plan.</summary>
     /// <summary>Plan mensual; con <paramref name="firstCyclePrice"/> el primer mes se cobra a ese precio y los siguientes a <paramref name="price"/>.</summary>
-    Task<string> CreateMonthlyPlanAsync(string name, decimal price, string currency, decimal? firstCyclePrice = null, CancellationToken cancellationToken = default);
+    /// <summary>Plan de suscripción que cobra cada <paramref name="intervalMonths"/> meses; con <paramref name="firstCyclePrice"/>, el primer cobro va a ese precio.</summary>
+    Task<string> CreatePlanAsync(string name, decimal price, string currency, int intervalMonths, decimal? firstCyclePrice = null, CancellationToken cancellationToken = default);
     Task<PayPalSubscriptionInfo> GetSubscriptionAsync(string subscriptionId, CancellationToken cancellationToken = default);
     Task CancelSubscriptionAsync(string subscriptionId, string reason, CancellationToken cancellationToken = default);
     Task<bool> VerifyWebhookAsync(string payload, IReadOnlyDictionary<string, string> headers, CancellationToken cancellationToken = default);
@@ -35,8 +36,8 @@ public interface IPayPalClient
 
 public interface IGitHubIssuesClient
 {
-    Task<GitHubIssue> CreateIssueAsync(Project project, Ticket ticket, CancellationToken cancellationToken = default);
-    Task<long> CreateCommentAsync(Project project, int issueNumber, string body, CancellationToken cancellationToken = default);
+    Task<GitHubIssue> CreateIssueAsync(Project project, ProjectRepository repository, Ticket ticket, CancellationToken cancellationToken = default);
+    Task<long> CreateCommentAsync(ProjectRepository repository, int issueNumber, string body, CancellationToken cancellationToken = default);
 }
 
 /// <summary>USD desde el tipo de cambio oficial de SUNAT, EUR desde el BCRP — ver T7.0 en el PLAN para el detalle de cada fuente.</summary>
