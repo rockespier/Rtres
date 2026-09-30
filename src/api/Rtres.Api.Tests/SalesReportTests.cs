@@ -38,7 +38,7 @@ public class SalesReportTests
         Assert.Equal((100m, 575m, 18m, 67.5m), (Prop(tax, "ventasGravadasPen"), Prop(tax, "ventasNoGravadasPen"), Prop(tax, "igvEstimado"), Prop(tax, "rentaEstimada")));
 
         var net = Assert.IsType<OkObjectResult>(await admin.NetReport(today.Month, today.Year, CancellationToken.None)).Value!;
-        Assert.Equal((675m, 67.5m, 607.5m), (Prop(net, "ventasPen"), Prop(net, "impuestosEstimadosPen"), Prop(net, "netoEstimadoPen")));
+        Assert.Equal((675m, 67.5m, 607.5m), (Prop(net, "ventasPen"), Prop(net, "impuestosPen"), Prop(net, "utilidadNetaPen")));
     }
 
     private static ClientProduct AddProduct(RtresDbContext db, Guid clientId, Guid projectId, TaxDocumentType taxType)

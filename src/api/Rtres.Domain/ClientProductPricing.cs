@@ -82,5 +82,5 @@ public static class ClientProductPricing
         if (item.DiscountEndsAt == NoEnd && item.PeriodEnd() is DateTime end) item.DiscountEndsAt = end;
     }
 
-    private static DateTime? PeriodEnd(this ClientProduct item) => item.BillingCycle == BillingCycle.Mensual ? item.NextChargeAt : item.RenewsAt;
+    private static DateTime? PeriodEnd(this ClientProduct item) => item.BillingCycle.IsSubscription() ? item.NextChargeAt : item.RenewsAt;
 }

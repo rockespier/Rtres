@@ -268,7 +268,10 @@ namespace Rtres.Infrastructure.Persistence.Migrations
                         .HasPrecision(12, 2)
                         .HasColumnType("decimal(12,2)");
 
-                    b.Property<Guid>("ClientProductId")
+                    b.Property<Guid>("ClientId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ClientProductId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
@@ -285,6 +288,9 @@ namespace Rtres.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PayPalOrderIdOrSubscriptionId")
                         .IsRequired()
@@ -306,6 +312,8 @@ namespace Rtres.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("PayPalOrderIdOrSubscriptionId")
                         .IsUnique();
+
+                    b.HasIndex("ClientId", "CreatedAt");
 
                     b.ToTable("PaymentTransactions");
                 });
@@ -364,14 +372,6 @@ namespace Rtres.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("ClientId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("GithubRepoName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("GithubRepoOwner")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -386,6 +386,42 @@ namespace Rtres.Infrastructure.Persistence.Migrations
                         .IsUnique();
 
                     b.ToTable("Projects");
+                });
+
+            modelBuilder.Entity("Rtres.Domain.ProjectRepository", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsDefault")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Label")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Owner")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("Owner", "Name")
+                        .IsUnique();
+
+                    b.ToTable("ProjectRepositories");
                 });
 
             modelBuilder.Entity("Rtres.Domain.TaxDocument", b =>
@@ -420,6 +456,10 @@ namespace Rtres.Infrastructure.Persistence.Migrations
 
                     b.Property<Guid?>("PaymentTransactionId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal?>("RetentionAmount")
+                        .HasPrecision(12, 2)
+                        .HasColumnType("decimal(12,2)");
 
                     b.Property<string>("Series")
                         .IsRequired()
@@ -527,6 +567,9 @@ namespace Rtres.Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("ProjectId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("RepositoryId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Status")
@@ -669,6 +712,20 @@ namespace Rtres.Infrastructure.Persistence.Migrations
                     b.Navigation("Product");
 
                     b.Navigation("Project");
+                });
+
+            modelBuilder.Entity("Rtres.Domain.ProjectRepository", b =>
+                {
+                    b.HasOne("Rtres.Domain.Project", null)
+                        .WithMany("Repositories")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Rtres.Domain.Project", b =>
+                {
+                    b.Navigation("Repositories");
                 });
 #pragma warning restore 612, 618
         }

@@ -162,18 +162,18 @@ public sealed class PayPalClient(HttpClient httpClient, IConfiguration configura
         return new PayPalCapture(orderId, status, null, null);
     }
 
-    public async Task<string> CreateMonthlyPlanAsync(string name, decimal price, string currency, decimal? firstCyclePrice = null, CancellationToken cancellationToken = default)
+    public async Task<string> CreatePlanAsync(string name, decimal price, string currency, int intervalMonths, decimal? firstCyclePrice = null, CancellationToken cancellationToken = default)
     {
         using var productResponse = await SendAsync(new HttpRequestMessage(HttpMethod.Post, "v1/catalogs/products") { Content = JsonContent(new { name, type = "SERVICE" }) }, cancellationToken);
         using var product = JsonDocument.Parse(await productResponse.Content.ReadAsStringAsync(cancellationToken));
         var plan = new
         {
             product_id = product.RootElement.GetProperty("id").GetString(),
-            name = $"{name} — mensual",
-            // Con descuento, un ciclo TRIAL de un mes al precio rebajado y luego el precio regular.
+            name = intervalMonths == 1 ? $"{name} — mensual" : $"{name} — cada {intervalMonths} meses",
+            // Con descuento, un ciclo TRIAL (un periodo) al precio rebajado y luego el precio regular.
             billing_cycles = firstCyclePrice is decimal first
-                ? new[] { Cycle("TRIAL", 1, 1, first, currency), Cycle("REGULAR", 2, 0, price, currency) }
-                : new[] { Cycle("REGULAR", 1, 0, price, currency) },
+                ? new[] { Cycle("TRIAL", 1, 1, first, currency, intervalMonths), Cycle("REGULAR", 2, 0, price, currency, intervalMonths) }
+                : new[] { Cycle("REGULAR", 1, 0, price, currency, intervalMonths) },
             payment_preferences = new { auto_bill_outstanding = true, payment_failure_threshold = 3 },
         };
         using var planResponse = await SendAsync(new HttpRequestMessage(HttpMethod.Post, "v1/billing/plans") { Content = JsonContent(plan) }, cancellationToken);
@@ -181,8 +181,8 @@ public sealed class PayPalClient(HttpClient httpClient, IConfiguration configura
         return created.RootElement.GetProperty("id").GetString()!;
     }
 
-    private static object Cycle(string tenure, int sequence, int totalCycles, decimal price, string currency) =>
-        new { frequency = new { interval_unit = "MONTH", interval_count = 1 }, tenure_type = tenure, sequence, total_cycles = totalCycles, pricing_scheme = new { fixed_price = new { value = price.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture), currency_code = currency } } };
+    private static object Cycle(string tenure, int sequence, int totalCycles, decimal price, string currency, int intervalMonths) =>
+        new { frequency = new { interval_unit = "MONTH", interval_count = intervalMonths }, tenure_type = tenure, sequence, total_cycles = totalCycles, pricing_scheme = new { fixed_price = new { value = price.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture), currency_code = currency } } };
 
     public async Task<PayPalSubscriptionInfo> GetSubscriptionAsync(string subscriptionId, CancellationToken cancellationToken = default)
     {
@@ -264,16 +264,16 @@ public sealed class PayPalClient(HttpClient httpClient, IConfiguration configura
 
 public sealed class GitHubIssuesClient(IConfiguration configuration) : IGitHubIssuesClient
 {
-    public async Task<GitHubIssue> CreateIssueAsync(Rtres.Domain.Project project, Ticket ticket, CancellationToken cancellationToken = default)
+    public async Task<GitHubIssue> CreateIssueAsync(Rtres.Domain.Project project, ProjectRepository repository, Ticket ticket, CancellationToken cancellationToken = default)
     {
         var newIssue = new NewIssue(BuildTitle(ticket)) { Body = BuildBody(ticket) };
         foreach (var label in BuildLabels(project, ticket)) newIssue.Labels.Add(label);
-        var issue = await Client().Issue.Create(project.GithubRepoOwner, project.GithubRepoName, newIssue);
+        var issue = await Client().Issue.Create(repository.Owner, repository.Name, newIssue);
         return new GitHubIssue(issue.Number, issue.HtmlUrl);
     }
 
-    public async Task<long> CreateCommentAsync(Rtres.Domain.Project project, int issueNumber, string body, CancellationToken cancellationToken = default)
-        => (await Client().Issue.Comment.Create(project.GithubRepoOwner, project.GithubRepoName, issueNumber, body)).Id;
+    public async Task<long> CreateCommentAsync(ProjectRepository repository, int issueNumber, string body, CancellationToken cancellationToken = default)
+        => (await Client().Issue.Comment.Create(repository.Owner, repository.Name, issueNumber, body)).Id;
 
     public static string BuildCommentBody(TicketComment comment, string authorName) =>
         $"**{authorName}** (vía portal de clientes):\n\n{comment.Body.Trim()}\n\n{GitHubLabels.PortalCommentMarker}{comment.Id} -->";

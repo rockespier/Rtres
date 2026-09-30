@@ -1,3 +1,4 @@
+import { SORTABLE } from '../../core/sortable';
 import { Component, Input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
@@ -8,13 +9,13 @@ import { ProjectDto, TicketDto } from '../../core/portal-api.service';
 @Component({
   selector: 'app-ticket-table',
   standalone: true,
-  imports: [CommonModule, RouterLink, StatusPillComponent, TicketTypePillComponent],
+  imports: [...SORTABLE,CommonModule, RouterLink, StatusPillComponent, TicketTypePillComponent],
   template: `<div class="card overflow-x-auto mt-6">
-    <table class="p-table">
-      <thead><tr><th>Ticket</th><th class="hidden sm:table-cell">Tipo</th><th class="hidden md:table-cell">Proyecto</th><th class="hidden lg:table-cell">GitHub</th><th>Estado</th><th class="hidden sm:table-cell">Actualizado</th></tr></thead>
+    <table class="p-table" appSort #s="appSort">
+      <thead><tr><th sortKey="title">Ticket</th><th class="hidden sm:table-cell" sortKey="type">Tipo</th><th class="hidden md:table-cell" [sortKey]="projectKey">Proyecto</th><th class="hidden lg:table-cell" sortKey="githubIssueNumber">GitHub</th><th sortKey="status">Estado</th><th class="hidden sm:table-cell" sortKey="updatedAt">Actualizado</th></tr></thead>
       <tbody>
         <tr *ngIf="!tickets.length"><td colspan="6" class="text-muted text-sm">No hay tickets que coincidan.</td></tr>
-        <tr *ngFor="let t of tickets" class="cursor-pointer" (click)="open(t)">
+        <tr *ngFor="let t of tickets | sortBy:s.key():s.dir()" class="cursor-pointer" (click)="open(t)">
           <td><a [routerLink]="['/tickets', t.id]" class="font-medium hover:underline" (click)="$event.stopPropagation()">{{ t.title }}</a><p class="text-xs text-muted">#{{ t.code }}</p></td>
           <td class="hidden sm:table-cell"><app-ticket-type-pill [type]="t.type"/></td>
           <td class="hidden md:table-cell text-muted">{{ projectName(t.projectId) }}</td>
@@ -32,5 +33,6 @@ export class TicketTableComponent {
   @Input() projects: ProjectDto[] = [];
 
   projectName(id: string): string { return this.projects.find(p => p.id === id)?.slug ?? '—'; }
+  readonly projectKey = (t: TicketDto) => this.projectName(t.projectId);
   open(t: TicketDto): void { this.router.navigate(['/tickets', t.id]); }
 }

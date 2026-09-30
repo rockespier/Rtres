@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnDestroy, OnInit, TemplateRef, ViewChild, effect, inject, signal } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, TemplateRef, ViewChild, computed, effect, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
@@ -24,6 +24,7 @@ import { PortalUiService } from '../../core/portal-ui.service';
             <button *ngFor="let t of types; let first = first" type="button" class="type-tab" [class.ml-2]="!first" [class.active]="form.value.type===t.value" (click)="setType(t.value)">{{ t.label }}</button>
           </div>
           <label>Proyecto<select class="field" formControlName="projectId"><option *ngFor="let p of projects()" [value]="p.id">{{ p.name }}</option></select></label>
+          <label *ngIf="repositories().length > 1">Componente<select class="field" formControlName="repositoryId"><option *ngFor="let r of repositories()" [value]="r.id">{{ r.label || r.name }}</option></select></label>
           <label>Título<input class="field" formControlName="title"></label>
           <label>Descripción *<textarea class="field" formControlName="description"></textarea></label>
           <label>Comportamiento actual{{ isBug() ? ' *' : ' (opcional)' }}<textarea class="field" formControlName="currentBehavior"></textarea></label>
@@ -59,6 +60,7 @@ export class TicketFormComponent implements OnInit, AfterViewInit, OnDestroy {
   form = this.fb.group({
     type: ['Bug' as TicketType],
     projectId: [''],
+    repositoryId: [''],
     title: [''],
     description: ['', Validators.required],
     currentBehavior: ['', Validators.required],
@@ -70,6 +72,9 @@ export class TicketFormComponent implements OnInit, AfterViewInit, OnDestroy {
   });
 
   preview = toSignal(this.form.valueChanges, { initialValue: this.form.value });
+  private projectId = toSignal(this.form.controls.projectId.valueChanges, { initialValue: '' });
+  /** Repos del proyecto elegido: con más de uno, el cliente indica dónde va el ticket (por defecto el principal). */
+  repositories = computed(() => this.projects().find(p => p.id === this.projectId())?.repositories ?? []);
 
   constructor() {
     effect(() => {
@@ -78,6 +83,10 @@ export class TicketFormComponent implements OnInit, AfterViewInit, OnDestroy {
         this.projects.set(projects);
         this.form.patchValue({ projectId: projects.length ? projects[0].id : '' });
       });
+    });
+    effect(() => {
+      const repos = this.repositories();
+      this.form.controls.repositoryId.setValue((repos.find(r => r.isDefault) ?? repos[0])?.id ?? '');
     });
   }
 
@@ -114,6 +123,7 @@ export class TicketFormComponent implements OnInit, AfterViewInit, OnDestroy {
     this.error.set('');
     this.api.createTicket({
       projectId: v.projectId!,
+      repositoryId: this.repositories().length > 1 && v.repositoryId ? v.repositoryId : undefined,
       type: v.type!,
       title: v.title!,
       description: v.description!,

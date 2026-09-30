@@ -18,8 +18,8 @@ public sealed class GitHubWebhookProcessor(RtresDbContext db, INotificationSende
         var name = repo.GetProperty("name").GetString();
         var number = issue.GetProperty("number").GetInt32();
         var ticket = await db.Tickets
-            .Join(db.Projects, t => t.ProjectId, p => p.Id, (t, p) => new { t, p })
-            .Where(x => x.t.GithubIssueNumber == number && x.p.GithubRepoOwner == owner && x.p.GithubRepoName == name)
+            .Join(db.ProjectRepositories, t => t.RepositoryId, r => (Guid?)r.Id, (t, r) => new { t, r })
+            .Where(x => x.t.GithubIssueNumber == number && x.r.Owner == owner && x.r.Name == name)
             .Select(x => x.t).SingleOrDefaultAsync(ct);
         if (ticket is null) { logger.LogDebug("Issue {Owner}/{Repo}#{Number} no corresponde a ningún ticket", owner, name, number); return; }
 

@@ -17,23 +17,23 @@ public sealed class GitHubIssueSyncJob(RtresDbContext db, IGitHubIssuesClient gi
     {
         var ticket = await db.Tickets.SingleOrDefaultAsync(x => x.Id == ticketId, cancellationToken);
         if (ticket is null) { logger.LogWarning("Ticket {TicketId} no existe; no se crea issue", ticketId); return; }
-        var project = await db.Projects.SingleAsync(x => x.Id == ticket.ProjectId, cancellationToken);
-        if (!project.HasRepo())
+        var project = await db.Projects.Include(x => x.Repositories).SingleAsync(x => x.Id == ticket.ProjectId, cancellationToken);
+        if (project.Repositories.RepositoryFor(ticket.RepositoryId) is not { } repository)
         {
             logger.LogWarning("Proyecto {Project} no tiene repo de GitHub configurado; ticket {Code} queda sin issue", project.Slug, ticket.Code);
             return;
         }
         if (ticket.GithubIssueNumber is null)
         {
-            var issue = await github.CreateIssueAsync(project, ticket, cancellationToken);
-            ticket.GithubIssueNumber = issue.Number; ticket.GithubIssueUrl = issue.Url; ticket.UpdatedAt = DateTime.UtcNow;
+            var issue = await github.CreateIssueAsync(project, repository, ticket, cancellationToken);
+            ticket.RepositoryId = repository.Id; ticket.GithubIssueNumber = issue.Number; ticket.GithubIssueUrl = issue.Url; ticket.UpdatedAt = DateTime.UtcNow;
             await db.SaveChangesAsync(cancellationToken);
-            logger.LogInformation("Ticket {Code} sincronizado con {Owner}/{Repo}#{Number}", ticket.Code, project.GithubRepoOwner, project.GithubRepoName, issue.Number);
+            logger.LogInformation("Ticket {Code} sincronizado con {Owner}/{Repo}#{Number}", ticket.Code, repository.Owner, repository.Name, issue.Number);
         }
 
         // Comentarios hechos en el portal antes de que existiera el issue.
         var pending = await db.TicketComments.Where(x => x.TicketId == ticket.Id && !x.FromGithub && x.GithubCommentId == null).OrderBy(x => x.CreatedAt).ToListAsync(cancellationToken);
-        foreach (var comment in pending) await PublishAsync(project, ticket, comment, cancellationToken);
+        foreach (var comment in pending) await PublishAsync(repository, ticket, comment, cancellationToken);
     }
 
     [AutomaticRetry(Attempts = 5)]
@@ -43,15 +43,15 @@ public sealed class GitHubIssueSyncJob(RtresDbContext db, IGitHubIssuesClient gi
         if (comment is null || comment.FromGithub || comment.GithubCommentId is not null) return;
         var ticket = await db.Tickets.SingleAsync(x => x.Id == comment.TicketId, cancellationToken);
         if (ticket.GithubIssueNumber is null) return; // CreateIssueAsync lo publica al crear el issue
-        var project = await db.Projects.SingleAsync(x => x.Id == ticket.ProjectId, cancellationToken);
-        if (!project.HasRepo()) return;
-        await PublishAsync(project, ticket, comment, cancellationToken);
+        var repository = await db.ProjectRepositories.SingleOrDefaultAsync(x => x.Id == ticket.RepositoryId, cancellationToken);
+        if (repository is null) return;
+        await PublishAsync(repository, ticket, comment, cancellationToken);
     }
 
-    private async Task PublishAsync(Project project, Ticket ticket, TicketComment comment, CancellationToken cancellationToken)
+    private async Task PublishAsync(ProjectRepository repository, Ticket ticket, TicketComment comment, CancellationToken cancellationToken)
     {
         var author = await db.UserAccounts.Where(x => x.Id == comment.AuthorUserId).Select(x => x.Role == UserRole.SuperAdmin ? "Rtres" : x.Name == "" ? x.Email : x.Name).SingleOrDefaultAsync(cancellationToken) ?? "Cliente";
-        comment.GithubCommentId = await github.CreateCommentAsync(project, ticket.GithubIssueNumber!.Value, GitHubIssuesClient.BuildCommentBody(comment, author), cancellationToken);
+        comment.GithubCommentId = await github.CreateCommentAsync(repository, ticket.GithubIssueNumber!.Value, GitHubIssuesClient.BuildCommentBody(comment, author), cancellationToken);
         await db.SaveChangesAsync(cancellationToken);
     }
 

@@ -21,7 +21,7 @@ public sealed class TaxDocumentService(RtresDbContext db, ILogger<TaxDocumentSer
     {
         try
         {
-            if (await db.TaxDocuments.AnyAsync(x => x.PaymentTransactionId == payment.Id, ct)) return null;
+            if (payment.ClientProductId is null || await db.TaxDocuments.AnyAsync(x => x.PaymentTransactionId == payment.Id, ct)) return null;
             var item = await db.ClientProducts.Include(x => x.Product).SingleAsync(x => x.Id == payment.ClientProductId, ct);
             var client = await db.Clients.SingleAsync(x => x.Id == item.ClientId, ct);
             if (!client.RequiresTaxDocument || item.Product is null) return null;

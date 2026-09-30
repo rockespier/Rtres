@@ -192,10 +192,10 @@ public class PayPalPaymentTests
         using var db = TestData.Db(out var seed);
         var mine = AddProduct(db, seed, BillingCycle.Anual, orderId: "ORD-A");
         var otherClient = new Client { CompanyName = "Selva Viva", Email = "s@example.com" };
-        var otherProject = new Project { ClientId = otherClient.Id, Name = "Selva", Slug = "selva", GithubRepoOwner = "", GithubRepoName = "" };
+        var otherProject = new Project { ClientId = otherClient.Id, Name = "Selva", Slug = "selva" };
         db.AddRange(otherClient, otherProject); db.SaveChanges();
         var theirs = AddProduct(db, new Seed(otherClient, otherProject, seed.Ticket, seed.User), BillingCycle.Anual, orderId: "ORD-B");
-        db.PaymentTransactions.AddRange(new PaymentTransaction { ClientProductId = mine.Id, PayPalOrderIdOrSubscriptionId = "ORD-A", Amount = 120, InternalCode = "RT-INT-000001" }, new PaymentTransaction { ClientProductId = theirs.Id, PayPalOrderIdOrSubscriptionId = "ORD-B", Amount = 120, InternalCode = "RT-INT-000002" });
+        db.PaymentTransactions.AddRange(new PaymentTransaction { ClientId = seed.Client.Id, ClientProductId = mine.Id, PayPalOrderIdOrSubscriptionId = "ORD-A", Amount = 120, InternalCode = "RT-INT-000001" }, new PaymentTransaction { ClientId = otherClient.Id, ClientProductId = theirs.Id, PayPalOrderIdOrSubscriptionId = "ORD-B", Amount = 120, InternalCode = "RT-INT-000002" });
         db.SaveChanges();
 
         async Task<int> Count(ClaimsPrincipal user, Guid? clientId)
@@ -266,6 +266,35 @@ public class PayPalPaymentTests
     }
 
     [Fact]
+    public async Task Bimonthly_quarterly_and_semiannual_cycles_are_subscriptions_every_2_3_and_6_months()
+    {
+        using var db = TestData.Db(out _);
+        var payPal = new FakePayPal();
+        var checkout = new PayPalCheckoutService(payPal, new ConfigurationBuilder().Build());
+        var quarterly = new Product { Name = "Soporte", BillingCycle = BillingCycle.Trimestral, BasePrice = 250 };
+
+        var item = new ClientProduct { BillingCycle = BillingCycle.Trimestral };
+        await checkout.StartAsync(item, quarterly, null, CancellationToken.None);
+        await checkout.StartAsync(new ClientProduct { BillingCycle = BillingCycle.Trimestral }, quarterly, null, CancellationToken.None);
+        Assert.Equal(("SUB-1", "PLAN-1", 1), (item.PayPalSubscriptionId, quarterly.PayPalPlanId, payPal.PlansCreated)); // suscripción, plan del catálogo reutilizado
+        Assert.Empty(payPal.OrderAmounts);
+
+        // Mismo producto asignado con otro ciclo: plan propio, el del catálogo (trimestral) no se toca.
+        await checkout.StartAsync(new ClientProduct { BillingCycle = BillingCycle.Semestral }, quarterly, null, CancellationToken.None);
+        await checkout.StartAsync(new ClientProduct { BillingCycle = BillingCycle.Bimestral }, quarterly, null, CancellationToken.None);
+        Assert.Equal([3, 6, 2], payPal.PlanMonths); Assert.Equal("PLAN-1", quarterly.PayPalPlanId);
+
+        var now = new DateTime(2026, 1, 31, 0, 0, 0, DateTimeKind.Utc);
+        foreach (var (cycle, next) in new[] { (BillingCycle.Bimestral, new DateTime(2026, 3, 31)), (BillingCycle.Trimestral, new DateTime(2026, 4, 30)), (BillingCycle.Semestral, new DateTime(2026, 7, 31)) })
+        {
+            var paid = new ClientProduct { BillingCycle = cycle };
+            PayPalPaymentService.ExtendPeriod(paid, now);
+            Assert.Equal((next, (DateTime?)null), (paid.NextChargeAt!.Value.Date, paid.RenewsAt));
+            Assert.NotNull(paid.ValidateYears(2)); // varios años por adelantado: solo Anual
+        }
+    }
+
+    [Fact]
     public async Task Paypal_charges_add_igv_for_peruvian_invoices()
     {
         using var db = TestData.Db(out _);
@@ -327,11 +356,12 @@ public class PayPalPaymentTests
         public string CaptureStatus { get; init; } = "COMPLETED";
         public int Captures { get; private set; }
         public int PlansCreated { get; private set; }
+        public List<int> PlanMonths { get; } = [];
         public List<string> ReturnUrls { get; } = [];
         public PayPalSubscriptionInfo? Subscription { get; set; }
         public Dictionary<string, PayPalSubscriptionInfo?> Subscriptions { get; } = [];
         public List<(decimal Price, decimal? FirstCycle)> Plans { get; } = [];
-        public Task<string> CreateMonthlyPlanAsync(string name, decimal price, string currency, decimal? firstCyclePrice = null, CancellationToken cancellationToken = default) { Plans.Add((price, firstCyclePrice)); return Task.FromResult($"PLAN-{++PlansCreated}"); }
+        public Task<string> CreatePlanAsync(string name, decimal price, string currency, int intervalMonths, decimal? firstCyclePrice = null, CancellationToken cancellationToken = default) { Plans.Add((price, firstCyclePrice)); PlanMonths.Add(intervalMonths); return Task.FromResult($"PLAN-{++PlansCreated}"); }
         public Task<PayPalSubscriptionInfo> GetSubscriptionAsync(string subscriptionId, CancellationToken cancellationToken = default) =>
             Subscriptions.TryGetValue(subscriptionId, out var info) ? (info is null ? throw new HttpRequestException("PayPal caído") : Task.FromResult(info)) : Task.FromResult(Subscription!);
         public Task<PayPalCapture> CaptureOrderAsync(string orderId, CancellationToken cancellationToken = default)

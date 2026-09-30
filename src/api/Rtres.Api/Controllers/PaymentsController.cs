@@ -109,7 +109,7 @@ public sealed class PaymentsController(RtresDbContext db, IPayPalClient payPal, 
         var scope = ClientScope(clientId, out var owner); if (scope is not null) return scope;
         var item = await db.ClientProducts.SingleOrDefaultAsync(x => x.Id == id && x.ClientId == owner, ct);
         if (item is null) return NotFound();
-        if (item.IsManualBilling || item.Status != ClientProductStatus.Activo || item.BillingCycle != BillingCycle.Mensual || string.IsNullOrWhiteSpace(item.PayPalSubscriptionId)) return BadRequest(new { message = "Este producto no tiene una suscripción cancelable." });
+        if (item.IsManualBilling || item.Status != ClientProductStatus.Activo || !item.BillingCycle.IsSubscription() || string.IsNullOrWhiteSpace(item.PayPalSubscriptionId)) return BadRequest(new { message = "Este producto no tiene una suscripción cancelable." });
         await payPal.CancelSubscriptionAsync(item.PayPalSubscriptionId, "Cancelada por el cliente desde el portal Rtres.", ct); item.Status = ClientProductStatus.Cancelado; await db.SaveChangesAsync(ct); return Ok();
     }
 

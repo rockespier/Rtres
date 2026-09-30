@@ -131,10 +131,40 @@ public class GitHubIssueSyncJobTests
     public async Task Skips_projects_without_repo()
     {
         using var db = TestData.Db(out var seed);
-        seed.Project.GithubRepoName = ""; await db.SaveChangesAsync();
+        TestData.RemoveRepos(db);
         var github = new FakeGitHub();
         await new GitHubIssueSyncJob(db, github, NullLogger<GitHubIssueSyncJob>.Instance).CreateIssueAsync(seed.Ticket.Id, CancellationToken.None);
         Assert.Equal(0, github.Calls);
+    }
+}
+
+public class MultiRepoProjectTests
+{
+    [Fact]
+    public async Task Ticket_goes_to_the_chosen_repo_and_its_webhook_finds_it()
+    {
+        using var db = TestData.Db(out var seed);
+        var api = new ProjectRepository { ProjectId = seed.Project.Id, Owner = "rtres", Name = "cabalgatas-andinas-api", Label = "API" };
+        db.ProjectRepositories.Add(api); await db.SaveChangesAsync();
+        var identity = new ClaimsIdentity([new Claim(ClaimTypes.NameIdentifier, seed.User.Id.ToString()), new Claim("client_id", seed.Client.Id.ToString()), new Claim(ClaimTypes.Role, "Cliente")], "test");
+        var portal = new PortalController(db, new FakeJobs(), new FakeNotifications(), new ConfigurationBuilder().Build(), NullLogger<PortalController>.Instance) { ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext { User = new ClaimsPrincipal(identity) } } };
+
+        Assert.IsType<BadRequestObjectResult>(await portal.CreateTicket(new CreateTicketRequest(seed.Project.Id, TicketType.Bug, "X", "Y", null, null, null, null, null, null, Guid.NewGuid()), null, CancellationToken.None));
+        var created = Assert.IsType<CreatedResult>(await portal.CreateTicket(new CreateTicketRequest(seed.Project.Id, TicketType.Bug, "Falla el API", "500", null, null, null, null, null, null, api.Id), null, CancellationToken.None));
+        var ticket = Assert.IsType<Ticket>(created.Value);
+
+        var github = new FakeGitHub();
+        var job = new GitHubIssueSyncJob(db, github, NullLogger<GitHubIssueSyncJob>.Instance);
+        await job.CreateIssueAsync(ticket.Id, CancellationToken.None);
+        await job.CreateIssueAsync(seed.Ticket.Id, CancellationToken.None); // sin repositorio indicado: va al principal
+        Assert.Equal(["rtres/cabalgatas-andinas-api", "rtres/cabalgatas-andinas-web"], github.Repos);
+        Assert.Equal(api.Id, (await db.Tickets.SingleAsync(x => x.Id == ticket.Id)).RepositoryId);
+
+        // Mismo número de issue en ambos repos: el webhook distingue el ticket por repositorio.
+        await new GitHubWebhookProcessor(db, new FakeNotifications(), NullLogger<GitHubWebhookProcessor>.Instance)
+            .ProcessAsync("issues", TestData.IssueEvent("closed", 42, state: "closed", repo: "cabalgatas-andinas-api"), CancellationToken.None);
+        Assert.Equal(TicketStatus.Resuelto, (await db.Tickets.SingleAsync(x => x.Id == ticket.Id)).Status);
+        Assert.Equal(TicketStatus.Abierto, (await db.Tickets.SingleAsync(x => x.Id == seed.Ticket.Id)).Status);
     }
 }
 
@@ -247,13 +277,13 @@ public class AdminTicketEndpointTests
         using var db = TestData.Db(out var seed);
         var jobs = new FakeJobs(); var notifications = new FakeNotifications();
         var controller = Admin(db, seed.User, jobs, notifications);
-        seed.Project.GithubRepoName = ""; await db.SaveChangesAsync();
+        TestData.RemoveRepos(db);
 
         var ok = Assert.IsType<OkObjectResult>(await controller.UpdateTicket(seed.Ticket.Id, new UpdateTicketStatusRequest(TicketStatus.EnProgreso), CancellationToken.None));
         Assert.Equal(TicketStatus.EnProgreso, (await db.Tickets.SingleAsync()).Status);
         var notification = Assert.Single(notifications.Sent); Assert.Equal(NotificationType.TicketStatusChanged, notification.Type); Assert.NotNull(notification.DedupeKey);
 
-        seed.Project.GithubRepoName = "repo"; await db.SaveChangesAsync();
+        db.ProjectRepositories.Add(new ProjectRepository { ProjectId = seed.Project.Id, Owner = "rtres", Name = "repo", IsDefault = true }); await db.SaveChangesAsync();
         var conflict = Assert.IsType<ConflictObjectResult>(await controller.UpdateTicket(seed.Ticket.Id, new UpdateTicketStatusRequest(TicketStatus.Resuelto), CancellationToken.None));
         Assert.Equal("El estado de este ticket se gestiona en GitHub", ((dynamic)conflict.Value!).message);
     }
@@ -277,7 +307,7 @@ public class AdminTicketEndpointTests
     public async Task New_ticket_without_repo_notifies_rtres()
     {
         using var db = TestData.Db(out var seed);
-        seed.Project.GithubRepoName = ""; await db.SaveChangesAsync();
+        TestData.RemoveRepos(db);
         var notifications = new FakeNotifications(); var jobs = new FakeJobs();
         var identity = new ClaimsIdentity([new Claim(ClaimTypes.NameIdentifier, seed.User.Id.ToString()), new Claim("client_id", seed.Client.Id.ToString()), new Claim(ClaimTypes.Role, "Cliente")], "test");
         var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?> { ["Notifications:StaffEmail"] = "equipo@rtres.net" }).Build();
@@ -324,13 +354,17 @@ internal static class TestData
     {
         var db = new RtresDbContext(new DbContextOptionsBuilder<RtresDbContext>().UseInMemoryDatabase(Guid.NewGuid().ToString()).Options);
         var client = new Client { CompanyName = "Cabalgatas Andinas", Email = "c@example.com" };
-        var project = new Project { ClientId = client.Id, Name = "Web", Slug = "cabalgatas-andinas-web", GithubRepoOwner = "rtres", GithubRepoName = "cabalgatas-andinas-web" };
+        var project = new Project { ClientId = client.Id, Name = "Web", Slug = "cabalgatas-andinas-web" };
+        var repository = new ProjectRepository { ProjectId = project.Id, Owner = "rtres", Name = "cabalgatas-andinas-web", IsDefault = true };
+        project.Repositories.Add(repository);
         var user = new UserAccount { ClientId = client.Id, Email = "roberto@example.com", Name = "Roberto Ramos" };
-        var ticket = new Ticket { Code = "RT-108", ClientId = client.Id, ProjectId = project.Id, Title = "Botón", Description = "No responde", GithubIssueNumber = issueNumber };
+        var ticket = new Ticket { Code = "RT-108", ClientId = client.Id, ProjectId = project.Id, Title = "Botón", Description = "No responde", GithubIssueNumber = issueNumber, RepositoryId = issueNumber is null ? null : repository.Id };
         db.AddRange(client, project, user, ticket); db.SaveChanges();
         seed = new Seed(client, project, ticket, user);
         return db;
     }
+
+    public static void RemoveRepos(RtresDbContext db) { db.ProjectRepositories.RemoveRange(db.ProjectRepositories); db.SaveChanges(); }
 
     public static string Sign(string secret, byte[] body) => "sha256=" + Convert.ToHexStringLower(HMACSHA256.HashData(Encoding.UTF8.GetBytes(secret), body));
 
@@ -348,15 +382,16 @@ internal sealed class FakeGitHub : IGitHubIssuesClient
 {
     public int Calls { get; private set; }
     public List<(int Issue, string Body)> Comments { get; } = [];
-    public Task<long> CreateCommentAsync(Project project, int issueNumber, string body, CancellationToken cancellationToken = default)
+    public List<string> Repos { get; } = [];
+    public Task<long> CreateCommentAsync(ProjectRepository repository, int issueNumber, string body, CancellationToken cancellationToken = default)
     {
         Comments.Add((issueNumber, body));
         return Task.FromResult(5000L);
     }
-    public Task<GitHubIssue> CreateIssueAsync(Project project, Ticket ticket, CancellationToken cancellationToken = default)
+    public Task<GitHubIssue> CreateIssueAsync(Project project, ProjectRepository repository, Ticket ticket, CancellationToken cancellationToken = default)
     {
-        Calls++;
-        return Task.FromResult(new GitHubIssue(42, $"https://github.com/{project.GithubRepoOwner}/{project.GithubRepoName}/issues/42"));
+        Calls++; Repos.Add($"{repository.Owner}/{repository.Name}");
+        return Task.FromResult(new GitHubIssue(42, $"https://github.com/{repository.Owner}/{repository.Name}/issues/42"));
     }
 }
 

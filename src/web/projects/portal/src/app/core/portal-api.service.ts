@@ -11,7 +11,9 @@ export interface DashboardSummary {
 }
 
 export interface ProductDto { id: string; type: string; name: string; billingCycle: string; basePrice: number | null; currency: string; description?:string|null; isActive?:boolean; taxDocumentType?:TaxDocumentType; igvRate?:number; }
-export interface ProjectDto { id: string; name: string; slug: string; githubRepoOwner?: string; githubRepoName?: string; }
+/** Repo de GitHub de un proyecto; `label` es el nombre que ve el cliente (ej. "Web", "API"). */
+export interface ProjectRepositoryDto { id: string; owner: string; name: string; label?: string | null; isDefault: boolean; }
+export interface ProjectDto { id: string; name: string; slug: string; repositories: ProjectRepositoryDto[]; }
 export type PaymentMethod = 'PayPal'|'Transferencia';
 export interface BankTransferInfo { instructions:string; amount:number|null; currency:string; includesIgv?:boolean; years?:number; }
 /** Años que se pueden pagar de una vez en productos anuales (igual que ClientProductPricing.MaxPrepaidYears). */
@@ -78,25 +80,28 @@ export interface CreateTicketRequest {
   environment?: string;
   acceptanceCriteria?: string;
   estimatedImpact?: string;
+  repositoryId?: string;
 }
 export interface TeamUserDto { id:string; name:string; email:string; role:'Cliente'|'Admin'; isActive:boolean; }
 export interface AdminClientDto { id:string; companyName:string; isActive:boolean; requiresTaxDocument:boolean; activeProducts:number; expiringProducts:number; expiredProducts:number; openTickets:number; }
 export interface PaymentTransactionDto { id:string; createdAt:string; product:string; clientName:string; amount:number; currency:string; status:string; internalCode:string|null; }
 export interface AdminClientDetailDto { id:string; companyName:string; contactName:string; email:string; phone:string|null; preferredLanguage:string; isActive:boolean; requiresTaxDocument:boolean; }
-export interface AdminClientProductDto { id:string; clientId:string; projectId:string; projectName:string|null; productId:string; productName:string|null; productType:string|null; billingCycle:string; isManualBilling:boolean; status:string; price:number|null; listPrice:number|null; discount:number|null; discountEndsAt:string|null; currentPrice:number|null; nextChargePrice:number|null; igvRate:number; nextChargeTotal:number|null; domainName:string|null; priceLabelOverride:string|null; renewsAt:string|null; nextChargeAt:string|null; }
+export interface AdminClientProductDto { id:string; clientId:string; projectId:string; projectName:string|null; productId:string; productName:string|null; productType:string|null; currency:string; billingCycle:string; isManualBilling:boolean; status:string; price:number|null; listPrice:number|null; discount:number|null; discountEndsAt:string|null; currentPrice:number|null; nextChargePrice:number|null; igvRate:number; nextChargeTotal:number|null; domainName:string|null; priceLabelOverride:string|null; renewsAt:string|null; nextChargeAt:string|null; }
 
 export interface TaxSettingsDto { igvRate:number; rentaRate:number; facturaSeries:string; facturaNextNumber:number; reciboSeries:string; reciboNextNumber:number; }
-export interface TaxDocumentRequest { clientProductId:string; issueDate:string; currency:string; totalAmount:number; notes:string|null; }
+export interface TaxDocumentRequest { clientProductId:string; issueDate:string; currency:string; totalAmount:number; notes:string|null; retentionAmount?:number|null; }
 export interface ExchangeRateDto { date:string; currencyCode:string; rateToPen:number; source:string; }
 export type TaxDocumentType = 'Factura'|'ReciboPorHonorarios';
 export interface TaxDocumentDto { id:string; paymentTransactionId:string|null; clientId:string; type:TaxDocumentType; series:string; number:number; issueDate:string; currency:string; baseAmount:number; igvAmount:number; totalAmount:number; notes:string|null; }
-export type ExpenseCategory = 'Hosting'|'Dominios'|'SuscripcionesIA'|'ApisPorUso'|'Sueldos'|'Otros';
+export type ExpenseCategory = 'Hosting'|'Dominios'|'SuscripcionesIA'|'ApisPorUso'|'Sueldos'|'Otros'|'ImpuestoRenta'|'Comisiones';
 export type ExpenseType = 'Fijo'|'Variable';
 export interface ExpenseDto { id:string; description:string; category:ExpenseCategory; type:ExpenseType; amount:number; currency:string; amountPen:number; date:string; recurring:boolean; recurrenceCycle:string|null; }
 export interface SalesReportDto { baseImponible:number; igv:number; total:number; }
 export interface TaxSummaryReportDto { ventasGravadasPen:number; ventasNoGravadasPen:number; igvEstimado:number; rentaEstimada:number; tasa:{igvRate:number;rentaRate:number}; disclaimer:string; }
 export interface ExpensesReportDto { total:number; porCategoria:{categoria:string;monto:number}[]; }
-export interface NetReportDto { ventasPen:number; gastosPen:number; impuestosEstimadosPen:number; netoEstimadoPen:number; }
+export interface NetReportDto { ventasPen:number; gastosPen:number; utilidadOperativaPen:number; rentaRate:number; impuestosPen:number; utilidadNetaPen:number; margen:number; serie:{mes:string;ventasPen:number;gastosPen:number;impuestosPen:number;utilidadNetaPen:number}[]; disclaimer:string; }
+export interface ClientRankingRowDto { clientId:string; clientName:string; ingresosPen:number; porcentaje:number; porcentajeAcumulado:number; cobros:number; ultimoCobro:string; periodoAnteriorPen:number; variacionPorcentaje:number|null; }
+export interface ClientsReportDto { totalPen:number; clientes:ClientRankingRowDto[]; }
 
 @Injectable({ providedIn: 'root' })
 export class PortalApiService {
@@ -145,7 +150,10 @@ export class PortalApiService {
   createAdminClient(body: Omit<AdminClientDetailDto,'id'>) { return this.http.post<{client:AdminClientDetailDto;access:ClientAccessDto}>(`${this.base}/admin/clients`, body); }
   generateClientAccess(clientId:string) { return this.http.post<ClientAccessDto>(`${this.base}/admin/clients/${clientId}/access`, {}); }
   createProject(clientId:string, body:{name:string;slug?:string;githubRepoOwner?:string;githubRepoName?:string}) { return this.http.post<ProjectDto>(`${this.base}/admin/clients/${clientId}/projects`, body); }
-  updateProject(id:string, body:{name?:string;githubRepoOwner?:string;githubRepoName?:string}) { return this.http.patch<ProjectDto>(`${this.base}/admin/projects/${id}`, body); }
+  updateProject(id:string, body:{name?:string}) { return this.http.patch<ProjectDto>(`${this.base}/admin/projects/${id}`, body); }
+  addRepository(projectId:string, body:{owner:string;name:string;label?:string;isDefault?:boolean}) { return this.http.post<ProjectDto>(`${this.base}/admin/projects/${projectId}/repositories`, body); }
+  updateRepository(id:string, body:{owner?:string;name?:string;label?:string;isDefault?:boolean}) { return this.http.patch<ProjectDto>(`${this.base}/admin/repositories/${id}`, body); }
+  deleteRepository(id:string) { return this.http.delete<ProjectDto>(`${this.base}/admin/repositories/${id}`); }
   updateAdminClient(id:string,body:Partial<Omit<AdminClientDetailDto,'id'>>) { return this.http.patch<AdminClientDetailDto>(`${this.base}/admin/clients/${id}`,body); }
   importAdminClients(file:File) { const data=new FormData();data.append('file',file);return this.http.post<ImportResult>(`${this.base}/admin/clients/import`,data); }
   adminClientTemplate() { return this.http.get(`${this.base}/admin/clients/import/template`,{responseType:'blob'}); }
@@ -170,10 +178,12 @@ export class PortalApiService {
   getExpenses(params:{month?:number;year?:number;category?:string}={}) { return this.http.get<ExpenseDto[]>(`${this.base}/admin/expenses${query(params)}`); }
   createExpense(body:Omit<ExpenseDto,'id'|'amountPen'>) { return this.http.post<ExpenseDto>(`${this.base}/admin/expenses`,body); }
   updateExpense(id:string,body:Partial<Omit<ExpenseDto,'id'|'amountPen'>>) { return this.http.patch<ExpenseDto>(`${this.base}/admin/expenses/${id}`,body); }
-  getSalesReport(month:number,year:number,currency:string) { return this.http.get<SalesReportDto>(`${this.base}/admin/reports/sales${query({month,year,currency})}`); }
-  getTaxSummaryReport(month:number,year:number) { return this.http.get<TaxSummaryReportDto>(`${this.base}/admin/reports/tax-summary${query({month,year})}`); }
-  getExpensesReport(month:number,year:number) { return this.http.get<ExpensesReportDto>(`${this.base}/admin/reports/expenses${query({month,year})}`); }
-  getNetReport(month:number,year:number) { return this.http.get<NetReportDto>(`${this.base}/admin/reports/net${query({month,year})}`); }
+  getSalesReport(month:number|undefined,year:number,currency:string) { return this.http.get<SalesReportDto>(`${this.base}/admin/reports/sales${query({month,year,currency})}`); }
+  getTaxSummaryReport(month:number|undefined,year:number) { return this.http.get<TaxSummaryReportDto>(`${this.base}/admin/reports/tax-summary${query({month,year})}`); }
+  getExpensesReport(month:number|undefined,year:number) { return this.http.get<ExpensesReportDto>(`${this.base}/admin/reports/expenses${query({month,year})}`); }
+  getNetReport(month:number|undefined,year:number) { return this.http.get<NetReportDto>(`${this.base}/admin/reports/net${query({month,year})}`); }
+  getClientsReport(month:number|undefined,year:number) { return this.http.get<ClientsReportDto>(`${this.base}/admin/reports/clients${query({month,year})}`); }
+  exportReport(month:number|undefined,year:number) { return this.http.get(`${this.base}/admin/reports/export${query({month,year})}`,{responseType:'blob'}); }
 }
 function query(params:Record<string,string|number|undefined>) { const q=Object.entries(params).filter(([,v])=>v!=null&&v!=='').map(([k,v])=>`${k}=${encodeURIComponent(v!)}`).join('&'); return q?`?${q}`:''; }
 export interface ImportResult { created:number; skipped:number; errors:{row:number;reason:string}[]; accesses?:ClientAccessDto[]; }
