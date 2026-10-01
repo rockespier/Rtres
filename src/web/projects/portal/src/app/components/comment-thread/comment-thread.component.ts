@@ -10,8 +10,7 @@ import { TicketCommentDto } from '../../core/portal-api.service';
     <ol class="space-y-4">
       <li *ngFor="let c of comments()" class="border-b pb-4 last:border-b-0 last:pb-0">
         <div class="flex flex-wrap items-center gap-2 text-sm">
-          <span class="font-medium">{{ c.authorName || (c.fromGithub ? 'Equipo Rtres' : 'Cliente') }}</span>
-          <span *ngIf="c.fromGithub" class="pill pill-neutral">vía GitHub</span>
+          <span class="font-medium">{{ c.fromGithub ? 'Equipo Rtres' : (c.authorName || 'Cliente') }}</span>
           <span class="text-xs text-muted">{{ c.createdAt | date:'short' }}</span>
         </div>
         <p class="text-sm mt-2 whitespace-pre-line">{{ c.body }}</p>

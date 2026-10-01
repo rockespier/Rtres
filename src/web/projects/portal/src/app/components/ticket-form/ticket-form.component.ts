@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, OnDestroy, OnInit, TemplateRef, ViewChild, computed, effect, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TicketPreviewCardComponent } from '../ticket-preview-card/ticket-preview-card.component';
 import { FileDropzoneComponent } from '../file-dropzone/file-dropzone.component';
@@ -24,6 +24,7 @@ import { PortalUiService } from '../../core/portal-ui.service';
             <button *ngFor="let t of types; let first = first" type="button" class="type-tab" [class.ml-2]="!first" [class.active]="form.value.type===t.value" (click)="setType(t.value)">{{ t.label }}</button>
           </div>
           <label>Proyecto<select class="field" formControlName="projectId"><option *ngFor="let p of projects()" [value]="p.id">{{ p.name }}</option></select></label>
+          <p *ngIf="productName() && form.value.projectId === productProjectId" class="text-sm -mt-3"><span class="text-muted">Producto:</span> <span class="font-medium">{{ productName() }}</span></p>
           <label *ngIf="repositories().length > 1">Componente<select class="field" formControlName="repositoryId"><option *ngFor="let r of repositories()" [value]="r.id">{{ r.label || r.name }}</option></select></label>
           <label>Título<input class="field" formControlName="title"></label>
           <label>Descripción *<textarea class="field" formControlName="description"></textarea></label>
@@ -45,6 +46,11 @@ export class TicketFormComponent implements OnInit, AfterViewInit, OnDestroy {
   private api = inject(PortalApiService);
   private router = inject(Router);
   private ui = inject(PortalUiService);
+  private params = inject(ActivatedRoute).snapshot.queryParamMap;
+  /** Ticket registrado desde la tarjeta de un producto: se guarda el producto mientras no se cambie de proyecto. */
+  productProjectId = this.params.get('projectId');
+  private clientProductId = this.params.get('clientProductId');
+  productName = signal('');
   @ViewChild('actions') private actionsTpl!: TemplateRef<unknown>;
 
   projects = signal<ProjectDto[]>([]);
@@ -81,7 +87,8 @@ export class TicketFormComponent implements OnInit, AfterViewInit, OnDestroy {
       this.ui.viewingClientId();
       this.api.getProjects().subscribe(projects => {
         this.projects.set(projects);
-        this.form.patchValue({ projectId: projects.length ? projects[0].id : '' });
+        const preset = projects.find(p => p.id === this.productProjectId);
+        this.form.patchValue({ projectId: preset?.id ?? (projects.length ? projects[0].id : '') });
       });
     });
     effect(() => {
@@ -92,6 +99,10 @@ export class TicketFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit(): void {
     this.ui.breadcrumb.set({ parentLabel: 'Tickets', parentLink: '/tickets', current: 'Nuevo' });
+    const type = this.params.get('type') as TicketType | null;
+    if (type && this.types.some(t => t.value === type)) this.setType(type);
+    if (this.params.get('title')) this.form.patchValue({ title: this.params.get('title') });
+    if (this.clientProductId) this.api.getClientProduct(this.clientProductId).subscribe({ next: p => this.productName.set(p.domainName ? `${p.product.name} — ${p.domainName}` : p.product.name), error: () => this.clientProductId = null });
   }
 
   ngAfterViewInit(): void {
@@ -124,6 +135,7 @@ export class TicketFormComponent implements OnInit, AfterViewInit, OnDestroy {
     this.api.createTicket({
       projectId: v.projectId!,
       repositoryId: this.repositories().length > 1 && v.repositoryId ? v.repositoryId : undefined,
+      clientProductId: this.clientProductId && v.projectId === this.productProjectId ? this.clientProductId : undefined,
       type: v.type!,
       title: v.title!,
       description: v.description!,

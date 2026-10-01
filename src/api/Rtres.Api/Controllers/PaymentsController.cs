@@ -30,7 +30,7 @@ public sealed class PaymentsController(RtresDbContext db, IPayPalClient payPal, 
         var client = Guid.TryParse(User.FindFirstValue("client_id"), out var clientId) ? await db.Clients.SingleOrDefaultAsync(x => x.Id == clientId, ct) : null;
         var igvRate = await db.IgvRateAsync(ct);
         var products = await db.Products.Where(x => x.IsActive).OrderBy(x => x.Name).ToListAsync(ct);
-        return Ok(products.Select(x => new { id = x.Id, type = x.Type, name = x.Name, billingCycle = x.BillingCycle, basePrice = x.BasePrice, currency = x.Currency, description = x.Description, isActive = x.IsActive, igvRate = client is null ? 0m : ClientProductPricing.IgvRateFor(client, x, igvRate) }));
+        return Ok(products.Select(x => new { id = x.Id, type = x.Type, name = x.Name, billingCycle = x.BillingCycle, basePrice = x.BasePrice, currency = x.Currency, description = x.Description, category = x.Category, tags = x.Tags, allowsTickets = x.AllowsTickets, isActive = x.IsActive, igvRate = client is null ? 0m : ClientProductPricing.IgvRateFor(client, x, igvRate) }));
     }
 
     [Authorize(Roles = "Cliente,Admin"), HttpPost("subscriptions")]
@@ -97,8 +97,8 @@ public sealed class PaymentsController(RtresDbContext db, IPayPalClient payPal, 
         var scope = ClientScope(clientId, out var owner); if (scope is not null) return scope;
         var item = await db.ClientProducts.Include(x => x.Product).SingleOrDefaultAsync(x => x.Id == id && x.ClientId == owner, ct);
         if (item?.Product is null) return NotFound();
-        // Renovar (Anual/Único por vencer o vencido) o reintentar un pago que quedó a medias (Pendiente, cualquier ciclo).
-        var renewable = item.BillingCycle is BillingCycle.Anual or BillingCycle.Unico && (item.Status is ClientProductStatus.PorVencer or ClientProductStatus.Vencido || item.RenewsAt <= DateTime.UtcNow.AddDays(RenewalWindowDays));
+        // Renovar (Anual por vencer o vencido; el pago único no se renueva) o reintentar un pago que quedó a medias (Pendiente, cualquier ciclo).
+        var renewable = item.BillingCycle == BillingCycle.Anual && (item.Status is ClientProductStatus.PorVencer or ClientProductStatus.Vencido || item.RenewsAt <= DateTime.UtcNow.AddDays(RenewalWindowDays));
         if (item.IsManualBilling || !(renewable || item.Status == ClientProductStatus.Pendiente)) return BadRequest(new { message = "Este producto no se puede renovar en línea." });
         try { var checkout = await checkoutService.StartAsync(item, item.Product, Request, ct, await db.IgvRateForAsync(owner, item.Product, ct), years); await db.SaveChangesAsync(ct); return Ok(new { approvalUrl = checkout.ApprovalUrl }); } catch (InvalidOperationException ex) { return BadRequest(new { message = ex.Message }); }
     }

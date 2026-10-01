@@ -1,3 +1,4 @@
+using System.Text.Json;
 using System.Security.Claims;
 using Hangfire;
 using Microsoft.AspNetCore.Authorization;
@@ -71,12 +72,43 @@ public sealed class PortalController(RtresDbContext db, IBackgroundJobClient job
         var error = ResolveClientId(clientId, out var clientIdValue); if (error is not null) return error;
         var project = await db.Projects.Include(x => x.Repositories).SingleOrDefaultAsync(x => x.Id == r.ProjectId && x.ClientId == clientIdValue, ct); if (project is null) return NotFound();
         if (r.RepositoryId is Guid repositoryId && project.Repositories.All(x => x.Id != repositoryId)) return BadRequest(new { message = "El repositorio no pertenece al proyecto." });
-        var ticket = new Ticket { Code = $"RT-{101 + await db.Tickets.CountAsync(ct)}", ClientId = clientIdValue, ProjectId = r.ProjectId, RepositoryId = r.RepositoryId, CreatedByUserId = UserId, Type = r.Type, Title = r.Title, Description = r.Description, CurrentBehavior = r.CurrentBehavior, ExpectedBehavior = r.ExpectedBehavior, StepsToReproduce = r.StepsToReproduce, Environment = r.Environment, AcceptanceCriteria = r.AcceptanceCriteria, EstimatedImpact = r.EstimatedImpact };
+        if (r.ClientProductId is Guid clientProductId && !await db.ClientProducts.AnyAsync(x => x.Id == clientProductId && x.ClientId == clientIdValue && x.ProjectId == r.ProjectId && x.Product!.AllowsTickets, ct))
+            return BadRequest(new { message = "Ese producto no admite tickets." });
+        var ticket = new Ticket { Code = $"RT-{101 + await db.Tickets.CountAsync(ct)}", ClientId = clientIdValue, ProjectId = r.ProjectId, RepositoryId = r.RepositoryId, ClientProductId = r.ClientProductId, CreatedByUserId = UserId, Type = r.Type, Title = r.Title, Description = r.Description, CurrentBehavior = r.CurrentBehavior, ExpectedBehavior = r.ExpectedBehavior, StepsToReproduce = r.StepsToReproduce, Environment = r.Environment, AcceptanceCriteria = r.AcceptanceCriteria, EstimatedImpact = r.EstimatedImpact };
         db.Tickets.Add(ticket); await db.SaveChangesAsync(ct);
         jobs.Enqueue<GitHubIssueSyncJob>(j => j.CreateIssueAsync(ticket.Id, CancellationToken.None));
         if (project.Repositories.Count == 0) await NotifyPortalTicketAsync(ticket, project, ct);
         return Created($"/api/tickets/{ticket.Id}", ticket);
     }
+    /// <summary>
+    /// Últimos avisos de la campana y cuántos no leyó el usuario. El cliente ve los suyos; SuperAdmin, los del cliente que
+    /// está viendo o, sin cliente seleccionado, todos (incluidos los internos: ticket nuevo, pedido por transferencia).
+    /// </summary>
+    [HttpGet("notifications")]
+    public async Task<IActionResult> Notifications(Guid? clientId, CancellationToken ct)
+    {
+        var query = db.PortalNotifications.AsQueryable();
+        if (!(IsSuperAdmin && clientId is null))
+        {
+            var error = ResolveClientId(clientId, out var id); if (error is not null) return error;
+            query = query.Where(x => x.ClientId == id && !x.ForStaff);
+        }
+        var seenAt = await db.UserAccounts.Where(x => x.Id == UserId).Select(x => x.NotificationsSeenAt).SingleOrDefaultAsync(ct);
+        var unread = await query.CountAsync(x => seenAt == null || x.CreatedAt > seenAt, ct);
+        var rows = await query.OrderByDescending(x => x.CreatedAt).Take(20)
+            .Select(x => new { x.Id, x.ClientId, x.Type, x.ForStaff, x.DataJson, x.CreatedAt, Company = db.Clients.Where(c => c.Id == x.ClientId).Select(c => c.CompanyName).FirstOrDefault() })
+            .ToListAsync(ct);
+        var items = rows.Select(x => new { id = x.Id, clientId = x.ClientId, company = x.Company, type = x.Type, forStaff = x.ForStaff, createdAt = x.CreatedAt, unread = seenAt == null || x.CreatedAt > seenAt, data = JsonSerializer.Deserialize<Dictionary<string, string>>(x.DataJson) ?? [] });
+        return Ok(new { items, unread });
+    }
+
+    [HttpPost("notifications/seen")]
+    public async Task<IActionResult> NotificationsSeen(CancellationToken ct)
+    {
+        var user = await db.UserAccounts.SingleOrDefaultAsync(x => x.Id == UserId, ct); if (user is null) return NotFound();
+        user.NotificationsSeenAt = DateTime.UtcNow; await db.SaveChangesAsync(ct); return NoContent();
+    }
+
     private async Task NotifyPortalTicketAsync(Ticket ticket, Project project, CancellationToken ct)
     {
         var staffEmail = configuration["Notifications:StaffEmail"] is { Length: > 0 } configured ? configured : configuration["Smtp:From"];

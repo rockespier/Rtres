@@ -22,11 +22,11 @@ public sealed class RenewalReminderJob(RtresDbContext db, INotificationSender no
         var today = now.Date;
         var limit = today.AddDays(ThresholdDays.Max() + 1);
         var expired = await db.ClientProducts
-            .Where(x => (x.Status == ClientProductStatus.Activo || x.Status == ClientProductStatus.PorVencer) && x.RenewsAt != null && x.RenewsAt < today)
+            .Where(x => (x.Status == ClientProductStatus.Activo || x.Status == ClientProductStatus.PorVencer) && x.BillingCycle != BillingCycle.Unico && x.RenewsAt != null && x.RenewsAt < today)
             .ToListAsync(cancellationToken);
         foreach (var item in expired) item.Status = ClientProductStatus.Vencido;
         var due = await db.ClientProducts.Include(x => x.Product)
-            .Where(x => (x.Status == ClientProductStatus.Activo || x.Status == ClientProductStatus.PorVencer) && x.RenewsAt != null && x.RenewsAt >= today && x.RenewsAt < limit)
+            .Where(x => (x.Status == ClientProductStatus.Activo || x.Status == ClientProductStatus.PorVencer) && x.BillingCycle != BillingCycle.Unico && x.RenewsAt != null && x.RenewsAt >= today && x.RenewsAt < limit)
             .Join(db.Clients.Where(c => c.IsActive), product => product.ClientId, client => client.Id, (product, client) => new { product, client })
             .ToListAsync(cancellationToken);
 

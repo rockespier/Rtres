@@ -12,14 +12,13 @@ import { ProjectDto, TicketDto } from '../../core/portal-api.service';
   imports: [...SORTABLE,CommonModule, RouterLink, StatusPillComponent, TicketTypePillComponent],
   template: `<div class="card overflow-x-auto mt-6">
     <table class="p-table" appSort #s="appSort">
-      <thead><tr><th sortKey="title">Ticket</th><th class="hidden sm:table-cell" sortKey="type">Tipo</th><th class="hidden md:table-cell" [sortKey]="projectKey">Proyecto</th><th class="hidden lg:table-cell" sortKey="githubIssueNumber">GitHub</th><th sortKey="status">Estado</th><th class="hidden sm:table-cell" sortKey="updatedAt">Actualizado</th></tr></thead>
+      <thead><tr><th sortKey="title">Ticket</th><th class="hidden sm:table-cell" sortKey="type">Tipo</th><th class="hidden md:table-cell" [sortKey]="projectKey">Proyecto</th><th sortKey="status">Estado</th><th class="hidden sm:table-cell" sortKey="updatedAt">Actualizado</th></tr></thead>
       <tbody>
-        <tr *ngIf="!tickets.length"><td colspan="6" class="text-muted text-sm">No hay tickets que coincidan.</td></tr>
+        <tr *ngIf="!tickets.length"><td colspan="5" class="text-muted text-sm">No hay tickets que coincidan.</td></tr>
         <tr *ngFor="let t of tickets | sortBy:s.key():s.dir()" class="cursor-pointer" (click)="open(t)">
           <td><a [routerLink]="['/tickets', t.id]" class="font-medium hover:underline" (click)="$event.stopPropagation()">{{ t.title }}</a><p class="text-xs text-muted">#{{ t.code }}</p></td>
           <td class="hidden sm:table-cell"><app-ticket-type-pill [type]="t.type"/></td>
           <td class="hidden md:table-cell text-muted">{{ projectName(t.projectId) }}</td>
-          <td class="hidden lg:table-cell"><a *ngIf="t.githubIssueUrl" [href]="t.githubIssueUrl" target="_blank" rel="noopener" class="text-accent" (click)="$event.stopPropagation()">issue #{{ t.githubIssueNumber }}</a><span *ngIf="!t.githubIssueUrl" class="text-muted">—</span></td>
           <td><app-status-pill [status]="t.status"/></td>
           <td class="hidden sm:table-cell text-muted">{{ t.updatedAt | date:'short' }}</td>
         </tr>

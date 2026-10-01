@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Hangfire;
 using Microsoft.EntityFrameworkCore;
 using Rtres.Domain;
@@ -16,6 +17,7 @@ public sealed class NotificationJob(RtresDbContext db, IEmailSender email, IConf
     /// <returns>Si el email se envió (false si se omitió: ya enviado, cliente inactivo o sin email).</returns>
     public async Task<bool> SendAsync(Guid clientId, Notification notification, CancellationToken cancellationToken)
     {
+        await AddToInboxAsync(clientId, notification, cancellationToken);
         if (notification.DedupeKey is not null && await AlreadySentAsync(db, notification.DedupeKey, cancellationToken)) return false;
         var client = await db.Clients.SingleOrDefaultAsync(x => x.Id == clientId, cancellationToken);
         if (client is null || !client.IsActive || string.IsNullOrWhiteSpace(client.Email))
@@ -44,6 +46,21 @@ public sealed class NotificationJob(RtresDbContext db, IEmailSender email, IConf
         return true;
     }
 
+    /// <summary>Bandeja de la campana: una entrada por aviso aunque el email falle y se reintente (la clave lo evita).</summary>
+    private async Task AddToInboxAsync(Guid clientId, Notification notification, CancellationToken cancellationToken)
+    {
+        if (notification.Type == NotificationType.AccountAccess) return; // lleva la contraseña temporal: solo por email
+        if (notification.DedupeKey is not null && await db.PortalNotifications.AnyAsync(x => x.DedupeKey == notification.DedupeKey, cancellationToken)) return;
+        if (!await db.Clients.AnyAsync(x => x.Id == clientId, cancellationToken)) return;
+        db.PortalNotifications.Add(new PortalNotification
+        {
+            ClientId = clientId, Type = notification.Type.ToString(), DedupeKey = notification.DedupeKey,
+            ForStaff = notification.Type is NotificationType.TicketCreated or NotificationType.TransferRequested,
+            DataJson = JsonSerializer.Serialize(notification.Data.Where(x => x.Key != "portalUrl").ToDictionary()),
+        });
+        await db.SaveChangesAsync(cancellationToken);
+    }
+
     public static Task<bool> AlreadySentAsync(RtresDbContext db, string dedupeKey, CancellationToken cancellationToken) =>
         db.NotificationLogs.AnyAsync(x => x.DedupeKey == dedupeKey && x.Success, cancellationToken);
 }
@@ -52,7 +69,9 @@ public sealed class QueuedNotificationSender(IBackgroundJobClient jobs) : INotif
 {
     public Task SendAsync(Client client, Notification notification, CancellationToken cancellationToken = default)
     {
-        jobs.Enqueue<NotificationJob>(j => j.SendAsync(client.Id, notification, CancellationToken.None));
+        // Sin clave propia se le asigna una: así un reintento del job no duplica el email ni la entrada de la campana.
+        var keyed = notification.DedupeKey is null ? notification with { DedupeKey = $"auto:{Guid.NewGuid():N}" } : notification;
+        jobs.Enqueue<NotificationJob>(j => j.SendAsync(client.Id, keyed, CancellationToken.None));
         return Task.CompletedTask;
     }
 }

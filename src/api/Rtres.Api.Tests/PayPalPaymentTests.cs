@@ -187,6 +187,17 @@ public class PayPalPaymentTests
     }
 
     [Fact]
+    public async Task One_time_products_are_never_renewed()
+    {
+        using var db = TestData.Db(out var seed);
+        var item = AddProduct(db, seed, BillingCycle.Unico, orderId: "ORD-OLD");
+        item.Status = ClientProductStatus.Vencido; item.RenewsAt = DateTime.UtcNow.AddDays(-3); db.SaveChanges();
+        var controller = Controller(db, new FakePayPal(), new FakeNotifications());
+        controller.ControllerContext.HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity([new Claim("client_id", seed.Client.Id.ToString()), new Claim(ClaimTypes.Role, "Cliente")], "test"));
+        Assert.IsType<BadRequestObjectResult>(await controller.Renew(item.Id, null, CancellationToken.None));
+    }
+
+    [Fact]
     public async Task Billing_shows_own_payments_to_clients_and_all_or_selected_to_superadmin()
     {
         using var db = TestData.Db(out var seed);
