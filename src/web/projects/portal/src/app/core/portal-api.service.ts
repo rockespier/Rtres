@@ -10,7 +10,7 @@ export interface DashboardSummary {
   nextPaymentAmount: number | null;
 }
 
-export interface ProductDto { id: string; type: string; name: string; billingCycle: string; basePrice: number | null; currency: string; description?:string|null; isActive?:boolean; taxDocumentType?:TaxDocumentType; igvRate?:number; }
+export interface ProductDto { id: string; type: string; name: string; billingCycle: string; basePrice: number | null; currency: string; description?:string|null; isActive?:boolean; taxDocumentType?:TaxDocumentType; igvRate?:number; category?:string|null; tags?:string|null; allowsTickets?:boolean; }
 /** Repo de GitHub de un proyecto; `label` es el nombre que ve el cliente (ej. "Web", "API"). */
 export interface ProjectRepositoryDto { id: string; owner: string; name: string; label?: string | null; isDefault: boolean; }
 export interface ProjectDto { id: string; name: string; slug: string; repositories: ProjectRepositoryDto[]; }
@@ -22,6 +22,7 @@ export interface ClientAccessDto { clientName: string; email: string; temporaryP
 
 export interface ClientProductApiDto {
   id: string;
+  projectId: string;
   status: string;
   renewsAt: string | null;
   nextChargeAt: string | null;
@@ -81,7 +82,10 @@ export interface CreateTicketRequest {
   acceptanceCriteria?: string;
   estimatedImpact?: string;
   repositoryId?: string;
+  clientProductId?: string;
 }
+/** Aviso de la campana: `data` trae los mismos valores que el email (code, title, product, amount…). */
+export interface PortalNotificationDto { id:string; clientId:string; company:string|null; type:string; forStaff:boolean; createdAt:string; unread:boolean; data:Record<string,string>; }
 export interface TeamUserDto { id:string; name:string; email:string; role:'Cliente'|'Admin'; isActive:boolean; }
 export interface AdminClientDto { id:string; companyName:string; isActive:boolean; requiresTaxDocument:boolean; activeProducts:number; expiringProducts:number; expiredProducts:number; openTickets:number; }
 export interface PaymentTransactionDto { id:string; createdAt:string; product:string; clientName:string; amount:number; currency:string; status:string; internalCode:string|null; }
@@ -121,6 +125,8 @@ export class PortalApiService {
   cancelProduct(id:string) { return this.http.post(this.scoped(`/client-products/${id}/cancel`), {}); }
   captureClientProduct(id:string) { return this.http.post<{status:string}>(this.scoped(`/client-products/${id}/capture`), {}); }
   getClientProduct(id:string) { return this.http.get<ClientProductApiDto>(this.scoped(`/client-products/${id}`)); }
+  getNotifications() { return this.http.get<{items:PortalNotificationDto[];unread:number}>(this.scoped('/notifications')); }
+  markNotificationsSeen() { return this.http.post<void>(`${this.base}/notifications/seen`, {}); }
   getProjects() { return this.http.get<ProjectDto[]>(this.scoped('/projects')); }
   getProjectsForClient(clientId:string) { return this.http.get<ProjectDto[]>(`${this.base}/projects?clientId=${encodeURIComponent(clientId)}`); }
   getTickets(page = 1, filters: { status?: string; type?: string } = {}) {

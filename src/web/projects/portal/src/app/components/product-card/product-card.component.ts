@@ -2,6 +2,7 @@ import { formatMoney } from '../../core/money.pipe';
 import { isSubscriptionCycle } from '../../core/enum-labels';
 import { Component, Input, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { BankTransferInfo, ClientProductApiDto, PREPAID_YEARS, PortalApiService } from '../../core/portal-api.service';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 import { BankTransferInfoComponent } from '../bank-transfer-info/bank-transfer-info.component';
@@ -47,7 +48,7 @@ const currentPrice = (p: ClientProductApiDto) => { const list = listPrice(p); re
 @Component({
   selector: 'app-product-card',
   standalone: true,
-  imports: [CommonModule, ConfirmDialogComponent, BankTransferInfoComponent],
+  imports: [CommonModule, RouterLink, ConfirmDialogComponent, BankTransferInfoComponent],
   template: `<article class="card p-6">
     <p class="text-muted text-sm">{{ typeLabel() }}</p>
     <h3 class="font-display text-lg font-semibold mt-2">{{ displayName() }}</h3>
@@ -59,6 +60,7 @@ const currentPrice = (p: ClientProductApiDto) => { const list = listPrice(p); re
     <label *ngIf="product.billingCycle === 'Anual' && (canPay() || canRenew() || canPayByTransfer())" class="field-label mt-5">Años a pagar<select class="field" [value]="years" (change)="setYears(+$any($event.target).value)"><option *ngFor="let y of yearOptions" [value]="y" [selected]="y === years">{{ y === 1 ? '1 año' : y + ' años por adelantado' }}</option></select></label>
     <div *ngIf="canPayByTransfer()" class="mt-5"><button *ngIf="!transferInfo" class="btn btn-primary btn-sm" [disabled]="busy" (click)="showTransfer()">{{ product.status === 'Pendiente' ? 'Cómo pagar' : 'Pagar renovación' }}</button><app-bank-transfer-info *ngIf="transferInfo" [info]="transferInfo"/></div>
     <div *ngIf="canPay() || canRenew() || canCancel()" class="flex gap-2 mt-5"><button *ngIf="canPay()" class="btn btn-primary btn-sm" [disabled]="busy" (click)="completePayment()">{{ busy ? 'Verificando…' : 'Completar pago' }}</button><button *ngIf="canRenew()" class="btn btn-primary btn-sm" (click)="renew()">Pagar renovación</button><button *ngIf="canCancel()" class="btn btn-ghost btn-sm" (click)="confirmingCancel=true;cancelError=''">Cancelar suscripción</button></div>
+    <div *ngIf="canTicket()" class="mt-5 pt-4 border-t"><a class="btn btn-ghost btn-sm" routerLink="/tickets/new" [queryParams]="{ projectId: product.projectId, clientProductId: product.id }">Registrar ticket</a></div>
   </article>
   <app-confirm-dialog *ngIf="confirmingCancel" title="Cancelar suscripción" [message]="'Se cancelará la suscripción de ' + displayName() + ' en PayPal y no habrá más cobros. Esta acción no se puede deshacer.'" confirmLabel="Sí, cancelar suscripción" busyLabel="Cancelando…" [danger]="true" [busy]="cancelling" [error]="cancelError" (confirmed)="cancel()" (cancelled)="confirmingCancel=false"/>`,
 })
@@ -70,10 +72,10 @@ export class ProductCardComponent {
   typeLabel = computed(() => TYPE_LABELS[this.product.product.type] ?? this.product.product.type);
   statusLabel = computed(() => STATUS_LABELS[this.product.status] ?? this.product.status);
   pillClass = computed(() => STATUS_PILL_CLASS[this.product.status] ?? 'pill-neutral');
-  /** Anual/Único que vence en 30 días o menos (o ya vencido): se puede pagar la renovación. Mismo criterio que el backend. */
+  /** Anual que vence en 30 días o menos (o ya vencido): se puede pagar la renovación. El pago único no se renueva. Mismo criterio que el backend. */
   canRenew = computed(() => {
     const p = this.product;
-    if (p.isManualBilling || !(p.billingCycle === 'Anual' || p.billingCycle === 'Unico')) return false;
+    if (p.isManualBilling || p.billingCycle !== 'Anual') return false;
     if (p.status === 'PorVencer' || p.status === 'Vencido') return true;
     return p.status === 'Activo' && !!p.renewsAt && new Date(p.renewsAt).getTime() - Date.now() <= RENEWAL_WINDOW_DAYS * 86_400_000;
   });
@@ -94,12 +96,16 @@ export class ProductCardComponent {
     return end ? `Precio especial hasta el ${end.toLocaleDateString('es-PE')}; luego ${money}${igvSuffix(p)}.` : `Precio especial (catálogo: ${money}${igvSuffix(p)}).`;
   });
   canCancel = computed(() => !this.product.isManualBilling && this.product.status === 'Activo' && isSubscriptionCycle(this.product.billingCycle) && !!this.product.payPalSubscriptionId);
+  /** El admin habilita los tickets por producto (Catálogo de productos → "Permite registrar tickets"). */
+  canTicket = computed(() => !!this.product.product.allowsTickets && this.product.status !== 'Cancelado');
   canPay = computed(() => !this.product.isManualBilling && this.product.status === 'Pendiente');
-  /** Pago por transferencia: pendiente o por renovar (Anual/Único dentro de los 30 días, o Mensual por cobrar). Lo confirma Rtres. */
+  /** Pago por transferencia: pendiente o por renovar (Anual dentro de los 30 días, o suscripción por cobrar). El pago único solo mientras está pendiente. Lo confirma Rtres. */
   canPayByTransfer = computed(() => {
     const p = this.product;
     if (!p.isManualBilling || p.status === 'Cancelado') return false;
-    if (p.status === 'Pendiente' || p.status === 'PorVencer' || p.status === 'Vencido') return true;
+    if (p.status === 'Pendiente') return true;
+    if (p.billingCycle === 'Unico') return false;
+    if (p.status === 'PorVencer' || p.status === 'Vencido') return true;
     const due = isSubscriptionCycle(p.billingCycle) ? p.nextChargeAt : p.renewsAt;
     return !!due && new Date(due).getTime() - Date.now() <= RENEWAL_WINDOW_DAYS * 86_400_000;
   });

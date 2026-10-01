@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using System.Text;
 using Hangfire.Common;
 using Microsoft.AspNetCore.Http;
@@ -86,6 +87,37 @@ public class NotificationJobTests
         Assert.Equal("c@example.com", message.To);
         var log = await db.NotificationLogs.SingleAsync();
         Assert.True(log.Success); Assert.Equal("PaymentReceived", log.Type); Assert.Equal("payment:abc", log.DedupeKey); Assert.Equal("c@example.com", log.Recipient);
+    }
+
+    [Fact]
+    public async Task Bell_inbox_keeps_one_entry_per_notice_and_counts_unread_per_user()
+    {
+        using var db = TestData.Db(out var seed);
+        var job = Job(db, new FakeEmail());
+        var reply = EmailTemplatesTests.Sample(NotificationType.TicketReply) with { DedupeKey = "reply:1" };
+        await job.SendAsync(seed.Client.Id, reply, CancellationToken.None);
+        await job.SendAsync(seed.Client.Id, reply, CancellationToken.None); // reintento: no duplica
+        await job.SendAsync(seed.Client.Id, EmailTemplatesTests.Sample(NotificationType.TicketCreated) with { DedupeKey = "created:1", To = "equipo@rtres.net" }, CancellationToken.None);
+        await job.SendAsync(seed.Client.Id, EmailTemplatesTests.Sample(NotificationType.AccountAccess) with { DedupeKey = "access:1" }, CancellationToken.None);
+        Assert.Equal(2, await db.PortalNotifications.CountAsync()); // el acceso (con contraseña) va solo por email
+
+        var portal = Portal(db, seed, "Cliente", seed.Client.Id);
+        var mine = Assert.IsType<OkObjectResult>(await portal.Notifications(null, CancellationToken.None)).Value!;
+        Assert.Equal(1, (int)mine.GetType().GetProperty("unread")!.GetValue(mine)!); // el aviso interno de ticket nuevo no lo ve el cliente
+        await portal.NotificationsSeen(CancellationToken.None);
+        var seen = Assert.IsType<OkObjectResult>(await portal.Notifications(null, CancellationToken.None)).Value!;
+        Assert.Equal(0, (int)seen.GetType().GetProperty("unread")!.GetValue(seen)!);
+
+        var staff = Assert.IsType<OkObjectResult>(await Portal(db, seed, "SuperAdmin", null).Notifications(null, CancellationToken.None)).Value!;
+        Assert.Equal(2, (int)staff.GetType().GetProperty("unread")!.GetValue(staff)!); // Rtres ve todo, con su propio "leído"
+    }
+
+    private static PortalController Portal(RtresDbContext db, Seed seed, string role, Guid? clientId)
+    {
+        var user = role == "SuperAdmin" ? new UserAccount { Email = "admin@rtres.net", Role = UserRole.SuperAdmin } : seed.User;
+        if (role == "SuperAdmin") { db.UserAccounts.Add(user); db.SaveChanges(); }
+        Claim[] claims = clientId is Guid id ? [new(ClaimTypes.NameIdentifier, user.Id.ToString()), new("client_id", id.ToString()), new(ClaimTypes.Role, role)] : [new(ClaimTypes.NameIdentifier, user.Id.ToString()), new(ClaimTypes.Role, role)];
+        return new PortalController(db, new FakeJobs(), new FakeNotifications(), new ConfigurationBuilder().Build(), NullLogger<PortalController>.Instance) { ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext { User = new ClaimsPrincipal(new ClaimsIdentity(claims, "test")) } } };
     }
 
     [Fact]

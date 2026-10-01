@@ -221,7 +221,8 @@ public sealed class AdminController(RtresDbContext db, PayPalCheckoutService che
         if (ReadYesNo(Cell(row, 7), defaultValue: true) is not bool active) return "IsActive inválido: usa SI o NO.";
         var taxText = Cell(row, 8).Trim(); var taxType = TaxDocumentType.Factura;
         if (taxText != "" && !TryEnum(taxText, out taxType)) return "TaxDocumentType inválido: usa Factura o ReciboPorHonorarios.";
-        product = new Product { Type = type, Name = name, BillingCycle = cycle, BasePrice = price, Currency = currency, Description = EmptyToNull(Cell(row, 6)), IsActive = active, TaxDocumentType = taxType };
+        if (ReadYesNo(Cell(row, 11), defaultValue: false) is not bool allowsTickets) return "AllowsTickets inválido: usa SI o NO.";
+        product = new Product { Type = type, Name = name, BillingCycle = cycle, BasePrice = price, Currency = currency, Description = EmptyToNull(Cell(row, 6)), IsActive = active, TaxDocumentType = taxType, Category = EmptyToNull(Cell(row, 9)), Tags = NormalizeTags(Cell(row, 10)), AllowsTickets = allowsTickets };
         return null;
     }
 
@@ -655,7 +656,7 @@ public sealed class AdminController(RtresDbContext db, PayPalCheckoutService che
     public async Task<ActionResult> UpdateProduct(Guid id, ProductPatchRequest request, CancellationToken ct)
     {
         var product = await db.Products.FindAsync([id], ct); if (product is null) return NotFound();
-        if (request.Type is ProductType type) product.Type = type; if (request.Name is not null) product.Name = request.Name.Trim(); if (request.BillingCycle is BillingCycle cycle) product.BillingCycle = cycle; if (request.BasePrice is not null) product.BasePrice = request.BasePrice; if (request.Currency is not null) product.Currency = request.Currency.Trim().ToUpperInvariant(); if (request.Description is not null) product.Description = EmptyToNull(request.Description); if (request.IsActive is bool active) product.IsActive = active; if (request.TaxDocumentType is TaxDocumentType taxType) product.TaxDocumentType = taxType;
+        if (request.Type is ProductType type) product.Type = type; if (request.Name is not null) product.Name = request.Name.Trim(); if (request.BillingCycle is BillingCycle cycle) product.BillingCycle = cycle; if (request.BasePrice is not null) product.BasePrice = request.BasePrice; if (request.Currency is not null) product.Currency = request.Currency.Trim().ToUpperInvariant(); if (request.Description is not null) product.Description = EmptyToNull(request.Description); if (request.IsActive is bool active) product.IsActive = active; if (request.Category is not null) product.Category = EmptyToNull(request.Category); if (request.Tags is not null) product.Tags = NormalizeTags(request.Tags); if (request.AllowsTickets is bool allowsTickets) product.AllowsTickets = allowsTickets; if (request.TaxDocumentType is TaxDocumentType taxType) product.TaxDocumentType = taxType;
         if (string.IsNullOrWhiteSpace(product.Name) || string.IsNullOrWhiteSpace(product.Currency)) return BadRequest(new { message = "Nombre y moneda son obligatorios." });
         await db.SaveChangesAsync(ct); return Ok(ProductDto(product));
     }
@@ -669,7 +670,10 @@ public sealed class AdminController(RtresDbContext db, PayPalCheckoutService che
         new("Currency", true, "PEN, USD o EUR", ["PEN", "USD", "EUR"]),
         new("Description", false, "Texto libre"),
         new("IsActive", false, "SI o NO (vacío = SI)", ["SI", "NO"]),
-        new("TaxDocumentType", false, "Comprobante que genera para clientes en Perú (vacío = Factura)", Enum.GetNames<TaxDocumentType>())),
+        new("TaxDocumentType", false, "Comprobante que genera para clientes en Perú (vacío = Factura)", Enum.GetNames<TaxDocumentType>()),
+        new("Category", false, "Agrupa el catálogo, ej. Sitios web"),
+        new("Tags", false, "Palabras para el buscador del catálogo, separadas por coma, ej. web, página, tienda online"),
+        new("AllowsTickets", false, "SI o NO (vacío = NO): el cliente puede registrar tickets desde este producto", ["SI", "NO"])),
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "productos-plantilla.xlsx");
 
     [HttpPost("products/import")]
@@ -800,10 +804,12 @@ public sealed class AdminController(RtresDbContext db, PayPalCheckoutService che
     private static string? EmptyToNull(string? value) => string.IsNullOrWhiteSpace(value) ? null : value.Trim();
     private static string? ValidateClient(ClientRequest request) => string.IsNullOrWhiteSpace(request.CompanyName) || string.IsNullOrWhiteSpace(request.ContactName) || string.IsNullOrWhiteSpace(request.Email) || !request.Email.Contains('@') ? "Empresa, contacto y email válido son obligatorios." : request.PreferredLanguage.Trim().ToLowerInvariant() is not ("es" or "en" or "it") ? "Idioma inválido." : null;
     private static string? ValidateProduct(ProductRequest request) => string.IsNullOrWhiteSpace(request.Name) || string.IsNullOrWhiteSpace(request.Currency) ? "Nombre y moneda son obligatorios." : null;
-    private static Product ToProduct(ProductRequest r) => new() { Type = r.Type, Name = r.Name.Trim(), BillingCycle = r.BillingCycle, BasePrice = r.BasePrice, Currency = r.Currency.Trim().ToUpperInvariant(), Description = EmptyToNull(r.Description), IsActive = r.IsActive, TaxDocumentType = r.TaxDocumentType };
+    private static Product ToProduct(ProductRequest r) => new() { Type = r.Type, Name = r.Name.Trim(), BillingCycle = r.BillingCycle, BasePrice = r.BasePrice, Currency = r.Currency.Trim().ToUpperInvariant(), Description = EmptyToNull(r.Description), IsActive = r.IsActive, TaxDocumentType = r.TaxDocumentType, Category = EmptyToNull(r.Category), Tags = NormalizeTags(r.Tags), AllowsTickets = r.AllowsTickets };
+    /// <summary>Etiquetas sin espacios sobrantes ni repetidas, separadas por ", "; null si no hay ninguna.</summary>
+    private static string? NormalizeTags(string? tags) => tags?.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).Distinct(StringComparer.OrdinalIgnoreCase).ToArray() is { Length: > 0 } list ? string.Join(", ", list) : null;
     private static object ClientDto(Client x) => new { id = x.Id, companyName = x.CompanyName, contactName = x.ContactName, email = x.Email, phone = x.Phone, preferredLanguage = x.PreferredLanguage, isActive = x.IsActive, requiresTaxDocument = x.RequiresTaxDocument };
     private static object ProjectDto(Project x) => new { id = x.Id, clientId = x.ClientId, name = x.Name, slug = x.Slug, repositories = x.Repositories.OrderByDescending(r => r.IsDefault).ThenBy(r => r.Name).Select(r => new { id = r.Id, owner = r.Owner, name = r.Name, label = r.Label, isDefault = r.IsDefault }) };
-    private static object ProductDto(Product x) => new { id = x.Id, type = x.Type.ToString(), name = x.Name, billingCycle = x.BillingCycle.ToString(), basePrice = x.BasePrice, currency = x.Currency, description = x.Description, isActive = x.IsActive, taxDocumentType = x.TaxDocumentType.ToString() };
+    private static object ProductDto(Product x) => new { id = x.Id, type = x.Type.ToString(), name = x.Name, billingCycle = x.BillingCycle.ToString(), basePrice = x.BasePrice, currency = x.Currency, description = x.Description, isActive = x.IsActive, taxDocumentType = x.TaxDocumentType.ToString(), category = x.Category, tags = x.Tags, allowsTickets = x.AllowsTickets };
     private async Task<object> ClientProductDtoAsync(ClientProduct x, CancellationToken ct) => ClientProductDto(x, x.Product is null ? 0m : await db.IgvRateForAsync(x.ClientId, x.Product, ct));
     /// <summary>Precios sin IGV; <c>nextChargeTotal</c> es lo que se cobra, con el IGV de <paramref name="igvRate"/> (Perú + Factura).</summary>
     private static object ClientProductDto(ClientProduct x, decimal igvRate) => new { igvRate, nextChargeTotal = x.NextChargeTotal(igvRate), id = x.Id, clientId = x.ClientId, projectId = x.ProjectId, projectName = x.Project?.Name, productId = x.ProductId, productName = x.Product?.Name, productType = x.Product?.Type.ToString(), currency = x.Product?.Currency ?? "USD", billingCycle = x.BillingCycle.ToString(), isManualBilling = x.IsManualBilling, status = x.Status.ToString(), price = x.Price, listPrice = x.ListPrice(), discount = x.Discount, discountEndsAt = x.DiscountEndsAt == ClientProductPricing.NoEnd ? null : x.DiscountEndsAt, currentPrice = x.CurrentPrice(DateTime.UtcNow), nextChargePrice = x.NextChargePrice(), domainName = x.DomainName, priceLabelOverride = x.PriceLabelOverride, renewsAt = x.RenewsAt, nextChargeAt = x.NextChargeAt };
@@ -817,8 +823,8 @@ public sealed record InviteRequest(string Name, string Email);
 public sealed record UpdateTeamRequest(UserRole? Role, bool? IsActive);
 public sealed record ClientRequest(string CompanyName, string ContactName, string Email, string? Phone, string PreferredLanguage, bool RequiresTaxDocument = false);
 public sealed record ClientPatchRequest(string? CompanyName, string? ContactName, string? Email, string? Phone, string? PreferredLanguage, bool? IsActive, bool? RequiresTaxDocument = null);
-public sealed record ProductRequest(ProductType Type, string Name, BillingCycle BillingCycle, decimal? BasePrice, string Currency, string? Description, bool IsActive, TaxDocumentType TaxDocumentType = TaxDocumentType.Factura);
-public sealed record ProductPatchRequest(ProductType? Type, string? Name, BillingCycle? BillingCycle, decimal? BasePrice, string? Currency, string? Description, bool? IsActive, TaxDocumentType? TaxDocumentType = null);
+public sealed record ProductRequest(ProductType Type, string Name, BillingCycle BillingCycle, decimal? BasePrice, string Currency, string? Description, bool IsActive, TaxDocumentType TaxDocumentType = TaxDocumentType.Factura, string? Category = null, string? Tags = null, bool AllowsTickets = false);
+public sealed record ProductPatchRequest(ProductType? Type, string? Name, BillingCycle? BillingCycle, decimal? BasePrice, string? Currency, string? Description, bool? IsActive, TaxDocumentType? TaxDocumentType = null, string? Category = null, string? Tags = null, bool? AllowsTickets = null);
 public sealed record AssignProductRequest(Guid ProductId, Guid ProjectId, BillingCycle BillingCycle, string BillingMode, decimal? Price, string? DomainName, string? PriceLabelOverride, DateOnly? RenewsAt = null, DateOnly? NextChargeAt = null, decimal? Discount = null);
 public sealed record TransferPaymentRequest(decimal? Amount, DateOnly? PaidAt, string? Reference, int Years = 1);
 public sealed record ClientProductDatesRequest(DateOnly? RenewsAt, DateOnly? NextChargeAt);

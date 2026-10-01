@@ -166,7 +166,9 @@ body{
   padding:11px 13px; font-size:14px; color:var(--ink);
 }
 .field:focus{border-color:var(--primary); box-shadow:0 0 0 3px var(--surface-tint);}
-.field:read-only{background:var(--neutral-bg); color:var(--muted); cursor:not-allowed;}
+input.field:read-only, textarea.field:read-only{background:var(--neutral-bg); color:var(--muted); cursor:not-allowed;}
+select.field{cursor:pointer;}
+select.field:disabled{cursor:not-allowed;}
 .field::placeholder{color:var(--muted);} /* --muted-2 fails 4.5:1 for placeholder text in both themes */
 .field-label{font-size:12.5px; font-weight:600; color:var(--muted); margin-bottom:6px; display:block;}
 

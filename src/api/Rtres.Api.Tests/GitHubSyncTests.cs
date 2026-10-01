@@ -168,6 +168,25 @@ public class MultiRepoProjectTests
     }
 }
 
+public class TicketFromProductTests
+{
+    [Fact]
+    public async Task Ticket_can_come_from_a_product_only_if_the_product_allows_tickets()
+    {
+        using var db = TestData.Db(out var seed);
+        var support = new Product { Name = "Soporte", AllowsTickets = true }; var hosting = new Product { Name = "Hosting" };
+        var withTickets = new ClientProduct { ClientId = seed.Client.Id, ProjectId = seed.Project.Id, ProductId = support.Id };
+        var withoutTickets = new ClientProduct { ClientId = seed.Client.Id, ProjectId = seed.Project.Id, ProductId = hosting.Id };
+        db.AddRange(support, hosting, withTickets, withoutTickets); await db.SaveChangesAsync();
+        var identity = new ClaimsIdentity([new Claim(ClaimTypes.NameIdentifier, seed.User.Id.ToString()), new Claim("client_id", seed.Client.Id.ToString()), new Claim(ClaimTypes.Role, "Cliente")], "test");
+        var portal = new PortalController(db, new FakeJobs(), new FakeNotifications(), new ConfigurationBuilder().Build(), NullLogger<PortalController>.Instance) { ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext { User = new ClaimsPrincipal(identity) } } };
+
+        Assert.IsType<BadRequestObjectResult>(await portal.CreateTicket(new CreateTicketRequest(seed.Project.Id, TicketType.Bug, "Caído", "No carga", null, null, null, null, null, null, ClientProductId: withoutTickets.Id), null, CancellationToken.None));
+        var created = Assert.IsType<CreatedResult>(await portal.CreateTicket(new CreateTicketRequest(seed.Project.Id, TicketType.Bug, "Caído", "No carga", null, null, null, null, null, null, ClientProductId: withTickets.Id), null, CancellationToken.None));
+        Assert.Equal(withTickets.Id, Assert.IsType<Ticket>(created.Value).ClientProductId);
+    }
+}
+
 public class GitHubWebhookProcessorTests
 {
     [Fact]

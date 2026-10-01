@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Rtres.Infrastructure.Persistence;
 
@@ -11,9 +12,11 @@ using Rtres.Infrastructure.Persistence;
 namespace Rtres.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(RtresDbContext))]
-    partial class RtresDbContextModelSnapshot : ModelSnapshot
+    [Migration("20261001102346_CatalogTagsTicketsNotifications")]
+    partial class CatalogTagsTicketsNotifications
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

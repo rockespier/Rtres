@@ -23,7 +23,8 @@ public enum ExpenseCategory { Hosting, Dominios, SuscripcionesIA, ApisPorUso, Su
 
 public sealed class Client { public Guid Id { get; set; } = Guid.NewGuid(); public string CompanyName { get; set; } = string.Empty; public string ContactName { get; set; } = string.Empty; public string Email { get; set; } = string.Empty; public string? Phone { get; set; } public string PreferredLanguage { get; set; } = "es"; public bool IsActive { get; set; } = true; /// <summary>Solo clientes en Perú: se les emite Factura/Recibo por honorarios por cada pago.</summary>
     public bool RequiresTaxDocument { get; set; } public DateTime CreatedAt { get; set; } = DateTime.UtcNow; }
-public sealed class UserAccount { public Guid Id { get; set; } = Guid.NewGuid(); public Guid? ClientId { get; set; } public string Email { get; set; } = string.Empty; public string PasswordHash { get; set; } = string.Empty; public string Name { get; set; } = string.Empty; public UserRole Role { get; set; } = UserRole.Cliente; public bool IsActive { get; set; } = true; }
+public sealed class UserAccount { public Guid Id { get; set; } = Guid.NewGuid(); public Guid? ClientId { get; set; } public string Email { get; set; } = string.Empty; public string PasswordHash { get; set; } = string.Empty; public string Name { get; set; } = string.Empty; public UserRole Role { get; set; } = UserRole.Cliente; public bool IsActive { get; set; } = true; /// <summary>Última vez que abrió la campana: lo posterior cuenta como no leído.</summary>
+    public DateTime? NotificationsSeenAt { get; set; } }
 /// <summary>Un proyecto puede tener varios repositorios de GitHub (ej. web y API); sin repositorios sus tickets no se sincronizan.</summary>
 public sealed class Project { public Guid Id { get; set; } = Guid.NewGuid(); public Guid ClientId { get; set; } public string Name { get; set; } = string.Empty; public string Slug { get; set; } = string.Empty; public List<ProjectRepository> Repositories { get; set; } = []; }
 /// <summary>Repositorio de GitHub de un proyecto. <see cref="Label"/> es el nombre que ve el cliente al elegir dónde va su ticket; el principal (<see cref="IsDefault"/>) recibe los tickets que no indican repositorio.</summary>
@@ -34,7 +35,13 @@ public static class ProjectExtensions
     public static ProjectRepository? RepositoryFor(this IReadOnlyCollection<ProjectRepository> repositories, Guid? repositoryId) =>
         repositoryId is Guid id ? repositories.FirstOrDefault(x => x.Id == id) : repositories.OrderByDescending(x => x.IsDefault).FirstOrDefault();
 }
-public sealed class Product { public Guid Id { get; set; } = Guid.NewGuid(); public ProductType Type { get; set; } public string Name { get; set; } = string.Empty; public BillingCycle BillingCycle { get; set; } public decimal? BasePrice { get; set; } public string Currency { get; set; } = "USD"; public string? Description { get; set; } public bool IsActive { get; set; } = true; public string? PayPalPlanId { get; set; } public decimal? PayPalPlanPrice { get; set; } public TaxDocumentType TaxDocumentType { get; set; } = TaxDocumentType.Factura; }
+public sealed class Product { public Guid Id { get; set; } = Guid.NewGuid(); public ProductType Type { get; set; } public string Name { get; set; } = string.Empty; public BillingCycle BillingCycle { get; set; } public decimal? BasePrice { get; set; } public string Currency { get; set; } = "USD"; public string? Description { get; set; } public bool IsActive { get; set; } = true; public string? PayPalPlanId { get; set; } public decimal? PayPalPlanPrice { get; set; } public TaxDocumentType TaxDocumentType { get; set; } = TaxDocumentType.Factura;
+    /// <summary>Agrupa el catálogo (ej. "Sitios web", "Infraestructura"); texto libre.</summary>
+    public string? Category { get; set; }
+    /// <summary>Palabras separadas por coma con las que el buscador del catálogo encuentra el producto (ej. "web, página, tienda online").</summary>
+    public string? Tags { get; set; }
+    /// <summary>El cliente puede registrar tickets desde la tarjeta de este producto.</summary>
+    public bool AllowsTickets { get; set; } }
 public sealed class ClientProduct { public Guid Id { get; set; } = Guid.NewGuid(); public Guid ClientId { get; set; } public Guid ProjectId { get; set; } public Guid ProductId { get; set; } public ClientProductStatus Status { get; set; } public BillingCycle BillingCycle { get; set; } public bool IsManualBilling { get; set; } public DateTime? RenewsAt { get; set; } public DateTime? NextChargeAt { get; set; } public DateTime? LastBackupAt { get; set; } public decimal? Price { get; set; } public string? PriceLabelOverride { get; set; } public string? PayPalOrderId { get; set; } public string? PayPalSubscriptionId { get; set; } public string? PayPalPlanId { get; set; } public string? DomainName { get; set; } /// <summary>Descuento de monto fijo sobre el precio del catálogo; ver <see cref="ClientProductPricing"/>.</summary>
     public decimal? Discount { get; set; } public DateTime? DiscountEndsAt { get; set; } public Product? Product { get; set; } public Project? Project { get; set; }
     /// <summary>Años que cubre la orden de PayPal pendiente (<see cref="PayPalOrderId"/>): al capturarla se extiende esa cantidad.</summary>
@@ -42,7 +49,8 @@ public sealed class ClientProduct { public Guid Id { get; set; } = Guid.NewGuid(
     /// <summary>No se guarda: IGV que se suma a este producto para su cliente; lo llena el API para que el portal muestre "+ IGV".</summary>
     public decimal? AppliedIgvRate { get; set; } }
 public sealed class Ticket { public Guid Id { get; set; } = Guid.NewGuid(); public string Code { get; set; } = string.Empty; public Guid ClientId { get; set; } public Guid ProjectId { get; set; } public Guid CreatedByUserId { get; set; } public TicketType Type { get; set; } public TicketStatus Status { get; set; } = TicketStatus.Abierto; public string Title { get; set; } = string.Empty; public string Description { get; set; } = string.Empty; public string? CurrentBehavior { get; set; } public string? ExpectedBehavior { get; set; } public string? StepsToReproduce { get; set; } public string? Environment { get; set; } public string? AcceptanceCriteria { get; set; } public string? EstimatedImpact { get; set; } /// <summary>Repositorio donde se crea el issue; null = el principal del proyecto (se fija al crear el issue).</summary>
-    public Guid? RepositoryId { get; set; } public int? GithubIssueNumber { get; set; } public string? GithubIssueUrl { get; set; } public DateTime CreatedAt { get; set; } = DateTime.UtcNow; public DateTime UpdatedAt { get; set; } = DateTime.UtcNow; }
+    public Guid? RepositoryId { get; set; } /// <summary>Producto desde el que se registró el ticket (opcional).</summary>
+    public Guid? ClientProductId { get; set; } public int? GithubIssueNumber { get; set; } public string? GithubIssueUrl { get; set; } public DateTime CreatedAt { get; set; } = DateTime.UtcNow; public DateTime UpdatedAt { get; set; } = DateTime.UtcNow; }
 public sealed class TicketAttachment { public Guid Id { get; set; } = Guid.NewGuid(); public Guid TicketId { get; set; } public string FileName { get; set; } = string.Empty; public string Url { get; set; } = string.Empty; public long SizeBytes { get; set; } }
 public sealed class TicketComment { public Guid Id { get; set; } = Guid.NewGuid(); public Guid TicketId { get; set; } public Guid? AuthorUserId { get; set; } public string Body { get; set; } = string.Empty; public bool FromGithub { get; set; } public long? GithubCommentId { get; set; } public string? GithubAuthorLogin { get; set; } public DateTime CreatedAt { get; set; } = DateTime.UtcNow; }
 /// <summary>Un cobro = un ingreso. <see cref="CreatedAt"/> es la fecha del cobro; su comprobante (si lo hay) es un <see cref="TaxDocument"/> enlazado.</summary>
@@ -69,3 +77,9 @@ public sealed class TaxSettings
     public string FacturaSeries { get; set; } = "F001"; public int FacturaNextNumber { get; set; } = 1;
     public string ReciboSeries { get; set; } = "E001"; public int ReciboNextNumber { get; set; } = 1;
 }
+
+/// <summary>
+/// Aviso de la campana del portal: uno por notificación (no por canal), con los mismos datos que el email.
+/// <see cref="ForStaff"/>: avisos internos para Rtres (ticket nuevo, pedido por transferencia), no los ve el cliente.
+/// </summary>
+public sealed class PortalNotification { public Guid Id { get; set; } = Guid.NewGuid(); public Guid ClientId { get; set; } public string Type { get; set; } = string.Empty; public bool ForStaff { get; set; } public string DataJson { get; set; } = "{}"; public string? DedupeKey { get; set; } public DateTime CreatedAt { get; set; } = DateTime.UtcNow; }

@@ -21,7 +21,6 @@ import { CommentFormComponent } from '../comment-form/comment-form.component';
       <h1 class="font-display text-2xl font-semibold mt-2">{{ t.title }}</h1>
       <p class="text-sm text-muted mt-1">
         Creado {{ t.createdAt | date:'medium' }} · Actualizado {{ t.updatedAt | date:'medium' }}
-        <ng-container *ngIf="t.githubIssueUrl"> · <a [href]="t.githubIssueUrl" target="_blank" rel="noopener" class="text-accent">issue #{{ t.githubIssueNumber }} en GitHub</a></ng-container>
       </p>
       <div class="grid lg:grid-cols-[1fr_360px] gap-6 mt-6">
         <div class="card p-6 space-y-5">

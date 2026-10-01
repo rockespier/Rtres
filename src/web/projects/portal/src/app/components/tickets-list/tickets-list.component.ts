@@ -15,7 +15,7 @@ import { PortalUiService } from '../../core/portal-ui.service';
       <a routerLink="/tickets/new" class="btn btn-primary btn-sm shrink-0">+ Nuevo ticket</a>
     </ng-template>
     <h1 class="font-display text-2xl font-semibold">Tickets</h1>
-    <p class="text-muted mt-1">Bugs, funcionalidades y requerimientos, sincronizados con GitHub.</p>
+    <p class="text-muted mt-1">Reporta bugs y pide nuevas funcionalidades o requerimientos; te avisamos de cada avance.</p>
     <div class="grid sm:grid-cols-2 gap-3 mt-6 max-w-xl">
       <select class="field" aria-label="Estado" [ngModel]="status()" (ngModelChange)="setFilter(status, $event)">
         <option value="">Todos los estados</option>
