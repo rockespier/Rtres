@@ -1,0 +1,292 @@
+
+#bbpress-forums div.bbp-breadcrumb p {
+    margin-bottom: 0;
+}
+
+#bbpress-forums div.bbp-breadcrumb {
+    margin-bottom: 15px;
+}
+
+#bbpress-forums div.bbp-breadcrumb + #subscription-toggle {
+    margin-top: 6px;
+    display: inline-block;
+    margin-left: 10px;
+}
+
+#bbpress-forums div.bbp-template-notice img.avatar,
+#bbpress-forums p.bbp-topic-meta img.avatar {
+    margin-bottom: 0;
+}
+
+#bbpress-forums fieldset.bbp-form {
+    padding-bottom: 30px;
+}
+
+#bbpress-forums fieldset.bbp-form label {
+    margin-bottom: 15px;
+}
+
+#bbpress-forums div.bbp-the-content-wrapper input {
+    width: auto;
+}
+
+#bbpress-forums div.wp-editor-container {
+    border: none;
+}
+
+#bbpress-forums div.bbp-the-content-wrapper div.quicktags-toolbar {
+    border-bottom: none;
+    margin-bottom: 10px;
+    border-radius: 30px;
+    padding: 10px 20px;
+}
+
+#bbpress-forums div.bbp-the-content-wrapper textarea.bbp-the-content {
+    padding: 20px 40px;
+}
+
+#bbpress-forums div.bbp-the-content-wrapper textarea.bbp-the-content:focus {
+    box-shadow: 25px 20px 20px -15px rgba(0, 0, 0, 0.3);
+}
+
+#bbpress-forums fieldset.bbp-form input#bbp_topic_subscription {
+    margin: 6px 9px 8px;
+    box-shadow: none;
+}
+
+#bbpress-forums fieldset.bbp-form input#bbp_topic_tags:focus {
+    box-shadow: 25px 20px 20px -15px rgba(0, 0, 0, 0.3);
+}
+
+#bbpress-forums div.bbp-reply-author img.avatar {
+    margin-bottom: 5px;
+}
+
+div.bbp-submit-wrapper {
+    float: left;
+}
+
+div.bbp-submit-wrapper [type="submit"] {
+    cursor: pointer;
+    display: inline-block;
+    text-decoration: none;
+    padding: 20px 50px;
+    font-size: 15px;
+    font-family: "Varela Round", Arial, "Helvetica Neue", Helvetica, sans-serif;
+    color: #fff;
+    border-radius: 50px;
+    position: relative;
+    transition: all .3s ease;
+    text-align: center;
+    background-color: var(--primary-accent-color);
+}
+
+.bbp-pagination-links .page-numbers {
+    position: relative;
+    background: #dbe9e9;
+    display: inline-block;
+    margin: 0 12px 0 0;
+    width: 25px;
+    height: 25px;
+    line-height: 25px;
+    text-align: center;
+    border: 1px solid transparent;
+    text-transform: uppercase;
+    color: #7b7b7b;
+    font-size: 10px;
+    border-radius: 100%;
+    transition: all .3s ease;
+}
+
+.bbp-pagination-links .page-numbers:hover {
+    background: transparent;
+    opacity: 1;
+    color: var(--primary-accent-color);
+    border-color: var(--primary-accent-color);
+}
+
+.bbp-pagination-links .page-numbers.current {
+    margin-left: 0;
+    background: transparent;
+    color: var(--primary-accent-color);
+    border-color: var(--primary-accent-color);
+}
+
+.selection--primary::-moz-selection {
+    background-color: var(--primary-accent-color);
+}
+
+.selection--primary::selection {
+    background-color: var(--primary-accent-color);
+}
+
+#buddypress form#whats-new-form textarea {
+    padding: 20px 40px;
+    border-color: transparent;
+    transition: all .3s ease;
+    font-size: 16px;
+    color: #7b7b7b;
+    margin-bottom: 30px;
+    border-radius: 50px;
+    background-color: #f7f9f9;
+    width: 100%;
+}
+
+#buddypress form#whats-new-form textarea:focus {
+    border-color: transparent !important;
+    outline-color: transparent;
+}
+
+#buddypress input[type="submit"] {
+    cursor: pointer;
+    display: inline-block;
+    text-decoration: none;
+    padding: 20px 50px;
+    font-size: 15px;
+    font-family: "Varela Round", Arial, "Helvetica Neue", Helvetica, sans-serif;
+    color: #fff;
+    border-radius: 50px;
+    position: relative;
+    transition: all .3s ease;
+    text-align: center;
+    background-color: var(--primary-accent-color);
+}
+
+#buddypress div.item-list-tabs ul li.last select:focus {
+    background: #f7f9f9;
+    box-shadow: none;
+}
+
+#buddypress div.item-list-tabs ul li.current a,
+#buddypress div.item-list-tabs ul li.selected a {
+    border-radius: 30px;
+    background-color: var(--primary-accent-color);
+}
+
+#buddypress div.item-list-tabs ul li.selected a {
+    color: #fff;
+}
+
+#buddypress div.item-list-tabs ul li a span {
+    padding: 2px 6px;
+}
+
+#buddypress a.button {
+    border-radius: 30px;
+}
+
+#buddypress .generic-button a {
+    border-radius: 30px;
+    color: #fff;
+    background-color: var(--primary-accent-color);
+    border-color: var(--primary-accent-color);
+}
+
+#buddypress .activity-list .activity-content .activity-header img.avatar {
+    margin: 0 5px 0 0 !important;
+}
+
+#buddypress .activity-list li.mini .activity-header {
+    line-height: 1;
+}
+
+#buddypress .activity-list li.mini .activity-avatar {
+    margin-top: 3px;
+}
+
+#buddypress div.pagination .pagination-links .page-numbers {
+    position: relative;
+    background: #dbe9e9;
+    display: inline-block;
+    margin: 0 12px 0 0;
+    width: 25px;
+    height: 25px;
+    line-height: 25px;
+    text-align: center;
+    border: 1px solid transparent;
+    text-transform: uppercase;
+    color: #7b7b7b;
+    font-size: 10px;
+    border-radius: 100%;
+    transition: all .3s ease;
+}
+
+#buddypress div.pagination .pagination-links .page-numbers:hover {
+    background: transparent;
+    opacity: 1;
+    color: var(--primary-accent-color);
+    border-color: var(--primary-accent-color);
+}
+
+#buddypress div.pagination .pagination-links .page-numbers.current {
+    margin-left: 0;
+    background: transparent;
+    color: var(--primary-accent-color);
+    border-color: var(--primary-accent-color);
+}
+
+#buddypress div.item-list-tabs ul li a, #buddypress div.item-list-tabs ul li span {
+    padding: 10px 15px;
+}
+
+#buddypress div.pagination {
+    margin-top: 10px;
+}
+
+#buddypress div.dir-search input[type="text"] {
+    padding: 20px 40px;
+    border-color: transparent;
+    transition: all .3s ease;
+    font-size: 16px;
+    color: #7b7b7b;
+    margin-bottom: 30px;
+    border-radius: 50px;
+    background-color: #f7f9f9;
+    width: 100%;
+}
+
+#buddypress div#item-header div#item-actions h2,
+#buddypress div#item-header div#item-actions h3 {
+    font-size: 30px;
+}
+
+#buddypress ul.item-list li {
+    padding: 20px 0;
+}
+
+#buddypress .radio {
+    overflow: visible;
+}
+
+#buddypress .radio label {
+    cursor: pointer;
+    padding-left: initial;
+    position: relative;
+    margin-left: initial;
+    margin-bottom: 15px;
+}
+
+#buddypress .radio input[type="radio"] {
+    opacity: initial;
+    height: auto;
+    width: auto;
+    overflow: initial;
+    margin: initial;
+    float: initial;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+#buddypress .radio input[type="radio"]:focus {
+    box-shadow: none;
+}
+
+#buddypress .radio label span {
+    position: initial;
+    left: initial;
+    top: initial;
+    display: inline-block;
+    vertical-align: middle;
+    line-height: 1;
+    margin-left: 10px;
+}

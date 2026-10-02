@@ -49,6 +49,16 @@
               "localize": [
                 "es"
               ]
+            },
+            "development-en": {
+              "localize": [
+                "en"
+              ]
+            },
+            "development-it": {
+              "localize": [
+                "it"
+              ]
             }
           }
         },
@@ -56,6 +66,14 @@
           "builder": "@angular/build:dev-server",
           "options": {
             "buildTarget": "site:build:development"
+          },
+          "configurations": {
+            "development-en": {
+              "buildTarget": "site:build:development-en"
+            },
+            "development-it": {
+              "buildTarget": "site:build:development-it"
+            }
           }
         },
         "extract-i18n": {

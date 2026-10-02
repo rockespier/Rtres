@@ -6,7 +6,9 @@
     "start:portal": "ng serve portal",
     "build:site": "ng build site",
     "build:portal": "ng build portal",
-    "serve:ssr:site": "node dist/site/server/es/server.mjs"
+    "serve:ssr:site": "node serve-site.mjs",
+    "start:site:en": "ng serve site -c development-en --port 4202",
+    "start:site:it": "ng serve site -c development-it --port 4203"
   },
   "dependencies": {
     "@angular/animations": "^18.2.0",
