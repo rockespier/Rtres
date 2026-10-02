@@ -1,0 +1,560 @@
+/*------------- #Gutenberg Customization Admin --------------*/
+@font-face {
+  font-family: 'Nunito';
+  src: local("Nunito ExtraLight"), local("Nunito-ExtraLight"), url("../fonts/Nunito/Nunito-ExtraLight.woff2") format("woff2"), url("../fonts/Nunito/Nunito-ExtraLight.woff") format("woff");
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap; }
+
+@font-face {
+  font-family: 'Nunito';
+  src: local("Nunito ExtraLight Italic"), local("Nunito-ExtraLightItalic"), url("../fonts/Nunito/Nunito-ExtraLightItalic.woff2") format("woff2"), url("../fonts/Nunito/Nunito-ExtraLightItalic.woff") format("woff");
+  font-weight: 200;
+  font-style: italic;
+  font-display: swap; }
+
+@font-face {
+  font-family: 'Nunito';
+  src: local("Nunito Light"), local("Nunito-Light"), url("../fonts/Nunito/Nunito-Light.woff2") format("woff2"), url("../fonts/Nunito/Nunito-Light.woff") format("woff");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap; }
+
+@font-face {
+  font-family: 'Nunito';
+  src: url("../fonts/Nunito/Nunito-LightItalic.eot");
+  src: local("Nunito Light Italic"), local("Nunito-LightItalic"), url("../fonts/Nunito/Nunito-LightItalic.eot?#iefix") format("embedded-opentype"), url("../fonts/Nunito/Nunito-LightItalic.woff2") format("woff2"), url("../fonts/Nunito/Nunito-LightItalic.woff") format("woff"), url("../fonts/Nunito/Nunito-LightItalic.ttf") format("truetype");
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap; }
+
+@font-face {
+  font-family: 'Nunito';
+  src: local("Nunito Regular"), local("Nunito-Regular"), url("../fonts/Nunito/Nunito-Regular.woff2") format("woff2"), url("../fonts/Nunito/Nunito-Regular.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap; }
+
+@font-face {
+  font-family: 'Nunito';
+  src: local("Nunito Italic"), local("Nunito-Italic"), url("../fonts/Nunito/Nunito-Italic.woff2") format("woff2"), url("../fonts/Nunito/Nunito-Italic.woff") format("woff");
+  font-weight: normal;
+  font-style: italic;
+  font-display: swap; }
+
+@font-face {
+  font-family: 'Nunito';
+  src: local("Nunito SemiBold"), local("Nunito-SemiBold"), url("../fonts/Nunito/Nunito-SemiBold.woff2") format("woff2"), url("../fonts/Nunito/Nunito-SemiBold.woff") format("woff");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap; }
+
+@font-face {
+  font-family: 'Nunito';
+  src: local("Nunito SemiBold Italic"), local("Nunito-SemiBoldItalic"), url("../fonts/Nunito/Nunito-SemiBoldItalic.woff2") format("woff2"), url("../fonts/Nunito/Nunito-SemiBoldItalic.woff") format("woff");
+  font-weight: 600;
+  font-style: italic;
+  font-display: swap; }
+
+@font-face {
+  font-family: 'Nunito';
+  src: local("Nunito ExtraBold"), local("Nunito-ExtraBold"), url("../fonts/Nunito/Nunito-ExtraBold.woff2") format("woff2"), url("../fonts/Nunito/Nunito-ExtraBold.woff") format("woff");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap; }
+
+@font-face {
+  font-family: 'Nunito';
+  src: local("Nunito ExtraBold Italic"), local("Nunito-ExtraBoldItalic"), url("../fonts/Nunito/Nunito-ExtraBoldItalic.woff2") format("woff2"), url("../fonts/Nunito/Nunito-ExtraBoldItalic.woff") format("woff");
+  font-weight: 800;
+  font-style: italic;
+  font-display: swap; }
+
+@font-face {
+  font-family: 'Nunito';
+  src: local("Nunito Bold"), local("Nunito-Bold"), url("../fonts/Nunito/Nunito-Bold.woff2") format("woff2"), url("../fonts/Nunito/Nunito-Bold.woff") format("woff");
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap; }
+
+@font-face {
+  font-family: 'Nunito';
+  src: local("Nunito Bold Italic"), local("Nunito-BoldItalic"), url("../fonts/Nunito/Nunito-BoldItalic.woff2") format("woff2"), url("../fonts/Nunito/Nunito-BoldItalic.woff") format("woff");
+  font-weight: bold;
+  font-style: italic;
+  font-display: swap; }
+
+@font-face {
+  font-family: 'Nunito';
+  src: local("Nunito Black Italic"), local("Nunito-BlackItalic"), url("../fonts/Nunito/Nunito-BlackItalic.woff2") format("woff2"), url("../fonts/Nunito/Nunito-BlackItalic.woff") format("woff");
+  font-weight: 900;
+  font-style: italic;
+  font-display: swap; }
+
+@font-face {
+  font-family: 'Nunito';
+  src: local("Nunito Black"), local("Nunito-Black"), url("../fonts/Nunito/Nunito-Black.woff2") format("woff2"), url("../fonts/Nunito/Nunito-Black.woff") format("woff");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap; }
+
+/* Width of the editor column */
+body .wp-block.edit-post-visual-editor,
+body .wp-block.editor-post-title__block,
+body .wp-block.editor-default-block-appender,
+body .wp-block.editor-block-list__block {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 1228px !important;
+  /* width of page (1100px) plus 2 x 14px margin */ }
+
+.alignleft {
+  float: left;
+  margin: 5px 20px 20px 0; }
+
+body {
+  font-family: "Nunito", Arial, "Helvetica Neue", Helvetica, serif;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: #595959;
+  margin: auto 20px; }
+
+.editor-post-title__block .editor-post-title__input,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 400;
+  color: #2f2c2c;
+  margin: .5em 0; }
+
+h1 {
+  font-size: 48px;
+  line-height: 1.2em; }
+
+h2 {
+  font-size: 42px;
+  line-height: 1.1em; }
+
+h3 {
+  font-size: 36px;
+  line-height: 1.3em; }
+
+h4 {
+  font-size: 30px;
+  line-height: 1.3em; }
+
+h5 {
+  font-size: 24px;
+  line-height: 1.3em; }
+
+h6 {
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 1.5em; }
+
+p {
+  color: #595959;
+  font-family: "Nunito", Arial, "Helvetica Neue", Helvetica, serif;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: 0.02em;
+  margin: 0 0 1em 0; }
+
+.wp-block-cover p.rich-text.editor-rich-text__editable {
+  font-size: 2em;
+  line-height: 1.25;
+  margin-bottom: 0; }
+  .wp-block-cover p.rich-text.editor-rich-text__editable a {
+    color: inherit; }
+
+pre,
+pre.wp-block-verse,
+pre.wp-block-preformatted {
+  white-space: pre;
+  font-family: monospace, monospace;
+  font-size: 1em;
+  line-height: 1.6;
+  margin-bottom: 1.6em;
+  max-width: 100%;
+  overflow: auto;
+  padding: 1.6em;
+  color: "Nunito", Arial, "Helvetica Neue", Helvetica, serif; }
+
+.wp-block-separator {
+  border-bottom: 2px solid #8f98a1; }
+  .wp-block-separator.is-style-dots {
+    border: none; }
+
+ul li,
+ol li {
+  color: #595959;
+  font-family: "Nunito", Arial, "Helvetica Neue", Helvetica, serif; }
+
+ol {
+  padding-left: 20px; }
+  ol li {
+    font-size: 16px;
+    -webkit-transition: all .3s ease;
+    -o-transition: all .3s ease;
+    transition: all .3s ease;
+    position: relative; }
+    ol li a {
+      display: inline-block; }
+
+/* Init counter */
+ol ol {
+  margin: 10px 0;
+  padding-left: 0; }
+
+ul,
+ol,
+ol.editor-rich-text__tinymce,
+ul.editor-rich-text__tinymce {
+  padding-left: 20px;
+  margin-left: 0; }
+
+td,
+th {
+  padding: 0;
+  border: 1px solid #ddd;
+  color: "Nunito", Arial, "Helvetica Neue", Helvetica, serif;
+  font-family: "Nunito", Arial, "Helvetica Neue", Helvetica, serif; }
+
+a {
+  color: #2f2c2c;
+  letter-spacing: 0.02em;
+  text-decoration: none; }
+
+.wp-block-categories,
+.wp-block-archives,
+.wp-block-latest-posts,
+.wp-block-latest-posts {
+  list-style: none;
+  padding-left: 20px; }
+  .wp-block-categories li,
+  .wp-block-archives li,
+  .wp-block-latest-posts li,
+  .wp-block-latest-posts li {
+    list-style: none; }
+    .wp-block-categories li a,
+    .wp-block-archives li a,
+    .wp-block-latest-posts li a,
+    .wp-block-latest-posts li a {
+      color: #2f2c2c; }
+      .wp-block-categories li a:hover,
+      .wp-block-archives li a:hover,
+      .wp-block-latest-posts li a:hover,
+      .wp-block-latest-posts li a:hover {
+        color: var(--primary-accent-color); }
+
+a:hover {
+  color: var(--primary-accent-color); }
+
+.wp-block-latest-posts.is-grid li {
+  margin: 0 16px 5px 0; }
+
+blockquote p {
+  margin: 0 0 20px !important;
+  line-height: 1.3em;
+  font-weight: 400;
+  font-size: 20px;
+  color: "Nunito", Arial, "Helvetica Neue", Helvetica, serif;
+  font-family: "Nunito", Arial, "Helvetica Neue", Helvetica, serif; }
+
+blockquote {
+  position: relative;
+  margin: 1em 0;
+  padding: 15px 15px 15px 80px;
+  border-left: none; }
+
+.has-very-dark-gray-color blockquote::before {
+  color: inherit; }
+
+blockquote::before,
+.wp-block-quote::before {
+  content: "\201D";
+  font-size: 190px;
+  color: #f0f2f2;
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  font-family: "Nunito", Arial, "Helvetica Neue", Helvetica, serif;
+  line-height: 1; }
+
+.wp-block-quote.has-text-align-right {
+  border-right: none; }
+
+.wp-block-pullquote {
+  border-top: 4px solid #555d66;
+  border-bottom: 4px solid #555d66;
+  color: #40464d;
+  margin-top: 1em;
+  margin-bottom: 1em; }
+
+.wp-block-pullquote__citation,
+.wp-block-quote__citation,
+.wp-block-quote cite,
+.wp-block-quote footer {
+  font-style: italic;
+  font-size: .9em;
+  color: #595959;
+  font-family: "Nunito", Arial, "Helvetica Neue", Helvetica, serif;
+  text-transform: initial; }
+
+.wp-block-pullquote .wp-block-pullquote__citation::before,
+.wp-block-pullquote .wp-block-quote__citation::before,
+.wp-block-quote .wp-block-quote__citation::before {
+  content: "\2014\00a0";
+  color: "Nunito", Arial, "Helvetica Neue", Helvetica, serif; }
+
+.wp-block-quote.is-large,
+.wp-block-quote.is-style-large {
+  margin: 3em 0;
+  padding: 15px 15px 15px 100px; }
+
+.wp-block-audio figcaption {
+  font-family: "Nunito", Arial, "Helvetica Neue", Helvetica, serif; }
+
+.wp-block-button__link {
+  font-family: "Nunito", Arial, "Helvetica Neue", Helvetica, serif; }
+
+.wp-block-image figcaption {
+  font-family: "Nunito", Arial, "Helvetica Neue", Helvetica, serif;
+  margin: 10px 5px 10px;
+  margin-bottom: 10px;
+  margin-bottom: 0;
+  display: block;
+  font-size: 14px;
+  line-height: 1.5;
+  background-color: #ececec;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  padding: 10px; }
+
+.wp-block-freeform.block-library-rich-text__tinymce blockquote {
+  border-left: none;
+  padding-left: 80px; }
+
+.wp-block-latest-comments li:before {
+  display: none; }
+
+.wp-block-latest-comments__comment-excerpt p {
+  font-size: 14px;
+  line-height: 1.8;
+  margin: 5px 0 20px; }
+
+.wp-block-freeform.block-library-rich-text__tinymce ol,
+.wp-block-freeform.block-library-rich-text__tinymce ul {
+  padding-left: 20px; }
+
+/* =Table
+-------------------------------------------------------------- */
+table {
+  background-color: transparent;
+  border-collapse: collapse;
+  border-spacing: 0;
+  width: 100%; }
+
+caption {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  color: #777;
+  text-align: left; }
+
+th {
+  text-align: left; }
+
+table {
+  width: 100%;
+  max-width: 100%;
+  margin-bottom: 20px;
+  border: 1px solid #ddd; }
+
+table > thead > tr > th,
+table > tbody > tr > th,
+table > tfoot > tr > th,
+table > thead > tr > td,
+table > tbody > tr > td,
+table > tfoot > tr > td {
+  padding: 8px;
+  line-height: 1.42857143;
+  vertical-align: top;
+  border-top: 1px solid #ddd; }
+
+table, th, td {
+  border: 1px solid #ddd; }
+
+table > thead > tr > th {
+  vertical-align: bottom;
+  border-bottom: 2px solid #ddd; }
+
+table > caption + thead > tr:first-child > th,
+table > colgroup + thead > tr:first-child > th,
+table > thead:first-child > tr:first-child > th,
+table > caption + thead > tr:first-child > td,
+table > colgroup + thead > tr:first-child > td,
+table > thead:first-child > tr:first-child > td {
+  border-top: 0; }
+
+table > tbody + tbody {
+  border-top: 2px solid #ddd; }
+
+table table {
+  background-color: #fff; }
+
+/* =WordPress Core
+-------------------------------------------------------------- */
+.align-center,
+.aligncenter {
+  text-align: center; }
+
+.align-left {
+  text-align: left; }
+
+.align-right {
+  text-align: right; }
+
+img.aligncenter {
+  display: block;
+  margin: 20px auto; }
+
+.alignnone {
+  margin: 5px 20px 20px 0; }
+
+.alignright {
+  float: right;
+  margin: 5px 0 20px 20px; }
+
+.alignleft {
+  float: left;
+  margin: 5px 20px 20px 0; }
+
+a img.alignright {
+  float: right;
+  margin: 5px 0 20px 20px; }
+
+a img.alignnone {
+  margin: 5px 20px 20px 0; }
+
+a img.alignleft {
+  float: left;
+  margin: 5px 20px 20px 0; }
+
+a img.aligncenter {
+  display: block;
+  margin-left: auto;
+  margin-right: auto; }
+
+.wp-caption {
+  border: 2px solid var(--ss-light-gray-color);
+  -webkit-border-radius: 10px;
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 20px;
+  background: #fff;
+  text-align: center; }
+  .wp-caption img {
+    margin-bottom: 15px; }
+  .wp-caption.wp-caption-text {
+    font-size: 14px;
+    margin-bottom: 0; }
+  .wp-caption a {
+    display: inline-block; }
+
+.wp-caption-text {
+  font-size: 14px; }
+
+.wp-block-freeform.block-library-rich-text__tinymce dl.wp-caption.alignnone,
+.wp-caption.alignnone {
+  margin: 5px 20px 20px 0; }
+
+.wp-block-freeform.block-library-rich-text__tinymce dl.wp-caption.alignleft,
+.wp-caption.alignleft {
+  margin: 5px 20px 20px 0; }
+
+.wp-block-freeform.block-library-rich-text__tinymce dl.wp-caption.alignright,
+.wp-caption.alignright {
+  margin: 5px 0 20px 20px; }
+
+.wp-caption p.wp-caption-text {
+  font-size: 14px;
+  line-height: 17px;
+  margin: 0;
+  padding: 0 4px 5px; }
+
+.crum_single_image .wp-caption-text {
+  margin-top: 30px; }
+
+.wp-caption-dd {
+  font-size: 14px; }
+
+.wp-block-freeform.block-library-rich-text__tinymce dl.wp-caption a {
+  display: inline-block; }
+
+.gallery-caption {
+  display: block;
+  font-size: .8rem;
+  line-height: 1.5;
+  background-color: #ececec;
+  margin: 10px 5px 10px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  padding: 10px; }
+
+.gallery-columns-6 .gallery-caption,
+.gallery-columns-7 .gallery-caption,
+.gallery-columns-8 .gallery-caption,
+.gallery-columns-9 .gallery-caption {
+  display: none; }
+
+.wp-block-search {
+  margin-bottom: 30px;
+  position: relative; }
+  .wp-block-search .wp-block-search__label {
+    display: none; }
+  .wp-block-search input {
+    margin-bottom: 0; }
+  .wp-block-search .wp-block-search__button {
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-size: 18px;
+    z-index: 10;
+    cursor: pointer;
+    height: 100%;
+    color: #fff;
+    border: none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    background-color: #4cc2c0;
+    -webkit-border-radius: 50px;
+    border-radius: 50px;
+    padding: 11px 30px; }
+    .wp-block-search .wp-block-search__button .wp-block-search__button-rich-text {
+      padding: 0;
+      line-height: 1; }
+
+.wp-block-search .wp-block-search__input {
+  border: none;
+  -webkit-border-radius: 50px;
+  border-radius: 50px; }
+
+input, textarea {
+  padding: 22px 40px;
+  border-color: transparent;
+  -webkit-transition: all .3s ease;
+  -o-transition: all .3s ease;
+  transition: all .3s ease;
+  font-size: 16px;
+  color: #595959;
+  margin-bottom: 30px;
+  -webkit-border-radius: 50px;
+  border-radius: 50px;
+  background-color: var(--ss-light-gray-color);
+  width: 100%; }

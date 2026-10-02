@@ -1,0 +1,210 @@
+@charset "UTF-8";
+/* fw image piker */
+.fw-backend-option-design-default > .fw-backend-option-input.width-type-fixed.fw-backend-option-input-type-background-image > .fw-inner {
+  max-width: 100%; }
+
+/* hide extensions */
+#fw-ext-page-builder,
+#fw-ext-events {
+  display: none !important; }
+
+/* megamenu icon */
+.mega-menu-icon-frame {
+  display: inline-block; }
+  .mega-menu-icon-frame > img {
+    width: 20px;
+    height: auto; }
+/* megamenu fields */
+.menu-edit .seosight-menu-row-field,
+.menu-edit .seosight-menu-column-field{
+  display: none;
+}
+.menu-edit .menu-item.menu-item-depth-0.mega-menu .seosight-menu-row-field{
+  display: block;
+}
+.menu-edit .seosight-menu-mega-options{
+  display: none;
+}
+.menu-edit .menu-item.menu-item-depth-0 .seosight-menu-mega-options{
+  display: block;
+}
+.menu-edit .menu-item.mega-menu .seosight-menu-mega-options{
+  display: block;
+}
+.menu-edit .menu-item.menu-item-depth-0 .seosight-menu-row-field.seosight-menu-mega-enable{
+  display: flex;
+}
+.menu-edit .menu-item.menu-item-depth-1 .seosight-menu-column-field{
+  display: block;
+}
+body .mega-menu-title{
+  width: 100% !important;
+}
+
+.menu-edit .menu-item.menu-item-depth-2.mega-menu .seosight-menu-column-field,
+.menu-edit .menu-item.menu-item-depth-3.mega-menu .seosight-menu-column-field,
+.menu-edit .menu-item.menu-item-depth-4.mega-menu .seosight-menu-column-field,
+.menu-edit .menu-item.menu-item-depth-5.mega-menu .seosight-menu-column-field,
+.menu-edit .menu-item.menu-item-depth-6.mega-menu .seosight-menu-column-field,
+.menu-edit .menu-item.menu-item-depth-7.mega-menu .seosight-menu-column-field,
+.menu-edit .menu-item.menu-item-depth-8.mega-menu .seosight-menu-column-field,
+.menu-edit .menu-item.menu-item-depth-9.mega-menu .seosight-menu-column-field{
+  display: none;
+}
+.menu-edit .menu-item.menu-item-depth-2.mega-menu .seosight-menu-column-field.hide-title,
+.menu-edit .menu-item.menu-item-depth-3.mega-menu .seosight-menu-column-field.hide-title,
+.menu-edit .menu-item.menu-item-depth-4.mega-menu .seosight-menu-column-field.hide-title,
+.menu-edit .menu-item.menu-item-depth-5.mega-menu .seosight-menu-column-field.hide-title,
+.menu-edit .menu-item.menu-item-depth-6.mega-menu .seosight-menu-column-field.hide-title,
+.menu-edit .menu-item.menu-item-depth-7.mega-menu .seosight-menu-column-field.hide-title,
+.menu-edit .menu-item.menu-item-depth-8.mega-menu .seosight-menu-column-field.hide-title,
+.menu-edit .menu-item.menu-item-depth-9.mega-menu .seosight-menu-column-field.hide-title{
+  display: block;
+}
+
+.cs-field-image_select label img {
+  max-width: 106px !important; }
+
+#setting-error-tgmpa {
+  clear: both;
+  display: block; }
+
+#vc_license-activation-notice, .rs-update-notice-wrap,
+.post-type-fw-slider #fw-options-box-sidebar-picker,
+#fw-backend-option-fw-option-slider-home-slider-population-method,
+#kc-footers ul li.kc-online-presets,
+.kc-online-presets,
+.mcl-extensions,
+#seosight-yoast-metabox,
+#crumina-yoast-metabox {
+  display: none !important; }
+
+#fw-option-slider-type img {
+  max-width: 100%;
+  height: auto; }
+
+.widgets-holder-wrap .widget-inside {
+  overflow: hidden; }
+
+#js-socials-list {
+  padding: 5px 15px;
+  background: #fafafa; }
+
+.fw-checkbox-float-left div {
+  float: left;
+  margin-right: 15px; }
+
+.fw-backend-options-group.border-bottom-none, .border-bottom-none {
+  border-bottom: none; }
+
+#fw-backend-options-group-padding_group .fw-backend-option {
+  display: inline-block; }
+
+#fw-backend-options-group-padding_group .fw-option-width-short {
+  width: 40px !important; }
+
+#fw-backend-options-group-padding_group .fw-backend-option-type-html {
+  float: left;
+  padding-right: 0;
+  width: 14%; }
+
+#fw-options-tab-styling-options #fw-backend-options-group-padding_group .fw-backend-option-type-html {
+  width: 15%; }
+
+#fw-backend-options-group-padding_group .fw-backend-option-desc {
+  margin-left: 0; }
+
+#fw-backend-options-group-padding_group .fw-backend-option.fw-backend-option-type-short-text {
+  padding-left: 13px;
+  padding-right: 0;
+  padding-bottom: 15px;
+  width: 68px !important; }
+
+/*Svg icons in media library*/
+td.media-icon img[src$=".svg"], img[src$=".svg"].attachment-post-thumbnail {
+  width: 100% !important;
+  height: auto !important; }
+
+
+/*------------- #Color-scheme for buttons --------------*/
+.colored-option {
+  color: #fff; }
+
+.btn--white {
+  color: #2f2c2c; }
+
+.btn--dark {
+  background-color: #2f2c2c; }
+
+.btn--primary {
+  background-color: #4cc2c0; }
+
+.btn--secondary {
+  background-color: var(--secondary-accent-color); }
+
+.btn--gray {
+  background-color: #ebebeb;
+  color: #2f2c2c; }
+
+.btn--blue {
+  background-color: #00adef; }
+
+.btn--purple {
+  background-color: #6739b6; }
+
+.btn--breez {
+  background-color: #4cc3c1; }
+
+.btn--secondary {
+  background-color: #f15b26; }
+
+.btn--orange {
+  background-color: #fcaf3b; }
+
+.btn--yellow {
+  background-color: #fecb16; }
+
+.btn--green {
+  background-color: #3cb879; }
+
+.btn--dark-gray {
+  background-color: #31364c; }
+
+.btn--brown {
+  background-color: #c69c6c; }
+
+.btn--rose {
+  background-color: #e91d62; }
+
+.btn--violet {
+  background-color: #605ca9; }
+
+.btn--olive {
+  background-color: #3e4d50; }
+
+.btn--light-green {
+  background-color: #80be2d; }
+
+.btn--dark-blue {
+  background-color: #2e3192; }
+
+/* Notice to install KingComposer Seosight. */
+.seosight-kc-notice{
+  padding: 15px;
+}
+.seosight-kc-notice a{
+  color: #444;
+}
+.seosight-kc-notice{
+  background-color: #ffb900;
+  border: 1px solid #ffb900;
+}
+.seosight-kc-notice.notice-error{
+  color: #fff;
+  background-color: #dc3232;
+  border: 1px solid #dc3232;
+}
+.seosight-kc-notice.notice-error a,
+.seosight-kc-notice.notice-error .notice-dismiss:before{
+  color: #fff;
+}

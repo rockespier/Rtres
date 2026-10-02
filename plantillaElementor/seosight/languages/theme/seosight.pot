@@ -1,0 +1,4806 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+"Project-Id-Version: Seosight\n"
+"POT-Creation-Date: 2021-02-22 09:34+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Loco https://localise.biz/\n"
+"X-Poedit-Basepath: ../..\n"
+"X-Poedit-WPHeader: style.css\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
+"esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;"
+"_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
+"X-Poedit-SearchPath-0: languages\n"
+"X-Poedit-SearchPath-1: .\n"
+"X-Poedit-SearchPathExcluded-0: *.js\n"
+"Language: "
+
+#. 1: reviews count 2: product name
+#: woocommerce/single-product-reviews.php:34
+#, php-format
+msgid "%1$s review for %2$s"
+msgid_plural "%1$s reviews for %2$s"
+msgstr[0] ""
+msgstr[1] ""
+
+#: woocommerce/single-product/rating.php:42
+#, php-format
+msgid "%s customer review"
+msgid_plural "%s customer reviews"
+msgstr[0] ""
+msgstr[1] ""
+
+#: inc/includes/auto-setup/views/install_setup.php:25
+#: inc/includes/auto-setup/views/install_setup.php:57
+#: inc/includes/auto-setup/views/install_setup.php:89
+#, php-format
+msgid "%s Plugin"
+msgstr ""
+
+#: lib/codestar-framework/fields/background/background.php:116
+msgid "&#8658; left to right"
+msgstr ""
+
+#: lib/codestar-framework/fields/background/background.php:115
+msgid "&#8659; top to bottom"
+msgstr ""
+
+#: lib/codestar-framework/fields/background/background.php:117
+msgid "&#8664; corner top to right"
+msgstr ""
+
+#: lib/codestar-framework/fields/background/background.php:118
+msgid "&#8665; corner top to left"
+msgstr ""
+
+#. used between list items, there is a space after the comma
+#: inc/includes/template-tags.php:68 inc/includes/template-tags.php:107
+msgid ", "
+msgstr ""
+
+#: inc/helpers.php:21
+#, php-format
+msgid "<a href=\"%s\">Customize</a>"
+msgstr ""
+
+#: inc/helpers.php:18 inc/widgets/menus/class-widget-menus.php:90
+#: inc/widgets/login/class-widget-login.php:82
+#, php-format
+msgid "<a href=\"%s\">Menus</a>"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:195
+#: framework-customizations/theme/options/metabox-header.php:8
+msgid "Absolute placed Header"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:153
+#: framework-customizations/theme/options/metabox-portfolio-page.php:31
+msgid "Action on panel link click"
+msgstr ""
+
+#: inc/includes/auto-setup/class-fw-auto-install.php:456
+msgid "Activaiting required plugins ..."
+msgstr ""
+
+#: inc/includes/auto-setup/class-fw-auto-install.php:473
+#: inc/includes/auto-setup/class-fw-auto-install.php:638
+msgid "Activate required demo plugins"
+msgstr ""
+
+#: inc/includes/auto-setup/class-fw-auto-install.php:499
+msgid "Activate required plugins"
+msgstr ""
+
+#: inc/includes/auto-setup/class-fw-auto-install.php:318
+msgid "Activating supported extensions"
+msgstr ""
+
+#: inc/includes/auto-setup/class-fw-auto-install.php:494
+msgid "Activating Unyson"
+msgstr ""
+
+#: lib/codestar-framework/fields/link_color/link_color.php:38
+msgid "Active"
+msgstr ""
+
+#: framework-customizations/extensions/forms/includes/builder-items/recaptchav3/class-fw-option-type-form-builder-item-recaptchav3.php:23
+msgid "Add a Recaptcha V3 field"
+msgstr ""
+
+#: woocommerce/single-product-reviews.php:74
+msgid "Add a review"
+msgstr ""
+
+#: framework-customizations/theme/options/customizer-footer.php:193
+msgid "Add box"
+msgstr ""
+
+#: framework-customizations/theme/options/posts/fw-portfolio.php:29
+#: framework-customizations/extensions/media/extensions/slider/extensions/home-slider/options/custom.php:23
+msgid "Add button"
+msgstr ""
+
+#: framework-customizations/theme/options/customizer-header.php:130
+msgid "Add field"
+msgstr ""
+
+#: woocommerce/single-product-reviews.php:74
+msgid "Add first review"
+msgstr ""
+
+#: lib/codestar-framework/fields/gallery/gallery.php:20
+msgid "Add Gallery"
+msgstr ""
+
+#: lib/codestar-framework/fields/icon/icon.php:20
+#: lib/codestar-framework/fields/icon/icon.php:53
+msgid "Add Icon"
+msgstr ""
+
+#: framework-customizations/theme/options/customizer-header.php:169
+#: framework-customizations/theme/options/customizer-footer.php:126
+msgid "Add icon"
+msgstr ""
+
+#: inc/widgets/contacts/class-widget-contacts.php:84
+#: inc/widgets/banner/class-widget-banner.php:90
+#: inc/widgets/banner/class-widget-banner.php:97
+msgid "Add image"
+msgstr ""
+
+#: lib/codestar-framework/fields/link/link.php:20
+msgid "Add Link"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:67
+#: framework-customizations/theme/options/customizer-subscribe.php:76
+msgid "Add name field to subscribe form"
+msgstr ""
+
+#: inc/widgets/contacts/class-widget-contacts.php:117
+#: inc/widgets/follow-us/class-widget-follow-us.php:111
+#: lib/codestar-framework/classes/shortcode-options.class.php:253
+#: lib/codestar-framework/fields/group/group.php:23
+msgid "Add New"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:538
+#: framework-customizations/theme/options/customizer-footer.php:35
+msgid "Add sliding effect for your footer."
+msgstr ""
+
+#: template-parts/downloads-item.php:42
+msgid "Add to cart"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:225
+#: framework-customizations/theme/options/customizer-header.php:114
+msgid "Add you phone, email etc."
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:633
+#: framework-customizations/theme/options/customizer-footer.php:131
+#: framework-customizations/extensions/media/extensions/slider/extensions/home-slider/options/custom.php:79
+msgid "Additional class"
+msgstr ""
+
+#: woocommerce/single-product/tabs/additional-information.php:25
+msgid "Additional information"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:1343
+#: framework-customizations/theme/options/customizer-old.php:85
+msgid "Additional JS"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:680
+#: cs-framework-override/config/customize.config.php:681
+#: cs-framework-override/config/customize.config.php:682
+#: framework-customizations/theme/options/customizer-footer.php:178
+#: framework-customizations/theme/options/customizer-footer.php:179
+#: framework-customizations/theme/options/customizer-footer.php:180
+msgid "Address"
+msgstr ""
+
+#: framework-customizations/theme/available-extensions.php:9
+msgid "Ajax portfolio"
+msgstr ""
+
+#: framework-customizations/theme/available-extensions.php:10
+msgid "Ajax portfolio."
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:545
+#: cs-framework-override/config/customize.config.php:1255
+#: framework-customizations/theme/options/customizer-old.php:73
+#: framework-customizations/theme/options/posts/fw-portfolio.php:133
+msgid "Align project media on single page"
+msgstr ""
+
+#: lib/codestar-framework/fields/border/border.php:29
+#: lib/codestar-framework/fields/spacing/spacing.php:29
+msgid "all"
+msgstr ""
+
+#: inc/widgets/latest-news/class-widget-latest-news.php:97
+msgid "All News"
+msgstr ""
+
+#: blog-template.php:46 portfolio-template.php:45
+#: framework-customizations/extensions/ajax-portfolio/views/panel.php:17
+msgid "All Projects"
+msgstr ""
+
+#: lib/codestar-framework/fields/typography/typography.php:188
+msgid "All Small Caps"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:428
+#: framework-customizations/theme/options/posts/fw-portfolio.php:16
+msgid "Alternative title for project"
+msgstr ""
+
+#: inc/includes/auto-setup/class-fw-auto-install.php:1153
+#: inc/includes/auto-setup/class-fw-auto-install.php:1157
+msgid ""
+"An unexpected error occurred. Something may be wrong with WordPress.org or "
+"this server&#8217;s configuration. If you continue to have problems, please "
+"try the <a href=\"http://wordpress.org/support/\">support forums</a>."
+msgstr ""
+
+#: inc/hooks.php:249
+msgid "Appears in footer section. Every widget in own column "
+msgstr ""
+
+#: inc/hooks.php:240
+msgid "Appears in the Hidden section. If available."
+msgstr ""
+
+#: inc/hooks.php:231
+msgid "Appears in the right section of the site."
+msgstr ""
+
+#: inc/helpers.php:591
+msgid "Apple Maps-esque"
+msgstr ""
+
+#: woocommerce/checkout/form-coupon.php:32 woocommerce/cart/cart.php:147
+msgid "Apply coupon"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:933
+#: framework-customizations/theme/options/customizer-blog.php:57
+msgid "Archive / Category options"
+msgstr ""
+
+#: lib/codestar-framework/fields/group/group.php:46
+#: lib/codestar-framework/fields/group/group.php:93
+#: lib/codestar-framework/fields/repeater/repeater.php:48
+#: lib/codestar-framework/fields/repeater/repeater.php:76
+msgid "Are you sure to delete this item?"
+msgstr ""
+
+#: lib/codestar-framework/classes/admin-options.class.php:579
+#: lib/codestar-framework/classes/admin-options.class.php:715
+msgid "Are you sure to reset this section options?"
+msgstr ""
+
+#: lib/codestar-framework/classes/admin-options.class.php:582
+#: lib/codestar-framework/classes/admin-options.class.php:718
+msgid "Are you sure you want to reset all settings to default values?"
+msgstr ""
+
+#: lib/codestar-framework/classes/setup.class.php:519
+msgid "Are you sure?"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:178
+#: cs-framework-override/config/metabox.config.php:256
+#: framework-customizations/theme/options/metabox-portfolio-page.php:57
+#: framework-customizations/theme/options/metabox-blog-page.php:22
+msgid "Ascending"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:424
+#: framework-customizations/theme/options/customizer-header.php:344
+msgid "Aside sidebar"
+msgstr ""
+
+#: inc/includes/auto-setup/class-fw-auto-install.php:253
+msgid ""
+"Attention, the installation process is not yet finished, if leave this page, "
+"you lose the information stored on the site!"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:376
+#: framework-customizations/theme/options/posts/post.php:87
+msgid "Audio post options"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:322
+#: framework-customizations/theme/options/posts/post.php:22
+msgid "Author avatar"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:949
+#: cs-framework-override/config/customize.config.php:986
+#: framework-customizations/theme/options/customizer-blog.php:75
+#: framework-customizations/theme/options/customizer-blog.php:123
+msgid "Author name and avatar block"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:316
+#: framework-customizations/theme/options/posts/post.php:17
+msgid "Author profession"
+msgstr ""
+
+#: inc/widgets/login/views/widget.php:26
+msgid "Authorize"
+msgstr ""
+
+#: lib/codestar-framework/fields/background/background.php:221
+msgid "Auto"
+msgstr ""
+
+#: framework-customizations/extensions/media/extensions/slider/extensions/home-slider/options/options.php:54
+msgid "Auto Scroll delay"
+msgstr ""
+
+#: inc/includes/auto-setup/views/install_setup.php:3
+msgid "Auto Setup"
+msgstr ""
+
+#: woocommerce/cart/cart.php:94
+msgid "Available on backorder"
+msgstr ""
+
+#: woocommerce/single-product-reviews.php:117
+msgid "Average"
+msgstr ""
+
+#: footer.php:228
+msgid "Back to top"
+msgstr ""
+
+#: framework-customizations/extensions/media/extensions/slider/extensions/home-slider/options/custom.php:14
+msgid "Background"
+msgstr ""
+
+#: lib/codestar-framework/fields/background/background.php:202
+msgid "Background Attachment"
+msgstr ""
+
+#: lib/codestar-framework/fields/background/background.php:269
+msgid "Background Blend Mode"
+msgstr ""
+
+#: lib/codestar-framework/fields/background/background.php:252
+msgid "Background Clip"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:102
+#: cs-framework-override/config/config-fields-class.php:362
+#: cs-framework-override/config/customize.config.php:310
+#: cs-framework-override/config/customize.config.php:544
+#: cs-framework-override/config/customize.config.php:724
+#: cs-framework-override/config/customize.config.php:789
+#: cs-framework-override/config/customize.config.php:1085
+#: framework-customizations/theme/options/customizer-subscribe.php:109
+#: framework-customizations/theme/options/customizer-stunning.php:73
+#: framework-customizations/theme/options/customizer-header.php:231
+#: framework-customizations/theme/options/metabox-stunning.php:141
+#: framework-customizations/theme/options/customizer-footer.php:40
+#: framework-customizations/theme/options/customizer-footer.php:219
+#: framework-customizations/theme/options/customizer-footer.php:277
+msgid "Background Color"
+msgstr ""
+
+#: framework-customizations/extensions/megamenu/options/row.php:6
+msgid "Background Image"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:111
+#: cs-framework-override/config/config-fields-class.php:266
+#: cs-framework-override/config/customize.config.php:502
+#: cs-framework-override/config/customize.config.php:1117
+#: inc/widgets/banner/class-widget-banner.php:88
+#: framework-customizations/theme/options/customizer-subscribe.php:116
+#: framework-customizations/theme/options/customizer-stunning.php:103
+#: framework-customizations/theme/options/metabox-stunning.php:64
+#: framework-customizations/theme/options/customizer-footer.php:23
+msgid "Background image"
+msgstr ""
+
+#: lib/codestar-framework/fields/background/background.php:235
+msgid "Background Origin"
+msgstr ""
+
+#: lib/codestar-framework/fields/background/background.php:161
+msgid "Background Position"
+msgstr ""
+
+#: lib/codestar-framework/fields/background/background.php:184
+msgid "Background Repeat"
+msgstr ""
+
+#: lib/codestar-framework/fields/background/background.php:218
+msgid "Background Size"
+msgstr ""
+
+#: lib/codestar-framework/fields/typography/typography.php:105
+msgid "Backup Font Family"
+msgstr ""
+
+#: woocommerce/single-product/rating.php:39
+#, php-format
+msgid "based on %s customer rating"
+msgid_plural "based on %s customer ratings"
+msgstr[0] ""
+msgstr[1] ""
+
+#: cs-framework-override/config/customize.config.php:762
+#: framework-customizations/theme/options/customizer-footer.php:256
+msgid "Become fixed"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:461
+#: framework-customizations/theme/options/posts/fw-portfolio.php:51
+msgid "Behavior on Portfolio page"
+msgstr ""
+
+#. Name of the template
+msgid "Blog"
+msgstr ""
+
+#. Name of the template
+msgid "Blog Grid"
+msgstr ""
+
+#. Name of the template
+msgid "Blog Masonry"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:871
+#: framework-customizations/theme/options/customizer-old.php:50
+msgid "Blog options"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:226
+#: framework-customizations/theme/options/posts/page.php:158
+msgid "Blog page options"
+msgstr ""
+
+#: inc/helpers.php:505
+msgid "Blue"
+msgstr ""
+
+#: inc/helpers.php:559
+msgid "Blue water"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:24
+#: cs-framework-override/config/customize.config.php:29
+#: framework-customizations/theme/options/customizer-typography.php:7
+#: framework-customizations/theme/options/customizer-typography.php:26
+msgid "Body font"
+msgstr ""
+
+#: lib/codestar-framework/fields/background/background.php:237
+#: lib/codestar-framework/fields/background/background.php:253
+msgid "Border Box"
+msgstr ""
+
+#: lib/codestar-framework/fields/border/border.php:27
+#: lib/codestar-framework/fields/spacing/spacing.php:27
+msgid "bottom"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:659
+#: framework-customizations/theme/options/customizer-footer.php:160
+msgid "Boxes with contacts"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:1075
+#: framework-customizations/theme/options/customizer-stunning.php:57
+msgid "Breadcrumbs"
+msgstr ""
+
+#: inc/helpers.php:507
+msgid "Breez"
+msgstr ""
+
+#: inc/helpers.php:512
+msgid "Brown"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:449
+#: framework-customizations/theme/options/posts/fw-portfolio.php:42
+msgid "Button Background"
+msgstr ""
+
+#: inc/widgets/banner/class-widget-banner.php:122
+msgid "Button color"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:442
+#: framework-customizations/theme/options/posts/fw-portfolio.php:34
+#: framework-customizations/extensions/media/extensions/slider/extensions/home-slider/options/custom.php:26
+msgid "Button Label"
+msgstr ""
+
+#: inc/widgets/latest-news/class-widget-latest-news.php:123
+#: inc/widgets/text-button/class-widget-text-button.php:92
+#: inc/widgets/banner/class-widget-banner.php:116
+msgid "Button link"
+msgstr ""
+
+#: framework-customizations/extensions/media/extensions/slider/extensions/home-slider/options/custom.php:41
+msgid "Button size"
+msgstr ""
+
+#: inc/widgets/text-button/class-widget-text-button.php:86
+#: inc/widgets/banner/class-widget-banner.php:110
+msgid "Button text"
+msgstr ""
+
+#: framework-customizations/extensions/media/extensions/slider/extensions/home-slider/options/custom.php:61
+msgid "Button with border and transparent background"
+msgstr ""
+
+#: framework-customizations/extensions/media/extensions/slider/extensions/home-slider/options/custom.php:20
+msgid "Buttons"
+msgstr ""
+
+#: framework-customizations/extensions/media/extensions/slider/extensions/home-slider/options/custom.php:75
+msgid "Buttons shadow effect on hover"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:612
+#: framework-customizations/theme/options/posts/fw-portfolio.php:206
+msgid "Buttons with previous / next post links"
+msgstr ""
+
+#: framework-customizations/theme/options/customizer-subscribe.php:57
+msgid ""
+"By default here is displayed form from \"Email Subscribers & Newsletters\" "
+"plugin.  \n"
+"\t\t\t\t\t\tPlugin must be installed and activated if you want to use built-"
+"in form"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:50
+msgid ""
+"By default here is displayed form from \"Email Subscribers & Newsletters\" "
+"plugin. Plugin must be installed and activated if you want to use built-in "
+"form"
+msgstr ""
+
+#: lib/codestar-framework/classes/comment-options.class.php:228
+#: lib/codestar-framework/classes/metabox-options.class.php:307
+msgid "Cancel"
+msgstr ""
+
+#: comments.php:112
+msgid "Cancel Reply"
+msgstr ""
+
+#: lib/codestar-framework/fields/typography/typography.php:200
+msgid "Capitalize"
+msgstr ""
+
+#: woocommerce/cart/cart-totals.php:28
+msgid "Cart totals"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:198
+#: cs-framework-override/config/metabox.config.php:275
+#: framework-customizations/theme/options/metabox-portfolio-page.php:75
+#: framework-customizations/theme/options/metabox-blog-page.php:39
+msgid "Categories"
+msgstr ""
+
+#: inc/widgets/latest-news/class-widget-latest-news.php:116
+msgid "Category IDs, separated by commas."
+msgstr ""
+
+#: inc/widgets/categories/class-widget-categories.php:62
+msgid "Category list"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:549
+#: cs-framework-override/config/customize.config.php:1258
+#: framework-customizations/theme/options/customizer-old.php:76
+#: framework-customizations/theme/options/posts/fw-portfolio.php:137
+#: lib/codestar-framework/fields/typography/typography.php:172
+msgid "Center"
+msgstr ""
+
+#: lib/codestar-framework/fields/background/background.php:167
+msgid "Center Bottom"
+msgstr ""
+
+#: lib/codestar-framework/fields/background/background.php:166
+msgid "Center Center"
+msgstr ""
+
+#: lib/codestar-framework/fields/background/background.php:165
+msgid "Center Top"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:42
+#: cs-framework-override/config/metabox.config.php:65
+#: cs-framework-override/config/metabox.config.php:99
+#: cs-framework-override/config/metabox.config.php:563
+#: cs-framework-override/config/metabox.config.php:643
+#: cs-framework-override/config/metabox.config.php:666
+#: cs-framework-override/config/metabox.config.php:708
+#: framework-customizations/theme/options/posts/download.php:21
+#: framework-customizations/theme/options/posts/download.php:54
+#: framework-customizations/theme/options/posts/download.php:87
+#: framework-customizations/theme/options/posts/post.php:132
+#: framework-customizations/theme/options/posts/post.php:165
+#: framework-customizations/theme/options/posts/post.php:198
+#: framework-customizations/theme/options/posts/page.php:33
+#: framework-customizations/theme/options/posts/page.php:66
+#: framework-customizations/theme/options/posts/page.php:99
+#: framework-customizations/theme/options/posts/fw-portfolio.php:155
+#: framework-customizations/theme/options/posts/fw-portfolio.php:242
+#: framework-customizations/theme/options/posts/fw-portfolio.php:275
+#: framework-customizations/theme/options/taxonomies/category.php:16
+#: framework-customizations/theme/options/taxonomies/fw-portfolio-category.php:16
+msgid "Change settings?"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:683
+#: framework-customizations/theme/options/customizer-footer.php:181
+msgid "Chat"
+msgstr ""
+
+#: template-parts/shop-cart.php:55
+msgid "Checkout"
+msgstr ""
+
+#: framework-customizations/extensions/media/extensions/slider/extensions/home-slider/options/custom.php:125
+msgid "Choose a subtitle for your slide label"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:814
+#: framework-customizations/theme/options/customizer-design.php:15
+msgid "Choose between wide and narrow sidebar on your pages"
+msgstr ""
+
+#: framework-customizations/extensions/media/extensions/slider/extensions/home-slider/options/custom.php:88
+msgid "Choose content position on slide"
+msgstr ""
+
+#: inc/includes/auto-setup/views/install_setup.php:5
+msgid "Choose one of the install methods below."
+msgstr ""
+
+#: framework-customizations/extensions/media/extensions/slider/extensions/home-slider/options/custom.php:80
+msgid "Class that can be used for additional styling or JS actions"
+msgstr ""
+
+#: framework-customizations/extensions/media/extensions/slider/extensions/home-slider/manifest.php:5
+msgid "Classic slider"
+msgstr ""
+
+#: framework-customizations/extensions/media/extensions/slider/extensions/home-slider/manifest.php:6
+msgid "Classic Slider for Seosight theme"
+msgstr ""
+
+#: lib/codestar-framework/fields/gallery/gallery.php:22
+msgid "Clear"
+msgstr ""
+
+#: woocommerce/checkout/form-coupon.php:23
+msgid "Click here to enter your code"
+msgstr ""
+
+#: woocommerce/checkout/form-login.php:23
+msgid "Click here to login"
+msgstr ""
+
+#: framework-customizations/theme/options/customizer-subscribe.php:25
+#: framework-customizations/theme/options/customizer-subscribe.php:143
+#: framework-customizations/theme/options/customizer-footer.php:87
+msgid "Click on button below to edit block content"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:199
+#: cs-framework-override/config/metabox.config.php:276
+#: framework-customizations/theme/options/metabox-portfolio-page.php:76
+#: framework-customizations/theme/options/metabox-blog-page.php:40
+msgid "Click on field and type category name to find  category"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:431
+#: cs-framework-override/config/customize.config.php:898
+#: cs-framework-override/config/customize.config.php:1241
+#: cs-framework-override/config/customize.config.php:1326
+#: framework-customizations/theme/options/customizer-old.php:62
+#: framework-customizations/theme/options/customizer-blog.php:23
+#: framework-customizations/theme/options/option-link.php:42
+#: framework-customizations/theme/options/customizer-portfolio.php:105
+msgid "Click on field and type page name to find page"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:95
+#: cs-framework-override/config/config-fields-class.php:104
+#: cs-framework-override/config/config-fields-class.php:214
+#: cs-framework-override/config/config-fields-class.php:364
+#: cs-framework-override/config/config-fields-class.php:370
+#: cs-framework-override/config/metabox.config.php:328
+#: cs-framework-override/config/customize.config.php:312
+#: cs-framework-override/config/customize.config.php:487
+#: cs-framework-override/config/customize.config.php:495
+#: cs-framework-override/config/customize.config.php:546
+#: cs-framework-override/config/customize.config.php:725
+#: cs-framework-override/config/customize.config.php:733
+#: cs-framework-override/config/customize.config.php:1087
+#: cs-framework-override/config/customize.config.php:1095
+#: framework-customizations/theme/options/metabox-header.php:27
+#: framework-customizations/theme/options/customizer-subscribe.php:104
+#: framework-customizations/theme/options/customizer-subscribe.php:111
+#: framework-customizations/theme/options/customizer-stunning.php:75
+#: framework-customizations/theme/options/customizer-stunning.php:80
+#: framework-customizations/theme/options/customizer-header.php:233
+#: framework-customizations/theme/options/metabox-stunning.php:143
+#: framework-customizations/theme/options/metabox-stunning.php:148
+#: framework-customizations/theme/options/customizer-footer.php:13
+#: framework-customizations/theme/options/customizer-footer.php:18
+#: framework-customizations/theme/options/customizer-footer.php:42
+#: framework-customizations/theme/options/customizer-footer.php:220
+#: framework-customizations/theme/options/customizer-footer.php:225
+#: framework-customizations/theme/options/posts/post.php:27
+msgid "Click on field to choose color or clear field for default value"
+msgstr ""
+
+#: lib/codestar-framework/fields/background/background.php:278
+#: framework-customizations/extensions/media/extensions/slider/extensions/home-slider/options/custom.php:33
+msgid "Color"
+msgstr ""
+
+#: lib/codestar-framework/fields/background/background.php:276
+msgid "Color Dodge"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:355
+#: cs-framework-override/config/customize.config.php:1213
+#: framework-customizations/theme/options/customizer-stunning.php:174
+#: framework-customizations/theme/options/metabox-stunning.php:135
+msgid "Color overlay"
+msgstr ""
+
+#: framework-customizations/extensions/megamenu/options/column.php:9
+msgid "Column title"
+msgstr ""
+
+#: comments.php:134 woocommerce/single-product-reviews.php:123
+msgid "Comment"
+msgstr ""
+
+#: comments.php:41 comments.php:75
+msgid "Comment navigation"
+msgstr ""
+
+#: comments.php:87
+msgid "Comments are closed."
+msgstr ""
+
+#: comments.php:28
+#, php-format
+msgctxt "comments title"
+msgid "One comment"
+msgid_plural "%1$s Comments"
+msgstr[0] ""
+msgstr[1] ""
+
+#: cs-framework-override/config/customize.config.php:645
+#: framework-customizations/theme/options/customizer-footer.php:143
+msgid "Contacts section"
+msgstr ""
+
+#: lib/codestar-framework/fields/background/background.php:220
+msgid "Contain"
+msgstr ""
+
+#: framework-customizations/extensions/media/extensions/slider/extensions/home-slider/options/custom.php:10
+msgid "Content"
+msgstr ""
+
+#: lib/codestar-framework/fields/background/background.php:238
+#: lib/codestar-framework/fields/background/background.php:255
+msgid "Content Box"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:58
+#: framework-customizations/theme/options/customizer-subscribe.php:66
+msgid "Content of this block will be displayed Instead default subscribe form."
+msgstr ""
+
+#: framework-customizations/extensions/media/extensions/slider/extensions/home-slider/options/custom.php:87
+msgid "Content placement"
+msgstr ""
+
+#: inc/hooks.php:345 inc/hooks.php:349
+msgid "Continue Reading"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:701
+#: framework-customizations/theme/options/customizer-footer.php:199
+msgid "Copyright field"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:705
+#: framework-customizations/theme/options/customizer-footer.php:203
+msgid "Copyright text"
+msgstr ""
+
+#: woocommerce/checkout/form-coupon.php:30 woocommerce/cart/cart.php:146
+msgid "Coupon code"
+msgstr ""
+
+#: lib/codestar-framework/fields/background/background.php:219
+msgid "Cover"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:484
+#: framework-customizations/theme/options/posts/fw-portfolio.php:68
+msgid "Cover video"
+msgstr ""
+
+#: inc/helpers.php:547
+msgid "Coy Beauty"
+msgstr ""
+
+#. Author of the theme
+msgid "crumina"
+msgstr ""
+
+#: inc/includes/auto-setup/class-fw-auto-install.php:570
+msgid "Current user can't activate plugins"
+msgstr ""
+
+#: inc/includes/auto-setup/class-fw-auto-install.php:1106
+msgid "Current user can't activate plugins."
+msgstr ""
+
+#: inc/widgets/flickr/class-widget-flickr.php:68
+#: inc/widgets/instagram/class-widget-instagram.php:77
+msgid "Current window (_self)"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:834
+#: framework-customizations/theme/options/customizer-design.php:39
+msgid "Custom"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:634
+#: framework-customizations/theme/options/customizer-footer.php:133
+msgid "Custom CSS class will be added to this block"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:444
+#: cs-framework-override/config/customize.config.php:770
+#: framework-customizations/theme/options/customizer-header.php:370
+#: framework-customizations/theme/options/customizer-footer.php:261
+msgid "Custom icon"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:445
+#: framework-customizations/theme/options/customizer-header.php:371
+msgid "Custom icon for opening menu"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:115
+#: cs-framework-override/config/config-fields-class.php:270
+#: cs-framework-override/config/customize.config.php:506
+#: cs-framework-override/config/customize.config.php:1121
+msgid "Custom image"
+msgstr ""
+
+#: inc/widgets/menus/class-widget-menus.php:14
+msgid "Custom menus widget"
+msgstr ""
+
+#: lib/codestar-framework/fields/typography/typography.php:295
+msgid "Custom Style"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:234
+#: framework-customizations/theme/options/metabox-stunning.php:31
+msgid "Custom title text"
+msgstr ""
+
+#: cs-framework-override/config/nav.config.php:27
+msgid "Custom upload"
+msgstr ""
+
+#: lib/codestar-framework/fields/typography/typography.php:362
+msgid "Custom Web Fonts"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:20
+#: cs-framework-override/config/metabox.config.php:522
+#: framework-customizations/theme/options/posts/download.php:6
+#: framework-customizations/theme/options/posts/post.php:106
+#: framework-customizations/theme/options/posts/page.php:6
+#: framework-customizations/theme/options/posts/fw-portfolio.php:107
+msgid "Customize design"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:156
+#: framework-customizations/theme/options/customizer-subscribe.php:142
+msgid "Customize Images"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:25
+#: framework-customizations/theme/options/customizer-subscribe.php:24
+msgid "Customize Subscribe form"
+msgstr ""
+
+#: inc/helpers.php:503 inc/helpers.php:539
+#: cs-framework-override/config/customize.config.php:187
+#: framework-customizations/theme/options/customizer-header.php:49
+#: framework-customizations/extensions/media/extensions/slider/extensions/home-slider/options/custom.php:107
+msgid "Dark"
+msgstr ""
+
+#: inc/helpers.php:517
+msgid "Dark blue"
+msgstr ""
+
+#: inc/helpers.php:511
+msgid "Dark gray"
+msgstr ""
+
+#: lib/codestar-framework/fields/background/background.php:274
+msgid "Darken"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:348
+#: framework-customizations/theme/options/posts/post.php:40
+msgid "Darken semi-transparent overlay over image"
+msgstr ""
+
+#: lib/codestar-framework/fields/border/border.php:52
+#: lib/codestar-framework/fields/typography/typography.php:217
+msgid "Dashed"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:910
+#: framework-customizations/theme/options/customizer-blog.php:31
+msgid "Date to show"
+msgstr ""
+
+#: inc/helpers.php:535 cs-framework-override/config/config-fields-class.php:379
+#: cs-framework-override/config/config-fields-class.php:392
+#: cs-framework-override/config/metabox.config.php:33
+#: cs-framework-override/config/metabox.config.php:176
+#: cs-framework-override/config/metabox.config.php:187
+#: cs-framework-override/config/metabox.config.php:254
+#: cs-framework-override/config/metabox.config.php:265
+#: cs-framework-override/config/metabox.config.php:547
+#: cs-framework-override/config/metabox.config.php:576
+#: cs-framework-override/config/metabox.config.php:589
+#: cs-framework-override/config/metabox.config.php:602
+#: cs-framework-override/config/metabox.config.php:615
+#: cs-framework-override/config/metabox.config.php:628
+#: framework-customizations/theme/options/metabox-portfolio-page.php:55
+#: framework-customizations/theme/options/metabox-portfolio-page.php:65
+#: framework-customizations/theme/options/metabox-blog-page.php:20
+#: framework-customizations/theme/options/metabox-blog-page.php:30
+#: framework-customizations/theme/options/metabox-stunning.php:156
+#: framework-customizations/theme/options/metabox-stunning.php:168
+#: framework-customizations/theme/options/posts/post.php:121
+#: framework-customizations/theme/options/posts/page.php:22
+#: framework-customizations/theme/options/posts/fw-portfolio.php:135
+#: framework-customizations/theme/options/posts/fw-portfolio.php:177
+#: framework-customizations/theme/options/posts/fw-portfolio.php:188
+#: framework-customizations/theme/options/posts/fw-portfolio.php:199
+#: framework-customizations/theme/options/posts/fw-portfolio.php:210
+#: framework-customizations/theme/options/posts/fw-portfolio.php:221
+#: lib/codestar-framework/fields/typography/typography.php:119
+#: lib/codestar-framework/fields/typography/typography.php:132
+#: lib/codestar-framework/fields/typography/typography.php:145
+#: lib/codestar-framework/fields/typography/typography.php:160
+#: lib/codestar-framework/fields/typography/typography.php:176
+#: lib/codestar-framework/fields/typography/typography.php:189
+#: lib/codestar-framework/fields/typography/typography.php:203
+#: lib/codestar-framework/fields/typography/typography.php:221
+msgid "Default"
+msgstr ""
+
+#: lib/codestar-framework/classes/admin-options.class.php:298
+#: lib/codestar-framework/classes/admin-options.class.php:314
+msgid "Default settings restored."
+msgstr ""
+
+#: framework-customizations/extensions/forms/includes/builder-items/recaptchav3/class-fw-option-type-form-builder-item-recaptchav3.php:67
+msgid "Delete"
+msgstr ""
+
+#: inc/includes/auto-setup/views/install_setup.php:29
+#: inc/includes/auto-setup/views/install_setup.php:61
+#: inc/includes/auto-setup/views/install_setup.php:93
+msgid "Demo Content"
+msgstr ""
+
+#: framework-customizations/extensions/backups/extensions/backups-demo/views/page.php:23
+msgid "Demo Content Install"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:177
+#: cs-framework-override/config/metabox.config.php:255
+#: framework-customizations/theme/options/metabox-portfolio-page.php:56
+#: framework-customizations/theme/options/metabox-blog-page.php:21
+msgid "Descending"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:35
+#: inc/widgets/text-button/class-widget-text-button.php:78
+#: inc/widgets/contacts/class-widget-contacts.php:95
+#: inc/widgets/banner/class-widget-banner.php:102
+#: framework-customizations/theme/options/customizer-subscribe.php:36
+msgid "Description"
+msgstr ""
+
+#: inc/widgets/contacts/class-widget-contacts.php:69
+msgid "Description Text"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:481
+#: framework-customizations/theme/options/customizer-footer.php:8
+msgid "Design"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:802
+#: framework-customizations/theme/options/customizer-old.php:14
+msgid "Design customize"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:174
+#: cs-framework-override/config/metabox.config.php:252
+#: framework-customizations/theme/options/metabox-portfolio-page.php:53
+#: framework-customizations/theme/options/metabox-blog-page.php:18
+msgid "Designates the ascending or descending order of items"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:409
+#: framework-customizations/theme/options/customizer-header.php:331
+msgid "Different styles for search that show on icon click"
+msgstr ""
+
+#: lib/codestar-framework/fields/background/background.php:108
+msgid "Direction"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:149
+#: cs-framework-override/config/customize.config.php:1317
+#: framework-customizations/theme/options/customizer-subscribe.php:132
+#: framework-customizations/theme/options/customizer-portfolio.php:94
+msgid "Disable"
+msgstr ""
+
+#: inc/widgets/flickr/class-widget-flickr.php:74
+#: inc/widgets/instagram/class-widget-instagram.php:83
+msgid "Disable paddings"
+msgstr ""
+
+#: lib/codestar-framework/fields/sorter/sorter.php:22
+msgid "Disabled"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:753
+#: framework-customizations/theme/options/customizer-footer.php:249
+msgid "Display or hide button that scroll page to top on click."
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:16
+#: framework-customizations/theme/options/customizer-subscribe.php:20
+msgid "Display or hide section with subscribe form before footer."
+msgstr ""
+
+#: inc/widgets/flickr/class-widget-flickr.php:13
+msgid "Displays your latest Flickr photos"
+msgstr ""
+
+#: inc/widgets/instagram/class-widget-instagram.php:14
+msgid "Displays your latest Instagram photos"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:139
+#: cs-framework-override/config/config-fields-class.php:293
+#: cs-framework-override/config/customize.config.php:530
+#: cs-framework-override/config/customize.config.php:1145
+#: framework-customizations/theme/options/customizer-subscribe.php:123
+#: framework-customizations/theme/options/customizer-stunning.php:111
+#: framework-customizations/theme/options/metabox-stunning.php:72
+#: framework-customizations/theme/options/customizer-footer.php:30
+msgid "Don't repeat image and expand it to full section background"
+msgstr ""
+
+#: lib/codestar-framework/fields/border/border.php:53
+#: lib/codestar-framework/fields/typography/typography.php:216
+msgid "Dotted"
+msgstr ""
+
+#: lib/codestar-framework/fields/border/border.php:54
+#: lib/codestar-framework/fields/typography/typography.php:215
+msgid "Double"
+msgstr ""
+
+#: inc/includes/auto-setup/class-fw-auto-install.php:721
+msgid "Downloading and installing child theme"
+msgstr ""
+
+#: inc/includes/auto-setup/class-fw-auto-install.php:706
+msgid "Downloading and installing Unyson"
+msgstr ""
+
+#: framework-customizations/extensions/media/extensions/slider/extensions/home-slider/options/custom.php:64
+msgid "Drop shadow"
+msgstr ""
+
+#: inc/includes/template-tags.php:355
+#: framework-customizations/extensions/forms/includes/builder-items/recaptchav3/class-fw-option-type-form-builder-item-recaptchav3.php:66
+msgid "Edit"
+msgstr ""
+
+#. %s: Name of current post
+#: inc/includes/template-tags.php:164
+#, php-format
+msgid "Edit \"%s\""
+msgstr ""
+
+#. %s: Name of current post
+#: template-parts/content-page.php:41
+#, php-format
+msgid "Edit %s"
+msgstr ""
+
+#: lib/codestar-framework/fields/gallery/gallery.php:21
+msgid "Edit Gallery"
+msgstr ""
+
+#: framework-customizations/extensions/forms/includes/builder-items/recaptchav3/class-fw-option-type-form-builder-item-recaptchav3.php:65
+msgid "Edit Label"
+msgstr ""
+
+#: lib/codestar-framework/fields/link/link.php:21
+msgid "Edit Link"
+msgstr ""
+
+#: framework-customizations/theme/options/customizer-subscribe.php:145
+msgid "Edit Sections Images"
+msgstr ""
+
+#: framework-customizations/theme/options/customizer-subscribe.php:27
+msgid "Edit Subscribe Form"
+msgstr ""
+
+#: framework-customizations/theme/options/customizer-footer.php:89
+msgid "Edit Text Block Content"
+msgstr ""
+
+#: inc/includes/template-tags.php:397
+msgid "Edit this comment"
+msgstr ""
+
+#: inc/includes/auto-setup/config/config.php:11
+msgid "Elementor"
+msgstr ""
+
+#: inc/hooks.php:503
+msgid "Elementor Demo"
+msgstr ""
+
+#: inc/includes/plugins-includes.php:39
+#: inc/includes/auto-setup/config/config.php:15
+msgid "Elementor Seosight Widgets"
+msgstr ""
+
+#: comments.php:97 woocommerce/single-product-reviews.php:102
+#: template-parts/subscribe-section.php:76
+msgid "Email"
+msgstr ""
+
+#: framework-customizations/theme/options/posts/crum-form.php:97
+msgid "Email To"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:148
+#: cs-framework-override/config/customize.config.php:1316
+#: framework-customizations/theme/options/customizer-subscribe.php:137
+#: framework-customizations/theme/options/customizer-portfolio.php:90
+msgid "Enable"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:347
+#: framework-customizations/theme/options/posts/post.php:39
+msgid "Enable Image Overlay"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:1314
+#: framework-customizations/theme/options/customizer-portfolio.php:85
+msgid "Enable inner navigation"
+msgstr ""
+
+#: framework-customizations/extensions/media/extensions/slider/extensions/home-slider/options/options.php:31
+msgid "Enable loop slides by circle"
+msgstr ""
+
+#: inc/widgets/flickr/class-widget-flickr.php:75
+#: inc/widgets/instagram/class-widget-instagram.php:84
+msgid "Enable paddings"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:808
+#: framework-customizations/theme/options/customizer-design.php:9
+msgid "Enable website pre-loader"
+msgstr ""
+
+#: lib/codestar-framework/fields/sorter/sorter.php:21
+msgid "Enabled"
+msgstr ""
+
+#: framework-customizations/extensions/forms/includes/builder-items/recaptchav3/class-fw-option-type-form-builder-item-recaptchav3.php:83
+msgid "Enter field label (it will be displayed on the web site)"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:368
+#: cs-framework-override/config/metabox.config.php:389
+#: framework-customizations/theme/options/posts/post.php:54
+#: framework-customizations/theme/options/posts/post.php:78
+msgid "Enter link for video that will be embedded"
+msgstr ""
+
+#: inc/includes/plugins-includes.php:25
+#: inc/includes/auto-setup/config/config.php:55
+msgid "Envato Market"
+msgstr ""
+
+#: lib/codestar-framework/classes/admin-options.class.php:226
+msgid "Error while saving the changes."
+msgstr ""
+
+#: lib/codestar-framework/fields/group/group.php:35
+#: lib/codestar-framework/fields/repeater/repeater.php:27
+msgid "Error: Field ID conflict."
+msgstr ""
+
+#: lib/codestar-framework/functions/actions.php:72
+#: lib/codestar-framework/functions/actions.php:110
+msgid "Error: Invalid key."
+msgstr ""
+
+#: lib/codestar-framework/classes/shortcode-options.class.php:290
+#: lib/codestar-framework/functions/actions.php:16
+#: lib/codestar-framework/functions/actions.php:68
+#: lib/codestar-framework/functions/actions.php:106
+#: lib/codestar-framework/functions/actions.php:141
+#: lib/codestar-framework/functions/actions.php:170
+msgid "Error: Invalid nonce verification."
+msgstr ""
+
+#: lib/codestar-framework/functions/actions.php:174
+msgid "Error: Invalid term ID."
+msgstr ""
+
+#: lib/codestar-framework/functions/actions.php:114
+msgid "Error: The response is not a valid JSON response."
+msgstr ""
+
+#: lib/codestar-framework/functions/actions.php:180
+msgid "Error: You do not have permission to do that."
+msgstr ""
+
+#: woocommerce/cart/cart-totals.php:71
+#, php-format
+msgid "estimated for %s"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:211
+#: cs-framework-override/config/metabox.config.php:285
+#: framework-customizations/theme/options/metabox-portfolio-page.php:86
+#: framework-customizations/theme/options/metabox-blog-page.php:50
+msgid "Exclude"
+msgstr ""
+
+#: inc/widgets/latest-news/class-widget-latest-news.php:113
+msgid "Exclude Category(s):"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:209
+#: cs-framework-override/config/metabox.config.php:283
+#: framework-customizations/theme/options/metabox-portfolio-page.php:84
+#: framework-customizations/theme/options/metabox-blog-page.php:48
+msgid "Exclude selected"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:138
+#: cs-framework-override/config/config-fields-class.php:292
+#: cs-framework-override/config/customize.config.php:529
+#: cs-framework-override/config/customize.config.php:1144
+#: framework-customizations/theme/options/customizer-subscribe.php:122
+#: framework-customizations/theme/options/customizer-stunning.php:110
+#: framework-customizations/theme/options/metabox-stunning.php:71
+#: framework-customizations/theme/options/customizer-footer.php:29
+msgid "Expand background"
+msgstr ""
+
+#: framework-customizations/extensions/media/extensions/slider/extensions/home-slider/options/options.php:17
+msgid "Expand height to full browser window height"
+msgstr ""
+
+#: lib/codestar-framework/fields/backup/backup.php:29
+msgid "Export & Download"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:43
+#: cs-framework-override/config/metabox.config.php:66
+#: cs-framework-override/config/metabox.config.php:100
+#: cs-framework-override/config/metabox.config.php:564
+#: cs-framework-override/config/metabox.config.php:644
+#: cs-framework-override/config/metabox.config.php:667
+#: cs-framework-override/config/metabox.config.php:709
+#: framework-customizations/theme/options/posts/download.php:22
+#: framework-customizations/theme/options/posts/download.php:55
+#: framework-customizations/theme/options/posts/download.php:88
+#: framework-customizations/theme/options/posts/post.php:133
+#: framework-customizations/theme/options/posts/post.php:166
+#: framework-customizations/theme/options/posts/post.php:199
+#: framework-customizations/theme/options/posts/page.php:34
+#: framework-customizations/theme/options/posts/page.php:67
+#: framework-customizations/theme/options/posts/page.php:100
+#: framework-customizations/theme/options/posts/fw-portfolio.php:156
+#: framework-customizations/theme/options/posts/fw-portfolio.php:243
+#: framework-customizations/theme/options/posts/fw-portfolio.php:276
+#: framework-customizations/theme/options/taxonomies/category.php:17
+#: framework-customizations/theme/options/taxonomies/fw-portfolio-category.php:17
+msgid "Extra settings for element. Will affect only on current page."
+msgstr ""
+
+#: template-parts/share-panel.php:13
+#: inc/widgets/facebook/class-widget-facebook.php:76
+msgid "Facebook"
+msgstr ""
+
+#: inc/includes/auto-setup/class-fw-auto-install.php:587
+#, php-format
+msgid "Failed to activate required plugins. %s"
+msgstr ""
+
+#: inc/includes/auto-setup/class-fw-auto-install.php:149
+#, php-format
+msgid "Failed to activate supported extensions. %s "
+msgstr ""
+
+#: inc/includes/auto-setup/class-fw-auto-install.php:689
+#: inc/includes/auto-setup/class-fw-auto-install.php:869
+#, php-format
+msgid "Failed to install required plugins. %s"
+msgstr ""
+
+#: inc/includes/auto-setup/class-fw-auto-install.php:668
+#: inc/includes/auto-setup/class-fw-auto-install.php:850
+#, php-format
+msgid "Failed to install required plugins. Folder %s is not writable"
+msgstr ""
+
+#: inc/includes/auto-setup/class-fw-auto-install.php:798
+#, php-format
+msgid "Failed to install supported extensions. %s "
+msgstr ""
+
+#: inc/includes/auto-setup/class-fw-auto-install.php:765
+#, php-format
+msgid "Failed to install supported extensions. Folder %s is not writable"
+msgstr ""
+
+#: inc/includes/auto-setup/class-fw-auto-install.php:891
+#, php-format
+msgid "Failed to install Theme. Folder %s is not writable"
+msgstr ""
+
+#: inc/includes/auto-setup/class-fw-auto-install.php:822
+#, php-format
+msgid "Failed to install Unyson. Folder %s is not writable"
+msgstr ""
+
+#: framework-customizations/theme/options/posts/crum-form.php:86
+msgid "Failure Message"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:976
+#: framework-customizations/theme/options/customizer-blog.php:109
+msgid "Featured image or other media on top of post"
+msgstr ""
+
+#: lib/codestar-framework/classes/setup.class.php:698
+#: lib/codestar-framework/classes/setup.class.php:702
+msgid "Field not found!"
+msgstr ""
+
+#: inc/includes/auto-setup/class-fw-auto-install.php:323
+msgid "Finish installing process"
+msgstr ""
+
+#: inc/includes/auto-setup/class-fw-auto-install.php:457
+msgid "Finished activaiting required plugins"
+msgstr ""
+
+#: inc/includes/auto-setup/class-fw-auto-install.php:455
+msgid "Finished installing required plugins"
+msgstr ""
+
+#: lib/codestar-framework/fields/background/background.php:204
+msgid "Fixed"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:537
+#: framework-customizations/theme/options/customizer-footer.php:34
+msgid "Fixed footer effect"
+msgstr ""
+
+#: inc/helpers.php:603
+msgid "Flat Map"
+msgstr ""
+
+#: inc/widgets/flickr/class-widget-flickr.php:45
+msgid "Flickr"
+msgstr ""
+
+#: inc/widgets/flickr/class-widget-flickr.php:56
+msgid "Flickr ID"
+msgstr ""
+
+#: lib/codestar-framework/fields/link_color/link_color.php:40
+msgid "Focus"
+msgstr ""
+
+#: inc/widgets/follow-us/class-widget-follow-us.php:53
+msgid "Follow Us"
+msgstr ""
+
+#: template-parts/top-bar.php:85
+msgid "Follow us:"
+msgstr ""
+
+#: lib/codestar-framework/fields/typography/typography.php:284
+msgid "Font Color"
+msgstr ""
+
+#: lib/codestar-framework/fields/typography/typography.php:96
+msgid "Font Family"
+msgstr ""
+
+#: lib/codestar-framework/fields/typography/typography.php:233
+msgid "Font Size"
+msgstr ""
+
+#: inc/widgets/tags/class-widget-tags.php:69
+msgid "Font size (in px):"
+msgstr ""
+
+#: lib/codestar-framework/fields/typography/typography.php:130
+msgid "Font Style"
+msgstr ""
+
+#: lib/codestar-framework/fields/typography/typography.php:184
+msgid "Font Variant"
+msgstr ""
+
+#: cs-framework-override/config/nav.config.php:26
+msgid "Fonts"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:475
+#: framework-customizations/theme/options/customizer-old.php:44
+msgid "Footer options"
+msgstr ""
+
+#: inc/hooks.php:247
+msgid "Footer Widget Area"
+msgstr ""
+
+#: framework-customizations/theme/options/posts/crum-form.php:16
+msgid "Form Fields"
+msgstr ""
+
+#: lib/codestar-framework/fields/background/background.php:72
+#: lib/codestar-framework/fields/date/date.php:31
+msgid "From"
+msgstr ""
+
+#: inc/includes/auto-setup/config/config.php:34
+msgid "Frontend Editor"
+msgstr ""
+
+#: framework-customizations/extensions/media/extensions/slider/extensions/home-slider/options/options.php:6
+msgid "Full height slider"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:397
+#: framework-customizations/theme/options/posts/post.php:101
+msgid "Gallery post options"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:891
+#: framework-customizations/theme/options/customizer-blog.php:17
+msgid "General options"
+msgstr ""
+
+#: woocommerce/single-product-reviews.php:116
+msgid "Good"
+msgstr ""
+
+#: lib/codestar-framework/fields/typography/typography.php:388
+msgid "Google Web Fonts"
+msgstr ""
+
+#: inc/helpers.php:583
+msgid "Gowalla"
+msgstr ""
+
+#: lib/codestar-framework/fields/background/background.php:114
+msgid "Gradient Direction"
+msgstr ""
+
+#: inc/helpers.php:504
+msgid "Gray"
+msgstr ""
+
+#: inc/helpers.php:510
+msgid "Green"
+msgstr ""
+
+#: inc/helpers.php:587
+msgid "Greyscale"
+msgstr ""
+
+#: inc/widgets/flickr/class-widget-flickr.php:72
+#: inc/widgets/instagram/class-widget-instagram.php:81
+msgid "Grid space"
+msgstr ""
+
+#: lib/codestar-framework/fields/border/border.php:57
+msgid "Groove"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:43
+#: cs-framework-override/config/customize.config.php:48
+#: framework-customizations/theme/options/customizer-typography.php:31
+#: framework-customizations/theme/options/customizer-typography.php:50
+msgid "H1 headings"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:62
+#: cs-framework-override/config/customize.config.php:67
+#: framework-customizations/theme/options/customizer-typography.php:55
+#: framework-customizations/theme/options/customizer-typography.php:74
+msgid "H2 headings"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:81
+#: cs-framework-override/config/customize.config.php:86
+#: framework-customizations/theme/options/customizer-typography.php:79
+#: framework-customizations/theme/options/customizer-typography.php:98
+msgid "H3 headings"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:100
+#: cs-framework-override/config/customize.config.php:105
+#: framework-customizations/theme/options/customizer-typography.php:103
+#: framework-customizations/theme/options/customizer-typography.php:122
+msgid "H4 headings"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:119
+#: cs-framework-override/config/customize.config.php:124
+#: framework-customizations/theme/options/customizer-typography.php:127
+#: framework-customizations/theme/options/customizer-typography.php:146
+msgid "H5 headings"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:138
+#: cs-framework-override/config/customize.config.php:143
+#: framework-customizations/theme/options/customizer-typography.php:151
+#: framework-customizations/theme/options/customizer-typography.php:170
+msgid "H6 headings"
+msgstr ""
+
+#: woocommerce/checkout/form-coupon.php:23
+msgid "Have a coupon?"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:25
+#: cs-framework-override/config/metabox.config.php:638
+#: framework-customizations/theme/options/posts/download.php:11
+#: framework-customizations/theme/options/posts/post.php:111
+#: framework-customizations/theme/options/posts/page.php:12
+#: framework-customizations/theme/options/posts/fw-portfolio.php:232
+msgid "Header"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:202
+#: framework-customizations/theme/options/metabox-header.php:14
+msgid "Header opacity"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:159
+#: framework-customizations/theme/options/customizer-old.php:26
+msgid "Header options"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:196
+#: framework-customizations/theme/options/metabox-header.php:9
+msgid "Header will be placed over page content"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:573
+#: cs-framework-override/config/customize.config.php:1267
+#: framework-customizations/theme/options/customizer-portfolio.php:8
+#: framework-customizations/theme/options/posts/fw-portfolio.php:173
+msgid "Heart icon with counter who liked page"
+msgstr ""
+
+#: inc/widgets/facebook/class-widget-facebook.php:113
+msgid "Height"
+msgstr ""
+
+#: lib/codestar-framework/fields/dimensions/dimensions.php:23
+msgid "height"
+msgstr ""
+
+#: inc/hooks.php:238
+msgid "Hidden Widget Area"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:18
+#: cs-framework-override/config/config-fields-class.php:381
+#: cs-framework-override/config/config-fields-class.php:394
+#: cs-framework-override/config/metabox.config.php:35
+#: cs-framework-override/config/metabox.config.php:78
+#: cs-framework-override/config/metabox.config.php:112
+#: cs-framework-override/config/metabox.config.php:146
+#: cs-framework-override/config/metabox.config.php:578
+#: cs-framework-override/config/metabox.config.php:591
+#: cs-framework-override/config/metabox.config.php:604
+#: cs-framework-override/config/metabox.config.php:617
+#: cs-framework-override/config/metabox.config.php:630
+#: cs-framework-override/config/metabox.config.php:679
+#: cs-framework-override/config/metabox.config.php:721
+#: cs-framework-override/config/customize.config.php:177
+#: cs-framework-override/config/customize.config.php:198
+#: cs-framework-override/config/customize.config.php:281
+#: cs-framework-override/config/customize.config.php:401
+#: cs-framework-override/config/customize.config.php:437
+#: cs-framework-override/config/customize.config.php:568
+#: cs-framework-override/config/customize.config.php:652
+#: cs-framework-override/config/customize.config.php:755
+#: cs-framework-override/config/customize.config.php:941
+#: cs-framework-override/config/customize.config.php:951
+#: cs-framework-override/config/customize.config.php:961
+#: cs-framework-override/config/customize.config.php:978
+#: cs-framework-override/config/customize.config.php:988
+#: cs-framework-override/config/customize.config.php:998
+#: cs-framework-override/config/customize.config.php:1008
+#: cs-framework-override/config/customize.config.php:1018
+#: cs-framework-override/config/customize.config.php:1036
+#: cs-framework-override/config/customize.config.php:1068
+#: cs-framework-override/config/customize.config.php:1078
+#: cs-framework-override/config/customize.config.php:1269
+#: cs-framework-override/config/customize.config.php:1279
+#: cs-framework-override/config/customize.config.php:1289
+#: cs-framework-override/config/customize.config.php:1299
+#: framework-customizations/theme/options/customizer-subscribe.php:13
+#: framework-customizations/theme/options/customizer-blog.php:69
+#: framework-customizations/theme/options/customizer-blog.php:83
+#: framework-customizations/theme/options/customizer-blog.php:97
+#: framework-customizations/theme/options/customizer-blog.php:117
+#: framework-customizations/theme/options/customizer-blog.php:131
+#: framework-customizations/theme/options/customizer-blog.php:145
+#: framework-customizations/theme/options/customizer-blog.php:159
+#: framework-customizations/theme/options/customizer-blog.php:173
+#: framework-customizations/theme/options/metabox-portfolio-page.php:22
+#: framework-customizations/theme/options/customizer-stunning.php:16
+#: framework-customizations/theme/options/customizer-stunning.php:47
+#: framework-customizations/theme/options/customizer-stunning.php:61
+#: framework-customizations/theme/options/customizer-portfolio.php:16
+#: framework-customizations/theme/options/customizer-portfolio.php:30
+#: framework-customizations/theme/options/customizer-portfolio.php:45
+#: framework-customizations/theme/options/customizer-portfolio.php:64
+#: framework-customizations/theme/options/customizer-header.php:38
+#: framework-customizations/theme/options/customizer-header.php:71
+#: framework-customizations/theme/options/customizer-header.php:193
+#: framework-customizations/theme/options/customizer-header.php:319
+#: framework-customizations/theme/options/customizer-header.php:362
+#: framework-customizations/theme/options/metabox-stunning.php:20
+#: framework-customizations/theme/options/metabox-stunning.php:158
+#: framework-customizations/theme/options/metabox-stunning.php:170
+#: framework-customizations/theme/options/customizer-footer.php:63
+#: framework-customizations/theme/options/customizer-footer.php:155
+#: framework-customizations/theme/options/customizer-footer.php:246
+#: framework-customizations/theme/options/posts/download.php:117
+#: framework-customizations/theme/options/posts/post.php:123
+#: framework-customizations/theme/options/posts/post.php:228
+#: framework-customizations/theme/options/posts/page.php:24
+#: framework-customizations/theme/options/posts/page.php:125
+#: framework-customizations/theme/options/posts/fw-portfolio.php:179
+#: framework-customizations/theme/options/posts/fw-portfolio.php:190
+#: framework-customizations/theme/options/posts/fw-portfolio.php:201
+#: framework-customizations/theme/options/posts/fw-portfolio.php:212
+#: framework-customizations/theme/options/posts/fw-portfolio.php:223
+msgid "Hide"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:389
+#: framework-customizations/theme/options/metabox-stunning.php:163
+msgid "Hide breadcrumbs"
+msgstr ""
+
+#: inc/widgets/facebook/class-widget-facebook.php:125
+msgid "Hide Cover Photo"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:376
+#: framework-customizations/theme/options/metabox-stunning.php:151
+msgid "Hide title"
+msgstr ""
+
+#: lib/codestar-framework/fields/link_color/link_color.php:37
+msgid "Hover"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:217
+#: cs-framework-override/config/metabox.config.php:291
+#: framework-customizations/theme/options/metabox-portfolio-page.php:90
+#: framework-customizations/theme/options/metabox-blog-page.php:54
+msgid "How many portfolios show per page"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:57
+#: framework-customizations/theme/options/customizer-subscribe.php:65
+msgid "HTML Field"
+msgstr ""
+
+#. Author URI of the theme
+msgid "http://crumina.net"
+msgstr ""
+
+#. URI of the theme
+msgid "http://theme.crumina.net/seosight/"
+msgstr ""
+
+#: cs-framework-override/config/nav.config.php:19
+#: cs-framework-override/config/customize.config.php:268
+#: cs-framework-override/config/customize.config.php:622
+#: cs-framework-override/config/customize.config.php:674
+#: inc/widgets/contacts/class-widget-contacts.php:78
+#: framework-customizations/theme/options/customizer-header.php:161
+#: framework-customizations/theme/options/customizer-footer.php:118
+#: framework-customizations/theme/options/customizer-footer.php:171
+msgid "Icon"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:691
+#: framework-customizations/theme/options/customizer-footer.php:187
+msgid "Icon Color"
+msgstr ""
+
+#: inc/widgets/banner/class-widget-banner.php:95
+msgid "Icon image"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:779
+#: framework-customizations/theme/options/customizer-footer.php:273
+msgid "Icon width"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:269
+#: framework-customizations/theme/options/customizer-header.php:170
+#: framework-customizations/theme/options/customizer-footer.php:127
+msgid "Icons of social networks with links to profile"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:599
+#: cs-framework-override/config/customize.config.php:1287
+#: framework-customizations/theme/options/customizer-portfolio.php:37
+#: framework-customizations/theme/options/posts/fw-portfolio.php:195
+msgid "Icons with script for share post in social networks"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:103
+#: cs-framework-override/config/config-fields-class.php:363
+#: cs-framework-override/config/customize.config.php:311
+#: cs-framework-override/config/customize.config.php:545
+#: cs-framework-override/config/customize.config.php:1086
+#: framework-customizations/theme/options/customizer-subscribe.php:110
+#: framework-customizations/theme/options/customizer-stunning.php:74
+#: framework-customizations/theme/options/customizer-header.php:232
+#: framework-customizations/theme/options/metabox-stunning.php:142
+#: framework-customizations/theme/options/customizer-footer.php:41
+msgid ""
+"If you choose no image to display - that color will be set as background"
+msgstr ""
+
+#: woocommerce/checkout/form-login.php:28
+msgid ""
+"If you have shopped with us before, please enter your details below. If you "
+"are a new customer, please proceed to the Billing section."
+msgstr ""
+
+#: framework-customizations/extensions/media/extensions/slider/extensions/home-slider/options/options.php:56
+msgid "If you will set \"0\" autopay will be disabled"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:162
+#: cs-framework-override/config/config-fields-class.php:170
+#: cs-framework-override/config/config-fields-class.php:178
+#: framework-customizations/theme/options/customizer-subscribe.php:150
+#: framework-customizations/theme/options/customizer-subscribe.php:156
+#: framework-customizations/theme/options/customizer-subscribe.php:162
+msgid "Image"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:335
+#: framework-customizations/theme/options/posts/post.php:44
+msgid "Image post options"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:179
+#: framework-customizations/theme/options/customizer-subscribe.php:163
+msgid "Image that rotating"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:163
+#: framework-customizations/theme/options/customizer-subscribe.php:151
+msgid "Image that uprear from bottom"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:171
+#: framework-customizations/theme/options/customizer-subscribe.php:157
+msgid "Image that uprear from right"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:146
+#: framework-customizations/theme/options/customizer-subscribe.php:127
+msgid "Images animation"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:147
+#: framework-customizations/theme/options/customizer-subscribe.php:128
+msgid "Images animation when section become visible"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:408
+#: framework-customizations/theme/options/posts/post.php:96
+msgid "Images in slider on post list:"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:409
+#: framework-customizations/theme/options/posts/post.php:97
+msgid "Images that will be displayed in slider on post list pages"
+msgstr ""
+
+#: lib/codestar-framework/fields/backup/backup.php:26
+msgid "Import"
+msgstr ""
+
+#: framework-customizations/extensions/backups/extensions/backups-demo/views/page.php:44
+#: framework-customizations/extensions/backups/extensions/backups-demo/views/page.php:55
+msgid "Important"
+msgstr ""
+
+#: framework-customizations/extensions/backups/extensions/backups-demo/views/page.php:14
+msgid ""
+"IMPORTANT: Installing this demo content will delete the content you "
+"currently have on your website. However, we create a backup of your current "
+"content in (Tools > Backup) You can restore the backup from there at any "
+"time in the future."
+msgstr ""
+
+#: inc/customizer-polylang.php:17
+msgid ""
+"In order to translate the Customize options, please add the translation to "
+"the"
+msgstr ""
+
+#: inc/plugins-extend/woocommerce.php:38
+msgid "In Your Shopping Cart:"
+msgstr ""
+
+#: framework-customizations/extensions/media/extensions/slider/extensions/home-slider/options/options.php:20
+msgid "Infinite loop"
+msgstr ""
+
+#: lib/codestar-framework/fields/typography/typography.php:170
+msgid "Inherit"
+msgstr ""
+
+#: lib/codestar-framework/fields/typography/typography.php:175
+msgid "Initial"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:325
+#: cs-framework-override/config/customize.config.php:1179
+#: framework-customizations/theme/options/customizer-stunning.php:143
+#: framework-customizations/theme/options/metabox-stunning.php:104
+msgid "Insert Video URL to embed this video"
+msgstr ""
+
+#: framework-customizations/theme/options/option-link.php:9
+msgid "Insert/edit link"
+msgstr ""
+
+#: lib/codestar-framework/fields/border/border.php:55
+msgid "Inset"
+msgstr ""
+
+#: inc/widgets/instagram/class-widget-instagram.php:45
+msgid "Instagram"
+msgstr ""
+
+#: inc/helpers.php:794
+msgid "Instagram did not return a 200."
+msgstr ""
+
+#: inc/helpers.php:855
+msgid "Instagram did not return any images."
+msgstr ""
+
+#: inc/helpers.php:802 inc/helpers.php:810 inc/helpers.php:814
+msgid "Instagram has returned invalid data."
+msgstr ""
+
+#: inc/helpers.php:821
+msgid "Instagram Image"
+msgstr ""
+
+#: framework-customizations/extensions/backups/extensions/backups-demo/views/page.php:78
+msgid "Install"
+msgstr ""
+
+#: inc/includes/auto-setup/views/install_setup.php:34
+msgid "Install Plugins & Demo Content"
+msgstr ""
+
+#: inc/includes/auto-setup/views/install_setup.php:66
+msgid "Install Plugins Only"
+msgstr ""
+
+#: inc/includes/auto-setup/class-fw-auto-install.php:643
+msgid "Install required demo plugins"
+msgstr ""
+
+#: inc/includes/auto-setup/class-fw-auto-install.php:453
+msgid "Installing"
+msgstr ""
+
+#: inc/includes/auto-setup/class-fw-auto-install.php:711
+msgid "Installing required plugins"
+msgstr ""
+
+#: inc/includes/auto-setup/class-fw-auto-install.php:454
+msgid "Installing required plugins ..."
+msgstr ""
+
+#: inc/includes/auto-setup/class-fw-auto-install.php:716
+msgid "Installing supported extensions"
+msgstr ""
+
+#: inc/hooks.php:278
+msgid "Invalid sidebar ID"
+msgstr ""
+
+#: template-parts/content-none.php:31
+msgid ""
+"It seems we can&rsquo;t find what you&rsquo;re looking for. Perhaps "
+"searching can help."
+msgstr ""
+
+#: inc/includes/auto-setup/class-fw-auto-install.php:1075
+#, php-format
+msgid "It was not possible to activate %s. Because it isn't installed."
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:532
+#: framework-customizations/theme/options/posts/fw-portfolio.php:125
+msgid "Item size on Category page"
+msgstr ""
+
+#: inc/plugins-extend/woocommerce.php:38
+msgid "items"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:216
+#: cs-framework-override/config/metabox.config.php:290
+#: framework-customizations/theme/options/metabox-portfolio-page.php:89
+#: framework-customizations/theme/options/metabox-blog-page.php:53
+msgid "Items per page"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:1348
+#: framework-customizations/theme/options/customizer-old.php:90
+msgid "JS code field"
+msgstr ""
+
+#: lib/codestar-framework/fields/typography/typography.php:174
+msgid "Justify"
+msgstr ""
+
+#: inc/includes/auto-setup/config/config.php:30
+msgid "King Composer"
+msgstr ""
+
+#: inc/hooks.php:508
+msgid "KingComposer Demo"
+msgstr ""
+
+#: inc/includes/plugins-includes.php:49
+#: inc/includes/auto-setup/config/config.php:39
+msgid "KingComposer Seosight"
+msgstr ""
+
+#: framework-customizations/extensions/forms/includes/builder-items/recaptchav3/class-fw-option-type-form-builder-item-recaptchav3.php:64
+#: framework-customizations/extensions/forms/includes/builder-items/recaptchav3/class-fw-option-type-form-builder-item-recaptchav3.php:82
+msgid "Label"
+msgstr ""
+
+#. Name of the template
+msgid "Landing"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:195
+#: framework-customizations/theme/options/customizer-header.php:63
+msgid "Languages selector"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:714
+#: cs-framework-override/config/customize.config.php:833
+#: inc/widgets/instagram/class-widget-instagram.php:71
+#: framework-customizations/theme/options/customizer-design.php:38
+#: framework-customizations/theme/options/customizer-footer.php:211
+#: framework-customizations/extensions/media/extensions/slider/extensions/home-slider/options/custom.php:45
+msgid "Large"
+msgstr ""
+
+#: inc/hooks.php:480 template-parts/stunning-header.php:122
+msgid "Latest posts"
+msgstr ""
+
+#: lib/codestar-framework/fields/map/map.php:24
+msgid "Latitude"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:356
+#: cs-framework-override/config/customize.config.php:790
+#: cs-framework-override/config/customize.config.php:1214
+#: framework-customizations/theme/options/customizer-stunning.php:175
+#: framework-customizations/theme/options/metabox-stunning.php:136
+#: framework-customizations/theme/options/customizer-footer.php:278
+msgid "Layer with colored overlay for background image"
+msgstr ""
+
+#: inc/widgets/text-button/views/widget.php:22
+msgid "Learn More"
+msgstr ""
+
+#: comments.php:110
+msgid "Leave a Reply"
+msgstr ""
+
+#: comments.php:111 woocommerce/single-product-reviews.php:75
+#, php-format
+msgid "Leave a Reply to %s"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:548
+#: cs-framework-override/config/customize.config.php:1257
+#: framework-customizations/theme/options/customizer-old.php:75
+#: framework-customizations/theme/options/posts/fw-portfolio.php:136
+#: lib/codestar-framework/fields/typography/typography.php:171
+msgid "Left"
+msgstr ""
+
+#: lib/codestar-framework/fields/border/border.php:28
+#: lib/codestar-framework/fields/spacing/spacing.php:28
+msgid "left"
+msgstr ""
+
+#: lib/codestar-framework/fields/background/background.php:164
+msgid "Left Bottom"
+msgstr ""
+
+#: lib/codestar-framework/fields/background/background.php:163
+msgid "Left Center"
+msgstr ""
+
+#: lib/codestar-framework/fields/background/background.php:162
+msgid "Left Top"
+msgstr ""
+
+#: lib/codestar-framework/fields/typography/typography.php:257
+msgid "Letter Spacing"
+msgstr ""
+
+#: framework-customizations/extensions/media/extensions/slider/extensions/home-slider/options/custom.php:112
+msgid "Light"
+msgstr ""
+
+#: inc/helpers.php:516
+msgid "Light green"
+msgstr ""
+
+#: inc/helpers.php:575
+msgid "Light Monochrome"
+msgstr ""
+
+#: lib/codestar-framework/fields/background/background.php:275
+msgid "Lighten"
+msgstr ""
+
+#: inc/includes/post-like.php:133 inc/includes/post-like.php:219
+msgid "Like"
+msgstr ""
+
+#: lib/codestar-framework/fields/typography/typography.php:245
+msgid "Line Height"
+msgstr ""
+
+#: lib/codestar-framework/fields/typography/typography.php:220
+msgid "Line-through"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:498
+#: cs-framework-override/config/metabox.config.php:506
+#: inc/widgets/follow-us/class-widget-follow-us.php:88
+#: framework-customizations/theme/options/posts/fw-portfolio.php:80
+#: framework-customizations/theme/options/posts/fw-portfolio.php:91
+msgid "Link"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:412
+#: framework-customizations/theme/options/option-link.php:19
+msgid "Link source"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:387
+#: framework-customizations/theme/options/posts/post.php:76
+msgid "Link to audio"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:331
+#: cs-framework-override/config/customize.config.php:1186
+#: framework-customizations/theme/options/customizer-stunning.php:150
+#: framework-customizations/theme/options/metabox-stunning.php:111
+msgid "Link to mp4 video"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:345
+#: cs-framework-override/config/customize.config.php:1202
+#: framework-customizations/theme/options/customizer-stunning.php:162
+#: framework-customizations/theme/options/metabox-stunning.php:123
+msgid "Link to ogg video"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:263
+#: cs-framework-override/config/customize.config.php:617
+#: framework-customizations/theme/options/customizer-header.php:157
+#: framework-customizations/theme/options/customizer-footer.php:114
+msgid "Link to social network page"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:367
+#: framework-customizations/theme/options/posts/post.php:53
+msgid "Link to video"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:338
+#: cs-framework-override/config/customize.config.php:1194
+#: framework-customizations/theme/options/customizer-stunning.php:156
+#: framework-customizations/theme/options/metabox-stunning.php:117
+msgid "Link to webm video"
+msgstr ""
+
+#: inc/customizer.php:53
+msgid "Links Color"
+msgstr ""
+
+#: inc/widgets/follow-us/class-widget-follow-us.php:14
+msgid "Links to company social page"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:83
+#: framework-customizations/theme/options/customizer-subscribe.php:95
+msgid "List"
+msgstr ""
+
+#: framework-customizations/extensions/backups/extensions/backups-demo/views/page.php:70
+msgid "Live Preview"
+msgstr ""
+
+#: lib/codestar-framework/fields/typography/typography.php:144
+#: lib/codestar-framework/fields/typography/typography.php:145
+msgid "Load Extra Styles"
+msgstr ""
+
+#: inc/helpers.php:211
+#: framework-customizations/extensions/ajax-portfolio/views/navs/loadmore.php:23
+msgid "Load more"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:167
+#: cs-framework-override/config/metabox.config.php:245
+#: framework-customizations/theme/options/metabox-portfolio-page.php:46
+#: framework-customizations/theme/options/metabox-blog-page.php:12
+msgid "Load more ajax"
+msgstr ""
+
+#: inc/helpers.php:203
+#: framework-customizations/extensions/ajax-portfolio/views/navs/loadmore.php:23
+msgid "Loaded all"
+msgstr ""
+
+#: woocommerce/global/form-login.php:55
+msgid "Login"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:279
+#: framework-customizations/theme/options/customizer-header.php:186
+msgid "Login/Logout block"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:349
+#: framework-customizations/theme/options/customizer-header.php:266
+msgid "Logo in Retina?"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:370
+#: framework-customizations/theme/options/customizer-header.php:298
+msgid "Logo typography"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:337
+#: framework-customizations/theme/options/customizer-header.php:257
+msgid "Logotype"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:363
+#: framework-customizations/theme/options/customizer-header.php:277
+msgid "Logotype description"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:342
+#: framework-customizations/theme/options/customizer-header.php:260
+msgid "Logotype Image"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:454
+#: framework-customizations/theme/options/customizer-header.php:377
+msgid "Logotype on aside panel"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:356
+#: framework-customizations/theme/options/customizer-header.php:271
+msgid "Logotype text"
+msgstr ""
+
+#: lib/codestar-framework/fields/map/map.php:25
+msgid "Longitude"
+msgstr ""
+
+#: woocommerce/global/form-login.php:45 inc/widgets/login/views/widget.php:37
+msgid "Lost your password?"
+msgstr ""
+
+#: lib/codestar-framework/fields/typography/typography.php:202
+msgid "Lowercase"
+msgstr ""
+
+#: lib/codestar-framework/fields/background/background.php:279
+msgid "Luminosity"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:679
+#: framework-customizations/theme/options/customizer-footer.php:177
+msgid "Mail"
+msgstr ""
+
+#: framework-customizations/theme/options/posts/crum-form.php:108
+msgid "Mailer"
+msgstr ""
+
+#: framework-customizations/extensions/media/extensions/slider/extensions/home-slider/options/custom.php:6
+msgid "Main image position"
+msgstr ""
+
+#: framework-customizations/extensions/media/extensions/slider/extensions/home-slider/options/custom.php:17
+#: framework-customizations/extensions/media/extensions/slider/extensions/home-slider/options/custom.php:115
+msgid "Main text color light / dark"
+msgstr ""
+
+#: inc/hooks.php:229
+msgid "Main Widget Area"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:763
+#: framework-customizations/theme/options/customizer-footer.php:257
+msgid "Make button fixed. By default will be shown in footer only"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:203
+#: framework-customizations/theme/options/metabox-header.php:15
+msgid "Make header background semitransparent"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:715
+#: cs-framework-override/config/customize.config.php:832
+#: framework-customizations/theme/options/customizer-design.php:37
+#: framework-customizations/theme/options/customizer-footer.php:212
+#: framework-customizations/extensions/media/extensions/slider/extensions/home-slider/options/custom.php:44
+msgid "Medium"
+msgstr ""
+
+#: inc/widgets/menus/class-widget-menus.php:69
+#: inc/widgets/login/class-widget-login.php:70
+msgid "Menu in first column"
+msgstr ""
+
+#: inc/widgets/menus/class-widget-menus.php:78
+msgid "Menu in second column"
+msgstr ""
+
+#: inc/widgets/menus/class-widget-menus.php:57
+msgid "Menu list"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:293
+#: framework-customizations/theme/options/customizer-header.php:216
+msgid "Menu panel"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:319
+#: framework-customizations/theme/options/customizer-header.php:252
+msgid "Menu typography"
+msgstr ""
+
+#: framework-customizations/theme/options/posts/crum-form.php:80
+msgid "Message sent!"
+msgstr ""
+
+#: inc/helpers.php:567
+msgid "Midnight Commander"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:534
+#: cs-framework-override/config/customize.config.php:577
+#: framework-customizations/theme/options/customizer-footer.php:82
+#: framework-customizations/theme/options/posts/fw-portfolio.php:127
+msgid "More about grid and columns you can read here"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:1307
+#: framework-customizations/theme/options/customizer-portfolio.php:74
+msgid "More Case Studies"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:369
+#: cs-framework-override/config/metabox.config.php:390
+#: framework-customizations/theme/options/posts/post.php:55
+#: framework-customizations/theme/options/posts/post.php:79
+msgid "More information about WordPress embeds:"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:513
+#: framework-customizations/theme/options/posts/fw-portfolio.php:98
+msgid "MP4 Only"
+msgstr ""
+
+#: lib/codestar-framework/fields/background/background.php:271
+msgid "Multiply"
+msgstr ""
+
+#: template-parts/subscribe-section.php:141
+msgid "Name"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:66
+#: framework-customizations/theme/options/customizer-subscribe.php:75
+msgid "Name field"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:816
+#: framework-customizations/theme/options/customizer-design.php:17
+msgid "Narrow"
+msgstr ""
+
+#: inc/helpers.php:599
+msgid "Neutral Blue"
+msgstr ""
+
+#: framework-customizations/theme/options/posts/crum-form.php:58
+msgid "New message"
+msgstr ""
+
+#: inc/widgets/flickr/class-widget-flickr.php:69
+#: inc/widgets/instagram/class-widget-instagram.php:78
+msgid "New window (_blank)"
+msgstr ""
+
+#: comments.php:53
+msgid "Newer Comments"
+msgstr ""
+
+#: template-parts/post-navigation.php:42
+msgid "Next Post"
+msgstr ""
+
+#: template-parts/portfolio-navigation.php:35
+msgid "Next Project"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:52
+#: cs-framework-override/config/config-fields-class.php:444
+#: cs-framework-override/config/metabox.config.php:45
+#: cs-framework-override/config/metabox.config.php:68
+#: cs-framework-override/config/metabox.config.php:102
+#: cs-framework-override/config/metabox.config.php:566
+#: cs-framework-override/config/metabox.config.php:646
+#: cs-framework-override/config/metabox.config.php:669
+#: cs-framework-override/config/metabox.config.php:711
+#: cs-framework-override/config/customize.config.php:924
+#: framework-customizations/theme/options/customizer-subscribe.php:49
+#: framework-customizations/theme/options/customizer-blog.php:50
+#: framework-customizations/theme/options/option-link.php:61
+#: framework-customizations/extensions/megamenu/options/column.php:13
+#: framework-customizations/theme/options/posts/download.php:30
+#: framework-customizations/theme/options/posts/download.php:63
+#: framework-customizations/theme/options/posts/download.php:96
+#: framework-customizations/theme/options/posts/post.php:141
+#: framework-customizations/theme/options/posts/post.php:174
+#: framework-customizations/theme/options/posts/post.php:207
+#: framework-customizations/theme/options/posts/page.php:42
+#: framework-customizations/theme/options/posts/page.php:75
+#: framework-customizations/theme/options/posts/page.php:108
+#: framework-customizations/theme/options/posts/fw-portfolio.php:164
+#: framework-customizations/theme/options/posts/fw-portfolio.php:251
+#: framework-customizations/theme/options/posts/fw-portfolio.php:284
+#: framework-customizations/theme/options/taxonomies/category.php:25
+#: framework-customizations/theme/options/taxonomies/fw-portfolio-category.php:25
+msgid "No"
+msgstr ""
+
+#: lib/codestar-framework/classes/admin-options.class.php:683
+#: lib/codestar-framework/classes/comment-options.class.php:210
+#: lib/codestar-framework/classes/metabox-options.class.php:289
+#: lib/codestar-framework/functions/actions.php:41
+#: lib/codestar-framework/fields/radio/radio.php:75
+#: lib/codestar-framework/fields/checkbox/checkbox.php:76
+#: lib/codestar-framework/fields/button_set/button_set.php:56
+#: lib/codestar-framework/fields/select/select.php:113
+msgid "No data available."
+msgstr ""
+
+#: post-format/grid-masonry/post-gallery.php:44
+#: post-format/grid-masonry/post-video.php:41
+#: post-format/grid-masonry/post-standard.php:40
+msgid "No image"
+msgstr ""
+
+#: framework-customizations/extensions/ajax-portfolio/views/loop.php:51
+msgid "No portfolio items"
+msgstr ""
+
+#: template-parts/shop-cart.php:63
+msgid "No products in the cart!"
+msgstr ""
+
+#: lib/codestar-framework/fields/background/background.php:186
+msgid "No Repeat"
+msgstr ""
+
+#: lib/codestar-framework/classes/setup.class.php:522
+msgid "No results found."
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:497
+#: framework-customizations/theme/options/posts/fw-portfolio.php:79
+#: lib/codestar-framework/fields/border/border.php:59
+#: lib/codestar-framework/fields/typography/typography.php:199
+#: lib/codestar-framework/fields/typography/typography.php:213
+msgid "None"
+msgstr ""
+
+#: lib/codestar-framework/fields/background/background.php:270
+#: lib/codestar-framework/fields/link_color/link_color.php:36
+#: lib/codestar-framework/fields/typography/typography.php:186
+msgid "Normal"
+msgstr ""
+
+#: inc/includes/post-like.php:37
+msgid "Not permitted"
+msgstr ""
+
+#: lib/codestar-framework/fields/background/background.php:36
+#: lib/codestar-framework/fields/media/media.php:57
+msgid "Not selected"
+msgstr ""
+
+#: woocommerce/single-product-reviews.php:118
+msgid "Not that bad"
+msgstr ""
+
+#: blog-template-grid.php:113 template-parts/content-none.php:14
+msgid "Nothing Found"
+msgstr ""
+
+#: inc/widgets/flickr/class-widget-flickr.php:62
+#: inc/widgets/instagram/class-widget-instagram.php:64
+msgid "Number of columns"
+msgstr ""
+
+#: inc/widgets/latest-news/class-widget-latest-news.php:108
+msgid "Number of news to show:"
+msgstr ""
+
+#: inc/widgets/flickr/class-widget-flickr.php:59
+#: inc/widgets/instagram/class-widget-instagram.php:61
+msgid "Number of photos"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:240
+#: cs-framework-override/config/config-fields-class.php:246
+#: cs-framework-override/config/customize.config.php:848
+#: cs-framework-override/config/customize.config.php:855
+#: cs-framework-override/config/customize.config.php:1049
+#: cs-framework-override/config/customize.config.php:1056
+#: framework-customizations/theme/options/customizer-design.php:49
+#: framework-customizations/theme/options/customizer-design.php:55
+msgid "Number only"
+msgstr ""
+
+#: inc/widgets/tags/class-widget-tags.php:65
+msgid "Number tags:"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:166
+#: cs-framework-override/config/metabox.config.php:244
+#: framework-customizations/theme/options/metabox-portfolio-page.php:45
+#: framework-customizations/theme/options/metabox-blog-page.php:11
+msgid "Numbers links"
+msgstr ""
+
+#: lib/codestar-framework/fields/switcher/switcher.php:21
+#: framework-customizations/extensions/media/extensions/slider/extensions/home-slider/options/custom.php:58
+#: framework-customizations/extensions/media/extensions/slider/extensions/home-slider/options/custom.php:72
+#: framework-customizations/extensions/media/extensions/slider/extensions/home-slider/options/options.php:14
+#: framework-customizations/extensions/media/extensions/slider/extensions/home-slider/options/options.php:28
+#: framework-customizations/extensions/media/extensions/slider/extensions/home-slider/options/options.php:42
+#: framework-customizations/extensions/media/extensions/slider/extensions/home-slider/options/options.php:67
+#: framework-customizations/extensions/media/extensions/slider/extensions/home-slider/options/options.php:81
+msgid "Off"
+msgstr ""
+
+#: comments.php:44
+msgid "Older Comments"
+msgstr ""
+
+#: inc/helpers.php:515
+msgid "Olive"
+msgstr ""
+
+#: inc/helpers.php:543
+msgid "Omni"
+msgstr ""
+
+#: lib/codestar-framework/fields/switcher/switcher.php:20
+#: framework-customizations/extensions/media/extensions/slider/extensions/home-slider/options/custom.php:54
+#: framework-customizations/extensions/media/extensions/slider/extensions/home-slider/options/custom.php:68
+#: framework-customizations/extensions/media/extensions/slider/extensions/home-slider/options/options.php:10
+#: framework-customizations/extensions/media/extensions/slider/extensions/home-slider/options/options.php:24
+#: framework-customizations/extensions/media/extensions/slider/extensions/home-slider/options/options.php:38
+#: framework-customizations/extensions/media/extensions/slider/extensions/home-slider/options/options.php:63
+#: framework-customizations/extensions/media/extensions/slider/extensions/home-slider/options/options.php:77
+msgid "On"
+msgstr ""
+
+#: woocommerce/single-product-reviews.php:133
+msgid ""
+"Only logged in customers who have purchased this product may leave a review."
+msgstr ""
+
+#: framework-customizations/theme/options/posts/crum-form.php:88
+msgid "Oops something went wrong."
+msgstr ""
+
+#: lib/codestar-framework/classes/setup.class.php:624
+msgid "Oops! Not allowed."
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:156
+#: framework-customizations/theme/options/metabox-portfolio-page.php:34
+msgid "Open Category archive"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:475
+#: framework-customizations/theme/options/posts/fw-portfolio.php:62
+msgid "Open featured image in lightbox"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:474
+#: framework-customizations/theme/options/posts/fw-portfolio.php:61
+msgid "Open inner project page"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:441
+#: framework-customizations/theme/options/option-link.php:53
+msgid "Open Link in New Window"
+msgstr ""
+
+#: inc/widgets/flickr/class-widget-flickr.php:66
+#: inc/widgets/instagram/class-widget-instagram.php:75
+msgid "Open links in"
+msgstr ""
+
+#: framework-customizations/theme/options/posts/crum-form.php:45
+msgid "Options"
+msgstr ""
+
+#: inc/helpers.php:508
+msgid "Orange"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:173
+#: cs-framework-override/config/metabox.config.php:251
+#: framework-customizations/theme/options/metabox-portfolio-page.php:51
+#: framework-customizations/theme/options/metabox-blog-page.php:16
+msgid "Order"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:190
+#: cs-framework-override/config/metabox.config.php:268
+#: framework-customizations/theme/options/metabox-portfolio-page.php:68
+#: framework-customizations/theme/options/metabox-blog-page.php:33
+msgid "Order by author."
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:188
+#: cs-framework-override/config/metabox.config.php:266
+#: framework-customizations/theme/options/metabox-portfolio-page.php:66
+#: framework-customizations/theme/options/metabox-blog-page.php:31
+msgid "Order by date"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:191
+#: cs-framework-override/config/metabox.config.php:269
+#: framework-customizations/theme/options/metabox-portfolio-page.php:69
+#: framework-customizations/theme/options/metabox-blog-page.php:34
+msgid "Order by last modified date."
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:189
+#: cs-framework-override/config/metabox.config.php:267
+#: framework-customizations/theme/options/metabox-portfolio-page.php:67
+#: framework-customizations/theme/options/metabox-blog-page.php:32
+msgid "Order by number of comments"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:184
+#: cs-framework-override/config/metabox.config.php:262
+#: framework-customizations/theme/options/metabox-portfolio-page.php:61
+#: framework-customizations/theme/options/metabox-blog-page.php:26
+msgid "Order posts by"
+msgstr ""
+
+#: inc/widgets/instagram/class-widget-instagram.php:72
+msgid "Original"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:209
+#: framework-customizations/theme/options/customizer-header.php:91
+msgid "Other plugin shortcode"
+msgstr ""
+
+#: woocommerce/single-product/rating.php:38
+#, php-format
+msgid "out of %1$s5%2$s"
+msgstr ""
+
+#: woocommerce/single-product/review-rating.php:29
+msgid "out of 5"
+msgstr ""
+
+#: framework-customizations/extensions/media/extensions/slider/extensions/home-slider/options/custom.php:50
+msgid "Outlined button"
+msgstr ""
+
+#: lib/codestar-framework/fields/border/border.php:56
+msgid "Outset"
+msgstr ""
+
+#: lib/codestar-framework/fields/background/background.php:273
+msgid "Overlay"
+msgstr ""
+
+#: lib/codestar-framework/fields/typography/typography.php:219
+msgid "Overline"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:1055
+msgid "Padding Bottom"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:245
+#: cs-framework-override/config/customize.config.php:854
+#: framework-customizations/theme/options/customizer-design.php:54
+msgid "Padding bottom"
+msgstr ""
+
+#: lib/codestar-framework/fields/background/background.php:236
+#: lib/codestar-framework/fields/background/background.php:254
+msgid "Padding Box"
+msgstr ""
+
+#: framework-customizations/theme/options/customizer-stunning.php:36
+#: framework-customizations/theme/options/metabox-stunning.php:41
+msgid "Padding from Bottom"
+msgstr ""
+
+#: framework-customizations/theme/options/customizer-stunning.php:31
+#: framework-customizations/theme/options/metabox-stunning.php:36
+msgid "Padding from Top"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:1048
+msgid "Padding Top"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:239
+#: cs-framework-override/config/customize.config.php:847
+#: framework-customizations/theme/options/customizer-design.php:48
+msgid "Padding top"
+msgstr ""
+
+#: inc/hooks.php:202
+#, php-format
+msgid "Page %s"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:1065
+#: framework-customizations/theme/options/customizer-stunning.php:43
+msgid "Page Title"
+msgstr ""
+
+#: template-parts/content-page.php:29 template-parts/content.php:53
+#: post-format/post-single.php:68 post-format/post-gallery.php:61
+#: post-format/post-video.php:59 post-format/post-standard.php:58
+#: post-format/post-audio.php:42 post-format/grid-masonry/post-gallery.php:70
+#: post-format/grid-masonry/post-video.php:67
+#: post-format/grid-masonry/post-standard.php:66
+#: post-format/grid-masonry/post-audio.php:54
+msgid "Pages:"
+msgstr ""
+
+#: inc/helpers.php:555
+msgid "Pale Dawn"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:1034
+#: framework-customizations/theme/options/customizer-stunning.php:23
+msgid "Panel after header will be show/hide from frontend"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:76
+#: cs-framework-override/config/metabox.config.php:677
+#: cs-framework-override/config/metabox.config.php:719
+#: framework-customizations/theme/options/metabox-stunning.php:23
+msgid "Panel after header will be shown/hidden from frontend"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:110
+#: framework-customizations/theme/options/posts/page.php:132
+msgid "Panel before footer will be show/hide from frontend"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:144
+#: framework-customizations/theme/options/metabox-portfolio-page.php:15
+msgid "Panel before items with taxonomy categories"
+msgstr ""
+
+#: framework-customizations/theme/options/posts/download.php:120
+#: framework-customizations/theme/options/posts/post.php:231
+msgid "Panel beforefooter will be show/hide from frontend"
+msgstr ""
+
+#: inc/helpers.php:579
+msgid "Paper"
+msgstr ""
+
+#: woocommerce/global/form-login.php:41 inc/widgets/login/views/widget.php:23
+msgid "Password"
+msgstr ""
+
+#: woocommerce/single-product-reviews.php:115
+msgid "Perfect"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:677
+#: cs-framework-override/config/customize.config.php:678
+#: framework-customizations/theme/options/customizer-footer.php:175
+#: framework-customizations/theme/options/customizer-footer.php:176
+msgid "Phone"
+msgstr ""
+
+#: inc/widgets/instagram/class-widget-instagram.php:67
+msgid "Photo size"
+msgstr ""
+
+#: inc/includes/template-tags.php:354
+msgid "Pingback:"
+msgstr ""
+
+#: template-parts/share-panel.php:32
+msgid "Pinterest"
+msgstr ""
+
+#: inc/plugins-extend/woocommerce.php:128
+msgid "Place order"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:306
+#: cs-framework-override/config/customize.config.php:1159
+#: framework-customizations/theme/options/customizer-stunning.php:116
+#: framework-customizations/theme/options/metabox-stunning.php:77
+msgid "Placeholder Image"
+msgstr ""
+
+#: inc/helpers.php:17
+#, php-format
+msgid ""
+"Please assign a menu to the primary menu location under %1$s or %2$s the "
+"design."
+msgstr ""
+
+#: inc/widgets/menus/class-widget-menus.php:89
+#: inc/widgets/login/class-widget-login.php:81
+#, php-format
+msgid "Please create menu in section %1$s"
+msgstr ""
+
+#: lib/codestar-framework/classes/setup.class.php:520
+#, php-format
+msgid "Please enter %s or more characters"
+msgstr ""
+
+#: lib/codestar-framework/functions/validate.php:14
+#: lib/codestar-framework/functions/validate.php:86
+msgid "Please enter a valid email address."
+msgstr ""
+
+#: lib/codestar-framework/functions/validate.php:32
+#: lib/codestar-framework/functions/validate.php:106
+msgid "Please enter a valid number."
+msgstr ""
+
+#: lib/codestar-framework/functions/validate.php:68
+#: lib/codestar-framework/functions/validate.php:146
+msgid "Please enter a valid URL."
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:218
+#: cs-framework-override/config/metabox.config.php:292
+#: framework-customizations/theme/options/metabox-portfolio-page.php:91
+#: framework-customizations/theme/options/metabox-blog-page.php:55
+msgid "Please input number here. Leave empty for default value"
+msgstr ""
+
+#: template-parts/shop-cart.php:64
+msgid "Please make your choice."
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:307
+#: cs-framework-override/config/customize.config.php:1160
+#: framework-customizations/theme/options/customizer-stunning.php:117
+#: framework-customizations/theme/options/metabox-stunning.php:78
+msgid "Please select placeholder image"
+msgstr ""
+
+#: woocommerce/single-product-reviews.php:114
+msgid "Please select rating for this product"
+msgstr ""
+
+#: inc/includes/auto-setup/class-fw-auto-install.php:1045
+msgid "Plugin is already installed."
+msgstr ""
+
+#: inc/includes/auto-setup/views/install_setup.php:11
+msgid "Plugins & Demo Content"
+msgstr ""
+
+#: inc/includes/auto-setup/views/install_setup.php:43
+msgid "Plugins Only"
+msgstr ""
+
+#. Name of the template
+msgid "Portfolio"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:1234
+#: framework-customizations/theme/options/customizer-old.php:56
+msgid "Portfolio options"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:130
+#: framework-customizations/theme/options/posts/page.php:150
+msgid "Portfolio page options"
+msgstr ""
+
+#: comments.php:113
+msgid "Post Comment"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:913
+#: framework-customizations/theme/options/customizer-blog.php:34
+msgid "Post creation"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:914
+#: framework-customizations/theme/options/customizer-blog.php:35
+msgid "Post last update"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:959
+#: cs-framework-override/config/customize.config.php:996
+#: framework-customizations/theme/options/customizer-blog.php:89
+#: framework-customizations/theme/options/customizer-blog.php:137
+msgid "Post time, categories, tags, comments info"
+msgstr ""
+
+#: inc/includes/template-tags.php:44 inc/includes/template-tags.php:141
+msgid "Posted by"
+msgstr ""
+
+#: inc/helpers.php:162
+msgid "Posts pagination"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:114
+#: cs-framework-override/config/config-fields-class.php:269
+#: cs-framework-override/config/customize.config.php:505
+#: cs-framework-override/config/customize.config.php:1120
+msgid "Predefined images"
+msgstr ""
+
+#: framework-customizations/extensions/media/extensions/slider/extensions/home-slider/options/options.php:84
+msgid "Prev / Next arrows buttons visibility"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:921
+#: framework-customizations/theme/options/customizer-blog.php:41
+msgid "Prev/Next Order"
+msgstr ""
+
+#: template-parts/post-navigation.php:31
+msgid "Previous Post"
+msgstr ""
+
+#: template-parts/portfolio-navigation.php:22
+msgid "Previous Project"
+msgstr ""
+
+#: woocommerce/cart/cart.php:31 woocommerce/cart/cart.php:99
+msgid "Price"
+msgstr ""
+
+#: inc/customizer.php:27
+msgid "Primary Accent Color"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:896
+#: framework-customizations/theme/options/customizer-blog.php:21
+msgid "Primary Blog page"
+msgstr ""
+
+#: inc/helpers.php:500
+msgid "Primary color"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:1239
+#: cs-framework-override/config/customize.config.php:1324
+#: framework-customizations/theme/options/customizer-old.php:60
+#: framework-customizations/theme/options/customizer-portfolio.php:103
+msgid "Primary portfolio page"
+msgstr ""
+
+#: woocommerce/cart/proceed-to-checkout-button.php:27
+msgid "Proceed to checkout"
+msgstr ""
+
+#: woocommerce/checkout/review-order.php:23 woocommerce/cart/cart.php:30
+#: woocommerce/cart/cart.php:77
+msgid "Product"
+msgstr ""
+
+#: woocommerce/single-product/tabs/description.php:25
+msgid "Product Description"
+msgstr ""
+
+#: inc/hooks.php:487 template-parts/stunning-header.php:133
+msgid "Product Details"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:558
+#: framework-customizations/theme/options/posts/fw-portfolio.php:145
+msgid "Project content"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:437
+#: cs-framework-override/config/metabox.config.php:444
+#: framework-customizations/theme/options/posts/fw-portfolio.php:28
+#: framework-customizations/theme/options/posts/fw-portfolio.php:37
+msgid "Project link"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:417
+#: framework-customizations/theme/options/posts/fw-portfolio.php:9
+msgid "Project summary"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:217
+#: framework-customizations/theme/options/customizer-header.php:99
+msgid "Provide plugin selector shortcode"
+msgstr ""
+
+#: inc/helpers.php:506
+msgid "Purple"
+msgstr ""
+
+#: woocommerce/checkout/review-order.php:24 woocommerce/cart/cart.php:32
+#: woocommerce/cart/cart.php:107
+msgid "Quantity"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:311
+#: framework-customizations/theme/options/posts/post.php:13
+msgid "Quote author"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:300
+#: framework-customizations/theme/options/posts/post.php:9
+msgid "Quote post options"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:192
+#: framework-customizations/theme/options/metabox-portfolio-page.php:70
+msgid "Random order"
+msgstr ""
+
+#: woocommerce/single-product/review-rating.php:28
+#: woocommerce/single-product/rating.php:36
+#, php-format
+msgid "Rated %s out of 5"
+msgstr ""
+
+#: template-parts/content-none.php:21
+#, php-format
+msgid ""
+"Ready to publish your first post? <a href=\"%1$s\">Get started here</a>."
+msgstr ""
+
+#: framework-customizations/extensions/forms/includes/builder-items/recaptchav3/class-fw-option-type-form-builder-item-recaptchav3.php:25
+#: framework-customizations/extensions/forms/includes/builder-items/recaptchav3/class-fw-option-type-form-builder-item-recaptchav3.php:63
+#: framework-customizations/extensions/forms/includes/builder-items/recaptchav3/class-fw-option-type-form-builder-item-recaptchav3.php:84
+msgid "Recaptcha V3"
+msgstr ""
+
+#: inc/widgets/login/views/widget.php:39
+msgid "Register now"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:1306
+#: framework-customizations/theme/options/customizer-portfolio.php:73
+msgid "Related project section title"
+msgstr ""
+
+#: inc/widgets/login/views/widget.php:32
+msgid "Remember Me"
+msgstr ""
+
+#: woocommerce/global/form-login.php:59
+msgid "Remember me"
+msgstr ""
+
+#: inc/widgets/contacts/class-widget-contacts.php:105
+#: inc/widgets/follow-us/class-widget-follow-us.php:98
+#: lib/codestar-framework/fields/upload/upload.php:22
+#: lib/codestar-framework/fields/media/media.php:24
+msgid "Remove"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:390
+#: framework-customizations/theme/options/metabox-stunning.php:164
+msgid "Remove breadcrumbs from stunning header section"
+msgstr ""
+
+#: lib/codestar-framework/fields/icon/icon.php:21
+msgid "Remove Icon"
+msgstr ""
+
+#: inc/widgets/contacts/class-widget-contacts.php:85
+#: inc/widgets/banner/class-widget-banner.php:90
+#: inc/widgets/banner/class-widget-banner.php:97
+msgid "Remove image"
+msgstr ""
+
+#: lib/codestar-framework/fields/link/link.php:22
+msgid "Remove Link"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:377
+#: framework-customizations/theme/options/metabox-stunning.php:152
+msgid "Remove text with page title from stunning header section"
+msgstr ""
+
+#: woocommerce/cart/cart.php:56
+msgid "Remove this item"
+msgstr ""
+
+#: lib/codestar-framework/fields/background/background.php:185
+msgid "Repeat"
+msgstr ""
+
+#: lib/codestar-framework/fields/background/background.php:187
+msgid "Repeat Horizontally"
+msgstr ""
+
+#: lib/codestar-framework/fields/background/background.php:188
+msgid "Repeat Vertically"
+msgstr ""
+
+#: lib/codestar-framework/classes/admin-options.class.php:582
+#: lib/codestar-framework/classes/admin-options.class.php:718
+#: lib/codestar-framework/classes/comment-options.class.php:227
+#: lib/codestar-framework/classes/metabox-options.class.php:306
+#: lib/codestar-framework/fields/backup/backup.php:31
+msgid "Reset"
+msgstr ""
+
+#: lib/codestar-framework/classes/admin-options.class.php:582
+#: lib/codestar-framework/classes/admin-options.class.php:718
+msgid "Reset All"
+msgstr ""
+
+#: lib/codestar-framework/classes/admin-options.class.php:579
+#: lib/codestar-framework/classes/admin-options.class.php:715
+msgid "Reset Section"
+msgstr ""
+
+#: inc/helpers.php:571
+msgid "Retro"
+msgstr ""
+
+#: 404.php:22
+msgid "Return to Home"
+msgstr ""
+
+#: woocommerce/checkout/form-login.php:22
+msgid "Returning customer?"
+msgstr ""
+
+#: woocommerce/single-product-reviews.php:37
+msgid "Reviews"
+msgstr ""
+
+#: lib/codestar-framework/fields/border/border.php:58
+msgid "ridge"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:550
+#: cs-framework-override/config/customize.config.php:1259
+#: framework-customizations/theme/options/customizer-old.php:77
+#: framework-customizations/theme/options/posts/fw-portfolio.php:138
+#: lib/codestar-framework/fields/typography/typography.php:173
+msgid "Right"
+msgstr ""
+
+#: lib/codestar-framework/fields/border/border.php:26
+#: lib/codestar-framework/fields/spacing/spacing.php:26
+msgid "right"
+msgstr ""
+
+#: lib/codestar-framework/fields/background/background.php:170
+msgid "Right Bottom"
+msgstr ""
+
+#: lib/codestar-framework/fields/background/background.php:169
+msgid "Right Center"
+msgstr ""
+
+#: lib/codestar-framework/fields/background/background.php:168
+msgid "Right Top"
+msgstr ""
+
+#: inc/helpers.php:513
+msgid "Rose"
+msgstr ""
+
+#: lib/codestar-framework/fields/typography/typography.php:368
+msgid "Safe Web Fonts"
+msgstr ""
+
+#: lib/codestar-framework/fields/background/background.php:277
+msgid "Saturation"
+msgstr ""
+
+#: lib/codestar-framework/classes/admin-options.class.php:576
+#: lib/codestar-framework/classes/admin-options.class.php:713
+msgid "Save"
+msgstr ""
+
+#: inc/hooks.php:432
+msgid "Save changes"
+msgstr ""
+
+#: comments.php:102
+msgid ""
+"Save my name, email, and website in this browser for the next time I comment."
+msgstr ""
+
+#: lib/codestar-framework/classes/admin-options.class.php:576
+#: lib/codestar-framework/classes/admin-options.class.php:713
+msgid "Saving..."
+msgstr ""
+
+#: lib/codestar-framework/fields/background/background.php:272
+msgid "Screen"
+msgstr ""
+
+#: lib/codestar-framework/fields/background/background.php:203
+msgid "Scroll"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:742
+#: framework-customizations/theme/options/customizer-footer.php:230
+msgid "Scroll Top Button"
+msgstr ""
+
+#: searchform.php:10 searchform.php:11 template-parts/search-blog.php:14
+#: template-parts/search-blog.php:18 template-parts/search-dropdown.php:13
+#: template-parts/search-fullscreen.php:15
+#: cs-framework-override/config/customize.config.php:388
+#: framework-customizations/theme/options/customizer-header.php:303
+msgid "Search"
+msgstr ""
+
+#: template-parts/stunning-header.php:125
+#, php-format
+msgid "Search Results for: %s"
+msgstr ""
+
+#: lib/codestar-framework/classes/admin-options.class.php:572
+#: lib/codestar-framework/fields/map/map.php:23
+#: lib/codestar-framework/fields/icon/icon.php:57
+msgid "Search..."
+msgstr ""
+
+#: lib/codestar-framework/classes/setup.class.php:521
+msgid "Searching..."
+msgstr ""
+
+#: inc/customizer.php:40
+msgid "Secondary Accent Color"
+msgstr ""
+
+#: inc/helpers.php:501
+msgid "Secondary color"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:712
+#: framework-customizations/theme/options/customizer-footer.php:209
+msgid "Section height"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:829
+#: framework-customizations/theme/options/customizer-design.php:31
+msgid "Sections padding"
+msgstr ""
+
+#: framework-customizations/extensions/forms/includes/builder-items/recaptchav3/class-fw-option-type-form-builder-item-recaptchav3.php:121
+msgid "Security Code"
+msgstr ""
+
+#: lib/codestar-framework/fields/typography/typography.php:97
+msgid "Select a font"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:897
+#: framework-customizations/theme/options/customizer-blog.php:22
+msgid "Select a page which breadcrumbs will be linked to"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:1240
+#: cs-framework-override/config/customize.config.php:1325
+#: framework-customizations/theme/options/customizer-old.php:61
+#: framework-customizations/theme/options/customizer-portfolio.php:104
+msgid "Select a page which center icon will be linked to"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:430
+#: framework-customizations/theme/options/option-link.php:41
+msgid "Select a page which this element will be linked to"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:442
+#: framework-customizations/theme/options/option-link.php:54
+msgid "Select here if you want to open the linked page in a new window"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:413
+#: framework-customizations/theme/options/option-link.php:26
+msgid "Select link source"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:219
+#: framework-customizations/theme/options/metabox-header.php:32
+msgid "Select menu to display"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:112
+#: cs-framework-override/config/config-fields-class.php:267
+#: cs-framework-override/config/customize.config.php:503
+#: cs-framework-override/config/customize.config.php:1118
+#: framework-customizations/theme/options/customizer-subscribe.php:117
+#: framework-customizations/theme/options/customizer-stunning.php:104
+#: framework-customizations/theme/options/metabox-stunning.php:65
+#: framework-customizations/theme/options/customizer-footer.php:24
+msgid "Select one of images or upload your own pattern"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:164
+#: cs-framework-override/config/metabox.config.php:242
+#: framework-customizations/theme/options/metabox-portfolio-page.php:43
+#: framework-customizations/theme/options/metabox-blog-page.php:9
+msgid "Select one of pagination types"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:220
+#: framework-customizations/theme/options/metabox-header.php:30
+#, php-format
+msgid "Select one of website menus. Or <a href=\"%s\">Create new menu</a>."
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:416
+#: framework-customizations/theme/options/option-link.php:24
+msgid "Select page"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:408
+#: framework-customizations/theme/options/customizer-header.php:330
+msgid "Select search style"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:429
+#: framework-customizations/theme/options/option-link.php:40
+msgid "Select some blog page"
+msgstr ""
+
+#: inc/widgets/tags/class-widget-tags.php:76
+#: inc/widgets/categories/class-widget-categories.php:79
+msgid "Select Taxonomy"
+msgstr ""
+
+#: framework-customizations/theme/options/option-link.php:10
+msgid "Select URL"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:911
+#: framework-customizations/theme/options/customizer-blog.php:32
+msgid "Select what date display in post meta"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:533
+#: cs-framework-override/config/customize.config.php:576
+#: framework-customizations/theme/options/customizer-footer.php:81
+#: framework-customizations/theme/options/posts/fw-portfolio.php:126
+msgid "Select width in 12 column grid"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:316
+#: cs-framework-override/config/customize.config.php:1170
+#: framework-customizations/theme/options/customizer-stunning.php:134
+#: framework-customizations/theme/options/metabox-stunning.php:95
+msgid "Self hosted"
+msgstr ""
+
+#: framework-customizations/theme/options/posts/crum-form.php:69
+msgid "Send"
+msgstr ""
+
+#. Name of the theme
+msgid "Seosight"
+msgstr ""
+
+#. Description of the theme
+msgid "Seosight - fresh idea for the SEO, Digital Marketing Agency."
+msgstr ""
+
+#: functions.php:66
+msgid "Seosight - Update and License Theme Settings"
+msgstr ""
+
+#: functions.php:65
+msgid "Seosight License"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:684
+#: cs-framework-override/config/customize.config.php:685
+#: framework-customizations/theme/options/customizer-footer.php:182
+#: framework-customizations/theme/options/customizer-footer.php:183
+msgid "Service"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:407
+#: framework-customizations/theme/options/option-link.php:8
+msgid "Set link"
+msgstr ""
+
+#: framework-customizations/extensions/forms/includes/builder-items/recaptchav3/class-fw-option-type-form-builder-item-recaptchav3.php:69
+msgid "Set secret key"
+msgstr ""
+
+#: framework-customizations/extensions/forms/includes/builder-items/recaptchav3/class-fw-option-type-form-builder-item-recaptchav3.php:68
+msgid "Set site key"
+msgstr ""
+
+#: framework-customizations/theme/options/posts/crum-form.php:42
+msgid "Settings"
+msgstr ""
+
+#: lib/codestar-framework/classes/admin-options.class.php:385
+msgid "Settings saved."
+msgstr ""
+
+#: lib/codestar-framework/classes/admin-options.class.php:286
+msgid "Settings successfully imported."
+msgstr ""
+
+#: inc/helpers.php:563
+msgid "Shades of Grey"
+msgstr ""
+
+#: template-parts/share-icons.php:1
+msgid "Share"
+msgstr ""
+
+#: inc/helpers.php:607
+msgid "Shift Worker"
+msgstr ""
+
+#: woocommerce/cart/cart-totals.php:55 woocommerce/cart/cart-totals.php:56
+msgid "Shipping"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:17
+#: cs-framework-override/config/config-fields-class.php:380
+#: cs-framework-override/config/config-fields-class.php:393
+#: cs-framework-override/config/metabox.config.php:34
+#: cs-framework-override/config/metabox.config.php:77
+#: cs-framework-override/config/metabox.config.php:111
+#: cs-framework-override/config/metabox.config.php:145
+#: cs-framework-override/config/metabox.config.php:577
+#: cs-framework-override/config/metabox.config.php:590
+#: cs-framework-override/config/metabox.config.php:603
+#: cs-framework-override/config/metabox.config.php:616
+#: cs-framework-override/config/metabox.config.php:629
+#: cs-framework-override/config/metabox.config.php:678
+#: cs-framework-override/config/metabox.config.php:720
+#: cs-framework-override/config/customize.config.php:176
+#: cs-framework-override/config/customize.config.php:197
+#: cs-framework-override/config/customize.config.php:280
+#: cs-framework-override/config/customize.config.php:400
+#: cs-framework-override/config/customize.config.php:436
+#: cs-framework-override/config/customize.config.php:567
+#: cs-framework-override/config/customize.config.php:651
+#: cs-framework-override/config/customize.config.php:754
+#: cs-framework-override/config/customize.config.php:940
+#: cs-framework-override/config/customize.config.php:950
+#: cs-framework-override/config/customize.config.php:960
+#: cs-framework-override/config/customize.config.php:977
+#: cs-framework-override/config/customize.config.php:987
+#: cs-framework-override/config/customize.config.php:997
+#: cs-framework-override/config/customize.config.php:1007
+#: cs-framework-override/config/customize.config.php:1017
+#: cs-framework-override/config/customize.config.php:1035
+#: cs-framework-override/config/customize.config.php:1067
+#: cs-framework-override/config/customize.config.php:1077
+#: cs-framework-override/config/customize.config.php:1268
+#: cs-framework-override/config/customize.config.php:1278
+#: cs-framework-override/config/customize.config.php:1288
+#: cs-framework-override/config/customize.config.php:1298
+#: framework-customizations/theme/options/customizer-subscribe.php:17
+#: framework-customizations/theme/options/customizer-blog.php:65
+#: framework-customizations/theme/options/customizer-blog.php:79
+#: framework-customizations/theme/options/customizer-blog.php:93
+#: framework-customizations/theme/options/customizer-blog.php:113
+#: framework-customizations/theme/options/customizer-blog.php:127
+#: framework-customizations/theme/options/customizer-blog.php:141
+#: framework-customizations/theme/options/customizer-blog.php:155
+#: framework-customizations/theme/options/customizer-blog.php:169
+#: framework-customizations/theme/options/metabox-portfolio-page.php:18
+#: framework-customizations/theme/options/customizer-stunning.php:20
+#: framework-customizations/theme/options/customizer-stunning.php:51
+#: framework-customizations/theme/options/customizer-stunning.php:65
+#: framework-customizations/theme/options/customizer-portfolio.php:12
+#: framework-customizations/theme/options/customizer-portfolio.php:26
+#: framework-customizations/theme/options/customizer-portfolio.php:41
+#: framework-customizations/theme/options/customizer-portfolio.php:60
+#: framework-customizations/theme/options/customizer-header.php:34
+#: framework-customizations/theme/options/customizer-header.php:67
+#: framework-customizations/theme/options/customizer-header.php:189
+#: framework-customizations/theme/options/customizer-header.php:315
+#: framework-customizations/theme/options/customizer-header.php:358
+#: framework-customizations/theme/options/metabox-stunning.php:16
+#: framework-customizations/theme/options/metabox-stunning.php:157
+#: framework-customizations/theme/options/metabox-stunning.php:169
+#: framework-customizations/theme/options/customizer-footer.php:59
+#: framework-customizations/theme/options/customizer-footer.php:151
+#: framework-customizations/theme/options/customizer-footer.php:242
+#: framework-customizations/theme/options/posts/download.php:113
+#: framework-customizations/theme/options/posts/post.php:122
+#: framework-customizations/theme/options/posts/post.php:224
+#: framework-customizations/theme/options/posts/page.php:23
+#: framework-customizations/theme/options/posts/page.php:129
+#: framework-customizations/theme/options/posts/fw-portfolio.php:178
+#: framework-customizations/theme/options/posts/fw-portfolio.php:189
+#: framework-customizations/theme/options/posts/fw-portfolio.php:200
+#: framework-customizations/theme/options/posts/fw-portfolio.php:211
+#: framework-customizations/theme/options/posts/fw-portfolio.php:222
+msgid "Show"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:1315
+#: framework-customizations/theme/options/customizer-portfolio.php:86
+msgid "Show additional navigation after portfolio"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:210
+#: cs-framework-override/config/metabox.config.php:284
+#: framework-customizations/theme/options/metabox-portfolio-page.php:85
+#: framework-customizations/theme/options/metabox-blog-page.php:49
+msgid "Show all categories except that selected in \"Categories\" option"
+msgstr ""
+
+#: lib/codestar-framework/classes/admin-options.class.php:568
+msgid "show all settings"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:30
+#: cs-framework-override/config/customize.config.php:434
+#: framework-customizations/theme/options/customizer-header.php:352
+#: framework-customizations/theme/options/posts/post.php:116
+#: framework-customizations/theme/options/posts/page.php:17
+msgid "Show aside open button?"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:1015
+#: framework-customizations/theme/options/customizer-blog.php:164
+msgid "Show author box?"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:948
+#: cs-framework-override/config/customize.config.php:985
+#: framework-customizations/theme/options/customizer-blog.php:74
+#: framework-customizations/theme/options/customizer-blog.php:122
+msgid "Show author?"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:586
+#: cs-framework-override/config/customize.config.php:1277
+#: framework-customizations/theme/options/customizer-portfolio.php:22
+#: framework-customizations/theme/options/posts/fw-portfolio.php:184
+msgid "Show block with date of created page"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:1016
+#: framework-customizations/theme/options/customizer-blog.php:165
+msgid "Show box with author avatar and detailed bio description"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:48
+#: framework-customizations/theme/options/customizer-subscribe.php:45
+msgid "Show Custom form here?"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:585
+#: cs-framework-override/config/customize.config.php:1276
+#: framework-customizations/theme/options/customizer-portfolio.php:21
+#: framework-customizations/theme/options/posts/fw-portfolio.php:183
+msgid "Show date?"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:15
+#: framework-customizations/theme/options/customizer-subscribe.php:9
+msgid "Show Email subscribe section"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:975
+#: framework-customizations/theme/options/customizer-blog.php:108
+msgid "Show featured media?"
+msgstr ""
+
+#: inc/widgets/facebook/class-widget-facebook.php:130
+msgid "Show Friend's Faces"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:1006
+#: framework-customizations/theme/options/customizer-blog.php:151
+msgid "Show icons that share post on social networks"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:572
+#: cs-framework-override/config/customize.config.php:1266
+#: framework-customizations/theme/options/customizer-portfolio.php:7
+#: framework-customizations/theme/options/posts/fw-portfolio.php:172
+msgid "Show Like"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:453
+#: framework-customizations/theme/options/customizer-header.php:376
+msgid "Show logo?"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:74
+#: framework-customizations/theme/options/customizer-subscribe.php:84
+msgid "Show name field first?"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:939
+#: framework-customizations/theme/options/customizer-blog.php:61
+msgid "Show or hide panel before posts list"
+msgstr ""
+
+#: inc/widgets/facebook/class-widget-facebook.php:135
+msgid "Show Page Posts"
+msgstr ""
+
+#: inc/widgets/categories/class-widget-categories.php:73
+msgid "Show post counts"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:958
+#: cs-framework-override/config/customize.config.php:995
+#: framework-customizations/theme/options/customizer-blog.php:88
+#: framework-customizations/theme/options/customizer-blog.php:136
+msgid "Show post meta?"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:611
+#: framework-customizations/theme/options/posts/fw-portfolio.php:205
+msgid "Show posts navigation"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:624
+#: cs-framework-override/config/customize.config.php:1296
+#: framework-customizations/theme/options/customizer-portfolio.php:55
+#: framework-customizations/theme/options/posts/fw-portfolio.php:216
+msgid "Show Related items"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:752
+#: framework-customizations/theme/options/customizer-footer.php:238
+msgid "Show Scroll to top button?"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:398
+#: framework-customizations/theme/options/customizer-header.php:311
+msgid "Show search icon?"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:938
+#: framework-customizations/theme/options/customizer-blog.php:60
+msgid "Show Search panel"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:650
+#: framework-customizations/theme/options/customizer-footer.php:147
+msgid "Show section with contacts"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:598
+#: cs-framework-override/config/customize.config.php:1286
+#: framework-customizations/theme/options/customizer-portfolio.php:36
+#: framework-customizations/theme/options/posts/fw-portfolio.php:194
+msgid "Show share icons?"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:1005
+#: framework-customizations/theme/options/customizer-blog.php:150
+msgid "Show share post buttons?"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:75
+#: cs-framework-override/config/metabox.config.php:676
+#: cs-framework-override/config/metabox.config.php:718
+#: framework-customizations/theme/options/metabox-stunning.php:12
+msgid "Show stunning header?"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:109
+#: framework-customizations/theme/options/posts/download.php:109
+#: framework-customizations/theme/options/posts/post.php:220
+#: framework-customizations/theme/options/posts/page.php:121
+msgid "Show Subscribe panel?"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:565
+#: framework-customizations/theme/options/customizer-footer.php:55
+msgid "Show text block"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:813
+#: framework-customizations/theme/options/customizer-design.php:14
+msgid "Sidebar width"
+msgstr ""
+
+#: template-parts/top-bar.php:105
+msgid "Sign in"
+msgstr ""
+
+#: template-parts/top-bar.php:102
+msgid "Sign out"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:970
+#: framework-customizations/theme/options/customizer-blog.php:104
+msgid "Single Post options"
+msgstr ""
+
+#: inc/includes/auto-setup/views/install_setup.php:75
+#: inc/includes/auto-setup/views/install_setup.php:98
+msgid "Skip Auto Setup"
+msgstr ""
+
+#: inc/includes/auto-setup/class-fw-auto-install.php:509
+msgid ""
+"Skip the auto setup all together and activate all the plugins manually. Note "
+"that this page will not be accessible until you install the theme again."
+msgstr ""
+
+#: inc/includes/auto-setup/class-fw-auto-install.php:211
+msgid ""
+"Skip the auto setup all together and activate all the Unyson dependencies "
+"manually. Note that this page will not be  accessible until you install the "
+"theme again."
+msgstr ""
+
+#: inc/includes/auto-setup/class-fw-auto-install.php:927
+msgid ""
+"Skip the auto setup all together and install all the plugins manually. Note "
+"that this page will not be accessible until you install the theme again."
+msgstr ""
+
+#: header.php:104
+msgid "Skip to content"
+msgstr ""
+
+#: framework-customizations/extensions/media/extensions/slider/extensions/home-slider/views/home-slider.php:114
+msgid "Slide"
+msgstr ""
+
+#: framework-customizations/extensions/media/extensions/slider/extensions/home-slider/options/options.php:73
+msgid "Slide arrows"
+msgstr ""
+
+#: framework-customizations/extensions/media/extensions/slider/extensions/home-slider/options/custom.php:100
+msgid "Slide background color"
+msgstr ""
+
+#: framework-customizations/extensions/media/extensions/slider/extensions/home-slider/options/options.php:59
+msgid "Slide labels"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:625
+#: cs-framework-override/config/customize.config.php:1297
+#: framework-customizations/theme/options/customizer-portfolio.php:56
+#: framework-customizations/theme/options/posts/fw-portfolio.php:217
+msgid "Slider with similar portfolio items category tag"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:716
+#: cs-framework-override/config/customize.config.php:831
+#: inc/widgets/instagram/class-widget-instagram.php:70
+#: framework-customizations/theme/options/customizer-design.php:36
+#: framework-customizations/theme/options/customizer-footer.php:213
+#: framework-customizations/extensions/media/extensions/slider/extensions/home-slider/options/custom.php:43
+msgid "Small"
+msgstr ""
+
+#: lib/codestar-framework/fields/typography/typography.php:187
+msgid "Small Caps"
+msgstr ""
+
+#: inc/widgets/facebook/class-widget-facebook.php:120
+msgid "Small header"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:239
+#: cs-framework-override/config/customize.config.php:612
+#: inc/widgets/follow-us/class-widget-follow-us.php:70
+#: framework-customizations/theme/options/customizer-header.php:135
+#: framework-customizations/theme/options/customizer-footer.php:111
+msgid "Social networks"
+msgstr ""
+
+#: lib/codestar-framework/fields/border/border.php:51
+#: lib/codestar-framework/fields/typography/typography.php:214
+msgid "Solid"
+msgstr ""
+
+#: 404.php:20
+msgid "Sorry! The Page Is Not Found The Link You Followed Is Probably Broken"
+msgstr ""
+
+#: 404.php:19
+msgid "Sorry! The Page Not Found"
+msgstr ""
+
+#: blog-template-grid.php:117 template-parts/content-none.php:25
+msgid ""
+"Sorry, but nothing matched your search terms. Please try again with some "
+"different keywords."
+msgstr ""
+
+#: inc/includes/auto-setup/class-fw-auto-install.php:254
+msgid "Sorry, we've encountered some errors, try to access this page later."
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:155
+#: framework-customizations/theme/options/metabox-portfolio-page.php:33
+msgid "Sort items on click"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:143
+#: framework-customizations/theme/options/metabox-portfolio-page.php:13
+msgid "Sort panel"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:185
+#: cs-framework-override/config/metabox.config.php:263
+#: framework-customizations/theme/options/metabox-portfolio-page.php:63
+#: framework-customizations/theme/options/metabox-blog-page.php:28
+msgid "Sort retrieved posts by parameter."
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:499
+#: cs-framework-override/config/metabox.config.php:512
+#: framework-customizations/theme/options/posts/fw-portfolio.php:81
+#: framework-customizations/theme/options/posts/fw-portfolio.php:97
+msgid "Source"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:332
+#: cs-framework-override/config/config-fields-class.php:339
+#: cs-framework-override/config/config-fields-class.php:346
+#: cs-framework-override/config/customize.config.php:1187
+#: cs-framework-override/config/customize.config.php:1195
+#: cs-framework-override/config/customize.config.php:1203
+#: framework-customizations/theme/options/customizer-stunning.php:151
+#: framework-customizations/theme/options/customizer-stunning.php:157
+#: framework-customizations/theme/options/customizer-stunning.php:163
+#: framework-customizations/theme/options/metabox-stunning.php:112
+#: framework-customizations/theme/options/metabox-stunning.php:118
+#: framework-customizations/theme/options/metabox-stunning.php:124
+msgid "Source of uploaded video"
+msgstr ""
+
+#: inc/customizer-polylang.php:18
+msgid "static home page"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:298
+#: framework-customizations/theme/options/customizer-header.php:221
+msgid "Sticky header on desktop?"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:304
+#: framework-customizations/theme/options/customizer-header.php:226
+msgid "Sticky header on mobile?"
+msgstr ""
+
+#: framework-customizations/extensions/media/extensions/slider/extensions/home-slider/options/options.php:34
+msgid "Stop on hover"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:60
+#: cs-framework-override/config/metabox.config.php:661
+#: cs-framework-override/config/metabox.config.php:703
+#: framework-customizations/theme/options/posts/download.php:44
+#: framework-customizations/theme/options/posts/post.php:155
+#: framework-customizations/theme/options/posts/page.php:56
+#: framework-customizations/theme/options/posts/fw-portfolio.php:265
+#: framework-customizations/theme/options/taxonomies/category.php:7
+#: framework-customizations/theme/options/taxonomies/fw-portfolio-category.php:7
+msgid "Stunning Header"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:1028
+#: framework-customizations/theme/options/customizer-old.php:32
+msgid "Stunning header"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:1033
+#: framework-customizations/theme/options/customizer-stunning.php:12
+msgid "Stunning Header Section"
+msgstr ""
+
+#: framework-customizations/theme/options/posts/crum-form.php:56
+msgid "Subject Message"
+msgstr ""
+
+#: comments.php:119 single-crum-form.php:33
+#: woocommerce/single-product-reviews.php:91
+msgid "Submit"
+msgstr ""
+
+#: framework-customizations/theme/options/posts/crum-form.php:67
+msgid "Submit Button"
+msgstr ""
+
+#: woocommerce/single-product-reviews.php:105
+msgid "Submit Review"
+msgstr ""
+
+#: template-parts/subscribe-section.php:165
+msgid "Subscribe"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:94
+#: cs-framework-override/config/customize.config.php:1224
+#: framework-customizations/theme/options/customizer-old.php:38
+#: framework-customizations/theme/options/posts/download.php:77
+#: framework-customizations/theme/options/posts/post.php:188
+#: framework-customizations/theme/options/posts/page.php:89
+msgid "Subscribe panel"
+msgstr ""
+
+#: lib/codestar-framework/fields/typography/typography.php:158
+msgid "Subset"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:669
+#: framework-customizations/theme/options/customizer-footer.php:167
+msgid "Subtitle"
+msgstr ""
+
+#: inc/helpers.php:595
+msgid "Subtle"
+msgstr ""
+
+#: inc/helpers.php:551
+msgid "Subtle Grayscale"
+msgstr ""
+
+#: woocommerce/checkout/review-order.php:58 woocommerce/cart/cart.php:128
+#: woocommerce/cart/cart-totals.php:33 woocommerce/cart/cart-totals.php:34
+msgid "Subtotal"
+msgstr ""
+
+#: framework-customizations/theme/options/posts/crum-form.php:78
+msgid "Success Message"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:922
+#: framework-customizations/theme/options/customizer-blog.php:42
+msgid "Swap posts that displayed in Prev / Next block"
+msgstr ""
+
+#: framework-customizations/extensions/media/extensions/slider/extensions/home-slider/options/custom.php:124
+msgid "Tab Subtitle"
+msgstr ""
+
+#: framework-customizations/extensions/media/extensions/slider/extensions/home-slider/options/custom.php:119
+msgid "Tab Title"
+msgstr ""
+
+#: inc/widgets/tags/class-widget-tags.php:54
+msgid "Tags list"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:230
+#: framework-customizations/theme/options/customizer-header.php:123
+msgid "Text"
+msgstr ""
+
+#: lib/codestar-framework/fields/typography/typography.php:168
+msgid "Text Align"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:461
+#: framework-customizations/theme/options/customizer-header.php:382
+msgid "Text Block"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:587
+#: framework-customizations/theme/options/customizer-footer.php:86
+msgid "Text block Content"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:462
+#: framework-customizations/theme/options/customizer-header.php:383
+msgid "Text block on aside panel"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:575
+#: framework-customizations/theme/options/customizer-footer.php:80
+msgid "Text block width"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:566
+#: framework-customizations/theme/options/customizer-footer.php:66
+msgid "Text block with description in footer"
+msgstr ""
+
+#: inc/widgets/latest-news/class-widget-latest-news.php:119
+msgid "Text button"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:94
+#: cs-framework-override/config/config-fields-class.php:213
+#: cs-framework-override/config/config-fields-class.php:369
+#: cs-framework-override/config/metabox.config.php:327
+#: cs-framework-override/config/customize.config.php:486
+#: cs-framework-override/config/customize.config.php:732
+#: cs-framework-override/config/customize.config.php:1094
+#: framework-customizations/theme/options/metabox-header.php:26
+#: framework-customizations/theme/options/customizer-subscribe.php:103
+#: framework-customizations/theme/options/customizer-stunning.php:79
+#: framework-customizations/theme/options/metabox-stunning.php:147
+#: framework-customizations/theme/options/customizer-footer.php:12
+#: framework-customizations/theme/options/customizer-footer.php:224
+#: framework-customizations/theme/options/posts/post.php:26
+msgid "Text Color"
+msgstr ""
+
+#: framework-customizations/extensions/media/extensions/slider/extensions/home-slider/options/custom.php:103
+msgid "Text Color scheme"
+msgstr ""
+
+#: lib/codestar-framework/fields/typography/typography.php:211
+msgid "Text Decoration"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:224
+#: framework-customizations/theme/options/customizer-header.php:113
+msgid "Text fields"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:598
+#: framework-customizations/theme/options/customizer-footer.php:98
+msgid "Text in column"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:599
+#: framework-customizations/theme/options/customizer-footer.php:99
+msgid "Text in left footer column"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:36
+#: framework-customizations/theme/options/customizer-subscribe.php:37
+msgid "Text that display after subscribe form"
+msgstr ""
+
+#: lib/codestar-framework/fields/typography/typography.php:197
+msgid "Text Transform"
+msgstr ""
+
+#: framework-customizations/theme/options/posts/crum-form.php:99
+msgid "The form will be sent to this email address."
+msgstr ""
+
+#: inc/includes/auto-setup/class-fw-auto-install.php:255
+msgid "The installation process was completed successfully."
+msgstr ""
+
+#: inc/includes/auto-setup/views/auto_setup.php:5
+msgid ""
+"The update process is starting. This process may take a while on some hosts, "
+"so please be patient."
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:184
+#: framework-customizations/theme/options/customizer-header.php:46
+msgid "Theme style"
+msgstr ""
+
+#: inc/widgets/categories/class-widget-categories.php:14
+msgid "Theme styled categories list"
+msgstr ""
+
+#: inc/widgets/latest-news/class-widget-latest-news.php:13
+msgid "Theme styled latest posts"
+msgstr ""
+
+#: inc/widgets/tags/class-widget-tags.php:13
+msgid "Theme styled tags list"
+msgstr ""
+
+#: inc/widgets/banner/class-widget-banner.php:15
+msgid "Theme widget: Banner"
+msgstr ""
+
+#: inc/widgets/categories/class-widget-categories.php:20
+msgid "Theme widget: Categories"
+msgstr ""
+
+#: inc/widgets/contacts/class-widget-contacts.php:10
+msgid "Theme widget: Contacts"
+msgstr ""
+
+#: inc/widgets/facebook/class-widget-facebook.php:12
+msgid "Theme widget: Facebook"
+msgstr ""
+
+#: inc/widgets/flickr/class-widget-flickr.php:12
+msgid "Theme widget: Flickr"
+msgstr ""
+
+#: inc/widgets/follow-us/class-widget-follow-us.php:18
+msgid "Theme widget: Follow us"
+msgstr ""
+
+#: inc/widgets/instagram/class-widget-instagram.php:12
+msgid "Theme widget: Instagram"
+msgstr ""
+
+#: inc/widgets/latest-news/class-widget-latest-news.php:14
+msgid "Theme widget: Latest News"
+msgstr ""
+
+#: inc/widgets/login/class-widget-login.php:17
+msgid "Theme widget: Login"
+msgstr ""
+
+#: inc/widgets/menus/class-widget-menus.php:20
+msgid "Theme widget: Menus"
+msgstr ""
+
+#: inc/widgets/tags/class-widget-tags.php:14
+msgid "Theme widget: Tags Cloud"
+msgstr ""
+
+#: inc/widgets/text-button/class-widget-text-button.php:15
+msgid "Theme widget: Text with button"
+msgstr ""
+
+#: woocommerce/single-product-reviews.php:59
+msgid "There are no reviews yet."
+msgstr ""
+
+#: lib/codestar-framework/functions/validate.php:50
+#: lib/codestar-framework/functions/validate.php:126
+msgid "This field is required."
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:350
+#: framework-customizations/theme/options/customizer-header.php:267
+msgid "This image wil be displayed twice smaller than uploaded image size."
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:450
+#: framework-customizations/theme/options/posts/fw-portfolio.php:43
+msgid "This is button background"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:443
+#: framework-customizations/theme/options/posts/fw-portfolio.php:35
+#: framework-customizations/extensions/media/extensions/slider/extensions/home-slider/options/custom.php:27
+msgid "This is the text that appears on your button"
+msgstr ""
+
+#: inc/includes/auto-setup/class-fw-auto-install.php:507
+#, php-format
+msgid ""
+"This option will activate %s already installed plugins and dependencies %s "
+"by Network Administrator. The %s demo content will not be installed %s."
+msgstr ""
+
+#: inc/includes/auto-setup/class-fw-auto-install.php:210
+#: inc/includes/auto-setup/class-fw-auto-install.php:508
+#, php-format
+msgid ""
+"This option will activate Unyson dependencies together %s with the demo "
+"content %s for the theme."
+msgstr ""
+
+#: inc/includes/auto-setup/class-fw-auto-install.php:209
+#, php-format
+msgid ""
+"This option will activate Unyson dependencies. The %s demo content will not "
+"be installed %s."
+msgstr ""
+
+#: inc/includes/auto-setup/class-fw-auto-install.php:925
+#, php-format
+msgid ""
+"This option will install and activate all the plugins and dependencies "
+"together %s with the demo content %s for the theme."
+msgstr ""
+
+#: inc/includes/auto-setup/class-fw-auto-install.php:926
+#, php-format
+msgid ""
+"This option will install and activate all the plugins and dependencies. The "
+"%s demo content will not be installed %s."
+msgstr ""
+
+#: framework-customizations/theme/options/posts/crum-form.php:68
+msgid "This text will appear in submit button"
+msgstr ""
+
+#: framework-customizations/theme/options/posts/crum-form.php:87
+msgid "This text will be displayed when the form will fail to be sent"
+msgstr ""
+
+#: framework-customizations/theme/options/posts/crum-form.php:79
+msgid "This text will be displayed when the form will successfully send"
+msgstr ""
+
+#: framework-customizations/theme/options/posts/crum-form.php:57
+msgid "This text will be used as subject message for the email"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:527
+#: inc/widgets/instagram/class-widget-instagram.php:69
+#: framework-customizations/theme/options/posts/fw-portfolio.php:112
+msgid "Thumbnail"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:544
+#: cs-framework-override/config/customize.config.php:1254
+#: framework-customizations/theme/options/customizer-old.php:72
+#: framework-customizations/theme/options/posts/fw-portfolio.php:132
+msgid "Thumbnail / Slider align"
+msgstr ""
+
+#: framework-customizations/extensions/media/extensions/slider/extensions/home-slider/options/options.php:55
+msgid "Time between change slides in seconds"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:29
+#: cs-framework-override/config/metabox.config.php:427
+#: cs-framework-override/config/customize.config.php:591
+#: cs-framework-override/config/customize.config.php:664
+#: inc/widgets/text-button/class-widget-text-button.php:71
+#: inc/widgets/flickr/class-widget-flickr.php:53
+#: inc/widgets/contacts/class-widget-contacts.php:63
+#: inc/widgets/facebook/class-widget-facebook.php:98
+#: inc/widgets/categories/class-widget-categories.php:68
+#: inc/widgets/instagram/class-widget-instagram.php:55
+#: inc/widgets/login/class-widget-login.php:59
+#: inc/widgets/banner/class-widget-banner.php:82
+#: framework-customizations/theme/options/customizer-subscribe.php:31
+#: framework-customizations/theme/options/customizer-footer.php:93
+#: framework-customizations/theme/options/customizer-footer.php:163
+#: framework-customizations/theme/options/posts/fw-portfolio.php:15
+msgid "Title"
+msgstr ""
+
+#: framework-customizations/extensions/media/extensions/slider/extensions/home-slider/options/options.php:70
+msgid "Title and description for each slide in bottom of slider"
+msgstr ""
+
+#: inc/widgets/latest-news/class-widget-latest-news.php:103
+#: inc/widgets/follow-us/class-widget-follow-us.php:60
+#: inc/widgets/tags/class-widget-tags.php:61
+#: inc/widgets/menus/class-widget-menus.php:62
+msgid "Title:"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:494
+#: framework-customizations/theme/options/customizer-footer.php:17
+msgid "Titles and Links  Color"
+msgstr ""
+
+#: lib/codestar-framework/fields/background/background.php:90
+#: lib/codestar-framework/fields/date/date.php:32
+msgid "To"
+msgstr ""
+
+#: lib/codestar-framework/fields/border/border.php:25
+#: lib/codestar-framework/fields/spacing/spacing.php:25
+msgid "top"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:165
+#: cs-framework-override/config/customize.config.php:175
+#: framework-customizations/theme/options/customizer-header.php:7
+#: framework-customizations/theme/options/customizer-header.php:31
+msgid "Top bar"
+msgstr ""
+
+#: inc/menus.php:8
+msgid "Top primary menu"
+msgstr ""
+
+#: woocommerce/checkout/review-order.php:25
+#: woocommerce/checkout/review-order.php:105 woocommerce/cart/cart.php:33
+#: woocommerce/cart/cart-totals.php:92 woocommerce/cart/cart-totals.php:93
+msgid "Total"
+msgstr ""
+
+#: template-parts/shop-cart.php:45
+msgid "total:"
+msgstr ""
+
+#: template-parts/share-panel.php:19
+msgid "Twitter"
+msgstr ""
+
+#: template-parts/search-dropdown.php:14
+#: template-parts/search-fullscreen.php:17
+msgid "Type and hit Enter..."
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:422
+#: framework-customizations/theme/options/option-link.php:33
+msgid "Type Link"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:251
+#: cs-framework-override/config/customize.config.php:1102
+#: framework-customizations/theme/options/customizer-stunning.php:89
+#: framework-customizations/theme/options/metabox-stunning.php:50
+msgid "Type of background"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:163
+#: cs-framework-override/config/metabox.config.php:241
+#: framework-customizations/theme/options/metabox-portfolio-page.php:41
+#: framework-customizations/theme/options/metabox-blog-page.php:7
+msgid "Type of pages pagination"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:415
+#: framework-customizations/theme/options/option-link.php:23
+msgid "Type url"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:18
+#: framework-customizations/theme/options/customizer-old.php:20
+msgid "Typography"
+msgstr ""
+
+#: inc/helpers.php:790
+msgid "Unable to communicate with Instagram."
+msgstr ""
+
+#: inc/includes/post-like.php:87 inc/includes/post-like.php:215
+msgid "Unlike"
+msgstr ""
+
+#: inc/includes/plugins-includes.php:17
+msgid "Unyson"
+msgstr ""
+
+#: inc/includes/auto-setup/views/install_setup.php:21
+#: inc/includes/auto-setup/views/install_setup.php:53
+#: inc/includes/auto-setup/views/install_setup.php:85
+msgid "Unyson Framework"
+msgstr ""
+
+#: woocommerce/cart/cart.php:152
+msgid "Update cart"
+msgstr ""
+
+#: lib/codestar-framework/classes/comment-options.class.php:228
+#: lib/codestar-framework/classes/metabox-options.class.php:307
+msgid "update post"
+msgstr ""
+
+#: lib/codestar-framework/fields/upload/upload.php:21
+#: lib/codestar-framework/fields/media/media.php:23
+msgid "Upload"
+msgstr ""
+
+#: lib/codestar-framework/fields/typography/typography.php:201
+msgid "Uppercase"
+msgstr ""
+
+#: inc/widgets/login/class-widget-login.php:64
+msgid "URL for redirect after login"
+msgstr ""
+
+#: inc/widgets/facebook/class-widget-facebook.php:103
+msgid "URL:"
+msgstr ""
+
+#: framework-customizations/extensions/megamenu/options/column.php:10
+msgid "Use column item as column title"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:206
+#: framework-customizations/theme/options/customizer-header.php:88
+msgid "Use language switcher"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:197
+#: cs-framework-override/config/config-fields-class.php:204
+#: framework-customizations/theme/options/metabox-header.php:10
+#: framework-customizations/theme/options/metabox-header.php:16
+msgid "Useful on pages with full-screen height sliders"
+msgstr ""
+
+#: inc/widgets/instagram/class-widget-instagram.php:58
+msgid "Username"
+msgstr ""
+
+#: inc/widgets/login/views/widget.php:22
+msgid "Username or Email"
+msgstr ""
+
+#: woocommerce/global/form-login.php:37
+msgid "Username or email"
+msgstr ""
+
+#: inc/widgets/contacts/class-widget-contacts.php:88
+msgid "Value Field"
+msgstr ""
+
+#: woocommerce/single-product/review-meta.php:34
+msgid "verified owner"
+msgstr ""
+
+#: woocommerce/single-product-reviews.php:119
+msgid "Very poor"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:324
+#: cs-framework-override/config/customize.config.php:1178
+#: framework-customizations/theme/options/customizer-stunning.php:142
+#: framework-customizations/theme/options/metabox-stunning.php:103
+msgid "Video Link"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:356
+#: framework-customizations/theme/options/posts/post.php:67
+msgid "Video post options"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:313
+#: cs-framework-override/config/customize.config.php:1167
+#: framework-customizations/theme/options/customizer-stunning.php:126
+#: framework-customizations/theme/options/metabox-stunning.php:87
+msgid "Video Source"
+msgstr ""
+
+#: template-parts/shop-cart.php:66
+msgid "View all catalog"
+msgstr ""
+
+#: inc/widgets/categories/views/widget.php:32
+#, php-format
+msgid "View all posts in %s"
+msgstr ""
+
+#: template-parts/shop-cart.php:51
+msgid "View Cart"
+msgstr ""
+
+#: template-parts/shop-cart.php:14 inc/includes/template-tags.php:242
+msgid "View your shopping cart"
+msgstr ""
+
+#: inc/helpers.php:514
+msgid "Violet"
+msgstr ""
+
+#: lib/codestar-framework/fields/link_color/link_color.php:39
+msgid "Visited"
+msgstr ""
+
+#: template-parts/share-panel.php:25
+msgid "Vkontakte"
+msgstr ""
+
+#: lib/codestar-framework/fields/typography/typography.php:218
+msgid "Wavy"
+msgstr ""
+
+#: framework-customizations/theme/options/posts/crum-form.php:98
+msgid "We recommend you to use an email that you verify often"
+msgstr ""
+
+#: template-parts/search-blog.php:16
+msgid "What are you looking for?"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:423
+#: framework-customizations/theme/options/option-link.php:34
+msgid "Where should this element link to?"
+msgstr ""
+
+#: inc/helpers.php:502 cs-framework-override/config/customize.config.php:186
+#: framework-customizations/theme/options/customizer-header.php:48
+msgid "White"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:817
+#: framework-customizations/theme/options/customizer-design.php:18
+msgid "Wide"
+msgstr ""
+
+#: inc/plugins-extend/email-subscribers.php:18
+msgctxt "widget-page-enhanced-select"
+msgid "Cannot create XMLHTTP instance"
+msgstr ""
+
+#: inc/plugins-extend/email-subscribers.php:21
+msgctxt "widget-page-enhanced-select"
+msgid "Email Address already exists!"
+msgstr ""
+
+#: inc/plugins-extend/email-subscribers.php:13
+msgctxt "widget-page-enhanced-select"
+msgid "Error"
+msgstr ""
+
+#: inc/plugins-extend/email-subscribers.php:23
+msgctxt "widget-page-enhanced-select"
+msgid "Invalid email address"
+msgstr ""
+
+#: inc/plugins-extend/email-subscribers.php:17
+msgctxt "widget-page-enhanced-select"
+msgid "loading..."
+msgstr ""
+
+#: inc/plugins-extend/email-subscribers.php:22
+msgctxt "widget-page-enhanced-select"
+msgid "Oops.. Unexpected error occurred."
+msgstr ""
+
+#: inc/plugins-extend/email-subscribers.php:15
+msgctxt "widget-page-enhanced-select"
+msgid "Please enter email address"
+msgstr ""
+
+#: inc/plugins-extend/email-subscribers.php:16
+msgctxt "widget-page-enhanced-select"
+msgid "Please provide a valid email address"
+msgstr ""
+
+#: inc/plugins-extend/email-subscribers.php:24
+msgctxt "widget-page-enhanced-select"
+msgid "Please try after some time"
+msgstr ""
+
+#: inc/plugins-extend/email-subscribers.php:14
+msgctxt "widget-page-enhanced-select"
+msgid "Success"
+msgstr ""
+
+#: inc/plugins-extend/email-subscribers.php:19
+msgctxt "widget-page-enhanced-select"
+msgid "Successfully Subscribed."
+msgstr ""
+
+#: inc/plugins-extend/email-subscribers.php:25
+msgctxt "widget-page-enhanced-select"
+msgid "There was a problem with the request"
+msgstr ""
+
+#: inc/plugins-extend/email-subscribers.php:20
+msgctxt "widget-page-enhanced-select"
+msgid ""
+"Your subscription was successful! Within a few minutes, kindly check the "
+"mail in your mailbox and confirm your subscription. If you can't see the "
+"mail in your mailbox, please check your spam folder."
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:555
+#: framework-customizations/theme/options/customizer-footer.php:47
+msgid "Widgets section"
+msgstr ""
+
+#: inc/widgets/facebook/class-widget-facebook.php:108
+msgid "Width"
+msgstr ""
+
+#: lib/codestar-framework/fields/dimensions/dimensions.php:22
+msgid "width"
+msgstr ""
+
+#: framework-customizations/extensions/media/extensions/slider/extensions/home-slider/options/custom.php:120
+msgid "Will be shown on bottom in slide label"
+msgstr ""
+
+#: cs-framework-override/config/metabox.config.php:31
+#: cs-framework-override/config/customize.config.php:435
+#: framework-customizations/theme/options/customizer-header.php:353
+#: framework-customizations/theme/options/posts/post.php:117
+#: framework-customizations/theme/options/posts/page.php:18
+msgid "Will enable button and aside panel"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:399
+#: framework-customizations/theme/options/customizer-header.php:322
+msgid "Will enable search icon in page header"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:1349
+#: framework-customizations/theme/options/customizer-old.php:91
+msgid "without &lt;script&gt; tags"
+msgstr ""
+
+#: lib/codestar-framework/fields/typography/typography.php:269
+msgid "Word Spacing"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:196
+#: framework-customizations/theme/options/customizer-header.php:64
+msgid "Works only with translate plugin  "
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:208
+#: framework-customizations/theme/options/customizer-header.php:90
+msgid "WPML or Polylang switcher"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:364
+#: framework-customizations/theme/options/customizer-header.php:278
+msgid "Write your logo description"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:357
+#: framework-customizations/theme/options/customizer-header.php:272
+msgid "Write your logo title"
+msgstr ""
+
+#: framework-customizations/extensions/forms/includes/builder-items/recaptchav3/class-fw-option-type-form-builder-item-recaptchav3.php:139
+msgid "Wrong captcha"
+msgstr ""
+
+#: inc/helpers.php:509
+msgid "Yellow"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:51
+#: cs-framework-override/config/config-fields-class.php:443
+#: cs-framework-override/config/metabox.config.php:44
+#: cs-framework-override/config/metabox.config.php:67
+#: cs-framework-override/config/metabox.config.php:101
+#: cs-framework-override/config/metabox.config.php:349
+#: cs-framework-override/config/metabox.config.php:565
+#: cs-framework-override/config/metabox.config.php:645
+#: cs-framework-override/config/metabox.config.php:668
+#: cs-framework-override/config/metabox.config.php:710
+#: cs-framework-override/config/customize.config.php:923
+#: framework-customizations/theme/options/customizer-subscribe.php:53
+#: framework-customizations/theme/options/customizer-blog.php:46
+#: framework-customizations/theme/options/option-link.php:57
+#: framework-customizations/extensions/megamenu/options/column.php:17
+#: framework-customizations/theme/options/posts/download.php:26
+#: framework-customizations/theme/options/posts/download.php:59
+#: framework-customizations/theme/options/posts/download.php:92
+#: framework-customizations/theme/options/posts/post.php:41
+#: framework-customizations/theme/options/posts/post.php:137
+#: framework-customizations/theme/options/posts/post.php:170
+#: framework-customizations/theme/options/posts/post.php:203
+#: framework-customizations/theme/options/posts/page.php:38
+#: framework-customizations/theme/options/posts/page.php:71
+#: framework-customizations/theme/options/posts/page.php:104
+#: framework-customizations/theme/options/posts/fw-portfolio.php:160
+#: framework-customizations/theme/options/posts/fw-portfolio.php:247
+#: framework-customizations/theme/options/posts/fw-portfolio.php:280
+#: framework-customizations/theme/options/taxonomies/category.php:21
+#: framework-customizations/theme/options/taxonomies/fw-portfolio-category.php:21
+msgid "Yes"
+msgstr ""
+
+#: template-parts/shop-cart.php:22
+msgid "You added to cart:"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:1066
+#: cs-framework-override/config/customize.config.php:1076
+#: framework-customizations/theme/options/customizer-stunning.php:44
+#: framework-customizations/theme/options/customizer-stunning.php:58
+msgid "You can control visibility of this element"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:84
+#: framework-customizations/theme/options/customizer-subscribe.php:96
+msgid "You can manage lists here: Email Subscribers > Audience > Manage Lists"
+msgstr ""
+
+#: cs-framework-override/config/customize.config.php:771
+#: framework-customizations/theme/options/customizer-footer.php:262
+msgid "You can upload own image for To Top button"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:49
+#: framework-customizations/theme/options/customizer-subscribe.php:56
+msgid "You can use any custom HTML or shortcode here."
+msgstr ""
+
+#: lib/codestar-framework/fields/group/group.php:133
+#: lib/codestar-framework/fields/repeater/repeater.php:89
+msgid "You cannot add more."
+msgstr ""
+
+#: lib/codestar-framework/fields/group/group.php:134
+#: lib/codestar-framework/fields/repeater/repeater.php:90
+msgid "You cannot remove more."
+msgstr ""
+
+#: inc/includes/post-like.php:392
+msgid "You do not like anything yet."
+msgstr ""
+
+#: lib/codestar-framework/classes/admin-options.class.php:564
+msgid "You have unsaved changes, save your changes!"
+msgstr ""
+
+#: inc/includes/post-like.php:365
+msgid "You Like:"
+msgstr ""
+
+#: comments.php:124 woocommerce/single-product-reviews.php:82
+msgid "You may use these HTML tags and attributes"
+msgstr ""
+
+#: woocommerce/single-product-reviews.php:109
+#, php-format
+msgid "You must be %1$slogged in%2$s to post a review."
+msgstr ""
+
+#: framework-customizations/extensions/backups/extensions/backups-demo/views/page.php:46
+#, php-format
+msgid "You need to activate %s."
+msgstr ""
+
+#: template-parts/subscribe-section.php:192
+msgid "You should select subscription list in your builder component"
+msgstr ""
+
+#: inc/includes/template-tags.php:375 inc/includes/template-tags.php:383
+msgid "Your comment is awaiting moderation."
+msgstr ""
+
+#: template-parts/subscribe-section.php:76
+msgid "Your Email Address"
+msgstr ""
+
+#: comments.php:132 woocommerce/single-product-reviews.php:78
+msgid "Your email address will not be published."
+msgstr ""
+
+#: comments.php:94
+msgid "Your Full Name"
+msgstr ""
+
+#: woocommerce/single-product/review-meta.php:25
+msgid "Your review is awaiting approval"
+msgstr ""
+
+#: cs-framework-override/config/config-fields-class.php:315
+#: cs-framework-override/config/customize.config.php:1169
+#: framework-customizations/theme/options/customizer-stunning.php:130
+#: framework-customizations/theme/options/metabox-stunning.php:91
+msgid "Youtube"
+msgstr ""
+
+#: framework-customizations/extensions/backups/extensions/backups-demo/views/page.php:47
+msgid "zip extension"
+msgstr ""

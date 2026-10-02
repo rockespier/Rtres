@@ -1,419 +1,467 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file source-language="en-US" datatype="plaintext" original="ng2.template">
+  <file source-language="es" datatype="plaintext" original="ng2.template">
     <body>
-      <trans-unit id="cta.giant" datatype="html">
-        <source>HABLEMOS</source>
+      <trans-unit id="home.contact.label" datatype="html">
+        <source>EMPECEMOS</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">projects/site/src/app/components/cta-band/cta-band.component.ts</context>
-          <context context-type="linenumber">1</context>
+          <context context-type="sourcefile">projects/site/src/app/components/home/contact.component.ts</context>
+          <context context-type="linenumber">8,9</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="cta.title" datatype="html">
-        <source>Tu próximo cliente está buscando tu marca ahora mismo.</source>
+      <trans-unit id="home.contact.title" datatype="html">
+        <source>Cuéntanos qué necesita<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br&gt;"/>tu negocio.</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">projects/site/src/app/components/cta-band/cta-band.component.ts</context>
-          <context context-type="linenumber">1</context>
+          <context context-type="sourcefile">projects/site/src/app/components/home/contact.component.ts</context>
+          <context context-type="linenumber">9,10</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="cta.sub" datatype="html">
-        <source>Lancemos tu proyecto y convirtamos visitas en resultados reales.</source>
+      <trans-unit id="home.contact.text" datatype="html">
+        <source>Analizamos tu contexto, definimos el camino y construimos una solución que puedas sostener.</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">projects/site/src/app/components/cta-band/cta-band.component.ts</context>
-          <context context-type="linenumber">1</context>
+          <context context-type="sourcefile">projects/site/src/app/components/home/contact.component.ts</context>
+          <context context-type="linenumber">10,11</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="cta.button" datatype="html">
-        <source>Empezar mi proyecto</source>
+      <trans-unit id="home.contact.proposal" datatype="html">
+        <source>Pedir una propuesta</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">projects/site/src/app/components/cta-band/cta-band.component.ts</context>
-          <context context-type="linenumber">1,2</context>
+          <context context-type="sourcefile">projects/site/src/app/components/home/contact.component.ts</context>
+          <context context-type="linenumber">11,12</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="faq.title" datatype="html">
-        <source>Todo lo que debes saber</source>
+      <trans-unit id="home.contact.whatsapp" datatype="html">
+        <source>Escribir por WhatsApp ↗</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">projects/site/src/app/components/faq/faq.component.ts</context>
-          <context context-type="linenumber">1</context>
+          <context context-type="sourcefile">projects/site/src/app/components/home/contact.component.ts</context>
+          <context context-type="linenumber">12,17</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="features.title" datatype="html">
-        <source>Todo lo que tu negocio necesita, en un solo partner</source>
+      <trans-unit id="home.hero.title" datatype="html">
+        <source>Tecnología que<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br&gt;"/>hace avanzar<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br&gt;"/>tu negocio.</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">projects/site/src/app/components/features/features.component.ts</context>
-          <context context-type="linenumber">2</context>
+          <context context-type="sourcefile">projects/site/src/app/components/home/hero.component.ts</context>
+          <context context-type="linenumber">14,15</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="features.sub" datatype="html">
-        <source>De la idea al lanzamiento, y del lanzamiento al crecimiento sostenido.</source>
+      <trans-unit id="home.hero.sub" datatype="html">
+        <source>Software a medida, infraestructura y soporte para convertir tus proyectos en realidad.</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">projects/site/src/app/components/features/features.component.ts</context>
-          <context context-type="linenumber">2</context>
+          <context context-type="sourcefile">projects/site/src/app/components/home/hero.component.ts</context>
+          <context context-type="linenumber">15,16</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="feat.6.cta" datatype="html">
-        <source>Preview del portal →</source>
+      <trans-unit id="home.cta.talk" datatype="html">
+        <source>Hablemos de tu proyecto</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">projects/site/src/app/components/features/features.component.ts</context>
-          <context context-type="linenumber">3</context>
+          <context context-type="sourcefile">projects/site/src/app/components/home/hero.component.ts</context>
+          <context context-type="linenumber">16,17</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/components/home/site-header.component.ts</context>
+          <context context-type="linenumber">17,18</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="feat.1.title" datatype="html">
-        <source>Diseño de sitios web</source>
+      <trans-unit id="home.cta.portal" datatype="html">
+        <source>Portal de asistencia</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">projects/site/src/app/components/features/features.component.ts</context>
-          <context context-type="linenumber">5</context>
+          <context context-type="sourcefile">projects/site/src/app/components/home/hero.component.ts</context>
+          <context context-type="linenumber">17,23</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/components/home/site-header.component.ts</context>
+          <context context-type="linenumber">18,23</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="feat.1.desc" datatype="html">
-        <source>Sitios rápidos, responsivos y orientados a conversión.</source>
+      <trans-unit id="home.proof.text" datatype="html">
+        <source>Desde la idea hasta la operación diaria, un solo equipo para resolver necesidades tecnológicas.</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">projects/site/src/app/components/features/features.component.ts</context>
-          <context context-type="linenumber">5</context>
+          <context context-type="sourcefile">projects/site/src/app/components/home/proof-strip.component.ts</context>
+          <context context-type="linenumber">8,11</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="feat.2.title" datatype="html">
-        <source>SEO &amp; SEM</source>
+      <trans-unit id="home.proof.software" datatype="html">
+        <source>Software</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">projects/site/src/app/components/features/features.component.ts</context>
-          <context context-type="linenumber">6</context>
+          <context context-type="sourcefile">projects/site/src/app/components/home/proof-strip.component.ts</context>
+          <context context-type="linenumber">10,12</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="feat.2.desc" datatype="html">
-        <source>Posicionamos tu marca entre los primeros resultados.</source>
+      <trans-unit id="home.proof.infra" datatype="html">
+        <source>Infraestructura</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">projects/site/src/app/components/features/features.component.ts</context>
-          <context context-type="linenumber">6</context>
+          <context context-type="sourcefile">projects/site/src/app/components/home/proof-strip.component.ts</context>
+          <context context-type="linenumber">11,13</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="feat.3.title" datatype="html">
-        <source>Desarrollo a medida</source>
+      <trans-unit id="home.proof.support" datatype="html">
+        <source>Soporte</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">projects/site/src/app/components/features/features.component.ts</context>
-          <context context-type="linenumber">7</context>
+          <context context-type="sourcefile">projects/site/src/app/components/home/proof-strip.component.ts</context>
+          <context context-type="linenumber">12,16</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="feat.3.desc" datatype="html">
-        <source>Sistemas y plataformas construidas para tu operación.</source>
+      <trans-unit id="home.proof.continuity" datatype="html">
+        <source>Continuidad</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">projects/site/src/app/components/features/features.component.ts</context>
-          <context context-type="linenumber">7</context>
+          <context context-type="sourcefile">projects/site/src/app/components/home/proof-strip.component.ts</context>
+          <context context-type="linenumber">13,19</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="feat.4.title" datatype="html">
-        <source>E-commerce</source>
+      <trans-unit id="home.services.label" datatype="html">
+        <source>LO QUE HACEMOS</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">projects/site/src/app/components/features/features.component.ts</context>
-          <context context-type="linenumber">8</context>
+          <context context-type="sourcefile">projects/site/src/app/components/home/services.component.ts</context>
+          <context context-type="linenumber">10,11</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="feat.4.desc" datatype="html">
-        <source>Catálogo, carrito y pasarela de pagos integrados.</source>
+      <trans-unit id="home.services.title" datatype="html">
+        <source>No vendemos piezas<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br&gt;"/>sueltas. Construimos la<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br&gt;"/>base tecnológica de tu empresa.</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">projects/site/src/app/components/features/features.component.ts</context>
-          <context context-type="linenumber">8</context>
+          <context context-type="sourcefile">projects/site/src/app/components/home/services.component.ts</context>
+          <context context-type="linenumber">11,12</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="feat.5.title" datatype="html">
-        <source>Soporte y mantenimiento</source>
+      <trans-unit id="home.services.1.title" datatype="html">
+        <source>Software a medida</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">projects/site/src/app/components/features/features.component.ts</context>
-          <context context-type="linenumber">9</context>
+          <context context-type="sourcefile">projects/site/src/app/components/home/services.component.ts</context>
+          <context context-type="linenumber">33</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/components/home/site-footer.component.ts</context>
+          <context context-type="linenumber">14,16</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="feat.5.desc" datatype="html">
-        <source>Planes mensuales con tickets y tiempos de respuesta claros.</source>
+      <trans-unit id="home.services.1.text" datatype="html">
+        <source>Plataformas que ordenan procesos y automatizan tareas.</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">projects/site/src/app/components/features/features.component.ts</context>
-          <context context-type="linenumber">9</context>
+          <context context-type="sourcefile">projects/site/src/app/components/home/services.component.ts</context>
+          <context context-type="linenumber">33</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="feat.6.title" datatype="html">
-        <source>Portal de clientes</source>
+      <trans-unit id="home.services.2.title" datatype="html">
+        <source>Apps y experiencias web</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">projects/site/src/app/components/features/features.component.ts</context>
-          <context context-type="linenumber">10</context>
+          <context context-type="sourcefile">projects/site/src/app/components/home/services.component.ts</context>
+          <context context-type="linenumber">34</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/components/home/site-footer.component.ts</context>
+          <context context-type="linenumber">15,17</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="feat.6.desc" datatype="html">
-        <source>Gestiona tus productos, pagos y soporte en un solo panel.</source>
+      <trans-unit id="home.services.2.text" datatype="html">
+        <source>Productos digitales claros y rápidos.</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">projects/site/src/app/components/features/features.component.ts</context>
-          <context context-type="linenumber">10</context>
+          <context context-type="sourcefile">projects/site/src/app/components/home/services.component.ts</context>
+          <context context-type="linenumber">34</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="footer.tagline" datatype="html">
-        <source>Profesionales en soluciones web. Generamos el retorno de tu inversión.</source>
+      <trans-unit id="home.services.3.title" datatype="html">
+        <source>Integración y automatización</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">projects/site/src/app/components/footer/footer.component.ts</context>
-          <context context-type="linenumber">1</context>
+          <context context-type="sourcefile">projects/site/src/app/components/home/services.component.ts</context>
+          <context context-type="linenumber">35</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="footer.col1.title" datatype="html">
+      <trans-unit id="home.services.3.text" datatype="html">
+        <source>ERP, facturación, inventario y servicios conectados.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/components/home/services.component.ts</context>
+          <context context-type="linenumber">35</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="home.services.4.title" datatype="html">
+        <source>Hosting, dominios y soporte</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/components/home/services.component.ts</context>
+          <context context-type="linenumber">36</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="home.services.4.text" datatype="html">
+        <source>La operación técnica que mantiene tus sistemas disponibles.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/components/home/services.component.ts</context>
+          <context context-type="linenumber">36</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="home.footer.tagline" datatype="html">
+        <source>Profesionales en soluciones web.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/components/home/site-footer.component.ts</context>
+          <context context-type="linenumber">11,14</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="home.footer.services" datatype="html">
         <source>Servicios</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">projects/site/src/app/components/footer/footer.component.ts</context>
-          <context context-type="linenumber">1</context>
+          <context context-type="sourcefile">projects/site/src/app/components/home/site-footer.component.ts</context>
+          <context context-type="linenumber">13,15</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="footer.col2.title" datatype="html">
+      <trans-unit id="home.footer.hosting" datatype="html">
+        <source>Hosting y soporte</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/components/home/site-footer.component.ts</context>
+          <context context-type="linenumber">16,20</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="home.footer.company" datatype="html">
         <source>Empresa</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">projects/site/src/app/components/footer/footer.component.ts</context>
-          <context context-type="linenumber">1</context>
+          <context context-type="sourcefile">projects/site/src/app/components/home/site-footer.component.ts</context>
+          <context context-type="linenumber">19,21</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="nav.projects" datatype="html">
-        <source>Proyectos</source>
+      <trans-unit id="home.nav.about" datatype="html">
+        <source>Nosotros</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">projects/site/src/app/components/footer/footer.component.ts</context>
-          <context context-type="linenumber">1</context>
+          <context context-type="sourcefile">projects/site/src/app/components/home/site-footer.component.ts</context>
+          <context context-type="linenumber">20,22</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">projects/site/src/app/components/site-header/site-header.component.ts</context>
-          <context context-type="linenumber">2</context>
+          <context context-type="sourcefile">projects/site/src/app/components/home/site-header.component.ts</context>
+          <context context-type="linenumber">12,14</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="nav.reviews" datatype="html">
+      <trans-unit id="home.nav.cases" datatype="html">
+        <source>Casos de éxito</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/components/home/site-footer.component.ts</context>
+          <context context-type="linenumber">21,24</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/components/home/site-header.component.ts</context>
+          <context context-type="linenumber">13,14</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="home.footer.reviews" datatype="html">
         <source>Opiniones</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">projects/site/src/app/components/footer/footer.component.ts</context>
-          <context context-type="linenumber">1</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">projects/site/src/app/components/site-header/site-header.component.ts</context>
-          <context context-type="linenumber">2</context>
+          <context context-type="sourcefile">projects/site/src/app/components/home/site-footer.component.ts</context>
+          <context context-type="linenumber">22,26</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="footer.col3.title" datatype="html">
+      <trans-unit id="home.footer.contact" datatype="html">
         <source>Contacto</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">projects/site/src/app/components/footer/footer.component.ts</context>
-          <context context-type="linenumber">1</context>
+          <context context-type="sourcefile">projects/site/src/app/components/home/site-footer.component.ts</context>
+          <context context-type="linenumber">25,27</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="hero.giant" datatype="html">
-        <source>CRECE</source>
+      <trans-unit id="home.nav.solutions" datatype="html">
+        <source>Soluciones</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">projects/site/src/app/components/hero/hero.component.ts</context>
-          <context context-type="linenumber">2</context>
+          <context context-type="sourcefile">projects/site/src/app/components/home/site-header.component.ts</context>
+          <context context-type="linenumber">10,11</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="hero.eyebrow" datatype="html">
-        <source>18+ años de experiencia · 300+ proyectos entregados</source>
+      <trans-unit id="home.nav.sectors" datatype="html">
+        <source>Sectores</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">projects/site/src/app/components/hero/hero.component.ts</context>
-          <context context-type="linenumber">2</context>
+          <context context-type="sourcefile">projects/site/src/app/components/home/site-header.component.ts</context>
+          <context context-type="linenumber">11,12</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="hero.title.line1" datatype="html">
-        <source>Soluciones web que</source>
+      <trans-unit id="home.nav.resources" datatype="html">
+        <source>Recursos</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">projects/site/src/app/components/hero/hero.component.ts</context>
-          <context context-type="linenumber">2</context>
+          <context context-type="sourcefile">projects/site/src/app/components/home/site-header.component.ts</context>
+          <context context-type="linenumber">14,17</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="hero.title.line2" datatype="html">
-        <source>convierten visitas en clientes</source>
+      <trans-unit id="home.cases.label" datatype="html">
+        <source>CASOS DE ÉXITO</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">projects/site/src/app/components/hero/hero.component.ts</context>
-          <context context-type="linenumber">2</context>
+          <context context-type="sourcefile">projects/site/src/app/components/home/success-cases.component.ts</context>
+          <context context-type="linenumber">10,11</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="hero.sub" datatype="html">
-        <source>Diseñamos y desarrollamos sitios, tiendas y sistemas a medida — con soporte y gestión de clientes en un solo lugar.</source>
+      <trans-unit id="home.cases.title" datatype="html">
+        <source>Sistemas que sostienen <x id="START_TAG_MARK" ctype="x-mark" equiv-text="&lt;mark&gt;"/>operaciones reales.<x id="CLOSE_TAG_MARK" ctype="x-mark" equiv-text="&lt;/mark&gt;"/></source>
         <context-group purpose="location">
-          <context context-type="sourcefile">projects/site/src/app/components/hero/hero.component.ts</context>
-          <context context-type="linenumber">2</context>
+          <context context-type="sourcefile">projects/site/src/app/components/home/success-cases.component.ts</context>
+          <context context-type="linenumber">11,12</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="hero.cta.primary" datatype="html">
-        <source>Solicitar cotización</source>
+      <trans-unit id="home.cases.sub" datatype="html">
+        <source>Dos proyectos, dos sectores y años de evolución tecnológica.</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">projects/site/src/app/components/hero/hero.component.ts</context>
-          <context context-type="linenumber">2</context>
+          <context context-type="sourcefile">projects/site/src/app/components/home/success-cases.component.ts</context>
+          <context context-type="linenumber">12,15</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="hero.cta.secondary" datatype="html">
-        <source>Ver planes</source>
+      <trans-unit id="home.cases.rule1" datatype="html">
+        <source>TECNOLOGÍA<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br&gt;"/>QUE TRABAJA<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br&gt;"/>CON VOS.</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">projects/site/src/app/components/hero/hero.component.ts</context>
-          <context context-type="linenumber">2</context>
+          <context context-type="sourcefile">projects/site/src/app/components/home/success-cases.component.ts</context>
+          <context context-type="linenumber">27,28</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="hero.float.number" datatype="html">
-        <source>300+</source>
+      <trans-unit id="home.cases.footer.title" datatype="html">
+        <source>Mismos principios, distintos desafíos.</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">projects/site/src/app/components/hero/hero.component.ts</context>
-          <context context-type="linenumber">2</context>
+          <context context-type="sourcefile">projects/site/src/app/components/home/success-cases.component.ts</context>
+          <context context-type="linenumber">28</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="hero.float.label" datatype="html">
-        <source>Proyectos entregados</source>
+      <trans-unit id="home.cases.footer.text" datatype="html">
+        <source>Sistemas sólidos, equipos que evolucionan y operaciones que no se detienen.</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">projects/site/src/app/components/hero/hero.component.ts</context>
-          <context context-type="linenumber">2</context>
+          <context context-type="sourcefile">projects/site/src/app/components/home/success-cases.component.ts</context>
+          <context context-type="linenumber">28,29</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="hero.float.rating" datatype="html">
-        <source>5.0 · 18 años</source>
+      <trans-unit id="home.cases.rule2" datatype="html">
+        <source>IDEAS<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br&gt;"/>SISTEMAS<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br&gt;"/>RESULTADOS</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">projects/site/src/app/components/hero/hero.component.ts</context>
-          <context context-type="linenumber">2</context>
+          <context context-type="sourcefile">projects/site/src/app/components/home/success-cases.component.ts</context>
+          <context context-type="linenumber">29,30</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="hero.trust" datatype="html">
-        <source>Marcas que confían en nosotros</source>
+      <trans-unit id="home.cases.1.sector" datatype="html">
+        <source>SECTOR · ASISTENCIA AL VIAJERO</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">projects/site/src/app/components/hero/hero.component.ts</context>
-          <context context-type="linenumber">2</context>
+          <context context-type="sourcefile">projects/site/src/app/components/home/success-cases.component.ts</context>
+          <context context-type="linenumber">61</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="pricing.eyebrow" datatype="html">
-        <source>Precios</source>
+      <trans-unit id="home.cases.1.scope" datatype="html">
+        <source>Desde 2008 · Ventas, comisiones y BI</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">projects/site/src/app/components/pricing/pricing.component.ts</context>
-          <context context-type="linenumber">2</context>
+          <context context-type="sourcefile">projects/site/src/app/components/home/success-cases.component.ts</context>
+          <context context-type="linenumber">63</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="pricing.title" datatype="html">
-        <source>Planes claros, sin sorpresas</source>
+      <trans-unit id="home.cases.1.menu2" datatype="html">
+        <source>Ventas</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">projects/site/src/app/components/pricing/pricing.component.ts</context>
-          <context context-type="linenumber">2</context>
+          <context context-type="sourcefile">projects/site/src/app/components/home/success-cases.component.ts</context>
+          <context context-type="linenumber">64</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/components/home/success-cases.component.ts</context>
+          <context context-type="linenumber">65</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="pricing.sub" datatype="html">
-        <source>Un único pago para tu sitio — IGV no incluido.</source>
+      <trans-unit id="home.cases.1.menu3" datatype="html">
+        <source>Comisiones</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">projects/site/src/app/components/pricing/pricing.component.ts</context>
-          <context context-type="linenumber">2</context>
+          <context context-type="sourcefile">projects/site/src/app/components/home/success-cases.component.ts</context>
+          <context context-type="linenumber">64</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="addons.title" datatype="html">
-        <source>Complementa tu plan</source>
+      <trans-unit id="home.cases.2.sector" datatype="html">
+        <source>SECTOR · AUTOMOTRIZ / POSVENTA</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">projects/site/src/app/components/pricing/pricing.component.ts</context>
-          <context context-type="linenumber">2</context>
+          <context context-type="sourcefile">projects/site/src/app/components/home/success-cases.component.ts</context>
+          <context context-type="linenumber">68</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="projects.view" datatype="html">
-        <source>Ver proyecto</source>
+      <trans-unit id="home.cases.2.scope" datatype="html">
+        <source>DMS · SAP · Garantías</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">projects/site/src/app/components/project-card/project-card.component.ts</context>
-          <context context-type="linenumber">2</context>
+          <context context-type="sourcefile">projects/site/src/app/components/home/success-cases.component.ts</context>
+          <context context-type="linenumber">70</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="project.alt" datatype="html">
-        <source>Proyecto — <x id="PH" equiv-text="this.name"/></source>
+      <trans-unit id="home.cases.2.menu1" datatype="html">
+        <source>Taller</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">projects/site/src/app/components/project-card/project-card.component.ts</context>
-          <context context-type="linenumber">2</context>
+          <context context-type="sourcefile">projects/site/src/app/components/home/success-cases.component.ts</context>
+          <context context-type="linenumber">71</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="projects.giant" datatype="html">
-        <source>PROYECTOS</source>
+      <trans-unit id="home.cases.2.menu2" datatype="html">
+        <source>Órdenes</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">projects/site/src/app/components/projects/projects.component.ts</context>
-          <context context-type="linenumber">2</context>
+          <context context-type="sourcefile">projects/site/src/app/components/home/success-cases.component.ts</context>
+          <context context-type="linenumber">71</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="projects.title" datatype="html">
-        <source>Trabajo que habla por nosotros</source>
+      <trans-unit id="home.cases.2.menu3" datatype="html">
+        <source>Garantías</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">projects/site/src/app/components/projects/projects.component.ts</context>
-          <context context-type="linenumber">2</context>
+          <context context-type="sourcefile">projects/site/src/app/components/home/success-cases.component.ts</context>
+          <context context-type="linenumber">71</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="projects.sub" datatype="html">
-        <source>Una muestra de sitios y sistemas que hemos construido para nuestros clientes.</source>
+      <trans-unit id="home.cases.2.panel" datatype="html">
+        <source>Operaciones</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">projects/site/src/app/components/projects/projects.component.ts</context>
-          <context context-type="linenumber">2</context>
+          <context context-type="sourcefile">projects/site/src/app/components/home/success-cases.component.ts</context>
+          <context context-type="linenumber">72</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="projects.cta" datatype="html">
-        <source>Ver todos los proyectos</source>
+      <trans-unit id="home.support.label" datatype="html">
+        <source>CLIENTES Y SOPORTE</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">projects/site/src/app/components/projects/projects.component.ts</context>
-          <context context-type="linenumber">2</context>
+          <context context-type="sourcefile">projects/site/src/app/components/home/support.component.ts</context>
+          <context context-type="linenumber">11,13</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="reviews.eyebrow" datatype="html">
-        <source>Opiniones</source>
+      <trans-unit id="home.support.title" datatype="html">
+        <source>No desaparecemos<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br&gt;"/><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;i&gt;"/>al entregar.<x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/></source>
         <context-group purpose="location">
-          <context context-type="sourcefile">projects/site/src/app/components/reviews/reviews.component.ts</context>
-          <context context-type="linenumber">1</context>
+          <context context-type="sourcefile">projects/site/src/app/components/home/support.component.ts</context>
+          <context context-type="linenumber">12,13</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="reviews.title" datatype="html">
-        <source>Lo que dicen quienes ya trabajan con nosotros</source>
+      <trans-unit id="home.support.continues" datatype="html">
+        <source>PROYECTOS QUE CONTINÚAN</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">projects/site/src/app/components/reviews/reviews.component.ts</context>
-          <context context-type="linenumber">1</context>
+          <context context-type="sourcefile">projects/site/src/app/components/home/support.component.ts</context>
+          <context context-type="linenumber">24,26</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="review.1.quote" datatype="html">
-        <source>“Un equipo comprometido y muy profesional.”</source>
+      <trans-unit id="home.portal.label" datatype="html">
+        <source>PORTAL DE ASISTENCIA</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">projects/site/src/app/components/reviews/reviews.component.ts</context>
-          <context context-type="linenumber">1</context>
+          <context context-type="sourcefile">projects/site/src/app/components/home/support.component.ts</context>
+          <context context-type="linenumber">29,30</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="review.1.author" datatype="html">
-        <source>— Cliente Rtres</source>
+      <trans-unit id="home.portal.status" datatype="html">
+        <source>Próximamente</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">projects/site/src/app/components/reviews/reviews.component.ts</context>
-          <context context-type="linenumber">1</context>
+          <context context-type="sourcefile">projects/site/src/app/components/home/support.component.ts</context>
+          <context context-type="linenumber">30,32</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="review.2.quote" datatype="html">
-        <source>“Entendieron nuestro negocio desde el primer día.”</source>
+      <trans-unit id="home.portal.title" datatype="html">
+        <source>Compra, renueva y gestiona <x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br&gt;"/>tus tickets desde un solo lugar.</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">projects/site/src/app/components/reviews/reviews.component.ts</context>
-          <context context-type="linenumber">1</context>
+          <context context-type="sourcefile">projects/site/src/app/components/home/support.component.ts</context>
+          <context context-type="linenumber">32,33</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="review.3.quote" datatype="html">
-        <source>“Soporte rápido y siempre claro.”</source>
+      <trans-unit id="home.support.t1.quote" datatype="html">
+        <source>Rtres cumple en exceso con nuestras expectativas.</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">projects/site/src/app/components/reviews/reviews.component.ts</context>
-          <context context-type="linenumber">1</context>
+          <context context-type="sourcefile">projects/site/src/app/components/home/support.component.ts</context>
+          <context context-type="linenumber">71</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="clients.label" datatype="html">
-        <source>Clientes que nos eligen</source>
+      <trans-unit id="home.support.t1.role" datatype="html">
+        <source>Gerente comercial</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">projects/site/src/app/components/reviews/reviews.component.ts</context>
-          <context context-type="linenumber">1</context>
+          <context context-type="sourcefile">projects/site/src/app/components/home/support.component.ts</context>
+          <context context-type="linenumber">71</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="nav.cta" datatype="html">
-        <source>Solicitar cotización</source>
+      <trans-unit id="home.support.t2.quote" datatype="html">
+        <source>Siempre presentes para ir mejorando mi sitio web.</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">projects/site/src/app/components/site-header/site-header.component.ts</context>
-          <context context-type="linenumber">2</context>
+          <context context-type="sourcefile">projects/site/src/app/components/home/support.component.ts</context>
+          <context context-type="linenumber">72</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="nav.features" datatype="html">
-        <source>Características</source>
+      <trans-unit id="home.support.t2.role" datatype="html">
+        <source>Artista plástica</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">projects/site/src/app/components/site-header/site-header.component.ts</context>
-          <context context-type="linenumber">2</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="nav.pricing" datatype="html">
-        <source>Precios</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">projects/site/src/app/components/site-header/site-header.component.ts</context>
-          <context context-type="linenumber">2</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="nav.login" datatype="html">
-        <source>Iniciar sesión</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">projects/site/src/app/components/top-bar/top-bar.component.ts</context>
-          <context context-type="linenumber">2,3</context>
+          <context context-type="sourcefile">projects/site/src/app/components/home/support.component.ts</context>
+          <context context-type="linenumber">72</context>
         </context-group>
       </trans-unit>
     </body>
