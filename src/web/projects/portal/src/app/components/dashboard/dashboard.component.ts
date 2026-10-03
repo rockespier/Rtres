@@ -157,7 +157,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   nextPayment = computed(() => {
     const amount = this.summary()?.nextPaymentAmount;
     if (!amount) return '—';
-    const soonest = this.products().filter(p => p.status !== 'Cancelado' && dueDate(p)).sort((a, b) => +dueDate(a)! - +dueDate(b)!)[0];
+    // Mismo producto que usa el backend (PortalController.Summary): la suscripción con el próximo cobro más cercano.
+    const soonest = this.products().filter(p => p.nextChargeAt).sort((a, b) => +new Date(a.nextChargeAt!) - +new Date(b.nextChargeAt!))[0];
     return formatMoney(amount, soonest?.product.currency ?? 'USD');
   });
 
