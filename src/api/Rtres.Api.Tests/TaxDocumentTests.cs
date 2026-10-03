@@ -55,7 +55,32 @@ public class TaxDocumentTests
         Assert.Equal(121, Doc(Assert.IsType<CreatedResult>(await admin.CreateTaxDocument(new TaxDocumentRequest(item.Id, new DateOnly(2026, 9, 2), "PEN", 59m, null), CancellationToken.None))).Number);
 
         Assert.IsType<BadRequestObjectResult>(await admin.UpdateTaxSettings(new TaxSettingsRequest(null, null, FacturaNextNumber: 100), CancellationToken.None));
-        Assert.IsType<BadRequestObjectResult>(await admin.UpdateTaxSettings(new TaxSettingsRequest(null, null, FacturaSeries: "E001"), CancellationToken.None));
+        Assert.IsType<BadRequestObjectResult>(await admin.UpdateTaxSettings(new TaxSettingsRequest(null, null, FacturaSeries: "B001"), CancellationToken.None));
+    }
+
+    [Fact]
+    public async Task Factura_and_recibo_can_share_the_sol_series_with_independent_correlatives()
+    {
+        using var db = TestData.Db(out var seed);
+        seed.Client.RequiresTaxDocument = true; db.SaveChanges();
+        var factura = AddProduct(db, seed, TaxDocumentType.Factura);
+        var recibo = AddProduct(db, seed, TaxDocumentType.ReciboPorHonorarios);
+        var admin = Admin(db);
+        // Emitidos en SUNAT SOL: última factura E001-418, último recibo E001-189.
+        Assert.IsType<OkObjectResult>(await admin.UpdateTaxSettings(new TaxSettingsRequest(null, null, "E001", 419, "E001", 190), CancellationToken.None));
+
+        var f = Doc(Assert.IsType<CreatedResult>(await admin.CreateTaxDocument(new TaxDocumentRequest(factura.Id, new DateOnly(2026, 10, 1), "PEN", 118m, null), CancellationToken.None)));
+        var r = Doc(Assert.IsType<CreatedResult>(await admin.CreateTaxDocument(new TaxDocumentRequest(recibo.Id, new DateOnly(2026, 10, 1), "PEN", 500m, null), CancellationToken.None)));
+        Assert.Equal(("E001", 419), (f.Series, f.Number));
+        Assert.Equal(("E001", 190), (r.Series, r.Number)); // no sigue desde la factura 419
+
+        // El mismo número en la misma serie es válido si el tipo es distinto.
+        Assert.IsType<OkObjectResult>(await admin.UpdateTaxSettings(new TaxSettingsRequest(null, null, ReciboNextNumber: 419), CancellationToken.None));
+        var r2 = Doc(Assert.IsType<CreatedResult>(await admin.CreateTaxDocument(new TaxDocumentRequest(recibo.Id, new DateOnly(2026, 10, 2), "PEN", 500m, null), CancellationToken.None)));
+        Assert.Equal(("E001", 419, TaxDocumentType.ReciboPorHonorarios), (r2.Series, r2.Number, r2.Type));
+
+        // Cada tipo solo avanza respecto de sus propios comprobantes.
+        Assert.IsType<BadRequestObjectResult>(await admin.UpdateTaxSettings(new TaxSettingsRequest(null, null, ReciboNextNumber: 300), CancellationToken.None));
     }
 
     [Fact]
@@ -73,7 +98,7 @@ public class TaxDocumentTests
     private static AdminController Admin(RtresDbContext db) =>
         new(db, null!, null!, ClientOnboardingTests.AccessEmail(db, new FakeEmail()), PayPalPaymentTests.TaxDocuments(db), null!, new FakeNotifications()) { ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() } };
 
-    private static TaxDocument Doc(CreatedResult result) => new() { Series = Prop<string>(result.Value!, "series"), Number = Prop<int>(result.Value!, "number"), BaseAmount = Prop<decimal>(result.Value!, "baseAmount") };
+    private static TaxDocument Doc(CreatedResult result) => new() { Series = Prop<string>(result.Value!, "series"), Number = Prop<int>(result.Value!, "number"), BaseAmount = Prop<decimal>(result.Value!, "baseAmount"), Type = Enum.Parse<TaxDocumentType>(Prop<string>(result.Value!, "type")) };
     private static T Prop<T>(object value, string name) => (T)value.GetType().GetProperty(name)!.GetValue(value)!;
 
     private static ClientProduct AddProduct(RtresDbContext db, Seed seed, TaxDocumentType taxType)

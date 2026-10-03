@@ -73,7 +73,8 @@ public sealed class Expense { public Guid Id { get; set; } = Guid.NewGuid(); pub
 public sealed class TaxSettings
 {
     public Guid Id { get; set; } = Guid.NewGuid(); public decimal IgvRate { get; set; } = 0.18m; public decimal RentaRate { get; set; } = 0.10m; public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
-    // SUNAT numera cada serie por separado: una serie y su próximo correlativo por tipo de comprobante.
+    // SUNAT numera cada tipo de comprobante por separado: una serie y su próximo correlativo por tipo. Factura y recibo
+    // pueden compartir serie (E001 al emitir desde SUNAT SOL) sin que sus correlativos se mezclen.
     public string FacturaSeries { get; set; } = "F001"; public int FacturaNextNumber { get; set; } = 1;
     public string ReciboSeries { get; set; } = "E001"; public int ReciboNextNumber { get; set; } = 1;
 }

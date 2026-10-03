@@ -19,7 +19,8 @@
     - Montos en PEN con el tipo de cambio del día de la operación: TipoCambio si lo indicas; si no, el de ExchangeRates más
       cercano a la fecha (máx. 7 días). Si no hay ninguno, la fila da error.
     - Los comprobantes cargados con su Serie/Numero reales hacen que el correlativo automático continúe desde el mayor
-      número de cada serie (así lo calcula TaxDocumentService).
+      número de cada tipo y serie (así lo calcula TaxDocumentService). Factura y recibo pueden compartir serie (E001 de
+      SUNAT SOL): cada tipo lleva su propio correlativo.
 
   Seguridad:
     - Todo o nada: si una fila tiene un error, no se carga nada y se listan los errores.
@@ -267,7 +268,7 @@ CROSS APPLY (VALUES
     (CASE WHEN r.ProductoIndicado = 1 AND r.ClientProductId IS NULL AND r.ClientId IS NOT NULL THEN LEFT(CONCAT(N'El cliente ', r.Cliente, N' no tiene el producto "', r.Producto, N'"', CASE WHEN r.Proyecto IS NOT NULL THEN CONCAT(N' en el proyecto "', r.Proyecto, N'"') END, N' (revisa Producto/Proyecto).'), 400) END),
     (CASE WHEN r.ProductosCoinciden > 1 THEN N'El cliente tiene ese producto en varios proyectos: indica Proyecto.' END),
     (CASE WHEN (SELECT COUNT(*) FROM @I o WHERE o.Clave = r.Clave) > 1 THEN N'Fila repetida en la carga (misma Serie-Numero, Referencia o cliente+fecha+monto).' END),
-    (CASE WHEN r.Serie IS NOT NULL AND EXISTS (SELECT 1 FROM TaxDocuments d WHERE d.Series = r.Serie AND d.Number = r.Numero)
+    (CASE WHEN r.Serie IS NOT NULL AND EXISTS (SELECT 1 FROM TaxDocuments d WHERE d.Type = CASE r.Tipo WHEN N'Factura' THEN 0 ELSE 1 END AND d.Series = r.Serie AND d.Number = r.Numero)
                AND NOT EXISTS (SELECT 1 FROM PaymentTransactions p WHERE p.PayPalOrderIdOrSubscriptionId = r.Clave)
           THEN N'Ya existe un comprobante con esa Serie-Numero que no vino de esta carga.' END)
 ) e(Error)

@@ -16,7 +16,7 @@ export class SubscribeDialogComponent {
   ngOnInit(){this.billingCycle=this.product.billingCycle;}
   cycleLabel(value:string){return value==='Unico'?'Pago único':value;}
   continue(){this.loading.set(true);this.error.set('');this.api.subscribeProduct({productId:this.product.id,projectId:this.projectId,billingCycle:this.billingCycle,paymentMethod:this.paymentMethod,years:this.product.billingCycle==='Anual'?this.years:1}).subscribe({next:r=>{if(r.approvalUrl){location.assign(r.approvalUrl);return;}this.loading.set(false);this.transferInfo.set(r.bankTransfer??{instructions:'',amount:null,currency:this.product.currency});},error:e=>{this.error.set(e.error?.message ?? 'No se pudo agregar el producto.');this.loading.set(false);}});}
-  /** El producto ya existe como Pendiente: se recarga para que aparezca en "Mis productos". */
-  done(){this.router.navigateByUrl('/dashboard');}
+  /** El producto ya existe como Pendiente: se recarga para que aparezca en "Mis servicios". */
+  done(){this.router.navigateByUrl('/services');}
   private router=inject(Router);
 }
