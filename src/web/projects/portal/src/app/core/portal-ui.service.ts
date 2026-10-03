@@ -12,6 +12,8 @@ export class PortalUiService {
   breadcrumb = signal<Breadcrumb>({ current: 'Inicio' });
   actions = signal<TemplateRef<unknown> | null>(null);
   viewingClientId = signal<string | null>(null);
+  /** Nombre del cliente que el SuperAdmin está viendo (para el menú). */
+  viewingClientName = signal<string | null>(null);
 
   toggleMobileMenu(): void {
     this.mobileMenuOpen.update(v => !v);

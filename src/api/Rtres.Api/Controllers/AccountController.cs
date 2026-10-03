@@ -116,12 +116,14 @@ public sealed class AdminController(RtresDbContext db, PayPalCheckoutService che
         if (request.IgvRate is decimal igv && (igv < 0 || igv > 1) || request.RentaRate is decimal renta0 && (renta0 < 0 || renta0 > 1)) return BadRequest(new { message = "Las tasas deben estar entre 0 y 1 (ej. 0.18 para 18%)." });
         var settings = await TaxSettingsRow(ct);
         var facturaSeries = request.FacturaSeries?.Trim().ToUpperInvariant() ?? settings.FacturaSeries; var reciboSeries = request.ReciboSeries?.Trim().ToUpperInvariant() ?? settings.ReciboSeries;
-        if (!Regex.IsMatch(facturaSeries, "^F[A-Z0-9]{3}$") || !Regex.IsMatch(reciboSeries, "^E[A-Z0-9]{3}$")) return BadRequest(new { message = "La serie tiene 4 caracteres: la de facturas empieza con F (ej. F001) y la de recibos por honorarios con E (ej. E001)." });
+        // Facturas: F### si se emiten desde un sistema propio, E### si se emiten desde SUNAT SOL (la misma E001 que los recibos:
+        // cada tipo de comprobante lleva su propio correlativo aunque compartan serie).
+        if (!Regex.IsMatch(facturaSeries, "^[FE][A-Z0-9]{3}$") || !Regex.IsMatch(reciboSeries, "^E[A-Z0-9]{3}$")) return BadRequest(new { message = "La serie tiene 4 caracteres: la de facturas empieza con F o E (ej. F001, o E001 si la emites desde SUNAT SOL) y la de recibos por honorarios con E (ej. E001)." });
         var facturaNext = request.FacturaNextNumber ?? settings.FacturaNextNumber; var reciboNext = request.ReciboNextNumber ?? settings.ReciboNextNumber;
         if (facturaNext < 1 || reciboNext < 1) return BadRequest(new { message = "El próximo correlativo debe ser mayor a 0." });
         // Bajar el correlativo por debajo de lo ya emitido repetiría números: la serie solo puede avanzar.
-        if (await LastNumberAsync(facturaSeries, ct) is int lastF && facturaNext <= lastF) return BadRequest(new { message = $"La serie {facturaSeries} ya llegó al {lastF}: el próximo correlativo debe ser mayor." });
-        if (await LastNumberAsync(reciboSeries, ct) is int lastR && reciboNext <= lastR) return BadRequest(new { message = $"La serie {reciboSeries} ya llegó al {lastR}: el próximo correlativo debe ser mayor." });
+        if (await LastNumberAsync(TaxDocumentType.Factura, facturaSeries, ct) is int lastF && facturaNext <= lastF) return BadRequest(new { message = $"La serie {facturaSeries} de facturas ya llegó al {lastF}: el próximo correlativo debe ser mayor." });
+        if (await LastNumberAsync(TaxDocumentType.ReciboPorHonorarios, reciboSeries, ct) is int lastR && reciboNext <= lastR) return BadRequest(new { message = $"La serie {reciboSeries} de recibos ya llegó al {lastR}: el próximo correlativo debe ser mayor." });
         if (request.IgvRate is decimal igvRate) settings.IgvRate = igvRate;
         if (request.RentaRate is decimal rentaRate) settings.RentaRate = rentaRate;
         (settings.FacturaSeries, settings.FacturaNextNumber, settings.ReciboSeries, settings.ReciboNextNumber) = (facturaSeries, facturaNext, reciboSeries, reciboNext);
@@ -130,7 +132,7 @@ public sealed class AdminController(RtresDbContext db, PayPalCheckoutService che
         return Ok(TaxSettingsDto(settings));
     }
 
-    private Task<int?> LastNumberAsync(string series, CancellationToken ct) => db.TaxDocuments.Where(x => x.Series == series).MaxAsync(x => (int?)x.Number, ct);
+    private Task<int?> LastNumberAsync(TaxDocumentType type, string series, CancellationToken ct) => db.TaxDocuments.Where(x => x.Type == type && x.Series == series).MaxAsync(x => (int?)x.Number, ct);
     private static object TaxSettingsDto(TaxSettings x) => new { igvRate = x.IgvRate, rentaRate = x.RentaRate, facturaSeries = x.FacturaSeries, facturaNextNumber = x.FacturaNextNumber, reciboSeries = x.ReciboSeries, reciboNextNumber = x.ReciboNextNumber };
 
     private async Task<TaxSettings> TaxSettingsRow(CancellationToken ct)

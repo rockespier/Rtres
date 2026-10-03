@@ -526,7 +526,7 @@ namespace Rtres.Infrastructure.Persistence.Migrations
                         .IsUnique()
                         .HasFilter("[PaymentTransactionId] IS NOT NULL");
 
-                    b.HasIndex("Series", "Number")
+                    b.HasIndex("Type", "Series", "Number")
                         .IsUnique();
 
                     b.ToTable("TaxDocuments");

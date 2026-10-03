@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { PortalApiService, PortalNotificationDto } from '../../core/portal-api.service';
 import { PortalUiService } from '../../core/portal-ui.service';
 import { formatMoney } from '../../core/money.pipe';
+import { ago } from '../../core/relative-time';
 
 const POLL_MS = 60_000;
 const TICKET_STATUS: Record<string, string> = { Abierto: 'Abierto', EnProgreso: 'En progreso', Resuelto: 'Resuelto', Publicado: 'Publicado', Cerrado: 'Cerrado' };
@@ -22,25 +23,16 @@ function describe(n: PortalNotificationDto): NotificationView {
     case 'RenewalReminder': {
       const days = Number(d['days']);
       const when = days <= 0 ? 'vence hoy' : days === 1 ? 'vence mañana' : `vence en ${days} días`;
-      return { ...base, tone: 'warn', title: `${d['domain'] || d['product']} ${when}`, detail: company + (amount ? `Renovación: ${amount}` : d['product'] ?? ''), link: '/dashboard' };
+      return { ...base, tone: 'warn', title: `${d['domain'] || d['product']} ${when}`, detail: company + (amount ? `Renovación: ${amount}` : d['product'] ?? ''), link: '/services' };
     }
     case 'PaymentReceived': return { ...base, tone: 'success', title: `Pago recibido${amount ? ': ' + amount : ''}`, detail: company + (d['product'] ?? ''), link: '/billing' };
-    case 'PaymentFailed': return { ...base, tone: 'danger', title: 'No se pudo cobrar un pago', detail: company + (d['product'] ?? ''), link: '/dashboard' };
+    case 'PaymentFailed': return { ...base, tone: 'danger', title: 'No se pudo cobrar un pago', detail: company + (d['product'] ?? ''), link: '/services' };
     case 'TicketCreated': return { ...base, tone: 'info', title: `Ticket nuevo ${d['code']}`, detail: `${d['company'] ?? ''} · ${d['title'] ?? ''}`, link: '/admin/tickets' };
     case 'TransferRequested': return { ...base, tone: 'warn', title: `Pago por transferencia pendiente${amount ? ': ' + amount : ''}`, detail: `${d['company'] ?? ''} · ${d['product'] ?? ''}`, link: `/admin/clients/${d['clientId']}` };
-    default: return { ...base, tone: 'neutral', title: n.type, detail: company, link: '/dashboard' };
+    default: return { ...base, tone: 'neutral', title: n.type, detail: company, link: '/' };
   }
 }
 
-function ago(iso: string): string {
-  const minutes = Math.max(0, Math.round((Date.now() - new Date(iso).getTime()) / 60_000));
-  if (minutes < 1) return 'ahora';
-  if (minutes < 60) return `hace ${minutes} min`;
-  const hours = Math.round(minutes / 60);
-  if (hours < 24) return `hace ${hours} h`;
-  const days = Math.round(hours / 24);
-  return days < 30 ? `hace ${days} d` : new Date(iso).toLocaleDateString('es-PE');
-}
 
 /** Campana del topbar: últimos cambios de tickets, vencimientos y pagos. Al abrirla, todo queda leído. */
 @Component({
@@ -67,7 +59,7 @@ function ago(iso: string): string {
     </section>
   </div>`,
   styles: [`
-    .bell{position:relative;display:grid;place-items:center;width:40px;height:40px;border-radius:12px;color:var(--muted);border:1px solid var(--border);background:var(--surface)}
+    .bell{position:relative;display:grid;place-items:center;width:40px;height:40px;border-radius:999px;color:var(--muted);border:1px solid var(--border);background:var(--surface)}
     .bell:hover,.bell.open{color:var(--ink);background:var(--neutral-bg)}
     .bell-badge{position:absolute;top:-5px;right:-5px;min-width:18px;height:18px;padding:0 5px;border-radius:99px;background:var(--danger-ink);color:#fff;font-size:10.5px;font-weight:700;display:grid;place-items:center;border:2px solid var(--surface)}
     .bell-panel{position:absolute;right:0;top:calc(100% + 8px);width:min(380px,calc(100vw - 32px));z-index:40;box-shadow:var(--shadow-pop);overflow:hidden}

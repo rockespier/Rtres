@@ -1,3 +1,33 @@
-import { Component, inject } from '@angular/core'; import { CommonModule } from '@angular/common'; import { Router, RouterLink, RouterOutlet } from '@angular/router'; import { SidebarComponent } from '../sidebar/sidebar.component'; import { TopbarComponent } from '../topbar/topbar.component'; import { ThemeToggleComponent } from '../theme-toggle/theme-toggle.component'; import { PortalUiService } from '../../core/portal-ui.service'; import { AuthService } from '../../core/auth.service';
-@Component({selector:'app-portal-shell',standalone:true,imports:[CommonModule,RouterOutlet,RouterLink,SidebarComponent,TopbarComponent,ThemeToggleComponent],template:`<div class="flex"><app-sidebar/><div class="flex-1 min-w-0"><app-topbar/><nav *ngIf="ui.mobileMenuOpen()" class="lg:hidden portal-surface border-b flex flex-col gap-1 text-sm px-4 py-4"><a routerLink="/dashboard" class="side-link px-3 py-2.5" (click)="ui.closeMobileMenu()">Mis productos</a><a routerLink="/catalog" class="side-link px-3 py-2.5" (click)="ui.closeMobileMenu()">Catálogo</a><a routerLink="/tickets" class="side-link px-3 py-2.5" (click)="ui.closeMobileMenu()">Tickets</a><p class="side-group-label">Cuenta</p><a routerLink="/billing" class="side-link px-3 py-2.5" (click)="ui.closeMobileMenu()">Facturación</a><a routerLink="/profile" class="side-link px-3 py-2.5" (click)="ui.closeMobileMenu()">Perfil</a><a *ngIf="auth.user()?.role==='Admin'" routerLink="/team" class="side-link px-3 py-2.5" (click)="ui.closeMobileMenu()">Equipo</a><a *ngIf="auth.user()?.role==='SuperAdmin'" routerLink="/admin/clients" class="side-link px-3 py-2.5" (click)="ui.closeMobileMenu()">Todos los clientes</a><a *ngIf="auth.user()?.role==='SuperAdmin'" routerLink="/admin/products" class="side-link px-3 py-2.5" (click)="ui.closeMobileMenu()">Catálogo de productos</a><ng-container *ngIf="auth.user()?.role==='SuperAdmin'"><p class="side-group-label">Finanzas</p><a routerLink="/admin/reports" class="side-link px-3 py-2.5" (click)="ui.closeMobileMenu()">Reportes</a><a routerLink="/admin/tax-documents" class="side-link px-3 py-2.5" (click)="ui.closeMobileMenu()">Documentos tributarios</a><a routerLink="/admin/expenses" class="side-link px-3 py-2.5" (click)="ui.closeMobileMenu()">Gastos</a><a routerLink="/admin/tax-settings" class="side-link px-3 py-2.5" (click)="ui.closeMobileMenu()">Configuración de tasas</a></ng-container><a href="javascript:void(0)" class="side-link px-3 py-2.5" (click)="logout()">Cerrar sesión</a><label class="flex items-center justify-between px-3 py-2.5 text-muted">Modo oscuro <app-theme-toggle/></label></nav><main class="px-6 lg:px-9 py-8 max-w-6xl"><router-outlet/></main></div></div>`})
-export class PortalShellComponent {ui=inject(PortalUiService);auth=inject(AuthService);router=inject(Router);logout(){this.ui.closeMobileMenu();this.auth.logout();this.router.navigateByUrl('/login');}}
+import { Component, DestroyRef, HostListener, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
+import { filter } from 'rxjs';
+import { SidebarComponent } from '../sidebar/sidebar.component';
+import { TopbarComponent } from '../topbar/topbar.component';
+import { PortalUiService } from '../../core/portal-ui.service';
+
+@Component({
+  selector: 'app-portal-shell',
+  standalone: true,
+  imports: [RouterOutlet, SidebarComponent, TopbarComponent],
+  template: `<div class="flex min-h-screen">
+    <app-sidebar class="hidden lg:block shrink-0"/>
+    @if (ui.mobileMenuOpen()) {
+      <div class="drawer-backdrop lg:hidden" (click)="ui.closeMobileMenu()"></div>
+      <app-sidebar class="lg:hidden" [drawer]="true" (navigate)="ui.closeMobileMenu()"/>
+    }
+    <div class="flex-1 min-w-0">
+      <app-topbar/>
+      <main class="px-4 sm:px-6 lg:px-10 py-8 lg:py-10 max-w-6xl"><router-outlet/></main>
+    </div>
+  </div>`,
+})
+export class PortalShellComponent {
+  ui = inject(PortalUiService);
+
+  constructor() {
+    inject(Router).events.pipe(filter(e => e instanceof NavigationEnd), takeUntilDestroyed(inject(DestroyRef))).subscribe(() => this.ui.closeMobileMenu());
+  }
+
+  @HostListener('document:keydown.escape') onEscape(): void { this.ui.closeMobileMenu(); }
+}

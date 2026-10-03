@@ -47,7 +47,8 @@ public sealed class TaxDocumentService(RtresDbContext db, ILogger<TaxDocumentSer
             var isFactura = type == TaxDocumentType.Factura;
             var series = isFactura ? settings.FacturaSeries : settings.ReciboSeries;
             // El próximo correlativo configurado es el piso; si ya hay documentos más altos en la serie, se sigue desde ahí.
-            var last = await db.TaxDocuments.Where(x => x.Series == series).MaxAsync(x => (int?)x.Number, ct) ?? 0;
+            // Se filtra por tipo: factura y recibo pueden compartir serie (E001 en SUNAT SOL) con correlativos independientes.
+            var last = await db.TaxDocuments.Where(x => x.Type == type && x.Series == series).MaxAsync(x => (int?)x.Number, ct) ?? 0;
             var number = Math.Max(isFactura ? settings.FacturaNextNumber : settings.ReciboNextNumber, last + 1);
             var baseAmount = isFactura ? Math.Round(total / (1 + settings.IgvRate), 2) : total;
             var document = new TaxDocument { ClientId = clientId, Type = type, Series = series, Number = number, IssueDate = issueDate, Currency = currency, BaseAmount = baseAmount, IgvAmount = total - baseAmount, TotalAmount = total, Notes = notes, PaymentTransactionId = paymentTransactionId };
@@ -56,7 +57,7 @@ public sealed class TaxDocumentService(RtresDbContext db, ILogger<TaxDocumentSer
             try { await db.SaveChangesAsync(ct); return document; }
             catch (DbUpdateException)
             {
-                // Otro documento tomó el mismo correlativo en paralelo (índice único Serie+Número): se recalcula.
+                // Otro documento tomó el mismo correlativo en paralelo (índice único Tipo+Serie+Número): se recalcula.
                 // Se suelta el documento para que un SaveChanges posterior del mismo contexto no lo reintente.
                 db.Entry(document).State = EntityState.Detached;
                 await db.Entry(settings).ReloadAsync(ct);
