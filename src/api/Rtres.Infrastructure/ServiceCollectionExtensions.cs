@@ -19,7 +19,7 @@ public static class ServiceCollectionExtensions
             client.DefaultRequestHeaders.UserAgent.ParseAdd("Rtres.Api/1.0 (+https://rtres.net)");
         });
         services.AddHttpClient<IPayPalClient, PayPalClient>(client => client.BaseAddress = new Uri(configuration["PayPal:BaseUrl"] ?? "https://api-m.sandbox.paypal.com/"));
-        services.AddScoped<IGitHubIssuesClient, GitHubIssuesClient>();
+        services.AddHttpClient<IGitHubIssuesClient, GitHubIssuesClient>();
         services.AddHttpClient<IExchangeRateClient, ExchangeRateClient>(client => client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (compatible; Rtres.Api/1.0; +https://rtres.net)"));
         if (string.IsNullOrWhiteSpace(configuration["Smtp:Host"])) services.AddScoped<IEmailSender, LoggingEmailSender>();
         else services.AddScoped<IEmailSender, SmtpEmailSender>();

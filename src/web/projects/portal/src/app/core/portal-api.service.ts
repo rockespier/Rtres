@@ -64,6 +64,8 @@ export interface TicketDto {
   githubIssueUrl: string | null;
 }
 
+export interface TicketAttachmentDto { id: string; fileName: string; contentType: string; sizeBytes: number; }
+export interface TicketDetailDto { ticket: TicketDto; projectName: string; componentName: string | null; createdByName: string | null; attachments: TicketAttachmentDto[]; comments: TicketCommentDto[]; }
 export interface TicketCommentDto { id: string; body: string; fromGithub: boolean; authorName: string | null; createdAt: string; }
 export interface AdminTicketDto { id:string; code:string; clientId:string; projectId:string; type:TicketType; status:TicketStatus; title:string; description:string; createdAt:string; updatedAt:string; githubIssueNumber:number|null; githubIssueUrl:string|null; client:{id:string;name:string}; project:{id:string;name:string}; managedIn:'GitHub'|'Portal'; }
 export interface AdminTicketsPage { items:AdminTicketDto[]; page:number; totalPages:number; }
@@ -99,7 +101,7 @@ export type TaxDocumentType = 'Factura'|'ReciboPorHonorarios';
 export interface TaxDocumentDto { id:string; paymentTransactionId:string|null; clientId:string; type:TaxDocumentType; series:string; number:number; issueDate:string; currency:string; baseAmount:number; igvAmount:number; totalAmount:number; notes:string|null; }
 export type ExpenseCategory = 'Hosting'|'Dominios'|'SuscripcionesIA'|'ApisPorUso'|'Sueldos'|'Otros'|'ImpuestoRenta'|'Comisiones';
 export type ExpenseType = 'Fijo'|'Variable';
-export interface ExpenseDto { id:string; description:string; category:ExpenseCategory; type:ExpenseType; amount:number; currency:string; amountPen:number; date:string; recurring:boolean; recurrenceCycle:string|null; }
+export interface ExpenseDto { id:string; description:string; category:ExpenseCategory; type:ExpenseType; amount:number; currency:string; amountPen:number; date:string; recurring:boolean; recurrenceCycle:string|null; recurrenceEndsAt?:string|null; }
 export interface SalesReportDto { baseImponible:number; igv:number; total:number; }
 export interface TaxSummaryReportDto { ventasGravadasPen:number; ventasNoGravadasPen:number; igvEstimado:number; rentaEstimada:number; tasa:{igvRate:number;rentaRate:number}; disclaimer:string; }
 export interface ExpensesReportDto { total:number; porCategoria:{categoria:string;monto:number}[]; }
@@ -133,13 +135,16 @@ export class PortalApiService {
     const q = [`page=${page}`, filters.status ? `status=${filters.status}` : '', filters.type ? `type=${filters.type}` : ''].filter(Boolean).join('&');
     return this.http.get<TicketsPage>(this.scoped(`/tickets?${q}`));
   }
-  getTicket(id: string) { return this.http.get<{ ticket: TicketDto; comments: TicketCommentDto[] }>(this.scoped(`/tickets/${id}`)); }
+  getTicket(id: string) { return this.http.get<TicketDetailDto>(this.scoped(`/tickets/${id}`)); }
+  /** Blob (no URL directa): la descarga necesita el header Authorization. */
+  getTicketAttachment(ticketId: string, attachmentId: string) { return this.http.get(this.scoped(`/tickets/${ticketId}/attachments/${attachmentId}`), { responseType: 'blob' }); }
   addTicketComment(id: string, body: string) { return this.http.post<TicketCommentDto>(`${this.base}/tickets/${id}/comments`, { body }); }
-  createTicket(body: CreateTicketRequest) { return this.http.post<TicketDto>(`${this.base}/tickets`, body); }
-  uploadAttachment(ticketId: string, file: File) {
+  /** Multipart: los adjuntos viajan con el ticket para que el issue de GitHub se cree ya con ellos. */
+  createTicket(body: CreateTicketRequest, files: File[] = []) {
     const form = new FormData();
-    form.append('file', file);
-    return this.http.post(`${this.base}/tickets/${ticketId}/attachments`, form);
+    for (const [key, value] of Object.entries(body)) if (value != null && value !== '') form.append(key, String(value));
+    for (const file of files) form.append('files', file, file.name);
+    return this.http.post<TicketDto>(`${this.base}/tickets`, form);
   }
   getTransactions() { return this.http.get<PaymentTransactionDto[]>(this.scoped('/billing/transactions')); }
   getProfile() { return this.http.get<{name:string;email:string}>(`${this.base}/profile`); }
@@ -159,6 +164,7 @@ export class PortalApiService {
   updateProject(id:string, body:{name?:string}) { return this.http.patch<ProjectDto>(`${this.base}/admin/projects/${id}`, body); }
   addRepository(projectId:string, body:{owner:string;name:string;label?:string;isDefault?:boolean}) { return this.http.post<ProjectDto>(`${this.base}/admin/projects/${projectId}/repositories`, body); }
   updateRepository(id:string, body:{owner?:string;name?:string;label?:string;isDefault?:boolean}) { return this.http.patch<ProjectDto>(`${this.base}/admin/repositories/${id}`, body); }
+  deleteProject(id:string) { return this.http.delete<void>(`${this.base}/admin/projects/${id}`); }
   deleteRepository(id:string) { return this.http.delete<ProjectDto>(`${this.base}/admin/repositories/${id}`); }
   updateAdminClient(id:string,body:Partial<Omit<AdminClientDetailDto,'id'>>) { return this.http.patch<AdminClientDetailDto>(`${this.base}/admin/clients/${id}`,body); }
   importAdminClients(file:File) { const data=new FormData();data.append('file',file);return this.http.post<ImportResult>(`${this.base}/admin/clients/import`,data); }
@@ -183,6 +189,10 @@ export class PortalApiService {
   createTaxDocument(body:TaxDocumentRequest) { return this.http.post<TaxDocumentDto>(`${this.base}/admin/tax-documents`,body); }
   getExpenses(params:{month?:number;year?:number;category?:string}={}) { return this.http.get<ExpenseDto[]>(`${this.base}/admin/expenses${query(params)}`); }
   createExpense(body:Omit<ExpenseDto,'id'|'amountPen'>) { return this.http.post<ExpenseDto>(`${this.base}/admin/expenses`,body); }
+  deleteExpense(id:string) { return this.http.delete<void>(`${this.base}/admin/expenses/${id}`); }
+  /** dryRun: solo cuenta los pagos que se borrarían, para confirmarlo antes. */
+  endExpenseRecurrence(id:string,endsAt:string,dryRun:boolean) { return this.http.post<{removed:number;kept:number;removedTotalPen:number}>(`${this.base}/admin/expenses/${id}/end-recurrence?dryRun=${dryRun}`,{endsAt}); }
+  resumeExpenseRecurrence(id:string) { return this.http.delete<void>(`${this.base}/admin/expenses/${id}/end-recurrence`); }
   updateExpense(id:string,body:Partial<Omit<ExpenseDto,'id'|'amountPen'>>) { return this.http.patch<ExpenseDto>(`${this.base}/admin/expenses/${id}`,body); }
   getSalesReport(month:number|undefined,year:number,currency:string) { return this.http.get<SalesReportDto>(`${this.base}/admin/reports/sales${query({month,year,currency})}`); }
   getTaxSummaryReport(month:number|undefined,year:number) { return this.http.get<TaxSummaryReportDto>(`${this.base}/admin/reports/tax-summary${query({month,year})}`); }

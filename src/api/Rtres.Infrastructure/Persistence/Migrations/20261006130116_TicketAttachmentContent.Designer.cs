@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Rtres.Infrastructure.Persistence;
 
@@ -11,9 +12,11 @@ using Rtres.Infrastructure.Persistence;
 namespace Rtres.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(RtresDbContext))]
-    partial class RtresDbContextModelSnapshot : ModelSnapshot
+    [Migration("20261006130116_TicketAttachmentContent")]
+    partial class TicketAttachmentContent
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -202,9 +205,6 @@ namespace Rtres.Infrastructure.Persistence.Migrations
 
                     b.Property<int?>("RecurrenceCycle")
                         .HasColumnType("int");
-
-                    b.Property<DateOnly?>("RecurrenceEndsAt")
-                        .HasColumnType("date");
 
                     b.Property<bool>("Recurring")
                         .HasColumnType("bit");
@@ -618,9 +618,6 @@ namespace Rtres.Infrastructure.Persistence.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("GithubIssueUrl")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("GithubProjectStatus")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("ProjectId")

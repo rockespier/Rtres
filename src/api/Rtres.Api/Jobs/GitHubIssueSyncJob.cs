@@ -25,7 +25,14 @@ public sealed class GitHubIssueSyncJob(RtresDbContext db, IGitHubIssuesClient gi
         }
         if (ticket.GithubIssueNumber is null)
         {
-            var issue = await github.CreateIssueAsync(project, repository, ticket, cancellationToken);
+            // Primero los adjuntos (cada uno se guarda al subir: un reintento no los duplica), luego el issue que los enlaza.
+            var attachments = await db.TicketAttachments.Where(x => x.TicketId == ticket.Id).OrderBy(x => x.CreatedAt).ToListAsync(cancellationToken);
+            foreach (var attachment in attachments.Where(x => x.Url.Length == 0))
+            {
+                attachment.Url = await github.UploadFileAsync(repository, GitHubIssuesClient.AttachmentPath(ticket, attachment), attachment.Content, $"Adjunto de {ticket.Code}: {attachment.FileName}", cancellationToken);
+                await db.SaveChangesAsync(cancellationToken);
+            }
+            var issue = await github.CreateIssueAsync(project, repository, ticket, attachments, cancellationToken);
             ticket.RepositoryId = repository.Id; ticket.GithubIssueNumber = issue.Number; ticket.GithubIssueUrl = issue.Url; ticket.UpdatedAt = DateTime.UtcNow;
             await db.SaveChangesAsync(cancellationToken);
             logger.LogInformation("Ticket {Code} sincronizado con {Owner}/{Repo}#{Number}", ticket.Code, repository.Owner, repository.Name, issue.Number);

@@ -62,6 +62,20 @@ public class GitHubWebhookSignatureTests
 public class GitHubIssuesClientTests
 {
     [Fact]
+    public void Token_per_owner_falls_back_to_default()
+    {
+        var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
+        {
+            ["GitHub:Token"] = "personal",
+            ["GitHub:Tokens:Mi-Org"] = "org",
+        }).Build();
+
+        Assert.Equal("org", GitHubIssuesClient.TokenFor(config, "mi-org"));
+        Assert.Equal("personal", GitHubIssuesClient.TokenFor(config, "rockespier"));
+        Assert.Throws<InvalidOperationException>(() => GitHubIssuesClient.TokenFor(new ConfigurationBuilder().Build(), "rockespier"));
+    }
+
+    [Fact]
     public void Body_skips_empty_sections_and_impact_only_for_changes()
     {
         var ticket = new Ticket { Code = "RT-110", Type = TicketType.Bug, Title = "Botón roto", Description = "No responde", Environment = "  ", EstimatedImpact = "Alto" };
@@ -165,6 +179,109 @@ public class MultiRepoProjectTests
             .ProcessAsync("issues", TestData.IssueEvent("closed", 42, state: "closed", repo: "cabalgatas-andinas-api"), CancellationToken.None);
         Assert.Equal(TicketStatus.Resuelto, (await db.Tickets.SingleAsync(x => x.Id == ticket.Id)).Status);
         Assert.Equal(TicketStatus.Abierto, (await db.Tickets.SingleAsync(x => x.Id == seed.Ticket.Id)).Status);
+    }
+}
+
+public class GitHubProjectStatusTests
+{
+    [Theory]
+    [InlineData("Recibido", TicketStatus.Abierto)]
+    [InlineData("En Progreso", TicketStatus.EnProgreso)]
+    [InlineData("In progress", TicketStatus.EnProgreso)]
+    [InlineData("Resuelto", TicketStatus.Resuelto)]
+    [InlineData("Done", TicketStatus.Resuelto)]
+    [InlineData("PUBLICADO", TicketStatus.Publicado)]
+    [InlineData("En progresó", TicketStatus.EnProgreso)]
+    [InlineData("Revisión", null)]
+    [InlineData(null, null)]
+    public void Columns_map_to_ticket_status(string? column, TicketStatus? expected) => Assert.Equal(expected, GitHubProjectStatus.Map(column));
+
+    [Fact]
+    public void Closed_issue_ignores_a_work_in_progress_column()
+    {
+        Assert.Null(GitHubProjectStatus.Resolve(new GitHubIssueState(true, "En Progreso")));
+        Assert.Equal(TicketStatus.Publicado, GitHubProjectStatus.Resolve(new GitHubIssueState(true, "Publicado")));
+    }
+
+    [Fact]
+    public void GraphQL_response_is_parsed_and_partial_errors_are_tolerated()
+    {
+        var json = JsonDocument.Parse("""
+            {"data":{"repository":{
+              "i1":{"state":"OPEN","projectItems":{"nodes":[{"fieldValueByName":null},{"fieldValueByName":{"name":"En Progreso"}}]}},
+              "i2":{"state":"CLOSED","projectItems":null},
+              "i3":null}},
+             "errors":[{"message":"Could not resolve to an Issue with the number of 3."}]}
+            """).RootElement;
+        var states = GitHubIssuesClient.ParseStates(json).ToDictionary(x => x.Number, x => x.State);
+        Assert.Equal(new GitHubIssueState(false, "En Progreso"), states[1]);
+        Assert.Equal(new GitHubIssueState(true, null), states[2]);
+        Assert.False(states.ContainsKey(3));
+        Assert.Contains("i1:issue(number:1)", GitHubIssuesClient.BuildStatesQuery([1, 2]));
+    }
+
+    [Fact]
+    public async Task Job_applies_the_column_only_when_it_changes()
+    {
+        using var db = TestData.Db(out var seed, issueNumber: 7);
+        seed.Ticket.RepositoryId = (await db.ProjectRepositories.FirstAsync()).Id; await db.SaveChangesAsync();
+        var github = new FakeGitHub(); var notifications = new FakeNotifications();
+        var job = new GitHubProjectStatusSyncJob(db, github, notifications, NullLogger<GitHubProjectStatusSyncJob>.Instance);
+
+        github.States[7] = new GitHubIssueState(false, "En Progreso");
+        await job.SyncAsync(CancellationToken.None);
+        var ticket = await db.Tickets.SingleAsync();
+        Assert.Equal((TicketStatus.EnProgreso, "En Progreso"), (ticket.Status, ticket.GithubProjectStatus));
+        Assert.Equal("EnProgreso", Assert.Single(notifications.Sent).Data["status"]);
+
+        // Un label estado:resuelto lo cambia por webhook; la columna no se movió, así que el job no lo pisa.
+        ticket.Status = TicketStatus.Resuelto; await db.SaveChangesAsync();
+        await job.SyncAsync(CancellationToken.None);
+        Assert.Equal(TicketStatus.Resuelto, (await db.Tickets.SingleAsync()).Status);
+
+        github.States[7] = new GitHubIssueState(false, "Publicado");
+        await job.SyncAsync(CancellationToken.None);
+        Assert.Equal(TicketStatus.Publicado, (await db.Tickets.SingleAsync()).Status);
+        Assert.Equal(2, notifications.Sent.Count);
+    }
+
+    [Fact]
+    public async Task Webhook_ignores_events_that_do_not_change_status()
+    {
+        using var db = TestData.Db(out var seed, issueNumber: 7);
+        seed.Ticket.Status = TicketStatus.EnProgreso; await db.SaveChangesAsync(); // movido de columna; el issue aún tiene estado:abierto
+        var processor = new GitHubWebhookProcessor(db, new FakeNotifications(), NullLogger<GitHubWebhookProcessor>.Instance);
+        await processor.ProcessAsync("issues", TestData.IssueEvent("edited", 7, labels: ["estado:abierto"]), CancellationToken.None);
+        var labeledBug = JsonSerializer.SerializeToElement(new { action = "labeled", label = new { name = "bug" }, issue = new { number = 7, state = "open", labels = new[] { new { name = "estado:abierto" }, new { name = "bug" } } }, repository = new { name = "cabalgatas-andinas-web", owner = new { login = "rtres" } } });
+        await processor.ProcessAsync("issues", labeledBug, CancellationToken.None);
+        Assert.Equal(TicketStatus.EnProgreso, (await db.Tickets.SingleAsync()).Status);
+    }
+}
+
+public class TicketAttachmentTests
+{
+    [Fact]
+    public async Task Attachments_are_uploaded_to_the_repo_once_and_linked_in_the_issue()
+    {
+        using var db = TestData.Db(out var seed);
+        var identity = new ClaimsIdentity([new Claim(ClaimTypes.NameIdentifier, seed.User.Id.ToString()), new Claim("client_id", seed.Client.Id.ToString()), new Claim(ClaimTypes.Role, "Cliente")], "test");
+        var portal = new PortalController(db, new FakeJobs(), new FakeNotifications(), new ConfigurationBuilder().Build(), NullLogger<PortalController>.Instance) { ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext { User = new ClaimsPrincipal(identity) } } };
+        static IFormFile File(string name, string type, int size) => new FormFile(new MemoryStream(new byte[size]), 0, size, "files", name) { Headers = new HeaderDictionary(), ContentType = type };
+        var request = new CreateTicketRequest(seed.Project.Id, TicketType.Requerimiento, "Beneficios en el PDF", "Letras más pequeñas", null, "2 por fila", null, null, "Se ve como la imagen", null);
+
+        Assert.IsType<BadRequestObjectResult>(await portal.CreateTicket(request, null, CancellationToken.None, [File("vacio.png", "image/png", 0)]));
+        var created = Assert.IsType<CreatedResult>(await portal.CreateTicket(request, null, CancellationToken.None, [File("diseño final.png", "image/png", 10), File("log.txt", "text/plain", 5)]));
+        var ticket = Assert.IsType<Ticket>(created.Value);
+
+        var github = new FakeGitHub();
+        var job = new GitHubIssueSyncJob(db, github, NullLogger<GitHubIssueSyncJob>.Instance);
+        await job.CreateIssueAsync(ticket.Id, CancellationToken.None);
+        await job.CreateIssueAsync(ticket.Id, CancellationToken.None); // reintento: no vuelve a subir
+        Assert.Equal(2, github.Uploads.Count);
+        Assert.All(github.Uploads, x => Assert.StartsWith($".rtres/attachments/{ticket.Code}/", x));
+        Assert.EndsWith("-dise-o-final.png", github.Uploads[0]);
+        Assert.Contains("![diseño final.png](https://github.com/", github.LastBody);
+        Assert.Contains("- [log.txt](https://github.com/", github.LastBody);
     }
 }
 
@@ -407,9 +524,19 @@ internal sealed class FakeGitHub : IGitHubIssuesClient
         Comments.Add((issueNumber, body));
         return Task.FromResult(5000L);
     }
-    public Task<GitHubIssue> CreateIssueAsync(Project project, ProjectRepository repository, Ticket ticket, CancellationToken cancellationToken = default)
+    public Dictionary<int, GitHubIssueState> States { get; } = [];
+    public Task<IReadOnlyDictionary<int, GitHubIssueState>> GetIssueStatesAsync(ProjectRepository repository, IReadOnlyCollection<int> issueNumbers, CancellationToken cancellationToken = default)
+        => Task.FromResult<IReadOnlyDictionary<int, GitHubIssueState>>(States.Where(x => issueNumbers.Contains(x.Key)).ToDictionary());
+    public List<string> Uploads { get; } = [];
+    public string? LastBody { get; private set; }
+    public Task<string> UploadFileAsync(ProjectRepository repository, string path, byte[] content, string message, CancellationToken cancellationToken = default)
     {
-        Calls++; Repos.Add($"{repository.Owner}/{repository.Name}");
+        Uploads.Add(path);
+        return Task.FromResult($"https://github.com/{repository.Owner}/{repository.Name}/blob/main/{path}?raw=true");
+    }
+    public Task<GitHubIssue> CreateIssueAsync(Project project, ProjectRepository repository, Ticket ticket, IReadOnlyList<TicketAttachment> attachments, CancellationToken cancellationToken = default)
+    {
+        Calls++; Repos.Add($"{repository.Owner}/{repository.Name}"); LastBody = GitHubIssuesClient.BuildBody(ticket, attachments);
         return Task.FromResult(new GitHubIssue(42, $"https://github.com/{repository.Owner}/{repository.Name}/issues/42"));
     }
 }

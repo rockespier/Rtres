@@ -262,27 +262,94 @@ public sealed class PayPalClient(HttpClient httpClient, IConfiguration configura
     private static StringContent JsonContent<T>(T value) => new(JsonSerializer.Serialize(value), Encoding.UTF8, "application/json");
 }
 
-public sealed class GitHubIssuesClient(IConfiguration configuration) : IGitHubIssuesClient
+public sealed class GitHubIssuesClient(IConfiguration configuration, HttpClient http) : IGitHubIssuesClient
 {
-    public async Task<GitHubIssue> CreateIssueAsync(Rtres.Domain.Project project, ProjectRepository repository, Ticket ticket, CancellationToken cancellationToken = default)
+    private const int GraphQlBatch = 50;
+
+    public async Task<IReadOnlyDictionary<int, GitHubIssueState>> GetIssueStatesAsync(ProjectRepository repository, IReadOnlyCollection<int> issueNumbers, CancellationToken cancellationToken = default)
     {
-        var newIssue = new NewIssue(BuildTitle(ticket)) { Body = BuildBody(ticket) };
+        var result = new Dictionary<int, GitHubIssueState>();
+        foreach (var batch in issueNumbers.Distinct().Chunk(GraphQlBatch))
+        {
+            using var request = new HttpRequestMessage(HttpMethod.Post, "https://api.github.com/graphql") { Content = JsonContent(new { query = BuildStatesQuery(batch), variables = new { owner = repository.Owner, name = repository.Name } }) };
+            request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", TokenFor(configuration, repository.Owner));
+            request.Headers.UserAgent.ParseAdd("rtres-portal");
+            using var response = await http.SendAsync(request, cancellationToken);
+            response.EnsureSuccessStatusCode();
+            using var json = JsonDocument.Parse(await response.Content.ReadAsStringAsync(cancellationToken));
+            foreach (var (number, state) in ParseStates(json.RootElement)) result[number] = state;
+        }
+        return result;
+    }
+
+    private static StringContent JsonContent<T>(T value) => new(JsonSerializer.Serialize(value), Encoding.UTF8, "application/json");
+
+    /// <summary>Un alias por issue (<c>i{número}</c>) para leer hasta 50 en una sola consulta.</summary>
+    public static string BuildStatesQuery(IEnumerable<int> numbers) =>
+        "query($owner:String!,$name:String!){repository(owner:$owner,name:$name){" +
+        string.Concat(numbers.Select(n => $"i{n}:issue(number:{n}){{state projectItems(first:10){{nodes{{fieldValueByName(name:\"Status\"){{... on ProjectV2ItemFieldSingleSelectValue{{name}}}}}}}}}}")) + "}}";
+
+    /// <summary>
+    /// Toma la primera columna "Status" que corresponda a un estado conocido. Los errores parciales de GraphQL (issue
+    /// borrado, token sin permiso de Projects) dejan ese dato en null en vez de fallar todo el lote.
+    /// </summary>
+    public static IEnumerable<(int Number, GitHubIssueState State)> ParseStates(JsonElement root)
+    {
+        if (!root.TryGetProperty("data", out var data) || data.ValueKind != JsonValueKind.Object || !data.TryGetProperty("repository", out var repo) || repo.ValueKind != JsonValueKind.Object) yield break;
+        foreach (var issue in repo.EnumerateObject())
+        {
+            if (issue.Value.ValueKind != JsonValueKind.Object || !int.TryParse(issue.Name.AsSpan(1), out var number)) continue;
+            var closed = issue.Value.TryGetProperty("state", out var st) && st.GetString() == "CLOSED";
+            var columns = issue.Value.TryGetProperty("projectItems", out var items) && items.ValueKind == JsonValueKind.Object
+                ? items.GetProperty("nodes").EnumerateArray()
+                    .Select(n => n.TryGetProperty("fieldValueByName", out var v) && v.ValueKind == JsonValueKind.Object && v.TryGetProperty("name", out var c) ? c.GetString() : null)
+                    .Where(c => c is not null).ToList()
+                : [];
+            yield return (number, new GitHubIssueState(closed, columns.FirstOrDefault(c => GitHubProjectStatus.Map(c) is not null) ?? columns.FirstOrDefault()));
+        }
+    }
+
+    public async Task<GitHubIssue> CreateIssueAsync(Rtres.Domain.Project project, ProjectRepository repository, Ticket ticket, IReadOnlyList<TicketAttachment> attachments, CancellationToken cancellationToken = default)
+    {
+        var newIssue = new NewIssue(BuildTitle(ticket)) { Body = BuildBody(ticket, attachments) };
         foreach (var label in BuildLabels(project, ticket)) newIssue.Labels.Add(label);
-        var issue = await Client().Issue.Create(repository.Owner, repository.Name, newIssue);
+        var issue = await Client(repository.Owner).Issue.Create(repository.Owner, repository.Name, newIssue);
         return new GitHubIssue(issue.Number, issue.HtmlUrl);
     }
 
     public async Task<long> CreateCommentAsync(ProjectRepository repository, int issueNumber, string body, CancellationToken cancellationToken = default)
-        => (await Client().Issue.Comment.Create(repository.Owner, repository.Name, issueNumber, body)).Id;
+        => (await Client(repository.Owner).Issue.Comment.Create(repository.Owner, repository.Name, issueNumber, body)).Id;
+
+    public async Task<string> UploadFileAsync(ProjectRepository repository, string path, byte[] content, string message, CancellationToken cancellationToken = default)
+    {
+        var result = await Client(repository.Owner).Repository.Content.CreateFile(repository.Owner, repository.Name, path, new CreateFileRequest(message, Convert.ToBase64String(content), convertContentToBase64: false));
+        // ?raw=true: el issue muestra la imagen incluso en repos privados (GitHub la sirve con la sesión del lector).
+        return result.Content.HtmlUrl + "?raw=true";
+    }
+
+    /// <summary>Ruta del adjunto en el repo: carpeta por ticket y el id delante para que dos archivos con el mismo nombre no choquen.</summary>
+    public static string AttachmentPath(Ticket ticket, TicketAttachment attachment)
+    {
+        var name = string.Concat(attachment.FileName.Select(c => char.IsAsciiLetterOrDigit(c) || c is '.' or '-' or '_' ? c : '-')).Trim('-');
+        return $".rtres/attachments/{ticket.Code}/{attachment.Id.ToString("N")[..8]}-{(name.Length == 0 ? "archivo" : name)}";
+    }
 
     public static string BuildCommentBody(TicketComment comment, string authorName) =>
         $"**{authorName}** (vía portal de clientes):\n\n{comment.Body.Trim()}\n\n{GitHubLabels.PortalCommentMarker}{comment.Id} -->";
 
-    private GitHubClient Client()
+    private GitHubClient Client(string owner) =>
+        new(new Octokit.ProductHeaderValue("rtres-portal")) { Credentials = new Credentials(TokenFor(configuration, owner)) };
+
+    /// <summary>
+    /// Un token fine-grained solo cubre un resource owner (usuario u organización): se busca en <c>GitHub:Tokens:{owner}</c>
+    /// y, si no hay, se usa <c>GitHub:Token</c>. Las claves de configuración no distinguen mayúsculas, igual que GitHub.
+    /// </summary>
+    public static string TokenFor(IConfiguration configuration, string owner)
     {
-        var token = configuration["GitHub:Token"];
-        if (string.IsNullOrWhiteSpace(token)) throw new InvalidOperationException("GitHub:Token no está configurado.");
-        return new GitHubClient(new Octokit.ProductHeaderValue("rtres-portal")) { Credentials = new Credentials(token) };
+        var token = configuration[$"GitHub:Tokens:{owner}"];
+        if (string.IsNullOrWhiteSpace(token)) token = configuration["GitHub:Token"];
+        if (string.IsNullOrWhiteSpace(token)) throw new InvalidOperationException($"No hay token de GitHub para '{owner}': configura GitHub:Tokens:{owner} o GitHub:Token.");
+        return token;
     }
 
     public static string BuildTitle(Ticket ticket) => $"[{ticket.Code}] {ticket.Title}";
@@ -290,7 +357,7 @@ public sealed class GitHubIssuesClient(IConfiguration configuration) : IGitHubIs
     public static IReadOnlyList<string> BuildLabels(Rtres.Domain.Project project, Ticket ticket) =>
         [GitHubLabels.ForType(ticket.Type), GitHubLabels.ForStatus(ticket.Status), GitHubLabels.ForProject(project.Slug)];
 
-    public static string BuildBody(Ticket ticket)
+    public static string BuildBody(Ticket ticket, IReadOnlyList<TicketAttachment>? attachments = null)
     {
         var body = new StringBuilder();
         body.Append("> Ticket **").Append(ticket.Code).Append("** creado desde el portal de clientes (")
@@ -302,6 +369,12 @@ public sealed class GitHubIssuesClient(IConfiguration configuration) : IGitHubIs
         Section(body, "Entorno", ticket.Environment);
         Section(body, "Criterios de aceptación", ticket.AcceptanceCriteria);
         if (ticket.Type != TicketType.Bug) Section(body, "Impacto estimado", ticket.EstimatedImpact);
+        var uploaded = (attachments ?? []).Where(x => x.Url.Length > 0).ToList();
+        if (uploaded.Count > 0)
+        {
+            body.AppendLine().AppendLine("### Adjuntos");
+            foreach (var a in uploaded) body.AppendLine().AppendLine(a.IsImage ? $"![{a.FileName}]({a.Url})" : $"- [{a.FileName}]({a.Url})");
+        }
         return body.ToString();
     }
 

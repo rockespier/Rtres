@@ -102,6 +102,24 @@ public class ClientOnboardingTests
     }
 
     [Fact]
+    public async Task Projects_are_deleted_only_without_products_or_tickets()
+    {
+        using var db = TestData.Db(out var seed);
+        var admin = Admin(db);
+        await admin.CreateProject(seed.Client.Id, new ProjectRequest("Landing", null, "rockespier", "landing"), CancellationToken.None);
+        var project = await db.Projects.SingleAsync(x => x.Name == "Landing");
+        var ticket = new Ticket { Code = "RT-901", ClientId = seed.Client.Id, ProjectId = project.Id };
+        db.Tickets.Add(ticket); await db.SaveChangesAsync();
+
+        Assert.IsType<ConflictObjectResult>(await admin.DeleteProject(project.Id, CancellationToken.None));
+        db.Tickets.Remove(ticket); await db.SaveChangesAsync();
+        Assert.IsType<NoContentResult>(await admin.DeleteProject(project.Id, CancellationToken.None));
+        Assert.False(await db.Projects.AnyAsync(x => x.Id == project.Id));
+        Assert.False(await db.ProjectRepositories.AnyAsync(x => x.Name == "landing"));
+        Assert.IsType<NotFoundResult>(await admin.DeleteProject(project.Id, CancellationToken.None));
+    }
+
+    [Fact]
     public async Task New_client_receives_the_access_by_email_in_its_language()
     {
         using var db = TestData.Db(out _);

@@ -10,6 +10,8 @@ public record PayPalSubscriptionPayment(string Id, decimal Amount, string Curren
 /// <summary>Estado de una suscripción (ACTIVE, APPROVAL_PENDING, CANCELLED…) y sus cobros completados.</summary>
 public record PayPalSubscriptionInfo(string Id, string Status, DateTime? NextBillingTime, IReadOnlyList<PayPalSubscriptionPayment> Payments);
 public record GitHubIssue(int Number, string Url);
+/// <summary>Estado de un issue y la columna "Status" de los GitHub Projects donde está (null si no está en ninguno o el token no puede leerlos).</summary>
+public record GitHubIssueState(bool Closed, string? ProjectStatus);
 public record ExchangeRateQuote(DateOnly Date, decimal RateToPen, string Source);
 
 public interface IWordPressContentClient
@@ -36,7 +38,11 @@ public interface IPayPalClient
 
 public interface IGitHubIssuesClient
 {
-    Task<GitHubIssue> CreateIssueAsync(Project project, ProjectRepository repository, Ticket ticket, CancellationToken cancellationToken = default);
+    Task<GitHubIssue> CreateIssueAsync(Project project, ProjectRepository repository, Ticket ticket, IReadOnlyList<TicketAttachment> attachments, CancellationToken cancellationToken = default);
+    /// <summary>Sube un archivo al repo (rama por defecto) y devuelve una URL que GitHub muestra a quien tenga acceso al repo.</summary>
+    /// <summary>Lee en bloque (GraphQL) el estado y la columna del proyecto de los issues indicados; los que no existen no aparecen.</summary>
+    Task<IReadOnlyDictionary<int, GitHubIssueState>> GetIssueStatesAsync(ProjectRepository repository, IReadOnlyCollection<int> issueNumbers, CancellationToken cancellationToken = default);
+    Task<string> UploadFileAsync(ProjectRepository repository, string path, byte[] content, string message, CancellationToken cancellationToken = default);
     Task<long> CreateCommentAsync(ProjectRepository repository, int issueNumber, string body, CancellationToken cancellationToken = default);
 }
 
