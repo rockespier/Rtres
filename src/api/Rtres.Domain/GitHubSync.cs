@@ -49,6 +49,35 @@ public static class GitHubLabels
     }
 }
 
+/// <summary>Columnas del campo "Status" de un GitHub Project → estado del ticket. Acepta los nombres en español del tablero y los por defecto de GitHub.</summary>
+public static class GitHubProjectStatus
+{
+    private static readonly Dictionary<string, TicketStatus> Columns = new()
+    {
+        ["recibido"] = TicketStatus.Abierto, ["abierto"] = TicketStatus.Abierto, ["todo"] = TicketStatus.Abierto, ["to do"] = TicketStatus.Abierto, ["backlog"] = TicketStatus.Abierto,
+        ["en progreso"] = TicketStatus.EnProgreso, ["in progress"] = TicketStatus.EnProgreso,
+        ["resuelto"] = TicketStatus.Resuelto, ["done"] = TicketStatus.Resuelto,
+        ["publicado"] = TicketStatus.Publicado, ["published"] = TicketStatus.Publicado,
+        ["cerrado"] = TicketStatus.Cerrado, ["closed"] = TicketStatus.Cerrado,
+    };
+
+    /// <summary>Sin distinguir mayúsculas ni tildes; columnas desconocidas → null (no cambian el ticket).</summary>
+    public static TicketStatus? Map(string? column)
+    {
+        if (string.IsNullOrWhiteSpace(column)) return null;
+        var plain = new string(column.Trim().ToLowerInvariant().Normalize(System.Text.NormalizationForm.FormD)
+            .Where(c => System.Globalization.CharUnicodeInfo.GetUnicodeCategory(c) != System.Globalization.UnicodeCategory.NonSpacingMark).ToArray());
+        return Columns.TryGetValue(plain, out var status) ? status : null;
+    }
+
+    /// <summary>
+    /// Estado a aplicar cuando la columna cambió. Un issue cerrado no vuelve a un estado de trabajo en curso por una columna
+    /// atrasada: el cierre ya lo aplicó el webhook.
+    /// </summary>
+    public static TicketStatus? Resolve(GitHubIssueState state) =>
+        Map(state.ProjectStatus) is { } status && (!state.Closed || status >= TicketStatus.Resuelto) ? status : null;
+}
+
 public static class GitHubWebhookSignature
 {
     /// <summary>Valida el header <c>X-Hub-Signature-256</c> (HMAC-SHA256 del body con el secreto del webhook).</summary>

@@ -51,6 +51,31 @@ public class ExpenseImportTests
 
     private static void Row(IXLWorksheet sheet, int row, params string[] values) { for (var c = 0; c < values.Length; c++) sheet.Cell(row, c + 1).Value = values[c]; }
 
+    [Fact]
+    public async Task Ending_a_recurring_expense_removes_later_payments_of_the_series_only()
+    {
+        using var db = TestData.Db(out _);
+        Expense Pay(string description, int month, string currency = "USD") => new() { Description = description, Category = ExpenseCategory.SuscripcionesIA, Type = ExpenseType.Fijo, Amount = 10, AmountPen = 37, Currency = currency, Date = new DateOnly(2026, month, 7), Recurring = true, RecurrenceCycle = BillingCycle.Mensual };
+        var series = Enumerable.Range(1, 12).Select(m => Pay("Github Copilot", m)).ToList();
+        db.Expenses.AddRange(series); db.Expenses.AddRange(Pay("Claude", 11), Pay("Github Copilot", 11, "PEN")); await db.SaveChangesAsync();
+        var admin = Admin(db);
+
+        var preview = Assert.IsType<OkObjectResult>(await admin.EndRecurrence(series[0].Id, new EndRecurrenceRequest(new DateOnly(2026, 9, 30)), dryRun: true, CancellationToken.None));
+        Assert.Equal(3, Prop<int>(preview.Value!, "removed"));
+        Assert.Equal(14, await db.Expenses.CountAsync()); // dryRun no borra
+
+        Assert.IsType<OkObjectResult>(await admin.EndRecurrence(series[0].Id, new EndRecurrenceRequest(new DateOnly(2026, 9, 30)), dryRun: false, CancellationToken.None));
+        Assert.Equal(11, await db.Expenses.CountAsync()); // octubre-diciembre fuera; Claude y la serie en soles intactos
+        Assert.All(db.Expenses.Where(x => x.Description == "Github Copilot" && x.Currency == "USD"), x => Assert.Equal(new DateOnly(2026, 9, 30), x.RecurrenceEndsAt));
+        Assert.Null((await db.Expenses.SingleAsync(x => x.Description == "Claude")).RecurrenceEndsAt);
+
+        Assert.IsType<NoContentResult>(await admin.ResumeRecurrence(series[0].Id, CancellationToken.None));
+        Assert.Null((await db.Expenses.FindAsync(series[0].Id))!.RecurrenceEndsAt);
+
+        Assert.IsType<NoContentResult>(await admin.DeleteExpense(series[0].Id, CancellationToken.None));
+        Assert.IsType<NotFoundResult>(await admin.DeleteExpense(series[0].Id, CancellationToken.None));
+    }
+
     private static AdminController Admin(RtresDbContext db) =>
         new(db, null!, null!, ClientOnboardingTests.AccessEmail(db, new FakeEmail()), PayPalPaymentTests.TaxDocuments(db), null!, new FakeNotifications()) { ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() } };
 

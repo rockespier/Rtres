@@ -50,7 +50,27 @@ public sealed class PortalController(RtresDbContext db, IBackgroundJobClient job
     }
     [HttpGet("projects")] public async Task<IActionResult> Projects(Guid? clientId, CancellationToken ct) { var error = ResolveClientId(clientId, out var id); if (error is not null) return error; var projects = await db.Projects.Include(x => x.Repositories).Where(x => x.ClientId == id).ToListAsync(ct); foreach (var p in projects) p.Repositories = [.. p.Repositories.OrderByDescending(r => r.IsDefault).ThenBy(r => r.Name)]; return Ok(projects); }
     [HttpGet("tickets")] public async Task<IActionResult> Tickets(Guid? clientId, TicketStatus? status = null, TicketType? type = null, int page = 1, CancellationToken ct = default) { var error = ResolveClientId(clientId, out var id); if (error is not null) return error; page = Math.Max(page, 1); var q = db.Tickets.Where(x => x.ClientId == id && (status == null || x.Status == status) && (type == null || x.Type == type)).OrderByDescending(x => x.UpdatedAt); var n = await q.CountAsync(ct); return Ok(new { items = await q.Skip((page - 1) * 20).Take(20).ToListAsync(ct), page, totalPages = (int)Math.Ceiling(n / 20d) }); }
-    [HttpGet("tickets/{id:guid}")] public async Task<IActionResult> Ticket(Guid id, Guid? clientId, CancellationToken ct) { var error = ResolveClientId(clientId, out var client); if (error is not null) return error; var t = await db.Tickets.SingleOrDefaultAsync(x => x.Id == id && x.ClientId == client, ct); return t is null ? NotFound() : Ok(new { ticket = t, comments = await ToCommentDtos(db, db.TicketComments.Where(x => x.TicketId == id).OrderBy(x => x.CreatedAt)).ToListAsync(ct) }); }
+    [HttpGet("tickets/{id:guid}")]
+    public async Task<IActionResult> Ticket(Guid id, Guid? clientId, CancellationToken ct)
+    {
+        var error = ResolveClientId(clientId, out var client); if (error is not null) return error;
+        var t = await db.Tickets.SingleOrDefaultAsync(x => x.Id == id && x.ClientId == client, ct); if (t is null) return NotFound();
+        var project = await db.Projects.Include(x => x.Repositories).Where(x => x.Id == t.ProjectId).SingleAsync(ct);
+        // El componente solo aporta si el proyecto tiene varios repos; con uno es siempre el mismo.
+        var component = project.Repositories.Count > 1 ? project.Repositories.RepositoryFor(t.RepositoryId) is { } r ? r.Label ?? r.Name : null : null;
+        var createdBy = await db.UserAccounts.Where(x => x.Id == t.CreatedByUserId).Select(x => x.Name == "" ? x.Email : x.Name).SingleOrDefaultAsync(ct);
+        var attachments = await db.TicketAttachments.Where(x => x.TicketId == id).OrderBy(x => x.CreatedAt).Select(x => new TicketAttachmentDto(x.Id, x.FileName, x.ContentType, x.SizeBytes)).ToListAsync(ct);
+        var comments = await ToCommentDtos(db, db.TicketComments.Where(x => x.TicketId == id).OrderBy(x => x.CreatedAt)).ToListAsync(ct);
+        return Ok(new { ticket = t, projectName = project.Name, componentName = component, createdByName = createdBy, attachments, comments });
+    }
+
+    [HttpGet("tickets/{id:guid}/attachments/{attachmentId:guid}")]
+    public async Task<IActionResult> Attachment(Guid id, Guid attachmentId, Guid? clientId, CancellationToken ct)
+    {
+        var error = ResolveClientId(clientId, out var client); if (error is not null) return error;
+        var a = await db.TicketAttachments.SingleOrDefaultAsync(x => x.Id == attachmentId && x.TicketId == id && db.Tickets.Any(t => t.Id == id && t.ClientId == client), ct);
+        return a is null ? NotFound() : File(a.Content, a.ContentType, a.FileName);
+    }
     [HttpPost("tickets/{id:guid}/comments")]
     public async Task<IActionResult> AddComment(Guid id, CreateTicketCommentRequest r, CancellationToken ct)
     {
@@ -66,16 +86,29 @@ public sealed class PortalController(RtresDbContext db, IBackgroundJobClient job
     // Filtrar siempre antes de proyectar: SQL Server no traduce filtros sobre el DTO construido por constructor.
     internal static IQueryable<TicketCommentDto> ToCommentDtos(RtresDbContext db, IQueryable<TicketComment> comments) => comments
         .Select(x => new TicketCommentDto(x.Id, x.Body, x.FromGithub, x.FromGithub ? x.GithubAuthorLogin : db.UserAccounts.Where(u => u.Id == x.AuthorUserId).Select(u => u.Role == UserRole.SuperAdmin ? "Rtres" : u.Name == "" ? u.Email : u.Name).FirstOrDefault(), x.CreatedAt));
-    [HttpPost("tickets")]
-    public async Task<IActionResult> CreateTicket(CreateTicketRequest r, Guid? clientId, CancellationToken ct)
+    public const int MaxAttachments = 5;
+    public const long MaxAttachmentBytes = 10 * 1024 * 1024;
+
+    /// <summary>Multipart: los campos del ticket y los adjuntos (<c>files</c>) llegan juntos, así el job de GitHub ya los tiene al crear el issue.</summary>
+    [HttpPost("tickets"), RequestSizeLimit(60_000_000), RequestFormLimits(MultipartBodyLengthLimit = 60_000_000)]
+    public async Task<IActionResult> CreateTicket([FromForm] CreateTicketRequest r, Guid? clientId, CancellationToken ct, [FromForm] List<IFormFile>? files = null)
     {
         var error = ResolveClientId(clientId, out var clientIdValue); if (error is not null) return error;
+        files ??= [];
+        if (files.Count > MaxAttachments) return BadRequest(new { message = $"Máximo {MaxAttachments} adjuntos por ticket." });
+        if (files.FirstOrDefault(x => x.Length == 0 || x.Length > MaxAttachmentBytes) is { } invalid) return BadRequest(new { message = $"«{invalid.FileName}» está vacío o pesa más de 10 MB." });
         var project = await db.Projects.Include(x => x.Repositories).SingleOrDefaultAsync(x => x.Id == r.ProjectId && x.ClientId == clientIdValue, ct); if (project is null) return NotFound();
         if (r.RepositoryId is Guid repositoryId && project.Repositories.All(x => x.Id != repositoryId)) return BadRequest(new { message = "El repositorio no pertenece al proyecto." });
         if (r.ClientProductId is Guid clientProductId && !await db.ClientProducts.AnyAsync(x => x.Id == clientProductId && x.ClientId == clientIdValue && x.ProjectId == r.ProjectId && x.Product!.AllowsTickets, ct))
             return BadRequest(new { message = "Ese producto no admite tickets." });
         var ticket = new Ticket { Code = $"RT-{101 + await db.Tickets.CountAsync(ct)}", ClientId = clientIdValue, ProjectId = r.ProjectId, RepositoryId = r.RepositoryId, ClientProductId = r.ClientProductId, CreatedByUserId = UserId, Type = r.Type, Title = r.Title, Description = r.Description, CurrentBehavior = r.CurrentBehavior, ExpectedBehavior = r.ExpectedBehavior, StepsToReproduce = r.StepsToReproduce, Environment = r.Environment, AcceptanceCriteria = r.AcceptanceCriteria, EstimatedImpact = r.EstimatedImpact };
-        db.Tickets.Add(ticket); await db.SaveChangesAsync(ct);
+        db.Tickets.Add(ticket);
+        foreach (var file in files)
+        {
+            using var stream = new MemoryStream(); await file.CopyToAsync(stream, ct);
+            db.TicketAttachments.Add(new TicketAttachment { TicketId = ticket.Id, FileName = Path.GetFileName(file.FileName), ContentType = string.IsNullOrWhiteSpace(file.ContentType) ? "application/octet-stream" : file.ContentType, SizeBytes = file.Length, Content = stream.ToArray() });
+        }
+        await db.SaveChangesAsync(ct);
         jobs.Enqueue<GitHubIssueSyncJob>(j => j.CreateIssueAsync(ticket.Id, CancellationToken.None));
         if (project.Repositories.Count == 0) await NotifyPortalTicketAsync(ticket, project, ct);
         return Created($"/api/tickets/{ticket.Id}", ticket);
@@ -116,5 +149,4 @@ public sealed class PortalController(RtresDbContext db, IBackgroundJobClient job
         var client = await db.Clients.SingleAsync(x => x.Id == ticket.ClientId, ct);
         await notifications.SendAsync(client, new Notification(NotificationType.TicketCreated, new() { ["ticketId"] = ticket.Id.ToString(), ["code"] = ticket.Code, ["title"] = ticket.Title, ["company"] = client.CompanyName, ["project"] = project.Name, ["body"] = ticket.Description }, $"ticket-created:{ticket.Id}", staffEmail), ct);
     }
-    [HttpPost("tickets/{id:guid}/attachments")] public async Task<IActionResult> Attachment(Guid id, IFormFile file, Guid? clientId, CancellationToken ct) { var error = ResolveClientId(clientId, out var client); if (error is not null) return error; if (!await db.Tickets.AnyAsync(x => x.Id == id && x.ClientId == client, ct)) return NotFound(); var a = new TicketAttachment { TicketId = id, FileName = file.FileName, Url = $"/uploads/{id}/{file.FileName}", SizeBytes = file.Length }; db.TicketAttachments.Add(a); await db.SaveChangesAsync(ct); return Ok(a); }
 }

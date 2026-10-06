@@ -271,6 +271,49 @@ public sealed class AdminController(RtresDbContext db, PayPalCheckoutService che
         cell.DataType == XLDataType.DateTime ? DateOnly.FromDateTime(cell.GetDateTime())
         : DateOnly.TryParseExact(cell.GetString().Trim(), ["yyyy-MM-dd", "dd/MM/yyyy", "d/M/yyyy"], System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out var date) ? date : null;
 
+    [HttpDelete("expenses/{id:guid}")]
+    public async Task<ActionResult> DeleteExpense(Guid id, CancellationToken ct)
+    {
+        var expense = await db.Expenses.FindAsync([id], ct); if (expense is null) return NotFound();
+        db.Expenses.Remove(expense); await db.SaveChangesAsync(ct); return NoContent();
+    }
+
+    /// <summary>
+    /// Da de baja un gasto recurrente: borra los pagos de la serie posteriores a <c>EndsAt</c> y marca los que quedan con esa
+    /// fecha de fin. Los pagos se guardan como filas sueltas, así que la serie es "mismo concepto, categoría y moneda".
+    /// Con <c>dryRun</c> solo informa cuántos se borrarían, para confirmarlo antes.
+    /// </summary>
+    [HttpPost("expenses/{id:guid}/end-recurrence")]
+    public async Task<ActionResult> EndRecurrence(Guid id, EndRecurrenceRequest request, bool dryRun, CancellationToken ct)
+    {
+        var expense = await db.Expenses.FindAsync([id], ct); if (expense is null) return NotFound();
+        if (!expense.Recurring) return BadRequest(new { message = "El gasto no es recurrente." });
+        var series = await ExpenseSeries(expense).ToListAsync(ct);
+        var removed = series.Where(x => x.Date > request.EndsAt).ToList();
+        if (!dryRun)
+        {
+            db.Expenses.RemoveRange(removed);
+            foreach (var kept in series.Except(removed)) kept.RecurrenceEndsAt = request.EndsAt;
+            await db.SaveChangesAsync(ct);
+        }
+        return Ok(new { removed = removed.Count, kept = series.Count - removed.Count, removedTotalPen = Math.Round(removed.Sum(x => x.AmountPen), 2) });
+    }
+
+    /// <summary>Reactiva un gasto recurrente dado de baja (no recrea los pagos borrados).</summary>
+    [HttpDelete("expenses/{id:guid}/end-recurrence")]
+    public async Task<ActionResult> ResumeRecurrence(Guid id, CancellationToken ct)
+    {
+        var expense = await db.Expenses.FindAsync([id], ct); if (expense is null) return NotFound();
+        foreach (var x in await ExpenseSeries(expense).ToListAsync(ct)) x.RecurrenceEndsAt = null;
+        await db.SaveChangesAsync(ct); return NoContent();
+    }
+
+    private IQueryable<Expense> ExpenseSeries(Expense expense)
+    {
+        var description = expense.Description.Trim();
+        return db.Expenses.Where(x => x.Recurring && x.Description.Trim() == description && x.Category == expense.Category && x.Currency == expense.Currency);
+    }
+
     [HttpPatch("expenses/{id:guid}")]
     public async Task<ActionResult> UpdateExpense(Guid id, ExpensePatchRequest request, CancellationToken ct)
     {
@@ -580,6 +623,21 @@ public sealed class AdminController(RtresDbContext db, PayPalCheckoutService che
         await db.SaveChangesAsync(ct); return Ok(ProjectDto(project));
     }
 
+    /// <summary>Solo proyectos sin productos ni tickets: borrarlos dejaría cobros o issues huérfanos. Sus repos se quitan con él.</summary>
+    [HttpDelete("projects/{id:guid}")]
+    public async Task<ActionResult> DeleteProject(Guid id, CancellationToken ct)
+    {
+        var project = await db.Projects.Include(x => x.Repositories).SingleOrDefaultAsync(x => x.Id == id, ct); if (project is null) return NotFound();
+        var products = await db.ClientProducts.CountAsync(x => x.ProjectId == id, ct);
+        var tickets = await db.Tickets.CountAsync(x => x.ProjectId == id, ct);
+        if (products + tickets > 0)
+            return Conflict(new { message = $"«{project.Name}» tiene {Count(products, "producto", "productos")}{(products > 0 && tickets > 0 ? " y " : "")}{Count(tickets, "ticket", "tickets")}: muévelos o elimínalos antes de borrar el proyecto." });
+        db.ProjectRepositories.RemoveRange(project.Repositories); db.Projects.Remove(project);
+        await db.SaveChangesAsync(ct); return NoContent();
+    }
+
+    private static string Count(int n, string one, string many) => n == 0 ? "" : n == 1 ? $"1 {one}" : $"{n} {many}";
+
     [HttpPost("projects/{id:guid}/repositories")]
     public async Task<ActionResult> AddRepository(Guid id, RepositoryRequest request, CancellationToken ct)
     {
@@ -816,7 +874,7 @@ public sealed class AdminController(RtresDbContext db, PayPalCheckoutService che
     /// <summary>Precios sin IGV; <c>nextChargeTotal</c> es lo que se cobra, con el IGV de <paramref name="igvRate"/> (Perú + Factura).</summary>
     private static object ClientProductDto(ClientProduct x, decimal igvRate) => new { igvRate, nextChargeTotal = x.NextChargeTotal(igvRate), id = x.Id, clientId = x.ClientId, projectId = x.ProjectId, projectName = x.Project?.Name, productId = x.ProductId, productName = x.Product?.Name, productType = x.Product?.Type.ToString(), currency = x.Product?.Currency ?? "USD", billingCycle = x.BillingCycle.ToString(), isManualBilling = x.IsManualBilling, status = x.Status.ToString(), price = x.Price, listPrice = x.ListPrice(), discount = x.Discount, discountEndsAt = x.DiscountEndsAt == ClientProductPricing.NoEnd ? null : x.DiscountEndsAt, currentPrice = x.CurrentPrice(DateTime.UtcNow), nextChargePrice = x.NextChargePrice(), domainName = x.DomainName, priceLabelOverride = x.PriceLabelOverride, renewsAt = x.RenewsAt, nextChargeAt = x.NextChargeAt };
     private static object TaxDocumentDto(TaxDocument x) => new { id = x.Id, paymentTransactionId = x.PaymentTransactionId, clientId = x.ClientId, type = x.Type.ToString(), series = x.Series, number = x.Number, issueDate = x.IssueDate, currency = x.Currency, baseAmount = x.BaseAmount, igvAmount = x.IgvAmount, totalAmount = x.TotalAmount, notes = x.Notes, retentionAmount = x.RetentionAmount };
-    private static object ExpenseDto(Expense x) => new { id = x.Id, description = x.Description, category = x.Category.ToString(), type = x.Type.ToString(), amount = x.Amount, currency = x.Currency, amountPen = x.AmountPen, date = x.Date, recurring = x.Recurring, recurrenceCycle = x.RecurrenceCycle?.ToString() };
+    private static object ExpenseDto(Expense x) => new { id = x.Id, description = x.Description, category = x.Category.ToString(), type = x.Type.ToString(), amount = x.Amount, currency = x.Currency, amountPen = x.AmountPen, date = x.Date, recurring = x.Recurring, recurrenceCycle = x.RecurrenceCycle?.ToString(), recurrenceEndsAt = x.RecurrenceEndsAt };
 }
 
 public sealed record ProfileRequest(string Name);
@@ -840,4 +898,5 @@ public sealed record RepositoryRequest(string? Owner, string? Name, string? Labe
 public sealed record TaxSettingsRequest(decimal? IgvRate, decimal? RentaRate, string? FacturaSeries = null, int? FacturaNextNumber = null, string? ReciboSeries = null, int? ReciboNextNumber = null);
 public sealed record TaxDocumentRequest(Guid ClientProductId, DateOnly IssueDate, string Currency, decimal TotalAmount, string? Notes, decimal? RetentionAmount = null);
 public sealed record ExpenseRequest(string Description, ExpenseCategory Category, ExpenseType Type, decimal Amount, string Currency, DateOnly Date, bool Recurring, BillingCycle? RecurrenceCycle);
+public sealed record EndRecurrenceRequest(DateOnly EndsAt);
 public sealed record ExpensePatchRequest(string? Description, ExpenseCategory? Category, ExpenseType? Type, decimal? Amount, string? Currency, DateOnly? Date, bool? Recurring, BillingCycle? RecurrenceCycle);

@@ -24,10 +24,21 @@ public sealed class GitHubWebhookProcessor(RtresDbContext db, INotificationSende
         if (ticket is null) { logger.LogDebug("Issue {Owner}/{Repo}#{Number} no corresponde a ningún ticket", owner, name, number); return; }
 
         var action = payload.GetProperty("action").GetString();
-        if (eventName == "issues") await ApplyIssueAsync(ticket, issue, ct);
+        if (eventName == "issues") { if (!AffectsStatus(action, payload)) return; await ApplyIssueAsync(ticket, issue, ct); }
         else await ApplyCommentAsync(ticket, action, payload.GetProperty("comment"), ct);
         await db.SaveChangesAsync(ct);
     }
+
+    /// <summary>
+    /// Solo abrir/cerrar y los labels <c>estado:*</c> cambian el estado. Otros eventos (editar, asignar, labels como "bug")
+    /// no lo recalculan: si no, un issue movido de columna en el GitHub Project volvería al estado de sus labels viejos.
+    /// </summary>
+    internal static bool AffectsStatus(string? action, JsonElement payload) => action switch
+    {
+        "closed" or "reopened" => true,
+        "labeled" or "unlabeled" => !payload.TryGetProperty("label", out var label) || (label.GetProperty("name").GetString() ?? "").StartsWith(GitHubLabels.StatusPrefix, StringComparison.OrdinalIgnoreCase),
+        _ => false,
+    };
 
     private async Task ApplyIssueAsync(Ticket ticket, JsonElement issue, CancellationToken ct)
     {
@@ -42,7 +53,10 @@ public sealed class GitHubWebhookProcessor(RtresDbContext db, INotificationSende
         await NotifyAsync(ticket, NotificationType.TicketStatusChanged, new() { ["status"] = newStatus.ToString() }, null, ct);
     }
 
-    private async Task NotifyAsync(Ticket ticket, NotificationType type, Dictionary<string, string> data, string? dedupeKey, CancellationToken ct)
+    private Task NotifyAsync(Ticket ticket, NotificationType type, Dictionary<string, string> data, string? dedupeKey, CancellationToken ct) =>
+        NotifyTicketAsync(db, notifications, ticket, type, data, dedupeKey, ct);
+
+    internal static async Task NotifyTicketAsync(RtresDbContext db, INotificationSender notifications, Ticket ticket, NotificationType type, Dictionary<string, string> data, string? dedupeKey, CancellationToken ct)
     {
         var client = await db.Clients.FindAsync([ticket.ClientId], ct);
         if (client is null) return;

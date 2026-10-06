@@ -203,6 +203,9 @@ namespace Rtres.Infrastructure.Persistence.Migrations
                     b.Property<int?>("RecurrenceCycle")
                         .HasColumnType("int");
 
+                    b.Property<DateOnly?>("RecurrenceEndsAt")
+                        .HasColumnType("date");
+
                     b.Property<bool>("Recurring")
                         .HasColumnType("bit");
 
@@ -617,6 +620,9 @@ namespace Rtres.Infrastructure.Persistence.Migrations
                     b.Property<string>("GithubIssueUrl")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("GithubProjectStatus")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<Guid>("ProjectId")
                         .HasColumnType("uniqueidentifier");
 
@@ -655,9 +661,22 @@ namespace Rtres.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<byte[]>("Content")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("FileName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<long>("SizeBytes")
                         .HasColumnType("bigint");
