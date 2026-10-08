@@ -117,7 +117,7 @@ public class NotificationJobTests
         var user = role == "SuperAdmin" ? new UserAccount { Email = "admin@rtres.net", Role = UserRole.SuperAdmin } : seed.User;
         if (role == "SuperAdmin") { db.UserAccounts.Add(user); db.SaveChanges(); }
         Claim[] claims = clientId is Guid id ? [new(ClaimTypes.NameIdentifier, user.Id.ToString()), new("client_id", id.ToString()), new(ClaimTypes.Role, role)] : [new(ClaimTypes.NameIdentifier, user.Id.ToString()), new(ClaimTypes.Role, role)];
-        return new PortalController(db, new FakeJobs(), new FakeNotifications(), new ConfigurationBuilder().Build(), NullLogger<PortalController>.Instance) { ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext { User = new ClaimsPrincipal(new ClaimsIdentity(claims, "test")) } } };
+        return new PortalController(db, new FakeJobs(), new FakeNotifications(), new ConfigurationBuilder().Build(), NullLogger<PortalController>.Instance, new BankTransferService(db, new ConfigurationBuilder().Build())) { ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext { User = new ClaimsPrincipal(new ClaimsIdentity(claims, "test")) } } };
     }
 
     [Fact]

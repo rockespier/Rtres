@@ -1,11 +1,14 @@
 import { formatMoney } from '../../core/money.pipe';
 import { isSubscriptionCycle } from '../../core/enum-labels';
-import { Component, Input, computed, inject } from '@angular/core';
+import { Component, Input, OnInit, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { BankTransferInfo, ClientProductApiDto, PREPAID_YEARS, PortalApiService } from '../../core/portal-api.service';
+import { BankTransferInfo, ClientProductApiDto, PREPAID_YEARS, PortalApiService, TransferReportSummary } from '../../core/portal-api.service';
+import { PaymentMethodsService } from '../../core/payment-methods.service';
+import { AuthService } from '../../core/auth.service';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 import { BankTransferInfoComponent } from '../bank-transfer-info/bank-transfer-info.component';
+import { TransferReportFormComponent } from '../transfer-report-form/transfer-report-form.component';
 
 const RENEWAL_WINDOW_DAYS = 30;
 
@@ -48,7 +51,7 @@ const currentPrice = (p: ClientProductApiDto) => { const list = listPrice(p); re
 @Component({
   selector: 'app-product-card',
   standalone: true,
-  imports: [CommonModule, RouterLink, ConfirmDialogComponent, BankTransferInfoComponent],
+  imports: [CommonModule, RouterLink, ConfirmDialogComponent, BankTransferInfoComponent, TransferReportFormComponent],
   template: `<article class="card p-6">
     <p class="text-muted text-sm">{{ typeLabel() }}</p>
     <h3 class="font-display text-lg font-semibold mt-2">{{ displayName() }}</h3>
@@ -58,15 +61,30 @@ const currentPrice = (p: ClientProductApiDto) => { const list = listPrice(p); re
     <p *ngIf="dateLabel()" class="mt-1 text-sm text-muted">{{ dateLabel() }}</p>
     <p *ngIf="error" class="text-sm text-red-600 mt-3">{{ error }}</p>
     <label *ngIf="product.billingCycle === 'Anual' && (canPay() || canRenew() || canPayByTransfer())" class="field-label mt-5">Años a pagar<select class="field" [value]="years" (change)="setYears(+$any($event.target).value)"><option *ngFor="let y of yearOptions" [value]="y" [selected]="y === years">{{ y === 1 ? '1 año' : y + ' años por adelantado' }}</option></select></label>
-    <div *ngIf="canPayByTransfer()" class="mt-5"><button *ngIf="!transferInfo" class="btn btn-primary btn-sm" [disabled]="busy" (click)="showTransfer()">{{ product.status === 'Pendiente' ? 'Cómo pagar' : 'Pagar renovación' }}</button><app-bank-transfer-info *ngIf="transferInfo" [info]="transferInfo"/></div>
+    <div *ngIf="report?.status === 'Pendiente'" class="mt-5 rounded-lg border p-3 text-sm" role="status"><span class="pill pill-info">Pago en revisión</span><p class="text-muted mt-2">Reportaste tu transferencia el {{ formatDate(report!.createdAt) }}. Te avisaremos por correo cuando la confirmemos.</p></div>
+    <div *ngIf="report?.status === 'Rechazado' && canPayByTransfer()" class="mt-5 rounded-lg border p-3 text-sm" role="alert"><span class="pill pill-danger">Pago no confirmado</span><p class="mt-2">{{ report!.rejectionReason }}</p><p class="text-muted mt-1">Puedes reportarlo de nuevo con los datos correctos.</p></div>
+    <div *ngIf="canPayByTransfer() && report?.status !== 'Pendiente'" class="mt-5 space-y-3">
+      <button *ngIf="!transferInfo" class="btn btn-primary btn-sm" [disabled]="busy" (click)="showTransfer()">{{ product.status === 'Pendiente' ? 'Cómo pagar' : 'Pagar renovación' }}</button>
+      <app-bank-transfer-info *ngIf="transferInfo" [info]="transferInfo"/>
+      <button *ngIf="transferInfo && !reporting && !isStaff" class="btn btn-primary btn-sm" (click)="reporting=true">Ya transferí: reportar pago</button>
+      <app-transfer-report-form *ngIf="transferInfo && reporting" [clientProductId]="product.id" [info]="transferInfo" [years]="years" (reported)="onReported($event)" (cancelled)="reporting=false"/>
+    </div>
     <div *ngIf="canPay() || canRenew() || canCancel()" class="flex gap-2 mt-5"><button *ngIf="canPay()" class="btn btn-primary btn-sm" [disabled]="busy" (click)="completePayment()">{{ busy ? 'Verificando…' : 'Completar pago' }}</button><button *ngIf="canRenew()" class="btn btn-primary btn-sm" (click)="renew()">Pagar renovación</button><button *ngIf="canCancel()" class="btn btn-ghost btn-sm" (click)="confirmingCancel=true;cancelError=''">Cancelar suscripción</button></div>
     <div *ngIf="canTicket()" class="mt-5 pt-4 border-t"><a class="btn btn-ghost btn-sm" routerLink="/tickets/new" [queryParams]="{ projectId: product.projectId, clientProductId: product.id }">Registrar ticket</a></div>
   </article>
   <app-confirm-dialog *ngIf="confirmingCancel" title="Cancelar suscripción" [message]="'Se cancelará la suscripción de ' + displayName() + ' en PayPal y no habrá más cobros. Esta acción no se puede deshacer.'" confirmLabel="Sí, cancelar suscripción" busyLabel="Cancelando…" [danger]="true" [busy]="cancelling" [error]="cancelError" (confirmed)="cancel()" (cancelled)="confirmingCancel=false"/>`,
 })
-export class ProductCardComponent {
+export class ProductCardComponent implements OnInit {
   private api = inject(PortalApiService);
+  private paymentMethods = inject(PaymentMethodsService);
   @Input({ required: true }) product!: ClientProductApiDto;
+  /** Último pago por transferencia reportado (en revisión o rechazado). */
+  report: TransferReportSummary | null = null;
+  reporting = false;
+  /** Rtres viendo como un cliente: ve los datos de pago, pero el reporte lo hace el cliente (y "Registrar pago" está en el detalle del cliente). */
+  readonly isStaff = inject(AuthService).user()?.role === 'SuperAdmin';
+  ngOnInit() { this.paymentMethods.load(); this.report = this.product.transferReport ?? null; }
+  private payPalEnabled = computed(() => this.paymentMethods.methods().payPal);
 
   displayName = computed(() => this.product.domainName || this.product.product.name);
   typeLabel = computed(() => TYPE_LABELS[this.product.product.type] ?? this.product.product.type);
@@ -75,7 +93,7 @@ export class ProductCardComponent {
   /** Anual que vence en 30 días o menos (o ya vencido): se puede pagar la renovación. El pago único no se renueva. Mismo criterio que el backend. */
   canRenew = computed(() => {
     const p = this.product;
-    if (p.isManualBilling || p.billingCycle !== 'Anual') return false;
+    if (p.isManualBilling || p.billingCycle !== 'Anual' || !this.payPalEnabled()) return false;
     if (p.status === 'PorVencer' || p.status === 'Vencido') return true;
     return p.status === 'Activo' && !!p.renewsAt && new Date(p.renewsAt).getTime() - Date.now() <= RENEWAL_WINDOW_DAYS * 86_400_000;
   });
@@ -98,11 +116,13 @@ export class ProductCardComponent {
   canCancel = computed(() => !this.product.isManualBilling && this.product.status === 'Activo' && isSubscriptionCycle(this.product.billingCycle) && !!this.product.payPalSubscriptionId);
   /** El admin habilita los tickets por producto (Catálogo de productos → "Permite registrar tickets"). */
   canTicket = computed(() => !!this.product.product.allowsTickets && this.product.status !== 'Cancelado');
-  canPay = computed(() => !this.product.isManualBilling && this.product.status === 'Pendiente');
+  canPay = computed(() => !this.product.isManualBilling && this.product.status === 'Pendiente' && this.payPalEnabled());
   /** Pago por transferencia: pendiente o por renovar (Anual dentro de los 30 días, o suscripción por cobrar). El pago único solo mientras está pendiente. Lo confirma Rtres. */
   canPayByTransfer = computed(() => {
     const p = this.product;
-    if (!p.isManualBilling || p.status === 'Cancelado') return false;
+    // Mismo criterio que BankTransfersController.CanPayByTransfer: contratado por transferencia, o PayPal deshabilitado sin suscripción que cobre sola.
+    if (!this.paymentMethods.methods().bankTransfer || p.status === 'Cancelado') return false;
+    if (!p.isManualBilling && (this.payPalEnabled() || !!p.payPalSubscriptionId)) return false;
     if (p.status === 'Pendiente') return true;
     if (p.billingCycle === 'Unico') return false;
     if (p.status === 'PorVencer' || p.status === 'Vencido') return true;
@@ -113,6 +133,7 @@ export class ProductCardComponent {
   /** Productos anuales: se pueden pagar varios años de una vez (una sola orden o transferencia por el total). */
   years = 1; yearOptions = PREPAID_YEARS;
   setYears(years: number){this.years=years;if(this.transferInfo)this.showTransfer();}
+  onReported(report: TransferReportSummary){this.report=report;this.reporting=false;this.transferInfo=null;}
   showTransfer(){this.busy=true;this.error='';this.api.getBankTransfer(this.product.id,this.years).subscribe({next:x=>{this.busy=false;this.transferInfo=x;},error:e=>{this.busy=false;this.error=e?.error?.message??'No se pudieron cargar los datos de pago.';}});}
   busy = false;
   error = '';
@@ -131,7 +152,7 @@ export class ProductCardComponent {
     return '';
   });
 
-  private formatDate(iso: string): string {
+  formatDate(iso: string): string {
     return new Date(iso).toLocaleDateString('es-PE', { day: 'numeric', month: 'short', year: 'numeric' });
   }
   private formatDateTime(iso: string): string {

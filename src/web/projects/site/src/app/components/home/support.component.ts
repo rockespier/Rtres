@@ -48,7 +48,7 @@ const AUTOPLAY_MS = 7000;
         <div class="portal-copy">
           <div class="portal-kicker">
             <p i18n="@@home.portal.label">PORTAL DE ASISTENCIA</p>
-            <a class="portal-status" href="https://portal.rtres.net" target="_blank" rel="noopener" i18n="@@home.portal.status">Próximamente</a>
+            <a class="portal-status" href="https://portal.rtres.net" target="_blank" rel="noopener" i18n="@@home.portal.status">Ingresar</a>
           </div>
           <h2 i18n="@@home.portal.title">Compra, renueva y gestiona <br>tus tickets desde un solo lugar.</h2>
         </div>
@@ -93,7 +93,13 @@ const AUTOPLAY_MS = 7000;
     .portal-status:hover,.portal-status:focus-visible{background:#303030}
     .portal-copy h2{max-width:620px;margin:15px 0 0;color:var(--v2-dark);font:clamp(2rem,2.45vw,3rem)/1.06 Georgia,serif;letter-spacing:-.035em;text-wrap:balance}
     @media(max-width:850px){
+      /* Separación con la foto de Contacto, que en móvil queda justo debajo de la imagen del portal. */
+      :host{margin-bottom:28px}
       section{grid-template-columns:1fr}
+      /* En móvil la imagen habla sola: se oculta el texto encima y queda solo el botón para ingresar. */
+      .portal-visual{min-height:440px;padding:24px 7%;background-size:cover;background-position:center}
+      .portal-kicker p,.portal-copy h2{display:none}
+      .portal-kicker{justify-content:flex-end}
       .carousel{--per:1}
       .testimonial,.testimonial+.testimonial{padding:0;border-left:0}
     }

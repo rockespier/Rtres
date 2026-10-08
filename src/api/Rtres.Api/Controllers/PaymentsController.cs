@@ -11,7 +11,7 @@ using Rtres.Infrastructure.Persistence;
 namespace Rtres.Api.Controllers;
 
 [ApiController, Route("api")]
-public sealed class PaymentsController(RtresDbContext db, IPayPalClient payPal, PayPalCheckoutService checkoutService, PayPalPaymentService payments, INotificationSender notifications, IConfiguration configuration, ILogger<PaymentsController> logger) : ControllerBase
+public sealed class PaymentsController(RtresDbContext db, IPayPalClient payPal, PayPalCheckoutService checkoutService, PayPalPaymentService payments, BankTransferService transfers, INotificationSender notifications, IConfiguration configuration, ILogger<PaymentsController> logger) : ControllerBase
 {
     /// <summary>Días antes del vencimiento en que se puede pagar la renovación (igual que el primer recordatorio por email).</summary>
     public const int RenewalWindowDays = 30;
@@ -38,11 +38,16 @@ public sealed class PaymentsController(RtresDbContext db, IPayPalClient payPal, 
     {
         var scope = ClientScope(null, out var clientId); if (scope is not null) return scope;
         var product = await db.Products.SingleOrDefaultAsync(x => x.Id == request.ProductId && x.IsActive, ct);
-        if (product is null || !await db.Projects.AnyAsync(x => x.Id == request.ProjectId && x.ClientId == clientId, ct)) return NotFound();
+        if (product is null) return NotFound();
+        var projectId = request.ProjectId;
+        if (projectId is null) projectId = (await NewProjectAsync(clientId, product.Name, ct)).Id;
+        else if (!await db.Projects.AnyAsync(x => x.Id == projectId && x.ClientId == clientId, ct)) return NotFound();
         if (request.BillingCycle != product.BillingCycle) return BadRequest(new { message = "El ciclo debe coincidir con el producto seleccionado." });
         if (request.PaymentMethod is not (PaymentMethods.PayPal or PaymentMethods.Transferencia)) return BadRequest(new { message = "Método de pago inválido." });
         var transfer = request.PaymentMethod == PaymentMethods.Transferencia;
-        var item = new ClientProduct { ClientId = clientId, ProjectId = request.ProjectId, ProductId = product.Id, Product = product, BillingCycle = request.BillingCycle, Status = ClientProductStatus.Pendiente, Price = product.BasePrice, IsManualBilling = transfer };
+        var settings = await transfers.SettingsAsync(ct);
+        if (transfer ? !settings.BankTransferEnabled : !settings.PayPalEnabled) return BadRequest(new { message = transfer ? "El pago por transferencia no está disponible por ahora." : "El pago con PayPal no está disponible por ahora." });
+        var item = new ClientProduct { ClientId = clientId, ProjectId = projectId.Value, ProductId = product.Id, Product = product, BillingCycle = request.BillingCycle, Status = ClientProductStatus.Pendiente, Price = product.BasePrice, IsManualBilling = transfer };
         if (item.ValidateYears(request.Years) is string yearsError) return BadRequest(new { message = yearsError });
         db.ClientProducts.Add(item);
         var igvRate = await db.IgvRateForAsync(clientId, product, ct);
@@ -51,12 +56,28 @@ public sealed class PaymentsController(RtresDbContext db, IPayPalClient payPal, 
         {
             await db.SaveChangesAsync(ct);
             await NotifyTransferRequestAsync(item, product, igvRate, request.Years, ct);
-            return Ok(new { clientProductId = item.Id, approvalUrl = (string?)null, bankTransfer = BankTransferInfo(configuration, item, igvRate, request.Years) });
+            return Ok(new { clientProductId = item.Id, approvalUrl = (string?)null, bankTransfer = await transfers.InfoAsync(item, igvRate, request.Years, ct) });
         }
         try { var checkout = await checkoutService.StartAsync(item, product, Request, ct, igvRate, request.Years); await db.SaveChangesAsync(ct); return Ok(new { clientProductId = item.Id, approvalUrl = checkout.ApprovalUrl }); } catch (InvalidOperationException ex) { return BadRequest(new { message = ex.Message }); }
     }
 
-    /// <summary>Datos para pagar por transferencia (cuentas de <c>BankTransfer:Instructions</c>) y el monto a transferir por <paramref name="years"/> años.</summary>
+    /// <summary>
+    /// Proyecto creado al contratar sin elegir uno: se llama como el producto. El slug es único en todo el portal, así que
+    /// lleva la empresa y, si ya existe, un número.
+    /// </summary>
+    private async Task<Project> NewProjectAsync(Guid clientId, string productName, CancellationToken ct)
+    {
+        var company = await db.Clients.Where(x => x.Id == clientId).Select(x => x.CompanyName).SingleAsync(ct);
+        var baseSlug = AdminController.Slugify($"{company} {productName}");
+        if (baseSlug.Length == 0) baseSlug = "proyecto";
+        var slug = baseSlug;
+        for (var n = 2; await db.Projects.AnyAsync(x => x.Slug == slug, ct); n++) slug = $"{baseSlug}-{n}";
+        var project = new Project { ClientId = clientId, Name = productName, Slug = slug };
+        db.Projects.Add(project);
+        return project;
+    }
+
+    /// <summary>Datos para pagar por transferencia (cuentas bancarias activas) y el monto a transferir por <paramref name="years"/> años.</summary>
     [Authorize, HttpGet("client-products/{id:guid}/bank-transfer")]
     public async Task<IActionResult> BankTransfer(Guid id, Guid? clientId, CancellationToken ct, int years = 1)
     {
@@ -64,7 +85,7 @@ public sealed class PaymentsController(RtresDbContext db, IPayPalClient payPal, 
         var item = await db.ClientProducts.Include(x => x.Product).SingleOrDefaultAsync(x => x.Id == id && x.ClientId == owner, ct);
         if (item?.Product is null) return NotFound();
         if (item.ValidateYears(years) is string yearsError) return BadRequest(new { message = yearsError });
-        return Ok(BankTransferInfo(configuration, item, await db.IgvRateForAsync(owner, item.Product, ct), years));
+        return Ok(await transfers.InfoAsync(item, await db.IgvRateForAsync(owner, item.Product, ct), years, ct));
     }
 
     /// <summary>
@@ -82,15 +103,6 @@ public sealed class PaymentsController(RtresDbContext db, IPayPalClient payPal, 
         await notifications.SendAsync(client, new Notification(NotificationType.TransferRequested, data, $"transfer-request:{item.Id}", staffEmail), ct);
     }
 
-    internal static object BankTransferInfo(IConfiguration configuration, ClientProduct item, decimal igvRate, int years = 1) => new
-    {
-        instructions = configuration["BankTransfer:Instructions"] ?? "",
-        amount = item.ChargeTotal(igvRate, years),
-        years,
-        currency = item.Product?.Currency ?? "USD",
-        includesIgv = igvRate > 0,
-    };
-
     [Authorize(Roles = "Cliente,Admin"), HttpPost("client-products/{id:guid}/renew")]
     public async Task<IActionResult> Renew(Guid id, Guid? clientId, CancellationToken ct, int years = 1)
     {
@@ -100,6 +112,7 @@ public sealed class PaymentsController(RtresDbContext db, IPayPalClient payPal, 
         // Renovar (Anual por vencer o vencido; el pago único no se renueva) o reintentar un pago que quedó a medias (Pendiente, cualquier ciclo).
         var renewable = item.BillingCycle == BillingCycle.Anual && (item.Status is ClientProductStatus.PorVencer or ClientProductStatus.Vencido || item.RenewsAt <= DateTime.UtcNow.AddDays(RenewalWindowDays));
         if (item.IsManualBilling || !(renewable || item.Status == ClientProductStatus.Pendiente)) return BadRequest(new { message = "Este producto no se puede renovar en línea." });
+        if (!(await transfers.SettingsAsync(ct)).PayPalEnabled) return BadRequest(new { message = "El pago con PayPal no está disponible por ahora." });
         try { var checkout = await checkoutService.StartAsync(item, item.Product, Request, ct, await db.IgvRateForAsync(owner, item.Product, ct), years); await db.SaveChangesAsync(ct); return Ok(new { approvalUrl = checkout.ApprovalUrl }); } catch (InvalidOperationException ex) { return BadRequest(new { message = ex.Message }); }
     }
 
@@ -170,4 +183,5 @@ public sealed class PaymentsController(RtresDbContext db, IPayPalClient payPal, 
     }
 }
 
-public sealed record SubscribeRequest(Guid ProductId, Guid ProjectId, BillingCycle BillingCycle, string PaymentMethod = PaymentMethods.PayPal, int Years = 1);
+/// <summary><see cref="ProjectId"/> null: se crea un proyecto con el nombre del producto (clientes sin proyectos).</summary>
+public sealed record SubscribeRequest(Guid ProductId, Guid? ProjectId, BillingCycle BillingCycle, string PaymentMethod = PaymentMethods.PayPal, int Years = 1);

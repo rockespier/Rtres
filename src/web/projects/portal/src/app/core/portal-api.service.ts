@@ -15,7 +15,15 @@ export interface ProductDto { id: string; type: string; name: string; billingCyc
 export interface ProjectRepositoryDto { id: string; owner: string; name: string; label?: string | null; isDefault: boolean; }
 export interface ProjectDto { id: string; name: string; slug: string; repositories: ProjectRepositoryDto[]; }
 export type PaymentMethod = 'PayPal'|'Transferencia';
-export interface BankTransferInfo { instructions:string; amount:number|null; currency:string; includesIgv?:boolean; years?:number; }
+export type BankAccountType = 'Ahorros'|'Corriente';
+/** Cuenta de Rtres para pagos por transferencia. approxAmount: monto aproximado en la moneda de la cuenta si difiere de la del producto. */
+export interface BankAccountDto { id:string; bankName:string; holder:string; currency:string; type:BankAccountType; accountNumber:string; cci:string|null; isActive:boolean; sortOrder:number; approxAmount?:number|null; }
+export type BankAccountRequest = Omit<BankAccountDto,'id'|'sortOrder'|'approxAmount'>;
+export interface BankTransferInfo { instructions:string; amount:number|null; currency:string; includesIgv?:boolean; years?:number; accounts?:BankAccountDto[]; }
+export interface PaymentMethodsDto { payPal:boolean; bankTransfer:boolean; }
+export type TransferReportStatus = 'Pendiente'|'Aprobado'|'Rechazado';
+export interface TransferReportSummary { id:string; status:TransferReportStatus; createdAt:string; rejectionReason:string|null; }
+export interface TransferReportDto { id:string; clientId:string; company:string; clientProductId:string; product:string; domainName:string|null; productCurrency:string; amount:number; currency:string; paidAt:string; operationNumber:string|null; years:number; account:string|null; hasReceipt:boolean; receiptContentType:string|null; status:TransferReportStatus; rejectionReason:string|null; createdAt:string; reviewedAt:string|null; }
 /** Años que se pueden pagar de una vez en productos anuales (igual que ClientProductPricing.MaxPrepaidYears). */
 export const PREPAID_YEARS = [1, 2, 3, 4, 5];
 export interface ClientAccessDto { clientName: string; email: string; temporaryPassword: string; emailSent: boolean; }
@@ -37,6 +45,8 @@ export interface ClientProductApiDto {
   billingCycle: string;
   isManualBilling: boolean;
   payPalSubscriptionId?: string | null;
+  /** Último pago por transferencia reportado (en revisión o rechazado); null si no hay o ya se aprobó. */
+  transferReport?: TransferReportSummary | null;
   product: ProductDto;
   project: ProjectDto;
 }
@@ -135,7 +145,22 @@ export class PortalApiService {
   getDashboardSummary() { return this.http.get<DashboardSummary>(this.scoped('/dashboard/summary')); }
   getClientProducts() { return this.http.get<ClientProductApiDto[]>(this.scoped('/client-products')); }
   getCatalogProducts() { return this.http.get<ProductDto[]>(`${this.base}/catalog/products`); }
-  subscribeProduct(body:{productId:string;projectId:string;billingCycle:string;paymentMethod:PaymentMethod;years:number}) { return this.http.post<{clientProductId:string;approvalUrl:string|null;bankTransfer?:BankTransferInfo}>(`${this.base}/subscriptions`, body); }
+  subscribeProduct(body:{productId:string;projectId:string|null;billingCycle:string;paymentMethod:PaymentMethod;years:number}) { return this.http.post<{clientProductId:string;approvalUrl:string|null;bankTransfer?:BankTransferInfo}>(`${this.base}/subscriptions`, body); }
+  getPaymentMethods() { return this.http.get<PaymentMethodsDto>(`${this.base}/payment-methods`); }
+  /** Reporte del cliente: multipart con la constancia opcional (campo receipt). */
+  reportTransfer(clientProductId:string, body:{bankAccountId:string;amount:number;paidAt:string;operationNumber:string;years:number}, receipt:File|null) {
+    const form=new FormData(); for (const [k,v] of Object.entries(body)) form.append(k,String(v)); if (receipt) form.append('receipt',receipt,receipt.name);
+    return this.http.post<TransferReportSummary>(`${this.base}/client-products/${clientProductId}/transfer-reports`,form);
+  }
+  getTransferReceipt(id:string) { return this.http.get(`${this.base}/transfer-reports/${id}/receipt`,{responseType:'blob'}); }
+  getTransferReports(status?:TransferReportStatus) { return this.http.get<TransferReportDto[]>(`${this.base}/admin/transfer-reports${query({status})}`); }
+  approveTransfer(id:string, body:{amount?:number;paidAt?:string;operationNumber?:string}) { return this.http.post<{status:string}>(`${this.base}/admin/transfer-reports/${id}/approve`,body); }
+  rejectTransfer(id:string, reason:string) { return this.http.post<{status:string}>(`${this.base}/admin/transfer-reports/${id}/reject`,{reason}); }
+  updatePaymentSettings(body:{payPal?:boolean;bankTransfer?:boolean}) { return this.http.patch<PaymentMethodsDto>(`${this.base}/admin/payment-settings`,body); }
+  getBankAccounts() { return this.http.get<BankAccountDto[]>(`${this.base}/admin/bank-accounts`); }
+  createBankAccount(body:BankAccountRequest) { return this.http.post<BankAccountDto>(`${this.base}/admin/bank-accounts`,body); }
+  updateBankAccount(id:string, body:BankAccountRequest) { return this.http.put<BankAccountDto>(`${this.base}/admin/bank-accounts/${id}`,body); }
+  deleteBankAccount(id:string) { return this.http.delete<void>(`${this.base}/admin/bank-accounts/${id}`); }
   getBankTransfer(id:string,years=1) { return this.http.get<BankTransferInfo>(this.scoped(`/client-products/${id}/bank-transfer?years=${years}`)); }
   registerTransferPayment(id:string,body:{amount:number|null;paidAt:string|null;reference:string|null;years:number}) { return this.http.post<AdminClientProductDto>(`${this.base}/admin/client-products/${id}/payments`,body); }
   renewProduct(id:string,years=1) { return this.http.post<{approvalUrl:string}>(this.scoped(`/client-products/${id}/renew?years=${years}`), {}); }
@@ -193,6 +218,7 @@ export class PortalApiService {
   adminProductTemplate() { return this.http.get(`${this.base}/admin/products/import/template`,{responseType:'blob'}); }
   assignClientProduct(clientId:string,body:unknown) { return this.http.post<{clientProduct:AdminClientProductDto;approvalUrl:string|null}>(`${this.base}/admin/clients/${clientId}/products`,body); }
   updateAdminClientProduct(id:string,body:unknown) { return this.http.patch<AdminClientProductDto>(`${this.base}/admin/client-products/${id}`,body); }
+  deleteAdminClientProduct(id:string) { return this.http.delete<void>(`${this.base}/admin/client-products/${id}`); }
   /** Fechas en formato yyyy-MM-dd; null borra la fecha. */
   setClientProductDates(id:string,body:{renewsAt:string|null;nextChargeAt:string|null}) { return this.http.put<AdminClientProductDto>(`${this.base}/admin/client-products/${id}/dates`,body); }
 

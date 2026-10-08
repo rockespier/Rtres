@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 using Rtres.Api.Controllers;
+using Rtres.Api.Services;
 using Rtres.Api.GitHub;
 using Rtres.Api.Jobs;
 using Rtres.Domain;
@@ -161,7 +162,7 @@ public class MultiRepoProjectTests
         var api = new ProjectRepository { ProjectId = seed.Project.Id, Owner = "rtres", Name = "cabalgatas-andinas-api", Label = "API" };
         db.ProjectRepositories.Add(api); await db.SaveChangesAsync();
         var identity = new ClaimsIdentity([new Claim(ClaimTypes.NameIdentifier, seed.User.Id.ToString()), new Claim("client_id", seed.Client.Id.ToString()), new Claim(ClaimTypes.Role, "Cliente")], "test");
-        var portal = new PortalController(db, new FakeJobs(), new FakeNotifications(), new ConfigurationBuilder().Build(), NullLogger<PortalController>.Instance) { ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext { User = new ClaimsPrincipal(identity) } } };
+        var portal = new PortalController(db, new FakeJobs(), new FakeNotifications(), new ConfigurationBuilder().Build(), NullLogger<PortalController>.Instance, new BankTransferService(db, new ConfigurationBuilder().Build())) { ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext { User = new ClaimsPrincipal(identity) } } };
 
         Assert.IsType<BadRequestObjectResult>(await portal.CreateTicket(new CreateTicketRequest(seed.Project.Id, TicketType.Bug, "X", "Y", null, null, null, null, null, null, Guid.NewGuid()), null, CancellationToken.None));
         var created = Assert.IsType<CreatedResult>(await portal.CreateTicket(new CreateTicketRequest(seed.Project.Id, TicketType.Bug, "Falla el API", "500", null, null, null, null, null, null, api.Id), null, CancellationToken.None));
@@ -265,7 +266,7 @@ public class TicketAttachmentTests
     {
         using var db = TestData.Db(out var seed);
         var identity = new ClaimsIdentity([new Claim(ClaimTypes.NameIdentifier, seed.User.Id.ToString()), new Claim("client_id", seed.Client.Id.ToString()), new Claim(ClaimTypes.Role, "Cliente")], "test");
-        var portal = new PortalController(db, new FakeJobs(), new FakeNotifications(), new ConfigurationBuilder().Build(), NullLogger<PortalController>.Instance) { ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext { User = new ClaimsPrincipal(identity) } } };
+        var portal = new PortalController(db, new FakeJobs(), new FakeNotifications(), new ConfigurationBuilder().Build(), NullLogger<PortalController>.Instance, new BankTransferService(db, new ConfigurationBuilder().Build())) { ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext { User = new ClaimsPrincipal(identity) } } };
         static IFormFile File(string name, string type, int size) => new FormFile(new MemoryStream(new byte[size]), 0, size, "files", name) { Headers = new HeaderDictionary(), ContentType = type };
         var request = new CreateTicketRequest(seed.Project.Id, TicketType.Requerimiento, "Beneficios en el PDF", "Letras más pequeñas", null, "2 por fila", null, null, "Se ve como la imagen", null);
 
@@ -296,7 +297,7 @@ public class TicketFromProductTests
         var withoutTickets = new ClientProduct { ClientId = seed.Client.Id, ProjectId = seed.Project.Id, ProductId = hosting.Id };
         db.AddRange(support, hosting, withTickets, withoutTickets); await db.SaveChangesAsync();
         var identity = new ClaimsIdentity([new Claim(ClaimTypes.NameIdentifier, seed.User.Id.ToString()), new Claim("client_id", seed.Client.Id.ToString()), new Claim(ClaimTypes.Role, "Cliente")], "test");
-        var portal = new PortalController(db, new FakeJobs(), new FakeNotifications(), new ConfigurationBuilder().Build(), NullLogger<PortalController>.Instance) { ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext { User = new ClaimsPrincipal(identity) } } };
+        var portal = new PortalController(db, new FakeJobs(), new FakeNotifications(), new ConfigurationBuilder().Build(), NullLogger<PortalController>.Instance, new BankTransferService(db, new ConfigurationBuilder().Build())) { ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext { User = new ClaimsPrincipal(identity) } } };
 
         Assert.IsType<BadRequestObjectResult>(await portal.CreateTicket(new CreateTicketRequest(seed.Project.Id, TicketType.Bug, "Caído", "No carga", null, null, null, null, null, null, ClientProductId: withoutTickets.Id), null, CancellationToken.None));
         var created = Assert.IsType<CreatedResult>(await portal.CreateTicket(new CreateTicketRequest(seed.Project.Id, TicketType.Bug, "Caído", "No carga", null, null, null, null, null, null, ClientProductId: withTickets.Id), null, CancellationToken.None));
@@ -392,7 +393,7 @@ public class TicketCommentsEndpointTests
         using var db = TestData.Db(out var seed, issueNumber: 7);
         var jobs = new FakeJobs();
         var identity = new ClaimsIdentity([new Claim(ClaimTypes.NameIdentifier, seed.User.Id.ToString()), new Claim("client_id", seed.Client.Id.ToString()), new Claim(ClaimTypes.Role, "Cliente")], "test");
-        var controller = new PortalController(db, jobs, new FakeNotifications(), new ConfigurationBuilder().Build(), NullLogger<PortalController>.Instance) { ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext { User = new ClaimsPrincipal(identity) } } };
+        var controller = new PortalController(db, jobs, new FakeNotifications(), new ConfigurationBuilder().Build(), NullLogger<PortalController>.Instance, new BankTransferService(db, new ConfigurationBuilder().Build())) { ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext { User = new ClaimsPrincipal(identity) } } };
 
         Assert.IsType<BadRequestObjectResult>(await controller.AddComment(seed.Ticket.Id, new CreateTicketCommentRequest("  "), CancellationToken.None));
         Assert.IsType<NotFoundResult>(await controller.AddComment(Guid.NewGuid(), new CreateTicketCommentRequest("Hola"), CancellationToken.None));
@@ -447,7 +448,7 @@ public class AdminTicketEndpointTests
         var notifications = new FakeNotifications(); var jobs = new FakeJobs();
         var identity = new ClaimsIdentity([new Claim(ClaimTypes.NameIdentifier, seed.User.Id.ToString()), new Claim("client_id", seed.Client.Id.ToString()), new Claim(ClaimTypes.Role, "Cliente")], "test");
         var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?> { ["Notifications:StaffEmail"] = "equipo@rtres.net" }).Build();
-        var portal = new PortalController(db, jobs, notifications, config, NullLogger<PortalController>.Instance) { ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext { User = new ClaimsPrincipal(identity) } } };
+        var portal = new PortalController(db, jobs, notifications, config, NullLogger<PortalController>.Instance, new BankTransferService(db, new ConfigurationBuilder().Build())) { ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext { User = new ClaimsPrincipal(identity) } } };
 
         await portal.CreateTicket(new CreateTicketRequest(seed.Project.Id, TicketType.Bug, "Sin repo", "Necesito ayuda", null, null, null, null, null, null), null, CancellationToken.None);
 

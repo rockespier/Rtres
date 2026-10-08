@@ -27,6 +27,7 @@ builder.Services.AddScoped<AccessEmailService>();
 builder.Services.AddScoped<PayPalCheckoutService>();
 builder.Services.AddScoped<PayPalPaymentService>();
 builder.Services.AddScoped<TaxDocumentService>();
+builder.Services.AddScoped<BankTransferService>();
 builder.Services.AddCors(options => options.AddDefaultPolicy(policy => policy
     .WithOrigins(PayPalCheckoutService.AllowedOrigins(builder.Configuration))
     .AllowAnyHeader().AllowAnyMethod()));

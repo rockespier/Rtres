@@ -236,9 +236,12 @@ public class PayPalPaymentTests
 
     internal static PaymentsController PaymentsControllerFor(RtresDbContext db, INotificationSender? notifications = null) => Controller(db, new FakePayPal(), notifications ?? new FakeNotifications());
 
-    private static PaymentsController Controller(RtresDbContext db, IPayPalClient payPal, INotificationSender notifications) =>
-        new(db, payPal, new PayPalCheckoutService(payPal, new ConfigurationBuilder().Build()), new PayPalPaymentService(db, payPal, notifications, TaxDocuments(db), NullLogger<PayPalPaymentService>.Instance), notifications, new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?> { ["BankTransfer:Instructions"] = "BCP Soles 123-456", ["Notifications:StaffEmail"] = "equipo@rtres.net" }).Build(), NullLogger<PaymentsController>.Instance)
+    private static PaymentsController Controller(RtresDbContext db, IPayPalClient payPal, INotificationSender notifications)
+    {
+        var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?> { ["BankTransfer:Instructions"] = "BCP Soles 123-456", ["Notifications:StaffEmail"] = "equipo@rtres.net" }).Build();
+        return new(db, payPal, new PayPalCheckoutService(payPal, new ConfigurationBuilder().Build()), new PayPalPaymentService(db, payPal, notifications, TaxDocuments(db), NullLogger<PayPalPaymentService>.Instance), new BankTransferService(db, config), notifications, config, NullLogger<PaymentsController>.Instance)
         { ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() } };
+    }
 
     private static async Task Webhook(RtresDbContext db, IPayPalClient payPal, INotificationSender notifications, string json)
     {

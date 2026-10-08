@@ -479,8 +479,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="home.portal.status" datatype="html">
-        <source>Próximamente</source>
-        <target>Coming soon</target>
+        <source>Ingresar</source>
+        <target>Sign in</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/components/home/support.component.ts</context>
           <context context-type="linenumber">30,32</context>

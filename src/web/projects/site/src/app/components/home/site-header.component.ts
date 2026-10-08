@@ -47,8 +47,8 @@ type Menu = 'services' | 'cases' | null;
         <hr>
         <a routerLink="/nosotros" (click)="closeAll()" i18n="@@home.nav.about">Nosotros</a>
         <a routerLink="/recursos" (click)="closeAll()" i18n="@@home.nav.resources">Recursos</a>
-        <a routerLink="/" fragment="portal" (click)="closeAll()" i18n="@@home.cta.portal">Portal de asistencia</a>
         <a class="v2-btn-lime cta" routerLink="/" fragment="contacto" (click)="closeAll()" i18n="@@home.cta.talk">Hablemos de tu proyecto</a>
+        <a class="v2-btn-outline cta-portal" routerLink="/" fragment="portal" (click)="closeAll()" i18n="@@home.cta.portal">Portal de asistencia</a>
         <div class="langs"><app-lang-links separator=" · " /></div>
       </div>
     }
@@ -56,8 +56,9 @@ type Menu = 'services' | 'cases' | null;
   styles: [`
     :host{display:block;position:sticky;top:0;z-index:50;background:#fff;transition:box-shadow .2s}
     :host(.scrolled){box-shadow:0 1px 0 var(--v2-line),0 10px 30px -22px rgba(0,0,0,.35)}
-    header{height:88px;display:grid;grid-template-columns:150px 1fr auto;align-items:center;gap:24px;padding:0 5%;transition:height .2s}
-    :host(.scrolled) header{height:68px}
+    /* Aire arriba y abajo: el logo y el botón no quedan pegados al borde, sobre todo con la cabecera compacta al hacer scroll. */
+    header{height:100px;display:grid;grid-template-columns:150px 1fr auto;align-items:center;gap:24px;padding:12px 5%;transition:height .2s}
+    :host(.scrolled) header{height:84px}
     .logo img{width:120px;transition:width .2s}
     :host(.scrolled) .logo img{width:96px}
     nav{display:flex;justify-content:center;align-items:center;gap:30px;font-size:14px}
@@ -73,15 +74,16 @@ type Menu = 'services' | 'cases' | null;
     .burger{display:none;width:44px;height:44px;margin-left:12px;border:0;background:none;cursor:pointer;flex-direction:column;justify-content:center;gap:5px;padding:0 10px}
     .burger i{display:block;height:2px;background:var(--v2-ink)}
     .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-    .mobile{display:flex;flex-direction:column;gap:2px;max-height:calc(100vh - 68px);overflow:auto;padding:20px 7% 30px;border-top:1px solid var(--v2-line);background:#fff}
+    .mobile{display:flex;flex-direction:column;gap:2px;max-height:calc(100vh - 76px);overflow:auto;padding:20px 7% 30px;border-top:1px solid var(--v2-line);background:#fff}
     .mobile .v2-label{margin:18px 0 6px;color:var(--v2-muted)}
     .mobile a{padding:10px 0;font-size:18px}
     .mobile hr{width:100%;border:0;border-top:1px solid var(--v2-line);margin:14px 0 6px}
     .mobile .cta{margin-top:16px;text-align:center}
+    .mobile .cta-portal{margin-top:10px;text-align:center;font-size:16px}
     .mobile .langs{margin-top:16px;font-size:12px;letter-spacing:.12em}
     .mobile .langs ::ng-deep a{padding:0;font-size:12px}
     @media(max-width:850px){
-      header{grid-template-columns:1fr auto;height:68px}
+      header,:host(.scrolled) header{grid-template-columns:1fr auto;height:76px;padding-block:9px}
       nav,.portal-link,.actions>.v2-btn-lime{display:none}
       .burger{display:flex}
       .logo img{width:96px}

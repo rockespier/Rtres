@@ -25,6 +25,9 @@ import { RouterLink } from '@angular/router';
     @media(max-width:850px){
       .hero{height:auto}
       .copy{width:auto;padding:70px 7%}
+      /* Botones apilados: "Portal de asistencia" debajo de "Hablemos de tu proyecto", del mismo ancho. */
+      .copy a{display:block;width:100%;max-width:340px;text-align:center}
+      .outline{margin:12px 0 0}
     }
   `],
 })

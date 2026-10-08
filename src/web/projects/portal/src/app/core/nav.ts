@@ -24,6 +24,7 @@ export function navFor(role: PortalRole | undefined, viewingClient: string | nul
       { label: 'Operación', items: [
         { label: 'Clientes', link: '/admin/clients', icon: 'building' },
         { label: 'Tickets', link: '/admin/tickets', icon: 'ticket' },
+        { label: 'Pagos por confirmar', link: '/admin/transfer-reports', icon: 'wallet' },
         { label: 'Productos', link: '/admin/products', icon: 'layers' },
         { label: 'Videos del sitio', link: '/admin/learning-videos', icon: 'play' },
       ] },

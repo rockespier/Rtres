@@ -5,13 +5,14 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Rtres.Api.Jobs;
+using Rtres.Api.Services;
 using Rtres.Domain;
 using Rtres.Infrastructure.Persistence;
 
 namespace Rtres.Api.Controllers;
 
 [ApiController, Authorize, Route("api")]
-public sealed class PortalController(RtresDbContext db, IBackgroundJobClient jobs, INotificationSender notifications, IConfiguration configuration, ILogger<PortalController> logger) : ControllerBase
+public sealed class PortalController(RtresDbContext db, IBackgroundJobClient jobs, INotificationSender notifications, IConfiguration configuration, ILogger<PortalController> logger, BankTransferService transfers) : ControllerBase
 {
     private Guid UserId => Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
     private bool IsSuperAdmin => User.IsInRole(nameof(UserRole.SuperAdmin));
@@ -45,7 +46,13 @@ public sealed class PortalController(RtresDbContext db, IBackgroundJobClient job
         var items = await db.ClientProducts.Include(x => x.Product).Include(x => x.Project).Where(x => x.ClientId == id).ToListAsync(ct);
         // Precios sin IGV: se indica cuánto IGV se suma a cada producto para que el portal muestre "+ IGV".
         var client = await db.Clients.SingleOrDefaultAsync(x => x.Id == id, ct); var igvRate = await db.IgvRateAsync(ct);
-        foreach (var item in items) item.AppliedIgvRate = client is null || item.Product is null ? 0m : ClientProductPricing.IgvRateFor(client, item.Product, igvRate);
+        var reports = await transfers.LatestReportsAsync(items.Select(x => x.Id), ct);
+        foreach (var item in items)
+        {
+            item.AppliedIgvRate = client is null || item.Product is null ? 0m : ClientProductPricing.IgvRateFor(client, item.Product, igvRate);
+            // Solo interesa en la tarjeta mientras se revisa o si se rechazó; un pago aprobado ya se ve en el estado del producto.
+            item.TransferReport = reports.TryGetValue(item.Id, out var report) && report.Status != TransferReportStatus.Aprobado ? report : null;
+        }
         return Ok(items);
     }
     [HttpGet("projects")] public async Task<IActionResult> Projects(Guid? clientId, CancellationToken ct) { var error = ResolveClientId(clientId, out var id); if (error is not null) return error; var projects = await db.Projects.Include(x => x.Repositories).Where(x => x.ClientId == id).ToListAsync(ct); foreach (var p in projects) p.Repositories = [.. p.Repositories.OrderByDescending(r => r.IsDefault).ThenBy(r => r.Name)]; return Ok(projects); }

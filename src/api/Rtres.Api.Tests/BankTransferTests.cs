@@ -47,8 +47,8 @@ public class BankTransferTests
         var controller = PayPalPaymentTests.PaymentsControllerFor(db);
         controller.ControllerContext.HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity([new Claim("client_id", seed.Client.Id.ToString()), new Claim(ClaimTypes.Role, "Cliente")], "test"));
 
-        var info = Assert.IsType<OkObjectResult>(await controller.BankTransfer(item.Id, null, CancellationToken.None)).Value!;
-        Assert.Equal((expected, includesIgv), ((decimal)info.GetType().GetProperty("amount")!.GetValue(info)!, (bool)info.GetType().GetProperty("includesIgv")!.GetValue(info)!));
+        var info = Assert.IsType<BankTransferInfoDto>(Assert.IsType<OkObjectResult>(await controller.BankTransfer(item.Id, null, CancellationToken.None)).Value);
+        Assert.Equal((expected, includesIgv), (info.Amount, info.IncludesIgv));
     }
 
     [Fact]
@@ -90,9 +90,9 @@ public class BankTransferTests
         var ok = Assert.IsType<OkObjectResult>(await controller.Subscribe(new SubscribeRequest(product.Id, seed.Project.Id, BillingCycle.Anual, PaymentMethods.Transferencia), CancellationToken.None));
         var item = await db.ClientProducts.SingleAsync();
         Assert.Equal((ClientProductStatus.Pendiente, true, null), (item.Status, item.IsManualBilling, item.PayPalOrderId)); // sin PayPal
-        var info = ok.Value!.GetType().GetProperty("bankTransfer")!.GetValue(ok.Value)!;
-        Assert.Equal("BCP Soles 123-456", info.GetType().GetProperty("instructions")!.GetValue(info));
-        Assert.Equal(120m, info.GetType().GetProperty("amount")!.GetValue(info));
+        var info = Assert.IsType<BankTransferInfoDto>(ok.Value!.GetType().GetProperty("bankTransfer")!.GetValue(ok.Value));
+        Assert.Equal("BCP Soles 123-456", info.Instructions);
+        Assert.Equal(120m, info.Amount);
 
         // Rtres recibe el aviso del pedido (al email del equipo, no al del cliente).
         var notice = Assert.Single(notifications.Sent);
