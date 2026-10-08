@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Rtres.Api.Controllers;
+using Rtres.Api.Jobs;
 using Rtres.Domain;
 using Rtres.Infrastructure.Persistence;
 
@@ -18,7 +19,7 @@ public class ExpenseImportTests
         var admin = Admin(db);
 
         // Se parte de la plantilla descargable: así el test también cubre que sus columnas coinciden con el importador.
-        var template = Assert.IsType<FileContentResult>(admin.ExpenseTemplate());
+        var template = Assert.IsType<FileContentResult>(await admin.ExpenseTemplate(CancellationToken.None));
         using var book = new XLWorkbook(new MemoryStream(template.FileContents));
         Assert.Equal(2, book.Worksheets.Count); // Plantilla + Valores válidos
         var sheet = book.Worksheet(1);
@@ -35,7 +36,7 @@ public class ExpenseImportTests
         Assert.Equal([4, 5, 6], Prop<List<ImportError>>(ok.Value!, "errors").Select(x => x.Row));
 
         var vps = await db.Expenses.SingleAsync(x => x.Description == "Servidor VPS");
-        Assert.Equal((ExpenseCategory.Hosting, "USD", 75m, true, (BillingCycle?)BillingCycle.Mensual), (vps.Category, vps.Currency, vps.AmountPen, vps.Recurring, vps.RecurrenceCycle));
+        Assert.Equal((ExpenseCategoryIds.Hosting, "USD", 75m, true, (BillingCycle?)BillingCycle.Mensual), (vps.CategoryId, vps.Currency, vps.AmountPen, vps.Recurring, vps.RecurrenceCycle));
         var claude = await db.Expenses.SingleAsync(x => x.Description == "Claude");
         Assert.Equal((49.90m, new DateOnly(2026, 9, 28), false), (claude.Amount, claude.Date, claude.Recurring));
     }
@@ -55,7 +56,7 @@ public class ExpenseImportTests
     public async Task Ending_a_recurring_expense_removes_later_payments_of_the_series_only()
     {
         using var db = TestData.Db(out _);
-        Expense Pay(string description, int month, string currency = "USD") => new() { Description = description, Category = ExpenseCategory.SuscripcionesIA, Type = ExpenseType.Fijo, Amount = 10, AmountPen = 37, Currency = currency, Date = new DateOnly(2026, month, 7), Recurring = true, RecurrenceCycle = BillingCycle.Mensual };
+        Expense Pay(string description, int month, string currency = "USD") => new() { Description = description, CategoryId = ExpenseCategoryIds.SuscripcionesIA, Type = ExpenseType.Fijo, Amount = 10, AmountPen = 37, Currency = currency, Date = new DateOnly(2026, month, 7), Recurring = true, RecurrenceCycle = BillingCycle.Mensual };
         var series = Enumerable.Range(1, 12).Select(m => Pay("Github Copilot", m)).ToList();
         db.Expenses.AddRange(series); db.Expenses.AddRange(Pay("Claude", 11), Pay("Github Copilot", 11, "PEN")); await db.SaveChangesAsync();
         var admin = Admin(db);
@@ -74,6 +75,30 @@ public class ExpenseImportTests
 
         Assert.IsType<NoContentResult>(await admin.DeleteExpense(series[0].Id, CancellationToken.None));
         Assert.IsType<NotFoundResult>(await admin.DeleteExpense(series[0].Id, CancellationToken.None));
+    }
+
+    [Fact]
+    public async Task Recurring_expenses_schedule_the_next_payments_within_30_days()
+    {
+        using var db = TestData.Db(out _);
+        Expense Pay(string description, DateOnly date, BillingCycle cycle = BillingCycle.Mensual, DateOnly? endsAt = null) => new() { Description = description, CategoryId = ExpenseCategoryIds.SuscripcionesIA, Type = ExpenseType.Fijo, Amount = 20, AmountPen = 20, Currency = "PEN", Date = date, Recurring = true, RecurrenceCycle = cycle, RecurrenceEndsAt = endsAt };
+        db.Expenses.AddRange(
+            Pay("Claude", new(2026, 1, 31)), Pay("Claude", new(2026, 9, 30)),          // mensual, día 31
+            Pay("Dominio", new(2025, 10, 20), BillingCycle.Anual),                     // anual: toca el 20/10/2026
+            Pay("Copilot", new(2026, 3, 7), endsAt: new(2026, 3, 7)),                  // finalizado
+            Pay("Viejo", new(2026, 1, 15)));                                           // sin pagos desde enero: no se rellena el pasado
+        await db.SaveChangesAsync();
+        var job = new RecurringExpenseJob(db, Microsoft.Extensions.Logging.Abstractions.NullLogger<RecurringExpenseJob>.Instance);
+
+        var today = new DateOnly(2026, 10, 6);
+        await job.GenerateAsync(today, CancellationToken.None);
+        Assert.Equal([new DateOnly(2026, 10, 31)], db.Expenses.Where(x => x.Description == "Claude" && x.Date > today).Select(x => x.Date).ToList());
+        Assert.True(await db.Expenses.AnyAsync(x => x.Description == "Dominio" && x.Date == new DateOnly(2026, 10, 20)));
+        Assert.Equal(1, await db.Expenses.CountAsync(x => x.Description == "Copilot"));
+        Assert.Equal([new DateOnly(2026, 10, 15)], db.Expenses.Where(x => x.Description == "Viejo" && x.Date > new DateOnly(2026, 1, 15)).Select(x => x.Date).ToList());
+
+        Assert.All(db.Expenses.Where(x => x.Date > today), x => Assert.Equal(ExpenseCategoryIds.SuscripcionesIA, x.CategoryId));
+        Assert.Equal(0, await job.GenerateAsync(today, CancellationToken.None)); // idempotente
     }
 
     private static AdminController Admin(RtresDbContext db) =>

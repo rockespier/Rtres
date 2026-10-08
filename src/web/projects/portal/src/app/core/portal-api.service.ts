@@ -94,16 +94,31 @@ export interface PaymentTransactionDto { id:string; createdAt:string; product:st
 export interface AdminClientDetailDto { id:string; companyName:string; contactName:string; email:string; phone:string|null; preferredLanguage:string; isActive:boolean; requiresTaxDocument:boolean; }
 export interface AdminClientProductDto { id:string; clientId:string; projectId:string; projectName:string|null; productId:string; productName:string|null; productType:string|null; currency:string; billingCycle:string; isManualBilling:boolean; status:string; price:number|null; listPrice:number|null; discount:number|null; discountEndsAt:string|null; currentPrice:number|null; nextChargePrice:number|null; igvRate:number; nextChargeTotal:number|null; domainName:string|null; priceLabelOverride:string|null; renewsAt:string|null; nextChargeAt:string|null; }
 
-export interface TaxSettingsDto { igvRate:number; rentaRate:number; facturaSeries:string; facturaNextNumber:number; reciboSeries:string; reciboNextNumber:number; }
+export interface TaxSettingsDto { igvRate:number; rentaRate:number; facturaSeries:string; facturaNextNumber:number; reciboSeries:string; reciboNextNumber:number; ruc:string|null; isGoodTaxpayer:boolean; }
+/** Fila del cronograma SUNAT: periodo (yyyy-MM) y vencimiento por último dígito del RUC; dueDate es el que le toca a Rtres. */
+export interface TaxDueDateDto { id:string; period:string; digit0:string; digit1:string; digit2And3:string; digit4And5:string; digit6And7:string; digit8And9:string; goodTaxpayer:string; dueDate:string|null; filedAt:string|null; }
+export type TaxDueDateRequest = Pick<TaxDueDateDto,'digit0'|'digit1'|'digit2And3'|'digit4And5'|'digit6And7'|'digit8And9'|'goodTaxpayer'>;
+export interface TaxCalendarDto { ruc:string|null; isGoodTaxpayer:boolean; today:string; year:number; years:number[]; rows:TaxDueDateDto[]; next:TaxDueDateDto|null; overdue:string[]; missingNextYear:boolean; }
 export interface TaxDocumentRequest { clientProductId:string; issueDate:string; currency:string; totalAmount:number; notes:string|null; retentionAmount?:number|null; }
 export interface ExchangeRateDto { date:string; currencyCode:string; rateToPen:number; source:string; }
 export type TaxDocumentType = 'Factura'|'ReciboPorHonorarios';
 export interface TaxDocumentDto { id:string; paymentTransactionId:string|null; clientId:string; type:TaxDocumentType; series:string; number:number; issueDate:string; currency:string; baseAmount:number; igvAmount:number; totalAmount:number; notes:string|null; }
-export type ExpenseCategory = 'Hosting'|'Dominios'|'SuscripcionesIA'|'ApisPorUso'|'Sueldos'|'Otros'|'ImpuestoRenta'|'Comisiones';
+/** Video de la página Recursos del sitio. language null = los tres idiomas. */
+export interface LearningVideoDto { id:string; youtubeId:string; title:string; category:string; language:string|null; description:string|null; sortOrder:number; isPublished:boolean; }
+export interface LearningVideoRequest { url:string; title:string; category:string; language:string|null; description:string|null; isPublished:boolean; }
+/** Categoría administrable (Configuración). isSystem: sembrada por el sistema, no se elimina. */
+export interface CategoryDto { id:string; name:string; isSystem:boolean; isIncomeTax:boolean; usageCount:number; }
+/** Id fijo de la categoría de sistema "Otros" (valor por defecto de un gasto nuevo). */
+export const OTHER_EXPENSE_CATEGORY_ID = 'e0000000-0000-0000-0000-000000000005';
 export type ExpenseType = 'Fijo'|'Variable';
-export interface ExpenseDto { id:string; description:string; category:ExpenseCategory; type:ExpenseType; amount:number; currency:string; amountPen:number; date:string; recurring:boolean; recurrenceCycle:string|null; recurrenceEndsAt?:string|null; }
+export interface ExpenseDto { id:string; description:string; categoryId:string; categoryName:string; type:ExpenseType; amount:number; currency:string; amountPen:number; date:string; recurring:boolean; recurrenceCycle:string|null; recurrenceEndsAt?:string|null; }
 export interface SalesReportDto { baseImponible:number; igv:number; total:number; }
-export interface TaxSummaryReportDto { ventasGravadasPen:number; ventasNoGravadasPen:number; igvEstimado:number; rentaEstimada:number; tasa:{igvRate:number;rentaRate:number}; disclaimer:string; }
+export interface IgvMonthDto { mes:string; debitoFiscal:number; creditoFiscal:number; saldoAFavorAnterior:number; igvAPagar:number; saldoAFavorSiguiente:number; }
+export interface TaxSummaryReportDto { ventasGravadasPen:number; ventasNoGravadasPen:number; igvEstimado:number; rentaEstimada:number; tasa:{igvRate:number;rentaRate:number}; disclaimer:string; igv:Omit<IgvMonthDto,'mes'> & { meses:IgvMonthDto[] }; }
+export type PurchaseDocumentType = 'Factura'|'NotaCredito'|'NotaDebito'|'Boleta'|'ReciboPorHonorarios'|'Extranjero'|'Otro';
+export interface PurchaseDto { id:string; issueDate:string; period:string; documentType:PurchaseDocumentType; series:string; number:string; supplierTaxId:string; supplierName:string; currency:string; taxBase:number; igv:number; nonTaxable:number; total:number; exchangeRate:number; totalPen:number; igvPen:number; givesTaxCredit:boolean; taxCreditPen:number; expenseId:string|null; notes:string|null; igvWarning:boolean; }
+export interface PurchasesPageDto { items:PurchaseDto[]; totalPen:number; creditoFiscalPen:number; igvSinCreditoPen:number; }
+export interface PurchaseRequest { issueDate:string; period:string|null; documentType:PurchaseDocumentType; series:string; number:string; supplierTaxId:string; supplierName:string; currency:string; taxBase:number; igv:number; nonTaxable:number; usedForTaxedOperations:boolean; createExpense:boolean; expenseCategoryId:string|null; notes:string|null; }
 export interface ExpensesReportDto { total:number; porCategoria:{categoria:string;monto:number}[]; }
 export interface NetReportDto { ventasPen:number; gastosPen:number; utilidadOperativaPen:number; rentaRate:number; impuestosPen:number; utilidadNetaPen:number; margen:number; serie:{mes:string;ventasPen:number;gastosPen:number;impuestosPen:number;utilidadNetaPen:number}[]; disclaimer:string; }
 export interface ClientRankingRowDto { clientId:string; clientName:string; ingresosPen:number; porcentaje:number; porcentajeAcumulado:number; cobros:number; ultimoCobro:string; periodoAnteriorPen:number; variacionPorcentaje:number|null; }
@@ -183,18 +198,35 @@ export class PortalApiService {
 
   getTaxSettings() { return this.http.get<TaxSettingsDto>(`${this.base}/admin/tax-settings`); }
   updateTaxSettings(body:Partial<TaxSettingsDto>) { return this.http.patch<TaxSettingsDto>(`${this.base}/admin/tax-settings`,body); }
+  getTaxCalendar(year?:number) { return this.http.get<TaxCalendarDto>(`${this.base}/admin/tax-calendar${query({year})}`); }
+  saveTaxDueDate(period:string, body:TaxDueDateRequest) { return this.http.put<TaxDueDateDto>(`${this.base}/admin/tax-calendar/${period}`,body); }
+  setTaxPeriodFiled(id:string, filed:boolean) { return filed ? this.http.post<TaxDueDateDto>(`${this.base}/admin/tax-calendar/${id}/filed`,{}) : this.http.delete<TaxDueDateDto>(`${this.base}/admin/tax-calendar/${id}/filed`); }
+  markOverdueTaxPeriodsFiled() { return this.http.post<{marked:number}>(`${this.base}/admin/tax-calendar/filed-overdue`,{}); }
   syncExchangeRates() { return this.http.post<ExchangeRateDto[]>(`${this.base}/admin/exchange-rates/sync`,{}); }
   getExchangeRates() { return this.http.get<ExchangeRateDto[]>(`${this.base}/admin/exchange-rates`); }
   getTaxDocuments(params:{clientId?:string;month?:number;year?:number}={}) { return this.http.get<TaxDocumentDto[]>(`${this.base}/admin/tax-documents${query(params)}`); }
   createTaxDocument(body:TaxDocumentRequest) { return this.http.post<TaxDocumentDto>(`${this.base}/admin/tax-documents`,body); }
-  getExpenses(params:{month?:number;year?:number;category?:string}={}) { return this.http.get<ExpenseDto[]>(`${this.base}/admin/expenses${query(params)}`); }
-  createExpense(body:Omit<ExpenseDto,'id'|'amountPen'>) { return this.http.post<ExpenseDto>(`${this.base}/admin/expenses`,body); }
+  getLearningVideos() { return this.http.get<LearningVideoDto[]>(`${this.base}/admin/learning-videos`); }
+  saveLearningVideo(id:string|null, body:LearningVideoRequest) { return id ? this.http.put<LearningVideoDto>(`${this.base}/admin/learning-videos/${id}`,body) : this.http.post<LearningVideoDto>(`${this.base}/admin/learning-videos`,body); }
+  deleteLearningVideo(id:string) { return this.http.delete<void>(`${this.base}/admin/learning-videos/${id}`); }
+  reorderLearningVideos(ids:string[]) { return this.http.post<void>(`${this.base}/admin/learning-videos/reorder`,ids); }
+  getCategories(kind:'expense'|'product') { return this.http.get<CategoryDto[]>(`${this.base}/admin/${kind}-categories`); }
+  createCategory(kind:'expense'|'product',name:string) { return this.http.post<CategoryDto>(`${this.base}/admin/${kind}-categories`,{name}); }
+  renameCategory(kind:'expense'|'product',id:string,name:string) { return this.http.patch<void>(`${this.base}/admin/${kind}-categories/${id}`,{name}); }
+  deleteCategory(kind:'expense'|'product',id:string) { return this.http.delete<void>(`${this.base}/admin/${kind}-categories/${id}`); }
+  getExpenses(params:{month?:number;year?:number;categoryId?:string}={}) { return this.http.get<ExpenseDto[]>(`${this.base}/admin/expenses${query(params)}`); }
+  createExpense(body:Omit<ExpenseDto,'id'|'amountPen'|'categoryName'>) { return this.http.post<ExpenseDto>(`${this.base}/admin/expenses`,body); }
   deleteExpense(id:string) { return this.http.delete<void>(`${this.base}/admin/expenses/${id}`); }
   /** dryRun: solo cuenta los pagos que se borrarían, para confirmarlo antes. */
   endExpenseRecurrence(id:string,endsAt:string,dryRun:boolean) { return this.http.post<{removed:number;kept:number;removedTotalPen:number}>(`${this.base}/admin/expenses/${id}/end-recurrence?dryRun=${dryRun}`,{endsAt}); }
   resumeExpenseRecurrence(id:string) { return this.http.delete<void>(`${this.base}/admin/expenses/${id}/end-recurrence`); }
-  updateExpense(id:string,body:Partial<Omit<ExpenseDto,'id'|'amountPen'>>) { return this.http.patch<ExpenseDto>(`${this.base}/admin/expenses/${id}`,body); }
+  updateExpense(id:string,body:Partial<Omit<ExpenseDto,'id'|'amountPen'|'categoryName'>>) { return this.http.patch<ExpenseDto>(`${this.base}/admin/expenses/${id}`,body); }
   getSalesReport(month:number|undefined,year:number,currency:string) { return this.http.get<SalesReportDto>(`${this.base}/admin/reports/sales${query({month,year,currency})}`); }
+  getPurchases(year:number,month?:number) { return this.http.get<PurchasesPageDto>(`${this.base}/admin/purchases${query({year,month})}`); }
+  savePurchase(id:string|null,body:PurchaseRequest) { return id ? this.http.put<PurchaseDto>(`${this.base}/admin/purchases/${id}`,body) : this.http.post<PurchaseDto>(`${this.base}/admin/purchases`,body); }
+  deletePurchase(id:string,deleteExpense:boolean) { return this.http.delete<void>(`${this.base}/admin/purchases/${id}?deleteExpense=${deleteExpense}`); }
+  importPurchases(file:File) { const data=new FormData();data.append('file',file);return this.http.post<ImportResult>(`${this.base}/admin/purchases/import`,data); }
+  purchaseTemplate() { return this.http.get(`${this.base}/admin/purchases/import/template`,{responseType:'blob'}); }
   getTaxSummaryReport(month:number|undefined,year:number) { return this.http.get<TaxSummaryReportDto>(`${this.base}/admin/reports/tax-summary${query({month,year})}`); }
   getExpensesReport(month:number|undefined,year:number) { return this.http.get<ExpensesReportDto>(`${this.base}/admin/reports/expenses${query({month,year})}`); }
   getNetReport(month:number|undefined,year:number) { return this.http.get<NetReportDto>(`${this.base}/admin/reports/net${query({month,year})}`); }

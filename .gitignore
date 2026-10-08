@@ -11,3 +11,9 @@ obj/
 # Secrets and local configuration
 .env
 appsettings.*.local.json
+
+# Artefactos de Deploy-Local.ps1
+publish/
+
+# Notas internas con credenciales: nunca al repositorio
+Documentacion/informacion.md

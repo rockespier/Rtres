@@ -1,10 +1,13 @@
 import { Component } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { CASE_LINKS } from '../../core/site-nav';
 
-interface SuccessCase { sector: string; name: string; scope: string; menu: string[]; panel: string; }
+interface SuccessCase { sector: string; name: string; scope: string; menu: string[]; panel: string; path: string; }
 
 @Component({
   selector: 'app-home-cases',
   standalone: true,
+  imports: [RouterLink],
   template: `
     <section id="casos">
       <p class="v2-label case-label" i18n="@@home.cases.label">CASOS DE ÉXITO</p>
@@ -20,6 +23,7 @@ interface SuccessCase { sector: string; name: string; scope: string; menu: strin
               <aside>◉ {{ c.menu[0] }}<br>{{ c.menu[1] }}<br>{{ c.menu[2] }}</aside>
               <div>{{ c.panel }}<hr><i></i><i></i></div>
             </div>
+            <a class="see" [routerLink]="c.path"><ng-container i18n="@@home.cases.see">Ver el caso</ng-container> <b aria-hidden="true">→</b></a>
           </article>
         }
       </div>
@@ -45,6 +49,9 @@ interface SuccessCase { sector: string; name: string; scope: string; menu: strin
     .dash aside{background:#202826;color:#fff;padding:16px;line-height:2.5;font-size:12px}
     .dash>div{padding:22px}
     .dash i{display:block;height:75px;border-bottom:1px solid var(--v2-line);background:linear-gradient(170deg,transparent 45%,var(--v2-mark) 46% 49%,transparent 50%)}
+    .see{display:inline-flex;align-items:center;gap:12px;margin:22px 0 40px;font-size:11px;letter-spacing:.2em;text-transform:uppercase;font-weight:bold}
+    .see b{font:300 24px Arial;transition:transform .25s}
+    .see:hover b{transform:translateX(6px)}
     footer{display:grid;grid-template-columns:1fr 3fr 1fr;gap:30px;align-items:center;min-height:136px;margin:0 -5vw;padding:28px 5vw;background:var(--v2-lime)}
     footer b{font-size:24px}
     footer em{display:block;font-size:15px;font-style:normal;font-weight:normal;margin-top:5px}
@@ -63,6 +70,7 @@ export class HomeCasesComponent {
       scope: $localize`:@@home.cases.1.scope:Desde 2008 · Ventas, comisiones y BI`,
       menu: ['Dashboard', $localize`:@@home.cases.1.menu2:Ventas`, $localize`:@@home.cases.1.menu3:Comisiones`],
       panel: $localize`:@@home.cases.1.menu2:Ventas`,
+      path: CASE_LINKS[0].path,
     },
     {
       sector: $localize`:@@home.cases.2.sector:SECTOR · AUTOMOTRIZ / POSVENTA`,
@@ -70,6 +78,7 @@ export class HomeCasesComponent {
       scope: $localize`:@@home.cases.2.scope:DMS · SAP · Garantías`,
       menu: [$localize`:@@home.cases.2.menu1:Taller`, $localize`:@@home.cases.2.menu2:Órdenes`, $localize`:@@home.cases.2.menu3:Garantías`],
       panel: $localize`:@@home.cases.2.panel:Operaciones`,
+      path: CASE_LINKS[1].path,
     },
   ];
 }

@@ -18,9 +18,7 @@ const ROLE_LABELS: Record<string, string> = { Cliente: 'Cliente', Admin: 'Admini
   imports: [RouterLink, RouterLinkActive, ThemeToggleComponent, IconComponent],
   template: `<aside class="sidebar" [class.sidebar-dark]="isStaff()" [class.sidebar-drawer]="drawer()">
     <div class="sidebar-top">
-      <a routerLink="/" class="wordmark" aria-label="Rtres Web Solutions, inicio" (click)="navigate.emit()">
-        <span class="wordmark-name">Rtres</span><span class="wordmark-tag">Web solutions</span>
-      </a>
+      <a routerLink="/" class="brand-logo" (click)="navigate.emit()"><img src="assets/logo-rtres.png" alt="Rtres Web Solutions, inicio" width="175" height="79"></a>
       @if (drawer()) {
         <button type="button" class="icon-btn" aria-label="Cerrar menú" (click)="navigate.emit()"><app-icon name="x"/></button>
       }

@@ -52,7 +52,7 @@ public sealed class PayPalCheckoutService(IPayPalClient payPal, IConfiguration c
     }
 
     public static string[] AllowedOrigins(IConfiguration configuration) =>
-        [configuration["Frontend:PublicUrl"] ?? "https://rtres.net", configuration["Frontend:PortalUrl"] ?? "https://portal.rtres.net", "http://localhost:4200", "http://localhost:4201"];
+        [configuration["Frontend:PublicUrl"] ?? "https://rtres.net", configuration["Frontend:PortalUrl"] ?? "https://portal.rtres.net", "http://localhost:4200", "http://localhost:4201", "http://localhost:4000"];
 
     /// <summary>URL del portal desde el que se hizo la petición (si es un origen permitido), o <c>Frontend:PortalUrl</c>.</summary>
     public static string PortalBaseUrl(HttpRequest? request, IConfiguration configuration)

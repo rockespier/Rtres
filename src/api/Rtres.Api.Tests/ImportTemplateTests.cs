@@ -19,7 +19,7 @@ public class ImportTemplateTests
         {
             (admin.ClientTemplate(), 5, "\"es,en,it\""),
             (admin.ProductTemplate(), 1, $"\"{string.Join(",", Enum.GetNames<ProductType>())}\""),
-            (admin.ExpenseTemplate(), 2, $"\"{string.Join(",", Enum.GetNames<ExpenseCategory>())}\""),
+            (admin.ExpenseTemplate(CancellationToken.None).Result, 2, $"\"{string.Join(",", ExpenseCategoryIds.Seed.Select(x => x.Name))}\""),
         })
         {
             using var book = Open(result);

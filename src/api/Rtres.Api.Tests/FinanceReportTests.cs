@@ -52,7 +52,7 @@ public class FinanceReportTests
         AddPayment(db, seed.Client.Id, new DateOnly(Year, 6, 1), 250m);
         AddPayment(db, seed.Client.Id, new DateOnly(Year, 12, 31), 50m);
         AddPayment(db, seed.Client.Id, new DateOnly(Year + 1, 1, 1), 999m);
-        db.Expenses.Add(new Expense { Description = "VPS", Category = ExpenseCategory.Hosting, Amount = 40m, AmountPen = 40m, Date = new DateOnly(Year, 6, 15) }); db.SaveChanges();
+        db.Expenses.Add(new Expense { Description = "VPS", CategoryId = ExpenseCategoryIds.Hosting, Amount = 40m, AmountPen = 40m, Date = new DateOnly(Year, 6, 15) }); db.SaveChanges();
 
         var admin = Admin(db);
         var year = Ok(await admin.NetReport(null, Year, CancellationToken.None));
@@ -69,13 +69,13 @@ public class FinanceReportTests
         using var db = TestData.Db(out var seed);
         db.TaxSettings.Add(new TaxSettings { RentaRate = 0.10m });
         AddPayment(db, seed.Client.Id, new DateOnly(Year, 4, 10), 1000m);
-        db.Expenses.Add(new Expense { Description = "Sueldo", Category = ExpenseCategory.Sueldos, Amount = 300m, AmountPen = 300m, Date = new DateOnly(Year, 4, 30) }); db.SaveChanges();
+        db.Expenses.Add(new Expense { Description = "Sueldo", CategoryId = ExpenseCategoryIds.Sueldos, Amount = 300m, AmountPen = 300m, Date = new DateOnly(Year, 4, 30) }); db.SaveChanges();
 
         var net = Ok(await Admin(db).NetReport(4, Year, CancellationToken.None));
         Assert.Equal((0.10m, 100m, 600m), (Prop(net, "rentaRate"), Prop(net, "impuestosPen"), Prop(net, "utilidadNetaPen")));
 
         // Un pago de Renta registrado no reemplaza al pago a cuenta ni se cuenta como gasto operativo.
-        db.Expenses.Add(new Expense { Description = "Pago a cuenta Renta", Category = ExpenseCategory.ImpuestoRenta, Amount = 15m, AmountPen = 15m, Date = new DateOnly(Year, 4, 20) }); db.SaveChanges();
+        db.Expenses.Add(new Expense { Description = "Pago a cuenta Renta", CategoryId = ExpenseCategoryIds.ImpuestoRenta, Amount = 15m, AmountPen = 15m, Date = new DateOnly(Year, 4, 20) }); db.SaveChanges();
         var withPayment = Ok(await Admin(db).NetReport(4, Year, CancellationToken.None));
         Assert.Equal((300m, 100m, 600m), (Prop(withPayment, "gastosPen"), Prop(withPayment, "impuestosPen"), Prop(withPayment, "utilidadNetaPen")));
     }

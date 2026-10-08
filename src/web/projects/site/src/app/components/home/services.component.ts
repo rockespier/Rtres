@@ -1,16 +1,19 @@
 import { Component } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { SERVICE_LINKS } from '../../core/site-nav';
 
-interface Service { title: string; text: string; }
+interface Service { title: string; text: string; path: string; }
 
 @Component({
   selector: 'app-home-services',
   standalone: true,
+  imports: [RouterLink],
   template: `
     <section id="servicios">
       <p class="v2-label" i18n="@@home.services.label">LO QUE HACEMOS</p>
       <h2 class="v2-display" i18n="@@home.services.title">No vendemos piezas<br>sueltas. Construimos la<br>base tecnológica de tu empresa.</h2>
       @for (s of services; track s.title; let i = $index) {
-        <a href="#contacto"><small>{{ (i + 1).toString().padStart(2, '0') }}</small><b>{{ s.title }}</b><em>{{ s.text }}</em>↗</a>
+        <a [routerLink]="s.path"><small>{{ (i + 1).toString().padStart(2, '0') }}</small><b>{{ s.title }}</b><em>{{ s.text }}</em>↗</a>
       }
     </section>
   `,
@@ -30,9 +33,9 @@ interface Service { title: string; text: string; }
 })
 export class HomeServicesComponent {
   readonly services: Service[] = [
-    { title: $localize`:@@home.services.1.title:Software a medida`, text: $localize`:@@home.services.1.text:Plataformas que ordenan procesos y automatizan tareas.` },
-    { title: $localize`:@@home.services.2.title:Apps y experiencias web`, text: $localize`:@@home.services.2.text:Productos digitales claros y rápidos.` },
-    { title: $localize`:@@home.services.3.title:Integración y automatización`, text: $localize`:@@home.services.3.text:ERP, facturación, inventario y servicios conectados.` },
-    { title: $localize`:@@home.services.4.title:Hosting, dominios y soporte`, text: $localize`:@@home.services.4.text:La operación técnica que mantiene tus sistemas disponibles.` },
+    { title: $localize`:@@home.services.1.title:Software a medida`, path: SERVICE_LINKS[0].path, text: $localize`:@@home.services.1.text:Plataformas que ordenan procesos y automatizan tareas.` },
+    { title: $localize`:@@home.services.2.title:Apps y experiencias web`, path: SERVICE_LINKS[1].path, text: $localize`:@@home.services.2.text:Productos digitales claros y rápidos.` },
+    { title: $localize`:@@home.services.3.title:Integración y automatización`, path: SERVICE_LINKS[2].path, text: $localize`:@@home.services.3.text:ERP, facturación, inventario y servicios conectados.` },
+    { title: $localize`:@@home.services.4.title:Hosting, dominios y soporte`, path: SERVICE_LINKS[3].path, text: $localize`:@@home.services.4.text:La operación técnica que mantiene tus sistemas disponibles.` },
   ];
 }

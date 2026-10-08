@@ -489,6 +489,7 @@ internal static class TestData
     public static RtresDbContext Db(out Seed seed, int? issueNumber = null)
     {
         var db = new RtresDbContext(new DbContextOptionsBuilder<RtresDbContext>().UseInMemoryDatabase(Guid.NewGuid().ToString()).Options);
+        db.Database.EnsureCreated(); // siembra las categorías de gasto de sistema (HasData)
         var client = new Client { CompanyName = "Cabalgatas Andinas", Email = "c@example.com" };
         var project = new Project { ClientId = client.Id, Name = "Web", Slug = "cabalgatas-andinas-web" };
         var repository = new ProjectRepository { ProjectId = project.Id, Owner = "rtres", Name = "cabalgatas-andinas-web", IsDefault = true };

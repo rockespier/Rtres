@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Rtres.Domain;
+using Rtres.Infrastructure.Persistence;
 
 namespace Rtres.Api.Controllers;
 
 [ApiController, Route("api/public")]
-public sealed class PublicContentController(IWordPressContentClient content) : ControllerBase
+public sealed class PublicContentController(IWordPressContentClient content, RtresDbContext db) : ControllerBase
 {
     [HttpGet("{locale}/pages/{slug}")]
     public async Task<ActionResult<WordPressPage>> GetPage(string locale, string slug, CancellationToken cancellationToken)
@@ -33,4 +35,11 @@ public sealed class PublicContentController(IWordPressContentClient content) : C
         var url = await content.GetHeroPhotoUrlAsync(cancellationToken);
         return url is null ? NotFound() : Ok(new { url });
     }
+
+    /// <summary>Cifras del sitio (Quiénes somos): clientes activos registrados en el portal. Solo el total, sin datos de nadie.</summary>
+    [HttpGet("stats")]
+    public async Task<ActionResult<PublicStatsDto>> GetStats(CancellationToken cancellationToken) =>
+        Ok(new PublicStatsDto(await db.Clients.CountAsync(x => x.IsActive, cancellationToken)));
 }
+
+public sealed record PublicStatsDto(int ActiveClients);

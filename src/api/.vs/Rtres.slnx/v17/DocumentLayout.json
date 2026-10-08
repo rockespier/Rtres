@@ -3,6 +3,14 @@
   "WorkspaceRootPath": "C:\\repo\\rtres-net\\Rtres\\src\\api\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{9CCA5FD8-8109-A310-87E9-DA65C70E0A34}|Rtres.Api\\Rtres.Api.csproj|c:\\repo\\rtres-net\\rtres\\src\\api\\rtres.api\\controllers\\learningvideoscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9CCA5FD8-8109-A310-87E9-DA65C70E0A34}|Rtres.Api\\Rtres.Api.csproj|solutionrelative:rtres.api\\controllers\\learningvideoscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9CCA5FD8-8109-A310-87E9-DA65C70E0A34}|Rtres.Api\\Rtres.Api.csproj|c:\\repo\\rtres-net\\rtres\\src\\api\\rtres.api\\controllers\\publiccontentcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9CCA5FD8-8109-A310-87E9-DA65C70E0A34}|Rtres.Api\\Rtres.Api.csproj|solutionrelative:rtres.api\\controllers\\publiccontentcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{9CCA5FD8-8109-A310-87E9-DA65C70E0A34}|Rtres.Api\\Rtres.Api.csproj|c:\\repo\\rtres-net\\rtres\\src\\api\\rtres.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{9CCA5FD8-8109-A310-87E9-DA65C70E0A34}|Rtres.Api\\Rtres.Api.csproj|solutionrelative:rtres.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
@@ -23,12 +31,38 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "LearningVideosController.cs",
+              "DocumentMoniker": "C:\\repo\\rtres-net\\Rtres\\src\\api\\Rtres.Api\\Controllers\\LearningVideosController.cs",
+              "RelativeDocumentMoniker": "Rtres.Api\\Controllers\\LearningVideosController.cs",
+              "ToolTip": "C:\\repo\\rtres-net\\Rtres\\src\\api\\Rtres.Api\\Controllers\\LearningVideosController.cs",
+              "RelativeToolTip": "Rtres.Api\\Controllers\\LearningVideosController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABkAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-07T10:54:25.451Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "PublicContentController.cs",
+              "DocumentMoniker": "C:\\repo\\rtres-net\\Rtres\\src\\api\\Rtres.Api\\Controllers\\PublicContentController.cs",
+              "RelativeDocumentMoniker": "Rtres.Api\\Controllers\\PublicContentController.cs",
+              "ToolTip": "C:\\repo\\rtres-net\\Rtres\\src\\api\\Rtres.Api\\Controllers\\PublicContentController.cs",
+              "RelativeToolTip": "Rtres.Api\\Controllers\\PublicContentController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-07T10:54:17.332Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\repo\\rtres-net\\Rtres\\src\\api\\Rtres.Api\\Program.cs",
               "RelativeDocumentMoniker": "Rtres.Api\\Program.cs",
               "ToolTip": "C:\\repo\\rtres-net\\Rtres\\src\\api\\Rtres.Api\\Program.cs",
               "RelativeToolTip": "Rtres.Api\\Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAADMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-09-25T13:13:11.39Z",
               "EditorCaption": ""

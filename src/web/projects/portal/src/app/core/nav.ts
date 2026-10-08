@@ -25,12 +25,15 @@ export function navFor(role: PortalRole | undefined, viewingClient: string | nul
         { label: 'Clientes', link: '/admin/clients', icon: 'building' },
         { label: 'Tickets', link: '/admin/tickets', icon: 'ticket' },
         { label: 'Productos', link: '/admin/products', icon: 'layers' },
+        { label: 'Videos del sitio', link: '/admin/learning-videos', icon: 'play' },
       ] },
       { label: 'Finanzas', items: [
         { label: 'Reportes', link: '/admin/reports', icon: 'chart' },
         { label: 'Documentos tributarios', link: '/admin/tax-documents', icon: 'file' },
         { label: 'Gastos', link: '/admin/expenses', icon: 'wallet' },
-        { label: 'Tasas e impuestos', link: '/admin/tax-settings', icon: 'percent' },
+        { label: 'Compras', link: '/admin/purchases', icon: 'receipt' },
+        { label: 'Vencimientos SUNAT', link: '/admin/tax-calendar', icon: 'calendar' },
+        { label: 'Configuración', link: '/admin/tax-settings', icon: 'percent' },
       ] },
     ];
     if (viewingClient) groups.push({ label: `Viendo: ${viewingClient}`, items: CLIENT_AREA.filter(i => i.link !== '/catalog') });

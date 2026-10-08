@@ -1,7 +1,12 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "C:\\repo\\rtres-net\\Rtres\\src\\api\\",
-  "Documents": [],
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{9CCA5FD8-8109-A310-87E9-DA65C70E0A34}|Rtres.Api\\Rtres.Api.csproj|c:\\repo\\rtres-net\\rtres\\src\\api\\rtres.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9CCA5FD8-8109-A310-87E9-DA65C70E0A34}|Rtres.Api\\Rtres.Api.csproj|solutionrelative:rtres.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
@@ -9,11 +14,24 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": -1,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Bookmark",
               "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\repo\\rtres-net\\Rtres\\src\\api\\Rtres.Api\\Program.cs",
+              "RelativeDocumentMoniker": "Rtres.Api\\Program.cs",
+              "ToolTip": "C:\\repo\\rtres-net\\Rtres\\src\\api\\Rtres.Api\\Program.cs",
+              "RelativeToolTip": "Rtres.Api\\Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-25T13:13:11.39Z",
+              "EditorCaption": ""
             }
           ]
         },

@@ -78,8 +78,12 @@ RecurringJob.AddOrUpdate<RenewalReminderJob>("renewal-reminders", job => job.Sen
 // 11:00 UTC = 6:00 en Lima, antes que corra cualquier otro job del día.
 RecurringJob.AddOrUpdate<ExchangeRateSyncJob>("exchange-rate-sync", job => job.SyncAsync(CancellationToken.None), Cron.Daily(11));
 // Cobros de suscripciones PayPal que no llegaron por webhook (ver PayPalReconciliationJob).
+// 12:00 UTC = 7:00 en Lima, después del tipo de cambio: programa los pagos de gastos recurrentes de los próximos 30 días.
+RecurringJob.AddOrUpdate<RecurringExpenseJob>("recurring-expenses", job => job.GenerateAsync(CancellationToken.None), Cron.Daily(12));
 // Columna "Status" de los GitHub Projects → estado del ticket (GitHub no envía webhooks de proyectos de usuario).
 RecurringJob.AddOrUpdate<GitHubProjectStatusSyncJob>("github-project-status", job => job.SyncAsync(CancellationToken.None), "*/5 * * * *");
+// 13:30 UTC = 8:30 en Lima: vencimientos de la declaración mensual de SUNAT.
+RecurringJob.AddOrUpdate<TaxDueReminderJob>("tax-due-reminders", job => job.SendAsync(CancellationToken.None), "30 13 * * *");
 RecurringJob.AddOrUpdate<PayPalReconciliationJob>("paypal-reconciliation", job => job.ReconcileAsync(CancellationToken.None), Cron.Hourly);
 app.MapControllers();
 app.Run();

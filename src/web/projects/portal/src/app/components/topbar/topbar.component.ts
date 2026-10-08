@@ -14,7 +14,7 @@ import { IconComponent } from '../icon/icon.component';
   template: `<header class="topbar">
     <div class="flex items-center gap-3 min-w-0">
       <button type="button" class="icon-btn lg:hidden" aria-label="Abrir menú" [attr.aria-expanded]="ui.mobileMenuOpen()" (click)="ui.toggleMobileMenu()"><app-icon name="menu"/></button>
-      <a routerLink="/" class="wordmark wordmark-sm lg:hidden" aria-label="Rtres, inicio"><span class="wordmark-name">Rtres</span></a>
+      <a routerLink="/" class="brand-logo brand-logo-sm lg:hidden"><img src="assets/logo-rtres.png" alt="Rtres, inicio" width="175" height="79"></a>
       <nav class="crumbs hidden sm:flex" aria-label="Ruta">
         @if (ui.breadcrumb().parentLabel; as parent) {
           <a [routerLink]="ui.breadcrumb().parentLink || '/'">{{ parent }}</a><span aria-hidden="true">/</span>

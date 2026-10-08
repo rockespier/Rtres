@@ -1,0 +1,41 @@
+# Site público estático (prerender de Angular) en el hosting Linux: /es, /en, /it.
+Options -Indexes -MultiViews
+DirectoryIndex index.html
+# Apache arma la redirección de la barra final con http:// (el SSL termina en Nginx): se hace a mano más abajo.
+DirectorySlash Off
+
+<IfModule mod_rewrite.c>
+RewriteEngine On
+
+# HTTPS y sin www. El hosting termina SSL en Nginx: se mira también X-Forwarded-Proto para no entrar en bucle.
+RewriteCond %{HTTPS} !=on
+RewriteCond %{HTTP:X-Forwarded-Proto} !https
+RewriteRule ^ https://rtres.net%{REQUEST_URI} [L,R=301]
+RewriteCond %{HTTP_HOST} ^www\. [NC]
+RewriteRule ^ https://rtres.net%{REQUEST_URI} [L,R=301]
+
+# La raíz va al español (mismo comportamiento que serve-site.mjs). URL absoluta: una relativa saldría con http://.
+RewriteRule ^$ https://rtres.net/es/ [L,R=302]
+
+# Carpeta sin barra final (/es/servicios/software-a-medida) -> con barra, directo a https.
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^(.+[^/])$ https://rtres.net/$1/ [L,R=301]
+
+# Ruta de un idioma que no existe como archivo: la resuelve el router de Angular de ese idioma.
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(es|en|it)/ /$1/index.html [L]
+</IfModule>
+
+# El HTML se revalida siempre; los .js/.css llevan hash en el nombre (build production) y pueden cachearse un año.
+<IfModule mod_headers.c>
+<FilesMatch "\.html$">
+Header set Cache-Control "no-cache"
+</FilesMatch>
+<FilesMatch "-[A-Z0-9]{8}\.(js|css)$">
+Header set Cache-Control "public, max-age=31536000, immutable"
+</FilesMatch>
+<FilesMatch "\.(png|jpe?g|webp|avif|svg|ico|woff2?)$">
+Header set Cache-Control "public, max-age=604800"
+</FilesMatch>
+</IfModule>
