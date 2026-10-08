@@ -58,7 +58,7 @@ export const SERVICES: ServiceContent[] = [
     lead: $localize`:@@service.apps.lead:Sitios, portales y aplicaciones que tus clientes entienden a la primera: rápidos, claros y pensados para vender o atender mejor.`,
     metaDescription: $localize`:@@service.apps.meta:Diseño y desarrollo de sitios web, portales de clientes, tiendas online y aplicaciones web rápidas y fáciles de usar.`,
     image: 'assets/photos/apps-phone.jpg',
-    imagePosition: '50% 55%',
+    imagePosition: '50% 42%',
     problemLabel: $localize`:@@service.problem.label:EL PROBLEMA`,
     problem: $localize`:@@service.apps.problem:Un sitio lento, difícil de actualizar o que no se ve bien en el móvil espanta a los clientes antes de que lleguen a escribirte. La primera impresión digital ya es la primera impresión.`,
     rows: [

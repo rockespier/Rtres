@@ -29,6 +29,8 @@ function describe(n: PortalNotificationDto): NotificationView {
     case 'PaymentFailed': return { ...base, tone: 'danger', title: 'No se pudo cobrar un pago', detail: company + (d['product'] ?? ''), link: '/services' };
     case 'TicketCreated': return { ...base, tone: 'info', title: `Ticket nuevo ${d['code']}`, detail: `${d['company'] ?? ''} · ${d['title'] ?? ''}`, link: '/admin/tickets' };
     case 'TransferRequested': return { ...base, tone: 'warn', title: `Pago por transferencia pendiente${amount ? ': ' + amount : ''}`, detail: `${d['company'] ?? ''} · ${d['product'] ?? ''}`, link: `/admin/clients/${d['clientId']}` };
+    case 'TransferReported': return { ...base, tone: 'warn', title: `Pago por confirmar${amount ? ': ' + amount : ''}`, detail: `${d['company'] ?? ''} · ${d['product'] ?? ''}`, link: '/admin/transfer-reports' };
+    case 'TransferRejected': return { ...base, tone: 'danger', title: 'No pudimos confirmar tu pago', detail: company + (d['product'] ?? ''), link: '/services' };
     case 'TaxDueReminder': {
       const days = Number(d['days']);
       const [y, m] = (d['period'] ?? '').split('-').map(Number);

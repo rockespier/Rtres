@@ -1,8 +1,10 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CASE_LINKS } from '../../core/site-nav';
+import { CASES, CaseContent } from '../../pages/case/case-content';
 
-interface SuccessCase { sector: string; name: string; scope: string; menu: string[]; panel: string; path: string; }
+/** shot: el mismo recorte de casos_exito.png que muestra el detalle del caso. */
+interface SuccessCase { sector: string; name: string; scope: string; shot: CaseContent['shot']; path: string; }
 
 @Component({
   selector: 'app-home-cases',
@@ -19,10 +21,7 @@ interface SuccessCase { sector: string; name: string; scope: string; menu: strin
             <small>{{ c.sector }}</small>
             <h3>{{ c.name }}</h3>
             <b>{{ c.scope }}</b>
-            <div class="dash" aria-hidden="true">
-              <aside>◉ {{ c.menu[0] }}<br>{{ c.menu[1] }}<br>{{ c.menu[2] }}</aside>
-              <div>{{ c.panel }}<hr><i></i><i></i></div>
-            </div>
+            <div class="shot" role="img" [attr.aria-label]="c.name" style="background-image:url('assets/casos_exito.png')" [style.aspect-ratio]="c.shot.ratio" [style.background-size]="c.shot.size" [style.background-position]="c.shot.position"></div>
             <a class="see" [routerLink]="c.path"><ng-container i18n="@@home.cases.see">Ver el caso</ng-container> <b aria-hidden="true">→</b></a>
           </article>
         }
@@ -45,10 +44,7 @@ interface SuccessCase { sector: string; name: string; scope: string; menu: strin
     article{padding-right:35px}
     article+article{padding-left:35px;padding-right:0;border-left:1px solid var(--v2-rule)}
     h3{font-size:40px;margin:15px 0}
-    .dash{height:270px;margin-top:25px;display:grid;grid-template-columns:130px 1fr;background:#f8f8f8}
-    .dash aside{background:#202826;color:#fff;padding:16px;line-height:2.5;font-size:12px}
-    .dash>div{padding:22px}
-    .dash i{display:block;height:75px;border-bottom:1px solid var(--v2-line);background:linear-gradient(170deg,transparent 45%,var(--v2-mark) 46% 49%,transparent 50%)}
+    .shot{width:100%;margin-top:25px;background-color:#202826;background-repeat:no-repeat;border:1px solid var(--v2-line)}
     .see{display:inline-flex;align-items:center;gap:12px;margin:22px 0 40px;font-size:11px;letter-spacing:.2em;text-transform:uppercase;font-weight:bold}
     .see b{font:300 24px Arial;transition:transform .25s}
     .see:hover b{transform:translateX(6px)}
@@ -68,17 +64,17 @@ export class HomeCasesComponent {
       sector: $localize`:@@home.cases.1.sector:SECTOR · ASISTENCIA AL VIAJERO`,
       name: 'Euroamerican Assistance',
       scope: $localize`:@@home.cases.1.scope:Desde 2008 · Ventas, comisiones y BI`,
-      menu: ['Dashboard', $localize`:@@home.cases.1.menu2:Ventas`, $localize`:@@home.cases.1.menu3:Comisiones`],
-      panel: $localize`:@@home.cases.1.menu2:Ventas`,
+      shot: shotFor(CASE_LINKS[0].path),
       path: CASE_LINKS[0].path,
     },
     {
       sector: $localize`:@@home.cases.2.sector:SECTOR · AUTOMOTRIZ / POSVENTA`,
       name: 'Grupo Crosland',
       scope: $localize`:@@home.cases.2.scope:DMS · SAP · Garantías`,
-      menu: [$localize`:@@home.cases.2.menu1:Taller`, $localize`:@@home.cases.2.menu2:Órdenes`, $localize`:@@home.cases.2.menu3:Garantías`],
-      panel: $localize`:@@home.cases.2.panel:Operaciones`,
+      shot: shotFor(CASE_LINKS[1].path),
       path: CASE_LINKS[1].path,
     },
   ];
 }
+
+function shotFor(path: string) { return CASES.find(c => path.endsWith('/' + c.slug))!.shot; }

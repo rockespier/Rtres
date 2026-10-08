@@ -55,7 +55,7 @@ public sealed class NotificationJob(RtresDbContext db, IEmailSender email, IConf
         db.PortalNotifications.Add(new PortalNotification
         {
             ClientId = clientId, Type = notification.Type.ToString(), DedupeKey = notification.DedupeKey,
-            ForStaff = notification.Type is NotificationType.TicketCreated or NotificationType.TransferRequested,
+            ForStaff = notification.Type is NotificationType.TicketCreated or NotificationType.TransferRequested or NotificationType.TransferReported,
             DataJson = JsonSerializer.Serialize(notification.Data.Where(x => x.Key != "portalUrl").ToDictionary()),
         });
         await db.SaveChangesAsync(cancellationToken);

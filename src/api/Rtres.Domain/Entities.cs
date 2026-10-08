@@ -121,7 +121,9 @@ public sealed class ClientProduct { public Guid Id { get; set; } = Guid.NewGuid(
     /// <summary>Años que cubre la orden de PayPal pendiente (<see cref="PayPalOrderId"/>): al capturarla se extiende esa cantidad.</summary>
     public int? PayPalOrderYears { get; set; }
     /// <summary>No se guarda: IGV que se suma a este producto para su cliente; lo llena el API para que el portal muestre "+ IGV".</summary>
-    public decimal? AppliedIgvRate { get; set; } }
+    public decimal? AppliedIgvRate { get; set; }
+    /// <summary>No se guarda: último pago por transferencia reportado por el cliente (en revisión o rechazado), para la tarjeta.</summary>
+    public TransferReportSummary? TransferReport { get; set; } }
 public sealed class Ticket { public Guid Id { get; set; } = Guid.NewGuid(); public string Code { get; set; } = string.Empty; public Guid ClientId { get; set; } public Guid ProjectId { get; set; } public Guid CreatedByUserId { get; set; } public TicketType Type { get; set; } public TicketStatus Status { get; set; } = TicketStatus.Abierto; public string Title { get; set; } = string.Empty; public string Description { get; set; } = string.Empty; public string? CurrentBehavior { get; set; } public string? ExpectedBehavior { get; set; } public string? StepsToReproduce { get; set; } public string? Environment { get; set; } public string? AcceptanceCriteria { get; set; } public string? EstimatedImpact { get; set; } /// <summary>Repositorio donde se crea el issue; null = el principal del proyecto (se fija al crear el issue).</summary>
     public Guid? RepositoryId { get; set; } /// <summary>Producto desde el que se registró el ticket (opcional).</summary>
     public Guid? ClientProductId { get; set; } public int? GithubIssueNumber { get; set; } public string? GithubIssueUrl { get; set; } /// <summary>Última columna "Status" vista en el GitHub Project del issue: el estado solo se aplica cuando esa columna cambia.</summary>

@@ -16,6 +16,8 @@ namespace Rtres.Infrastructure.Notifications;
 /// <item><c>AccountAccess</c>: name, company, email, password (se envía en el momento, nunca por la cola de Hangfire)</item>
 /// <item><c>TransferRequested</c>: clientId, company, product, project, amount?, currency — aviso interno para Rtres, siempre en español</item>
 /// <item><c>TicketCreated</c>: ticketId, code, title, company, project, body — aviso interno para Rtres, siempre en español</item>
+/// <item><c>TransferReported</c>: reportId, company, product, amount, currency, operation? — aviso interno para Rtres, siempre en español</item>
+/// <item><c>TransferRejected</c>: product, amount, currency, reason</item>
 /// <item><c>TaxDueReminder</c>: period (yyyy-MM), dueDate (yyyy-MM-dd), days — aviso interno para Rtres, siempre en español</item>
 /// </list>
 /// </summary>
@@ -26,7 +28,7 @@ public static class EmailTemplates
     public static (string Subject, string Html, string Text) Render(Notification notification, string? language, string portalUrl)
     {
         // Los avisos internos van al equipo de Rtres: el idioma del cliente no aplica.
-        var lang = notification.Type is NotificationType.TransferRequested or NotificationType.TicketCreated or NotificationType.TaxDueReminder ? "es" : Languages.Contains(language) ? language! : "es";
+        var lang = notification.Type is NotificationType.TransferRequested or NotificationType.TicketCreated or NotificationType.TaxDueReminder or NotificationType.TransferReported ? "es" : Languages.Contains(language) ? language! : "es";
         var d = notification.Data;
         var t = Texts[lang];
         var portal = portalUrl.TrimEnd('/');
@@ -66,9 +68,19 @@ public static class EmailTemplates
                 new[] { string.Format(t["ticket-created.body"], V("company"), V("project"), V("title")), Quote(V("body")) },
                 t["cta.ticket"], $"{portal}/admin/tickets?ticketId={V("ticketId")}"),
             NotificationType.TaxDueReminder => TaxDueReminder(t, V, portal),
+            NotificationType.TransferReported => (
+                string.Format(t["reported.subject"], V("company"), Money(lang, V("amount"), V("currency"))),
+                string.IsNullOrWhiteSpace(V("operation"))
+                    ? new[] { string.Format(t["reported.body"], V("company"), V("product"), Money(lang, V("amount"), V("currency"))), t["reported.next"] }
+                    : new[] { string.Format(t["reported.body"], V("company"), V("product"), Money(lang, V("amount"), V("currency"))), string.Format(t["reported.operation"], V("operation")), t["reported.next"] },
+                t["cta.review"], $"{portal}/admin/transfer-reports"),
+            NotificationType.TransferRejected => (
+                string.Format(t["rejected.subject"], V("product")),
+                new[] { string.Format(t["rejected.body"], Money(lang, V("amount"), V("currency")), V("product")), string.Format(t["rejected.reason"], V("reason")), t["rejected.next"] },
+                t["cta.services"], $"{portal}/services"),
             _ => throw new ArgumentOutOfRangeException(nameof(notification), notification.Type, null),
         };
-        var footer = notification.Type is NotificationType.TransferRequested or NotificationType.TicketCreated or NotificationType.TaxDueReminder ? t["footer.staff"] : t["footer"];
+        var footer = notification.Type is NotificationType.TransferRequested or NotificationType.TicketCreated or NotificationType.TaxDueReminder or NotificationType.TransferReported ? t["footer.staff"] : t["footer"];
         return (subject, Html(footer, paragraphs, cta, link), Text(footer, paragraphs, cta, link));
     }
 
@@ -176,6 +188,16 @@ public static class EmailTemplates
             ["tax-due.next"] = "Revisa el IGV y la Renta estimados en Reportes y, cuando presentes la declaración, márcala como presentada en el calendario para no recibir más avisos.",
             ["tax-due.today"] = "hoy",
             ["cta.tax-due"] = "Ver calendario",
+            ["reported.subject"] = "Pago por transferencia por confirmar: {0} — {1}",
+            ["reported.body"] = "{0} reportó una transferencia por {1}: {2}.",
+            ["reported.operation"] = "N° de operación: {0}.",
+            ["reported.next"] = "Revisa la constancia y confírmalo o recházalo desde el portal; al confirmarlo se activa el producto.",
+            ["cta.review"] = "Revisar pago",
+            ["rejected.subject"] = "No pudimos confirmar tu pago de {0}",
+            ["rejected.body"] = "Revisamos la transferencia de {0} que reportaste para {1} y no pudimos confirmarla.",
+            ["rejected.reason"] = "Motivo: {0}",
+            ["rejected.next"] = "Puedes volver a reportar el pago desde Mis servicios con los datos correctos o responder a este correo si tienes dudas.",
+            ["cta.services"] = "Ir a Mis servicios",
         },
         ["en"] = new()
         {
@@ -204,6 +226,11 @@ public static class EmailTemplates
             ["cta.reply"] = "View and reply",
             ["cta.billing"] = "View billing",
             ["footer"] = "You are receiving this email because you have active services with Rtres Web Solutions.",
+            ["rejected.subject"] = "We could not confirm your payment for {0}",
+            ["rejected.body"] = "We reviewed the {0} bank transfer you reported for {1} and could not confirm it.",
+            ["rejected.reason"] = "Reason: {0}",
+            ["rejected.next"] = "You can report the payment again from My services with the correct details, or reply to this email if you have any questions.",
+            ["cta.services"] = "Go to My services",
         },
         ["it"] = new()
         {
@@ -232,6 +259,11 @@ public static class EmailTemplates
             ["cta.reply"] = "Vedi e rispondi",
             ["cta.billing"] = "Vedi fatturazione",
             ["footer"] = "Ricevi questa email perché hai servizi attivi con Rtres Web Solutions.",
+            ["rejected.subject"] = "Non siamo riusciti a confermare il tuo pagamento per {0}",
+            ["rejected.body"] = "Abbiamo verificato il bonifico di {0} che hai segnalato per {1} e non siamo riusciti a confermarlo.",
+            ["rejected.reason"] = "Motivo: {0}",
+            ["rejected.next"] = "Puoi segnalare di nuovo il pagamento da I miei servizi con i dati corretti, oppure rispondere a questa email in caso di dubbi.",
+            ["cta.services"] = "Vai a I miei servizi",
         },
     };
 }

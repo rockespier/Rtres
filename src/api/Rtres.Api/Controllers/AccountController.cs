@@ -685,7 +685,7 @@ public sealed partial class AdminController(RtresDbContext db, PayPalCheckoutSer
         var products = await db.ClientProducts.CountAsync(x => x.ProjectId == id, ct);
         var tickets = await db.Tickets.CountAsync(x => x.ProjectId == id, ct);
         if (products + tickets > 0)
-            return Conflict(new { message = $"«{project.Name}» tiene {Count(products, "producto", "productos")}{(products > 0 && tickets > 0 ? " y " : "")}{Count(tickets, "ticket", "tickets")}: muévelos o elimínalos antes de borrar el proyecto." });
+            return Conflict(new { message = $"«{project.Name}» tiene {Count(products, "producto", "productos")}{(products > 0 && tickets > 0 ? " y " : "")}{Count(tickets, "ticket", "tickets")}: {(products > 0 ? "muévelos a otro proyecto o elimínalos desde la tabla de productos" : "los tickets conservan el historial del proyecto, así que no se puede borrar")}." });
         db.ProjectRepositories.RemoveRange(project.Repositories); db.Projects.Remove(project);
         await db.SaveChangesAsync(ct); return NoContent();
     }
@@ -809,6 +809,7 @@ public sealed partial class AdminController(RtresDbContext db, PayPalCheckoutSer
         if (!await db.Clients.AnyAsync(x => x.Id == clientId, ct) || !await db.Projects.AnyAsync(x => x.Id == request.ProjectId && x.ClientId == clientId, ct)) return NotFound();
         var product = await db.Products.FindAsync([request.ProductId], ct); if (product is null) return NotFound();
         if (request.BillingMode is not ("Manual" or "PayPal")) return BadRequest(new { message = "Modo de facturación inválido." });
+        if (request.BillingMode == "PayPal" && await db.PaymentSettings.AnyAsync(x => !x.PayPalEnabled, ct)) return BadRequest(new { message = "PayPal está deshabilitado en Medios de pago: asocia el producto con cobro manual." });
         var item = new ClientProduct { ClientId = clientId, ProjectId = request.ProjectId, ProductId = product.Id, BillingCycle = request.BillingCycle, IsManualBilling = request.BillingMode == "Manual", Status = request.BillingMode == "Manual" ? ClientProductStatus.Activo : ClientProductStatus.Pendiente, Price = product.BasePrice is null ? request.Price : null, DomainName = EmptyToNull(request.DomainName), PriceLabelOverride = EmptyToNull(request.PriceLabelOverride), RenewsAt = ToUtcDate(request.RenewsAt), NextChargeAt = ToUtcDate(request.NextChargeAt), Product = product };
         item.Status = RenewalReminderJob.StatusFor(item.Status, item.RenewsAt, DateTime.UtcNow);
         if (item.SetDiscount(request.Discount) is string discountError) return BadRequest(new { message = discountError });
@@ -858,7 +859,32 @@ public sealed partial class AdminController(RtresDbContext db, PayPalCheckoutSer
         var item = await db.ClientProducts.Include(x => x.Product).Include(x => x.Project).SingleOrDefaultAsync(x => x.Id == id, ct); if (item is null) return NotFound();
         if (request.Price is not null) item.Price = request.Price; if (request.Status is ClientProductStatus status) item.Status = status; if (request.BillingCycle is BillingCycle cycle) item.BillingCycle = cycle; if (request.DomainName is not null) item.DomainName = EmptyToNull(request.DomainName); if (request.PriceLabelOverride is not null) item.PriceLabelOverride = EmptyToNull(request.PriceLabelOverride); if (request.IsManualBilling is bool manual) item.IsManualBilling = manual;
         if (request.Discount is not null && item.SetDiscount(request.Discount) is string discountError) return BadRequest(new { message = discountError });
+        // Mover a otro proyecto del mismo cliente (p. ej. para poder borrar el proyecto original). Sus tickets se quedan donde están.
+        if (request.ProjectId is Guid projectId && projectId != item.ProjectId)
+        {
+            var project = await db.Projects.SingleOrDefaultAsync(x => x.Id == projectId && x.ClientId == item.ClientId, ct);
+            if (project is null) return BadRequest(new { message = "El proyecto no pertenece a este cliente." });
+            (item.ProjectId, item.Project) = (project.Id, project);
+        }
         await db.SaveChangesAsync(ct); return Ok(await ClientProductDtoAsync(item, ct));
+    }
+
+    /// <summary>
+    /// Quita un producto asociado por error o que nunca se pagó. Con pagos registrados no se borra (son ingresos con
+    /// comprobante): se marca Cancelado o se mueve de proyecto. Una suscripción de PayPal activa se cancela antes en PayPal.
+    /// </summary>
+    [HttpDelete("client-products/{id:guid}")]
+    public async Task<ActionResult> DeleteClientProduct(Guid id, CancellationToken ct)
+    {
+        var item = await db.ClientProducts.Include(x => x.Product).SingleOrDefaultAsync(x => x.Id == id, ct); if (item is null) return NotFound();
+        var payments = await db.PaymentTransactions.CountAsync(x => x.ClientProductId == id, ct);
+        if (payments > 0) return Conflict(new { message = $"«{item.Product?.Name}» tiene {Count(payments, "pago registrado", "pagos registrados")}: no se elimina para no perder el historial contable. Márcalo como Cancelado o muévelo a otro proyecto." });
+        if (!string.IsNullOrWhiteSpace(item.PayPalSubscriptionId) && item.Status != ClientProductStatus.Cancelado) return Conflict(new { message = "Tiene una suscripción de PayPal: cancélala primero (estado Cancelado) para que no siga cobrando." });
+        // Los tickets registrados desde este producto se conservan, sin el vínculo; los reportes de transferencia (sin aprobar) se descartan.
+        await db.Tickets.Where(x => x.ClientProductId == id).ForEachAsync(x => x.ClientProductId = null, ct);
+        db.TransferReports.RemoveRange(await db.TransferReports.Where(x => x.ClientProductId == id).ToListAsync(ct));
+        db.ClientProducts.Remove(item);
+        await db.SaveChangesAsync(ct); return NoContent();
     }
 
     /// <summary>
@@ -956,7 +982,7 @@ public sealed record ProductPatchRequest(ProductType? Type, string? Name, Billin
 public sealed record AssignProductRequest(Guid ProductId, Guid ProjectId, BillingCycle BillingCycle, string BillingMode, decimal? Price, string? DomainName, string? PriceLabelOverride, DateOnly? RenewsAt = null, DateOnly? NextChargeAt = null, decimal? Discount = null);
 public sealed record TransferPaymentRequest(decimal? Amount, DateOnly? PaidAt, string? Reference, int Years = 1);
 public sealed record ClientProductDatesRequest(DateOnly? RenewsAt, DateOnly? NextChargeAt);
-public sealed record ClientProductPatchRequest(decimal? Price, ClientProductStatus? Status, BillingCycle? BillingCycle, bool? IsManualBilling, string? DomainName, string? PriceLabelOverride, decimal? Discount = null);
+public sealed record ClientProductPatchRequest(decimal? Price, ClientProductStatus? Status, BillingCycle? BillingCycle, bool? IsManualBilling, string? DomainName, string? PriceLabelOverride, decimal? Discount = null, Guid? ProjectId = null);
 public sealed record ImportError(int Row, string Reason);
 /// <summary>Columna de una plantilla de importación: <paramref name="Options"/> genera una lista desplegable en Excel.</summary>
 public sealed record TemplateColumn(string Name, bool Required, string Accepted, string[]? Options = null);
