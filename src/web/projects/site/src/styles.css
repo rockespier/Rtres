@@ -254,6 +254,8 @@ input:focus,textarea:focus,select:focus,button:focus-visible,a:focus-visible{out
 }
 
 /* ===== Home v2 (diseño aprobado 2026-10) — tokens y piezas compartidas ===== */
+/* La cabecera es fija: las anclas (#contacto, #portal…) no deben quedar debajo de ella. */
+html{scroll-padding-top:80px}
 :root{
   --v2-ink:#141414;
   --v2-muted:#666;

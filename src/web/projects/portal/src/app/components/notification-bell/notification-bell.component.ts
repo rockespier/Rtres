@@ -29,6 +29,12 @@ function describe(n: PortalNotificationDto): NotificationView {
     case 'PaymentFailed': return { ...base, tone: 'danger', title: 'No se pudo cobrar un pago', detail: company + (d['product'] ?? ''), link: '/services' };
     case 'TicketCreated': return { ...base, tone: 'info', title: `Ticket nuevo ${d['code']}`, detail: `${d['company'] ?? ''} · ${d['title'] ?? ''}`, link: '/admin/tickets' };
     case 'TransferRequested': return { ...base, tone: 'warn', title: `Pago por transferencia pendiente${amount ? ': ' + amount : ''}`, detail: `${d['company'] ?? ''} · ${d['product'] ?? ''}`, link: `/admin/clients/${d['clientId']}` };
+    case 'TaxDueReminder': {
+      const days = Number(d['days']);
+      const [y, m] = (d['period'] ?? '').split('-').map(Number);
+      const period = m ? new Date(y, m - 1, 1).toLocaleDateString('es-PE', { month: 'long', year: 'numeric' }) : d['period'];
+      return { ...base, tone: days <= 1 ? 'danger' : 'warn', title: `Declaración SUNAT ${days <= 0 ? 'vence hoy' : days === 1 ? 'vence mañana' : `vence en ${days} días`}`, detail: `Periodo ${period}`, link: '/admin/tax-calendar' };
+    }
     default: return { ...base, tone: 'neutral', title: n.type, detail: company, link: '/' };
   }
 }

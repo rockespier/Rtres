@@ -268,6 +268,11 @@ html[data-theme="dark"] .band{box-shadow:inset 0 0 0 1px var(--border);}
   --side-bg:var(--night); --side-ink:var(--on-night); --side-muted:var(--on-night-muted); --side-hover:rgba(255,255,255,.06); --side-line:rgba(255,255,255,.08);
 }
 .sidebar-dark .wordmark{color:var(--on-night);}
+/* Logo de la marca (el mismo del sitio). En la barra oscura se aclara el gris para que no se pierda sobre el fondo. */
+.brand-logo{display:inline-block; line-height:0;}
+.brand-logo img{width:132px; height:auto;}
+.brand-logo-sm img{width:92px;}
+.sidebar-dark .brand-logo img, html[data-theme="dark"] .brand-logo img{filter:brightness(1.15);}
 .sidebar-dark .wordmark-tag{color:var(--on-night-muted);}
 .sidebar-top{display:flex; align-items:center; justify-content:space-between; padding:0 10px; margin-bottom:34px;}
 .sidebar-nav{display:flex; flex-direction:column; gap:4px; flex:1; min-height:0; overflow-y:auto; margin:0 -4px; padding:0 4px;}

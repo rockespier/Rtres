@@ -526,6 +526,830 @@
           <context context-type="linenumber">72</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="home.contact.photo" datatype="html">
+        <source>Equipo trabajando en un proyecto</source>
+        <target>Team working on a project</target>
+      </trans-unit>
+      <trans-unit id="site.nav.aria" datatype="html">
+        <source>Principal</source>
+        <target>Main</target>
+      </trans-unit>
+      <trans-unit id="site.nav.menu" datatype="html">
+        <source>Menú</source>
+        <target>Menu</target>
+      </trans-unit>
+      <trans-unit id="home.cases.see" datatype="html">
+        <source>Ver el caso</source>
+        <target>See the case</target>
+      </trans-unit>
+      <trans-unit id="home.support.carousel" datatype="html">
+        <source>Opiniones de clientes</source>
+        <target>Client reviews</target>
+      </trans-unit>
+      <trans-unit id="home.support.prev" datatype="html">
+        <source>Opinión anterior</source>
+        <target>Previous review</target>
+      </trans-unit>
+      <trans-unit id="home.support.next" datatype="html">
+        <source>Opinión siguiente</source>
+        <target>Next review</target>
+      </trans-unit>
+      <trans-unit id="testimonial.weston" datatype="html">
+        <source>Rtres cumple en exceso con nuestras expectativas. Hemos desarrollado un sistema de venta online que nos permite trabajar con una ventaja tecnológica, lo cual se traduce en un mejor producto para nuestros clientes.</source>
+        <target>Rtres goes well beyond our expectations. Together we built an online sales system that gives us a technological edge, which translates into a better product for our customers.</target>
+      </trans-unit>
+      <trans-unit id="testimonial.tavolara" datatype="html">
+        <source>Lo que más aprecio del servicio de Rtres es que están siempre presentes para ir mejorando mi sitio web. Tener un sitio web me ha servido para ampliar la cantidad de personas que se interesan en mi arte.</source>
+        <target>What I value most about Rtres is that they are always there to keep improving my website. Having a website has helped me reach many more people interested in my art.</target>
+      </trans-unit>
+      <trans-unit id="testimonial.mendoza" datatype="html">
+        <source>Gracias a Rtres, hoy nuestro portal web es uno de los más visitados por surfers locales y extranjeros. Probé muchos servicios similares, pero ninguno con la misma efectividad.</source>
+        <target>Thanks to Rtres, our website is now one of the most visited by local and foreign surfers. I tried many similar services, but none were as effective.</target>
+      </trans-unit>
+      <trans-unit id="testimonial.mendoza.role" datatype="html">
+        <source>Propietario, Etnia Escuela de Surf</source>
+        <target>Owner, Etnia Surf School</target>
+      </trans-unit>
+      <trans-unit id="testimonial.ayres" datatype="html">
+        <source>¡Excelente servicio! No solo crearon mi página web, también nos apoyan ante cualquier eventualidad o servicio adicional que necesitemos. Definitivamente lo recomiendo.</source>
+        <target>Excellent service! They not only built my website, they also support us with anything that comes up or any extra service we need. I definitely recommend them.</target>
+      </trans-unit>
+      <trans-unit id="testimonial.ayres.role" datatype="html">
+        <source>Propietario, Hotel Puerto Antiguo</source>
+        <target>Owner, Hotel Puerto Antiguo</target>
+      </trans-unit>
+      <trans-unit id="testimonial.falcon" datatype="html">
+        <source>Gracias, Rtres, por la implementación de las páginas de Atiq Consultoría y Atiq Educación. 100% recomendados.</source>
+        <target>Thank you, Rtres, for building the websites for Atiq Consultoría and Atiq Educación. 100% recommended.</target>
+      </trans-unit>
+      <trans-unit id="testimonial.falcon.role" datatype="html">
+        <source>Gerente general, Grupo Atiq</source>
+        <target>General manager, Grupo Atiq</target>
+      </trans-unit>
+      <trans-unit id="testimonial.vejarano" datatype="html">
+        <source>Son totalmente profesionales y siempre dispuestos a mejorar. Resuelven las dudas en el menor tiempo posible y se puede contar con ellos de inmediato. La experiencia ha sido gratificante y enriquecedora.</source>
+        <target>They are thoroughly professional and always willing to improve. They answer questions in no time and you can count on them right away. It has been a rewarding and enriching experience.</target>
+      </trans-unit>
+      <trans-unit id="testimonial.vejarano.role" datatype="html">
+        <source>Cofundadora, Khalma</source>
+        <target>Co-founder, Khalma</target>
+      </trans-unit>
+      <trans-unit id="about.label" datatype="html">
+        <source>QUIÉNES SOMOS</source>
+        <target>ABOUT US</target>
+      </trans-unit>
+      <trans-unit id="about.title" datatype="html">
+        <source>Socios tecnológicos,<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br&gt;"/>no proveedores de paso.</source>
+        <target>Technology partners,<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br&gt;"/>not passing vendors.</target>
+      </trans-unit>
+      <trans-unit id="about.lead" datatype="html">
+        <source>Desde 2007 construimos y sostenemos los sistemas de empresas que no pueden detenerse. Con sede en Lima y operación en España e Italia.</source>
+        <target>Since 2007 we have built and run the systems of companies that cannot afford to stop. Based in Lima, operating in Spain and Italy.</target>
+      </trans-unit>
+      <trans-unit id="about.story.label" datatype="html">
+        <source>NUESTRA HISTORIA</source>
+        <target>OUR STORY</target>
+      </trans-unit>
+      <trans-unit id="about.story.statement" datatype="html">
+        <source>Empezamos como una firma de desarrollo local. Hoy somos el equipo técnico de empresas en América y Europa, y varios de nuestros primeros clientes siguen con nosotros desde 2008.</source>
+        <target>We started as a local development firm. Today we are the technical team behind companies in the Americas and Europe, and several of our first clients have been with us since 2008.</target>
+      </trans-unit>
+      <trans-unit id="about.story.body" datatype="html">
+        <source>Esa continuidad no es casualidad: entendemos cómo opera cada negocio, evolucionamos sus sistemas al ritmo del mercado y seguimos ahí después de la entrega, con soporte y mejoras continuas.</source>
+        <target>That continuity is no accident: we understand how each business runs, we evolve its systems at the pace of the market, and we stay after delivery with ongoing support and improvements.</target>
+      </trans-unit>
+      <trans-unit id="about.principles.label" datatype="html">
+        <source>CÓMO PENSAMOS</source>
+        <target>HOW WE THINK</target>
+      </trans-unit>
+      <trans-unit id="about.brands.label" datatype="html">
+        <source>HAN CONFIADO EN NOSOTROS</source>
+        <target>THEY HAVE TRUSTED US</target>
+      </trans-unit>
+      <trans-unit id="about.services.label" datatype="html">
+        <source>LO QUE HACEMOS</source>
+        <target>WHAT WE DO</target>
+      </trans-unit>
+      <trans-unit id="about.cta" datatype="html">
+        <source>¿Conversamos sobre tu proyecto?</source>
+        <target>Shall we talk about your project?</target>
+      </trans-unit>
+      <trans-unit id="about.stat1" datatype="html">
+        <source>año de fundación, en Lima</source>
+        <target>year founded, in Lima</target>
+      </trans-unit>
+      <trans-unit id="about.stat2" datatype="html">
+        <source>clientes activos en nuestro portal</source>
+        <target>active clients on our portal</target>
+      </trans-unit>
+      <trans-unit id="about.stat3" datatype="html">
+        <source>países: Perú, España e Italia</source>
+        <target>countries: Peru, Spain and Italy</target>
+      </trans-unit>
+      <trans-unit id="about.stat4" datatype="html">
+        <source>talleres conectados en un solo sistema</source>
+        <target>workshops connected in one system</target>
+      </trans-unit>
+      <trans-unit id="about.p1.title" datatype="html">
+        <source>Relaciones largas</source>
+        <target>Long relationships</target>
+      </trans-unit>
+      <trans-unit id="about.p1.text" datatype="html">
+        <source>Preferimos un cliente por quince años que quince proyectos sueltos. Por eso diseñamos pensando en el mantenimiento.</source>
+        <target>We would rather have one client for fifteen years than fifteen one-off projects. That is why we design with maintenance in mind.</target>
+      </trans-unit>
+      <trans-unit id="about.p2.title" datatype="html">
+        <source>Visión global, ejecución local</source>
+        <target>Global vision, local execution</target>
+      </trans-unit>
+      <trans-unit id="about.p2.text" datatype="html">
+        <source>Entendemos el mercado peruano y su normativa, y trabajamos con los estándares de un equipo internacional.</source>
+        <target>We know the Peruvian market and its regulations, and we work to the standards of an international team.</target>
+      </trans-unit>
+      <trans-unit id="about.p3.title" datatype="html">
+        <source>Madurez para lo crítico</source>
+        <target>Built for what is critical</target>
+      </trans-unit>
+      <trans-unit id="about.p3.text" datatype="html">
+        <source>Procesos, seguridad y experiencia para sostener sistemas de los que dependen ventas, talleres y operaciones 24/7.</source>
+        <target>Processes, security and experience to run systems that sales teams, workshops and 24/7 operations depend on.</target>
+      </trans-unit>
+      <trans-unit id="about.p4.title" datatype="html">
+        <source>Calidad hasta el final</source>
+        <target>Quality to the very end</target>
+      </trans-unit>
+      <trans-unit id="about.p4.text" datatype="html">
+        <source>Desde la primera línea de código hasta el soporte posterior a la entrega, la prioridad es que funcione y se use.</source>
+        <target>From the first line of code to post-delivery support, the priority is that it works and gets used.</target>
+      </trans-unit>
+      <trans-unit id="about.brand.surf" datatype="html">
+        <source>Asociación Latinoamericana de Surf</source>
+        <target>Latin American Surfing Association</target>
+      </trans-unit>
+      <trans-unit id="about.brand.fpt" datatype="html">
+        <source>Federación Peruana de Tabla</source>
+        <target>Peruvian Surfing Federation</target>
+      </trans-unit>
+      <trans-unit id="about.metaTitle" datatype="html">
+        <source>Quiénes somos — Rtres Web Solutions</source>
+        <target>About us — Rtres Web Solutions</target>
+      </trans-unit>
+      <trans-unit id="about.meta" datatype="html">
+        <source>Rtres Web Solutions: socios tecnológicos desde 2007, con sede en Lima y operación en España e Italia. Software a medida, integración y soporte.</source>
+        <target>Rtres Web Solutions: technology partners since 2007, based in Lima and operating in Spain and Italy. Custom software, integration and support.</target>
+      </trans-unit>
+      <trans-unit id="case.eua.sector" datatype="html">
+        <source>Asistencia al viajero y seguros</source>
+        <target>Travel assistance and insurance</target>
+      </trans-unit>
+      <trans-unit id="case.eua.intro" datatype="html">
+        <source>Líder en asistencia al viajero con más de 20 años de experiencia y operación 24/7 en todo el mundo.</source>
+        <target>A leader in travel assistance with more than 20 years of experience and 24/7 operations worldwide.</target>
+      </trans-unit>
+      <trans-unit id="case.eua.meta" datatype="html">
+        <source>Caso de éxito: sistema central de ventas, comisiones, cobranza y business intelligence para Euroamerican Assistance, desde 2008.</source>
+        <target>Case study: core sales, commissions, collections and business intelligence system for Euroamerican Assistance, since 2008.</target>
+      </trans-unit>
+      <trans-unit id="case.eua.stat1" datatype="html">
+        <source>socios tecnológicos desde</source>
+        <target>technology partners since</target>
+      </trans-unit>
+      <trans-unit id="case.eua.stat2" datatype="html">
+        <source>años de operación estable</source>
+        <target>years of stable operation</target>
+      </trans-unit>
+      <trans-unit id="case.eua.stat3" datatype="html">
+        <source>operación global sostenida</source>
+        <target>global operation, nonstop</target>
+      </trans-unit>
+      <trans-unit id="case.eua.challenge" datatype="html">
+        <source>Sostener una operación crítica que no puede detenerse, con coberturas médicas y legales complejas y un flujo financiero internacional.</source>
+        <target>Running a critical operation that cannot stop, with complex medical and legal coverage and international cash flows.</target>
+      </trans-unit>
+      <trans-unit id="case.eua.row1.title" datatype="html">
+        <source>Sistema integral de ventas</source>
+        <target>End-to-end sales system</target>
+      </trans-unit>
+      <trans-unit id="case.eua.row1.text" datatype="html">
+        <source>Administración total de productos, cálculo automático de comisiones, incentivos y beneficios.</source>
+        <target>Full product management and automatic calculation of commissions, incentives and benefits.</target>
+      </trans-unit>
+      <trans-unit id="case.eua.row2.title" datatype="html">
+        <source>Business intelligence</source>
+        <target>Business intelligence</target>
+      </trans-unit>
+      <trans-unit id="case.eua.row2.text" datatype="html">
+        <source>Tableros gráficos para monitorear ingresos y reportes ejecutivos para la dirección.</source>
+        <target>Visual dashboards to track revenue and executive reports for management.</target>
+      </trans-unit>
+      <trans-unit id="case.eua.row3.title" datatype="html">
+        <source>Gestión financiera</source>
+        <target>Financial management</target>
+      </trans-unit>
+      <trans-unit id="case.eua.row3.text" datatype="html">
+        <source>Módulo de cobranza integrado para asegurar la liquidez del negocio.</source>
+        <target>Integrated collections module to keep the business liquid.</target>
+      </trans-unit>
+      <trans-unit id="case.eua.row4.title" datatype="html">
+        <source>Venta online</source>
+        <target>Online sales</target>
+      </trans-unit>
+      <trans-unit id="case.eua.row4.text" datatype="html">
+        <source>Un sistema de venta en línea que da al equipo comercial una ventaja tecnológica frente a la competencia.</source>
+        <target>An online sales system that gives the sales team a technological edge over the competition.</target>
+      </trans-unit>
+      <trans-unit id="case.eua.int1" datatype="html">
+        <source>Ventas y comisiones</source>
+        <target>Sales and commissions</target>
+      </trans-unit>
+      <trans-unit id="case.eua.int2" datatype="html">
+        <source>Cobranza</source>
+        <target>Collections</target>
+      </trans-unit>
+      <trans-unit id="case.eua.int3" datatype="html">
+        <source>Reportes ejecutivos</source>
+        <target>Executive reports</target>
+      </trans-unit>
+      <trans-unit id="case.eua.int4" datatype="html">
+        <source>Venta online</source>
+        <target>Online sales</target>
+      </trans-unit>
+      <trans-unit id="case.eua.impact" datatype="html">
+        <source>Estabilidad operativa y administrativa garantizada por más de 15 años, con un sistema que evoluciona al ritmo del negocio.</source>
+        <target>Operational and administrative stability for more than 15 years, with a system that evolves at the pace of the business.</target>
+      </trans-unit>
+      <trans-unit id="case.eua.role" datatype="html">
+        <source>Gerente comercial, Euroamerican Assistance</source>
+        <target>Sales manager, Euroamerican Assistance</target>
+      </trans-unit>
+      <trans-unit id="case.crosland.sector" datatype="html">
+        <source>Automotriz y servicio técnico</source>
+        <target>Automotive and technical service</target>
+      </trans-unit>
+      <trans-unit id="case.crosland.intro" datatype="html">
+        <source>Representante oficial en el Perú de Kawasaki y Bajaj, con una red de servicio postventa en todo el país.</source>
+        <target>Official Kawasaki and Bajaj representative in Peru, with an after-sales service network across the country.</target>
+      </trans-unit>
+      <trans-unit id="case.crosland.meta" datatype="html">
+        <source>Caso de éxito: sistemas de gestión de talleres (DMS) integrados con SAP para Kawasaki y más de 300 talleres Bajaj del Grupo Crosland.</source>
+        <target>Case study: workshop management systems (DMS) integrated with SAP for Kawasaki and more than 300 Bajaj workshops of Grupo Crosland.</target>
+      </trans-unit>
+      <trans-unit id="case.crosland.stat1" datatype="html">
+        <source>talleres Bajaj conectados</source>
+        <target>Bajaj workshops connected</target>
+      </trans-unit>
+      <trans-unit id="case.crosland.stat2" datatype="html">
+        <source>stock y garantías en tiempo real</source>
+        <target>stock and warranties in real time</target>
+      </trans-unit>
+      <trans-unit id="case.crosland.stat3" datatype="html">
+        <source>marcas: Kawasaki y Bajaj</source>
+        <target>brands: Kawasaki and Bajaj</target>
+      </trans-unit>
+      <trans-unit id="case.crosland.challenge" datatype="html">
+        <source>Digitalizar y controlar la operación de talleres mecánicos y la venta de repuestos, con una sincronización precisa con el inventario corporativo.</source>
+        <target>Digitizing and controlling workshop operations and spare-parts sales, precisely synchronized with corporate inventory.</target>
+      </trans-unit>
+      <trans-unit id="case.crosland.group1" datatype="html">
+        <source>Taller Kawasaki</source>
+        <target>Kawasaki workshop</target>
+      </trans-unit>
+      <trans-unit id="case.crosland.row1.title" datatype="html">
+        <source>Órdenes de trabajo y presupuestos</source>
+        <target>Work orders and estimates</target>
+      </trans-unit>
+      <trans-unit id="case.crosland.row1.text" datatype="html">
+        <source>Gestión completa del taller, desde la recepción del vehículo hasta la entrega.</source>
+        <target>Complete workshop management, from vehicle intake to delivery.</target>
+      </trans-unit>
+      <trans-unit id="case.crosland.row2.title" datatype="html">
+        <source>Integración con SAP</source>
+        <target>SAP integration</target>
+      </trans-unit>
+      <trans-unit id="case.crosland.row2.text" datatype="html">
+        <source>Consulta de stock en tiempo real y reserva de repuestos en almacén.</source>
+        <target>Real-time stock lookup and spare-parts reservation in the warehouse.</target>
+      </trans-unit>
+      <trans-unit id="case.crosland.row3.title" datatype="html">
+        <source>Facturación</source>
+        <target>Invoicing</target>
+      </trans-unit>
+      <trans-unit id="case.crosland.row3.text" datatype="html">
+        <source>Interfaz automática para generar los comprobantes.</source>
+        <target>Automatic interface to issue invoices and receipts.</target>
+      </trans-unit>
+      <trans-unit id="case.crosland.group2" datatype="html">
+        <source>Red de talleres Bajaj</source>
+        <target>Bajaj workshop network</target>
+      </trans-unit>
+      <trans-unit id="case.crosland.row4.title" datatype="html">
+        <source>Control de reparaciones</source>
+        <target>Repair tracking</target>
+      </trans-unit>
+      <trans-unit id="case.crosland.row4.text" datatype="html">
+        <source>Seguimiento masivo de reparaciones y de la eficiencia técnica de cada taller.</source>
+        <target>Network-wide tracking of repairs and of each workshop's technical efficiency.</target>
+      </trans-unit>
+      <trans-unit id="case.crosland.row5.title" datatype="html">
+        <source>Gestión de garantías</source>
+        <target>Warranty management</target>
+      </trans-unit>
+      <trans-unit id="case.crosland.row5.text" datatype="html">
+        <source>Creación y seguimiento de reclamos de garantía directo a fábrica.</source>
+        <target>Creation and tracking of warranty claims straight to the factory.</target>
+      </trans-unit>
+      <trans-unit id="case.crosland.row6.title" datatype="html">
+        <source>Sincronización con SAP</source>
+        <target>SAP synchronization</target>
+      </trans-unit>
+      <trans-unit id="case.crosland.row6.text" datatype="html">
+        <source>Repuestos y validación de garantías sincronizados por completo.</source>
+        <target>Spare parts and warranty validation fully synchronized.</target>
+      </trans-unit>
+      <trans-unit id="case.crosland.int2" datatype="html">
+        <source>Inventario corporativo</source>
+        <target>Corporate inventory</target>
+      </trans-unit>
+      <trans-unit id="case.crosland.int3" datatype="html">
+        <source>Facturación</source>
+        <target>Invoicing</target>
+      </trans-unit>
+      <trans-unit id="case.crosland.int4" datatype="html">
+        <source>Garantías de fábrica</source>
+        <target>Factory warranties</target>
+      </trans-unit>
+      <trans-unit id="case.crosland.impact" datatype="html">
+        <source>Un flujo de trabajo técnico optimizado y control absoluto del inventario de repuestos en toda la red.</source>
+        <target>An optimized technical workflow and full control of spare-parts inventory across the network.</target>
+      </trans-unit>
+      <trans-unit id="case.challenge.label" datatype="html">
+        <source>EL DESAFÍO</source>
+        <target>THE CHALLENGE</target>
+      </trans-unit>
+      <trans-unit id="case.solution.label" datatype="html">
+        <source>NUESTRA SOLUCIÓN</source>
+        <target>OUR SOLUTION</target>
+      </trans-unit>
+      <trans-unit id="case.integrations.label" datatype="html">
+        <source>CONECTA</source>
+        <target>CONNECTS</target>
+      </trans-unit>
+      <trans-unit id="case.impact.label" datatype="html">
+        <source>IMPACTO</source>
+        <target>IMPACT</target>
+      </trans-unit>
+      <trans-unit id="case.services.label" datatype="html">
+        <source>SERVICIOS DE ESTE PROYECTO</source>
+        <target>SERVICES IN THIS PROJECT</target>
+      </trans-unit>
+      <trans-unit id="case.next.label" datatype="html">
+        <source>SIGUIENTE CASO</source>
+        <target>NEXT CASE</target>
+      </trans-unit>
+      <trans-unit id="case.cta" datatype="html">
+        <source>¿Tu empresa enfrenta un desafío parecido?</source>
+        <target>Is your company facing a similar challenge?</target>
+      </trans-unit>
+      <trans-unit id="case.titleSuffix" datatype="html">
+        <source>Caso de éxito</source>
+        <target>Case study</target>
+      </trans-unit>
+      <trans-unit id="resources.label" datatype="html">
+        <source>RECURSOS</source>
+        <target>RESOURCES</target>
+      </trans-unit>
+      <trans-unit id="resources.title" datatype="html">
+        <source>Aprende con<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br&gt;"/>nosotros.</source>
+        <target>Learn<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br&gt;"/>with us.</target>
+      </trans-unit>
+      <trans-unit id="resources.lead" datatype="html">
+        <source>Videos que recomendamos para crecer como profesional y como empresa: marca personal, disciplina, hábitos, negocios y tecnología.</source>
+        <target>Videos we recommend to grow as a professional and as a business: personal branding, discipline, habits, business and technology.</target>
+      </trans-unit>
+      <trans-unit id="resources.loading" datatype="html">
+        <source>Cargando videos…</source>
+        <target>Loading videos…</target>
+      </trans-unit>
+      <trans-unit id="resources.error" datatype="html">
+        <source>No pudimos cargar los videos. Vuelve a intentarlo en unos minutos.</source>
+        <target>We could not load the videos. Please try again in a few minutes.</target>
+      </trans-unit>
+      <trans-unit id="resources.empty" datatype="html">
+        <source>Muy pronto compartiremos aquí nuestros videos recomendados.</source>
+        <target>We will share our recommended videos here very soon.</target>
+      </trans-unit>
+      <trans-unit id="resources.filter" datatype="html">
+        <source>Filtrar por tema</source>
+        <target>Filter by topic</target>
+      </trans-unit>
+      <trans-unit id="resources.all" datatype="html">
+        <source>Todos</source>
+        <target>All</target>
+      </trans-unit>
+      <trans-unit id="resources.cta" datatype="html">
+        <source>¿Quieres llevar tu negocio al siguiente nivel?</source>
+        <target>Want to take your business to the next level?</target>
+      </trans-unit>
+      <trans-unit id="resources.play" datatype="html">
+        <source>Reproducir</source>
+        <target>Play</target>
+      </trans-unit>
+      <trans-unit id="resources.metaTitle" datatype="html">
+        <source>Recursos — Rtres Web Solutions</source>
+        <target>Resources — Rtres Web Solutions</target>
+      </trans-unit>
+      <trans-unit id="resources.meta" datatype="html">
+        <source>Videos recomendados por Rtres para crecer como profesional y como empresa: marca personal, disciplina, hábitos, negocios y tecnología.</source>
+        <target>Videos recommended by Rtres to grow as a professional and as a business: personal branding, discipline, habits, business and technology.</target>
+      </trans-unit>
+      <trans-unit id="service.software.title" datatype="html">
+        <source>Software a medida</source>
+        <target>Custom software</target>
+      </trans-unit>
+      <trans-unit id="service.software.lead" datatype="html">
+        <source>Sistemas hechos para cómo trabaja tu empresa: ventas, comisiones, operaciones e indicadores en una sola plataforma que crece contigo.</source>
+        <target>Systems built around how your company works: sales, commissions, operations and KPIs in one platform that grows with you.</target>
+      </trans-unit>
+      <trans-unit id="service.software.meta" datatype="html">
+        <source>Desarrollo de software a medida para empresas: sistemas de ventas, comisiones, gestión de talleres y business intelligence. Desde 2007.</source>
+        <target>Custom software development for companies: sales and commission systems, workshop management and business intelligence. Since 2007.</target>
+      </trans-unit>
+      <trans-unit id="service.problem.label" datatype="html">
+        <source>EL PROBLEMA</source>
+        <target>THE PROBLEM</target>
+      </trans-unit>
+      <trans-unit id="service.software.problem" datatype="html">
+        <source>Las hojas de cálculo y los sistemas genéricos llegan hasta un punto. Después, cada proceso nuevo es un parche, la información vive en lugares distintos y nadie confía del todo en los números.</source>
+        <target>Spreadsheets and off-the-shelf systems only go so far. After that, every new process is a patch, information lives in different places and nobody fully trusts the numbers.</target>
+      </trans-unit>
+      <trans-unit id="service.software.row1.title" datatype="html">
+        <source>Sistemas de ventas y comisiones</source>
+        <target>Sales and commission systems</target>
+      </trans-unit>
+      <trans-unit id="service.software.row1.text" datatype="html">
+        <source>Productos, tarifas, agentes y cálculo automático de comisiones e incentivos, sin planillas paralelas.</source>
+        <target>Products, rates, agents and automatic calculation of commissions and incentives, with no side spreadsheets.</target>
+      </trans-unit>
+      <trans-unit id="service.software.row2.title" datatype="html">
+        <source>Gestión de operaciones</source>
+        <target>Operations management</target>
+      </trans-unit>
+      <trans-unit id="service.software.row2.text" datatype="html">
+        <source>Órdenes de trabajo, presupuestos, garantías y flujos de aprobación adaptados a tu proceso real.</source>
+        <target>Work orders, estimates, warranties and approval flows shaped around your real process.</target>
+      </trans-unit>
+      <trans-unit id="service.software.row3.title" datatype="html">
+        <source>Business intelligence</source>
+        <target>Business intelligence</target>
+      </trans-unit>
+      <trans-unit id="service.software.row3.text" datatype="html">
+        <source>Tableros e informes ejecutivos con datos al día para decidir con números, no con intuición.</source>
+        <target>Dashboards and executive reports with up-to-date data, so decisions rest on numbers, not hunches.</target>
+      </trans-unit>
+      <trans-unit id="service.software.row4.title" datatype="html">
+        <source>Cobranza y finanzas</source>
+        <target>Collections and finance</target>
+      </trans-unit>
+      <trans-unit id="service.software.row4.text" datatype="html">
+        <source>Módulos de cobranza, facturación y conciliación conectados al resto de la operación.</source>
+        <target>Collections, invoicing and reconciliation modules connected to the rest of the operation.</target>
+      </trans-unit>
+      <trans-unit id="service.software.d1" datatype="html">
+        <source>Análisis del proceso y alcance por etapas</source>
+        <target>Process analysis and phased scope</target>
+      </trans-unit>
+      <trans-unit id="service.software.d2" datatype="html">
+        <source>Prototipo navegable antes de programar</source>
+        <target>A clickable prototype before coding</target>
+      </trans-unit>
+      <trans-unit id="service.software.d3" datatype="html">
+        <source>Sistema web en producción con usuarios y permisos</source>
+        <target>A web system in production with users and permissions</target>
+      </trans-unit>
+      <trans-unit id="service.software.d4" datatype="html">
+        <source>Documentación y capacitación del equipo</source>
+        <target>Documentation and team training</target>
+      </trans-unit>
+      <trans-unit id="service.software.d5" datatype="html">
+        <source>Soporte y evolución continua desde el portal</source>
+        <target>Ongoing support and evolution through the portal</target>
+      </trans-unit>
+      <trans-unit id="service.tech.sap" datatype="html">
+        <source>Integración con SAP</source>
+        <target>SAP integration</target>
+      </trans-unit>
+      <trans-unit id="service.tech.sunat" datatype="html">
+        <source>Facturación electrónica SUNAT</source>
+        <target>SUNAT e-invoicing</target>
+      </trans-unit>
+      <trans-unit id="service.software.case" datatype="html">
+        <source>Más de 15 años sosteniendo su sistema central de ventas, comisiones y cobranza.</source>
+        <target>More than 15 years running their core sales, commissions and collections system.</target>
+      </trans-unit>
+      <trans-unit id="service.software.cta" datatype="html">
+        <source>¿Tu operación necesita un sistema propio?</source>
+        <target>Does your operation need a system of its own?</target>
+      </trans-unit>
+      <trans-unit id="service.apps.title" datatype="html">
+        <source>Apps y experiencias web</source>
+        <target>Apps and web experiences</target>
+      </trans-unit>
+      <trans-unit id="service.apps.lead" datatype="html">
+        <source>Sitios, portales y aplicaciones que tus clientes entienden a la primera: rápidos, claros y pensados para vender o atender mejor.</source>
+        <target>Websites, portals and applications your customers understand at first glance: fast, clear and designed to sell or serve better.</target>
+      </trans-unit>
+      <trans-unit id="service.apps.meta" datatype="html">
+        <source>Diseño y desarrollo de sitios web, portales de clientes, tiendas online y aplicaciones web rápidas y fáciles de usar.</source>
+        <target>Design and development of websites, client portals, online stores and fast, easy-to-use web applications.</target>
+      </trans-unit>
+      <trans-unit id="service.apps.problem" datatype="html">
+        <source>Un sitio lento, difícil de actualizar o que no se ve bien en el móvil espanta a los clientes antes de que lleguen a escribirte. La primera impresión digital ya es la primera impresión.</source>
+        <target>A slow site that is hard to update or looks wrong on mobile drives customers away before they ever contact you. Your first digital impression is your first impression.</target>
+      </trans-unit>
+      <trans-unit id="service.apps.row1.title" datatype="html">
+        <source>Sitios web corporativos</source>
+        <target>Corporate websites</target>
+      </trans-unit>
+      <trans-unit id="service.apps.row1.text" datatype="html">
+        <source>Tu marca bien presentada, en varios idiomas y fácil de actualizar por tu equipo.</source>
+        <target>Your brand well presented, in several languages and easy for your team to update.</target>
+      </trans-unit>
+      <trans-unit id="service.apps.row2.title" datatype="html">
+        <source>Portales de clientes</source>
+        <target>Client portals</target>
+      </trans-unit>
+      <trans-unit id="service.apps.row2.text" datatype="html">
+        <source>Zonas privadas para que tus clientes consulten, compren, paguen o abran solicitudes sin llamarte.</source>
+        <target>Private areas where your customers can check, buy, pay or open requests without calling you.</target>
+      </trans-unit>
+      <trans-unit id="service.apps.row3.title" datatype="html">
+        <source>Tiendas y reservas online</source>
+        <target>Online stores and bookings</target>
+      </trans-unit>
+      <trans-unit id="service.apps.row3.text" datatype="html">
+        <source>Catálogo, pagos con PayPal o tarjeta y reservas conectadas a tu operación.</source>
+        <target>Catalog, PayPal or card payments and bookings connected to your operation.</target>
+      </trans-unit>
+      <trans-unit id="service.apps.row4.title" datatype="html">
+        <source>Aplicaciones web a medida</source>
+        <target>Custom web applications</target>
+      </trans-unit>
+      <trans-unit id="service.apps.row4.text" datatype="html">
+        <source>Herramientas internas o para clientes que funcionan en cualquier dispositivo, sin instalar nada.</source>
+        <target>Internal or customer-facing tools that work on any device, with nothing to install.</target>
+      </trans-unit>
+      <trans-unit id="service.apps.d1" datatype="html">
+        <source>Diseño a medida, no una plantilla genérica</source>
+        <target>A custom design, not a generic template</target>
+      </trans-unit>
+      <trans-unit id="service.apps.d2" datatype="html">
+        <source>Versión móvil revisada pantalla por pantalla</source>
+        <target>Mobile version reviewed screen by screen</target>
+      </trans-unit>
+      <trans-unit id="service.apps.d3" datatype="html">
+        <source>Textos e imágenes optimizados para buscadores</source>
+        <target>Copy and images optimized for search engines</target>
+      </trans-unit>
+      <trans-unit id="service.apps.d4" datatype="html">
+        <source>Panel para actualizar contenidos sin programar</source>
+        <target>A panel to update content without coding</target>
+      </trans-unit>
+      <trans-unit id="service.apps.d5" datatype="html">
+        <source>Hosting, dominio y certificado SSL incluidos si los necesitas</source>
+        <target>Hosting, domain and SSL certificate included if you need them</target>
+      </trans-unit>
+      <trans-unit id="service.tech.multilang" datatype="html">
+        <source>Multi-idioma (ES · EN · IT)</source>
+        <target>Multilingual (ES · EN · IT)</target>
+      </trans-unit>
+      <trans-unit id="service.apps.cta" datatype="html">
+        <source>¿Tu web está a la altura de tu empresa?</source>
+        <target>Is your website up to the standard of your company?</target>
+      </trans-unit>
+      <trans-unit id="service.integration.title" datatype="html">
+        <source>Integración y automatización</source>
+        <target>Integration and automation</target>
+      </trans-unit>
+      <trans-unit id="service.integration.lead" datatype="html">
+        <source>Conectamos tus sistemas para que los datos viajen solos: ERP, facturación electrónica, inventario y servicios externos hablando entre sí.</source>
+        <target>We connect your systems so data moves on its own: ERP, e-invoicing, inventory and external services talking to each other.</target>
+      </trans-unit>
+      <trans-unit id="service.integration.meta" datatype="html">
+        <source>Integración con SAP, facturación electrónica SUNAT, inventarios y APIs. Automatizamos procesos para eliminar la doble digitación.</source>
+        <target>SAP integration, SUNAT e-invoicing, inventory and APIs. We automate processes to eliminate double data entry.</target>
+      </trans-unit>
+      <trans-unit id="service.integration.problem" datatype="html">
+        <source>Cuando los sistemas no se hablan, alguien copia datos de uno a otro a mano. Eso cuesta horas, genera errores y hace que nadie sepa cuál es el número correcto.</source>
+        <target>When systems do not talk to each other, someone copies data from one to the other by hand. That costs hours, causes errors and leaves nobody sure which number is right.</target>
+      </trans-unit>
+      <trans-unit id="service.integration.row1.title" datatype="html">
+        <source>Integración con SAP</source>
+        <target>SAP integration</target>
+      </trans-unit>
+      <trans-unit id="service.integration.row1.text" datatype="html">
+        <source>Consulta de stock en tiempo real, reservas en almacén y sincronización de repuestos y garantías.</source>
+        <target>Real-time stock lookup, warehouse reservations and synchronization of spare parts and warranties.</target>
+      </trans-unit>
+      <trans-unit id="service.integration.row2.title" datatype="html">
+        <source>Facturación electrónica</source>
+        <target>E-invoicing</target>
+      </trans-unit>
+      <trans-unit id="service.integration.row2.text" datatype="html">
+        <source>Emisión y validación de comprobantes con SUNAT directamente desde tu sistema.</source>
+        <target>Issue and validate tax documents with SUNAT straight from your system.</target>
+      </trans-unit>
+      <trans-unit id="service.integration.row3.title" datatype="html">
+        <source>Pagos y suscripciones</source>
+        <target>Payments and subscriptions</target>
+      </trans-unit>
+      <trans-unit id="service.integration.row3.text" datatype="html">
+        <source>Cobros únicos y recurrentes con PayPal, conciliados automáticamente con tu facturación.</source>
+        <target>One-off and recurring PayPal charges, automatically reconciled with your invoicing.</target>
+      </trans-unit>
+      <trans-unit id="service.integration.row4.title" datatype="html">
+        <source>Automatización de tareas</source>
+        <target>Task automation</target>
+      </trans-unit>
+      <trans-unit id="service.integration.row4.text" datatype="html">
+        <source>Procesos programados, alertas y reportes que se generan y envían solos.</source>
+        <target>Scheduled processes, alerts and reports that generate and send themselves.</target>
+      </trans-unit>
+      <trans-unit id="service.integration.d1" datatype="html">
+        <source>Mapa de los sistemas y del flujo de datos</source>
+        <target>A map of your systems and data flow</target>
+      </trans-unit>
+      <trans-unit id="service.integration.d2" datatype="html">
+        <source>Conectores probados con datos reales</source>
+        <target>Connectors tested with real data</target>
+      </trans-unit>
+      <trans-unit id="service.integration.d3" datatype="html">
+        <source>Registro de cada sincronización y alertas si algo falla</source>
+        <target>A log of every sync and alerts when something fails</target>
+      </trans-unit>
+      <trans-unit id="service.integration.d4" datatype="html">
+        <source>Reintentos automáticos ante caídas de servicios externos</source>
+        <target>Automatic retries when external services go down</target>
+      </trans-unit>
+      <trans-unit id="service.integration.d5" datatype="html">
+        <source>Documentación técnica para tu equipo</source>
+        <target>Technical documentation for your team</target>
+      </trans-unit>
+      <trans-unit id="service.integration.case" datatype="html">
+        <source>Talleres Kawasaki y una red de más de 300 talleres Bajaj sincronizados con SAP en tiempo real.</source>
+        <target>Kawasaki workshops and a network of more than 300 Bajaj workshops synchronized with SAP in real time.</target>
+      </trans-unit>
+      <trans-unit id="service.integration.cta" datatype="html">
+        <source>¿Cuántas horas pierde tu equipo copiando datos?</source>
+        <target>How many hours does your team lose copying data?</target>
+      </trans-unit>
+      <trans-unit id="service.hosting.title" datatype="html">
+        <source>Hosting, dominios y soporte</source>
+        <target>Hosting, domains and support</target>
+      </trans-unit>
+      <trans-unit id="service.hosting.lead" datatype="html">
+        <source>La operación técnica que mantiene tus sistemas disponibles: servidores, dominios, certificados, copias de seguridad y un equipo que responde.</source>
+        <target>The technical operation that keeps your systems available: servers, domains, certificates, backups and a team that answers.</target>
+      </trans-unit>
+      <trans-unit id="service.hosting.meta" datatype="html">
+        <source>Hosting administrado, registro y renovación de dominios, certificados SSL, backups y soporte técnico con portal de tickets.</source>
+        <target>Managed hosting, domain registration and renewal, SSL certificates, backups and technical support with a ticket portal.</target>
+      </trans-unit>
+      <trans-unit id="service.hosting.problem" datatype="html">
+        <source>Un dominio que vence sin aviso, un certificado caducado o un servidor caído un viernes por la noche. Lo técnico solo se nota cuando falla, y entonces cuesta caro.</source>
+        <target>A domain that expires without warning, an expired certificate or a server down on a Friday night. The technical side only gets noticed when it fails, and then it costs dearly.</target>
+      </trans-unit>
+      <trans-unit id="service.hosting.row1.title" datatype="html">
+        <source>Hosting administrado</source>
+        <target>Managed hosting</target>
+      </trans-unit>
+      <trans-unit id="service.hosting.row1.text" datatype="html">
+        <source>Servidores configurados, actualizados y vigilados para tus sitios y sistemas.</source>
+        <target>Servers configured, updated and monitored for your sites and systems.</target>
+      </trans-unit>
+      <trans-unit id="service.hosting.row2.title" datatype="html">
+        <source>Dominios y certificados SSL</source>
+        <target>Domains and SSL certificates</target>
+      </trans-unit>
+      <trans-unit id="service.hosting.row2.text" datatype="html">
+        <source>Registro y renovación con avisos a 30, 7 y 1 día antes del vencimiento.</source>
+        <target>Registration and renewal with reminders 30, 7 and 1 day before expiry.</target>
+      </trans-unit>
+      <trans-unit id="service.hosting.row3.title" datatype="html">
+        <source>Copias de seguridad</source>
+        <target>Backups</target>
+      </trans-unit>
+      <trans-unit id="service.hosting.row3.text" datatype="html">
+        <source>Backups programados y restauración probada, no solo prometida.</source>
+        <target>Scheduled backups and restores that are tested, not just promised.</target>
+      </trans-unit>
+      <trans-unit id="service.hosting.row4.title" datatype="html">
+        <source>Soporte con tickets</source>
+        <target>Ticket-based support</target>
+      </trans-unit>
+      <trans-unit id="service.hosting.row4.text" datatype="html">
+        <source>Reportas desde el portal de asistencia y sigues cada caso hasta que queda resuelto.</source>
+        <target>Report it from the support portal and follow each case until it is solved.</target>
+      </trans-unit>
+      <trans-unit id="service.hosting.d1" datatype="html">
+        <source>Un solo proveedor para todo lo técnico</source>
+        <target>One provider for everything technical</target>
+      </trans-unit>
+      <trans-unit id="service.hosting.d2" datatype="html">
+        <source>Renovaciones y pagos online desde el portal</source>
+        <target>Online renewals and payments from the portal</target>
+      </trans-unit>
+      <trans-unit id="service.hosting.d3" datatype="html">
+        <source>Historial de tickets y respuestas en un lugar</source>
+        <target>Ticket and reply history in one place</target>
+      </trans-unit>
+      <trans-unit id="service.hosting.d4" datatype="html">
+        <source>Avisos antes de cada vencimiento</source>
+        <target>Reminders before every expiry</target>
+      </trans-unit>
+      <trans-unit id="service.hosting.d5" datatype="html">
+        <source>Facturación en soles, dólares o euros</source>
+        <target>Billing in soles, dollars or euros</target>
+      </trans-unit>
+      <trans-unit id="service.tech.portal" datatype="html">
+        <source>Portal de asistencia Rtres</source>
+        <target>Rtres support portal</target>
+      </trans-unit>
+      <trans-unit id="service.hosting.cta" datatype="html">
+        <source>¿Sabes cuándo vence tu dominio?</source>
+        <target>Do you know when your domain expires?</target>
+      </trans-unit>
+      <trans-unit id="service.process.1.title" datatype="html">
+        <source>Entender</source>
+        <target>Understand</target>
+      </trans-unit>
+      <trans-unit id="service.process.1.text" datatype="html">
+        <source>Conversamos con quienes usan el proceso todos los días.</source>
+        <target>We talk to the people who use the process every day.</target>
+      </trans-unit>
+      <trans-unit id="service.process.2.title" datatype="html">
+        <source>Diseñar</source>
+        <target>Design</target>
+      </trans-unit>
+      <trans-unit id="service.process.2.text" datatype="html">
+        <source>Definimos alcance, prioridades y un prototipo que puedas probar.</source>
+        <target>We define scope, priorities and a prototype you can try.</target>
+      </trans-unit>
+      <trans-unit id="service.process.3.title" datatype="html">
+        <source>Construir</source>
+        <target>Build</target>
+      </trans-unit>
+      <trans-unit id="service.process.3.text" datatype="html">
+        <source>Entregas por etapas, en producción desde las primeras semanas.</source>
+        <target>Phased deliveries, in production from the first weeks.</target>
+      </trans-unit>
+      <trans-unit id="service.process.4.title" datatype="html">
+        <source>Acompañar</source>
+        <target>Support</target>
+      </trans-unit>
+      <trans-unit id="service.process.4.text" datatype="html">
+        <source>Soporte, mejoras y tickets desde el portal de asistencia.</source>
+        <target>Support, improvements and tickets through the support portal.</target>
+      </trans-unit>
+      <trans-unit id="service.label" datatype="html">
+        <source>SERVICIOS</source>
+        <target>SERVICES</target>
+      </trans-unit>
+      <trans-unit id="service.seeCase" datatype="html">
+        <source>Ver un caso real</source>
+        <target>See a real case</target>
+      </trans-unit>
+      <trans-unit id="service.build.label" datatype="html">
+        <source>QUÉ CONSTRUIMOS</source>
+        <target>WHAT WE BUILD</target>
+      </trans-unit>
+      <trans-unit id="service.deliverables.label" datatype="html">
+        <source>LO QUE RECIBES</source>
+        <target>WHAT YOU GET</target>
+      </trans-unit>
+      <trans-unit id="service.tech.label" datatype="html">
+        <source>TECNOLOGÍA E INTEGRACIONES</source>
+        <target>TECHNOLOGY AND INTEGRATIONS</target>
+      </trans-unit>
+      <trans-unit id="service.process.label" datatype="html">
+        <source>CÓMO TRABAJAMOS</source>
+        <target>HOW WE WORK</target>
+      </trans-unit>
+      <trans-unit id="service.case.label" datatype="html">
+        <source>CASO REAL</source>
+        <target>REAL CASE</target>
+      </trans-unit>
+      <trans-unit id="service.case.more" datatype="html">
+        <source>Ver el caso completo</source>
+        <target>See the full case</target>
+      </trans-unit>
+      <trans-unit id="resources.openYoutube" datatype="html">
+        <source>Ver en YouTube</source>
+        <target>Watch on YouTube</target>
+      </trans-unit>
+      <trans-unit id="resources.featured" datatype="html">
+        <source>Destacado</source>
+        <target>Featured</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

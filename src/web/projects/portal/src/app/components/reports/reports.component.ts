@@ -1,6 +1,6 @@
 import { SORTABLE } from '../../core/sortable';
-import { Component, OnInit, inject } from '@angular/core'; import { CommonModule } from '@angular/common'; import { FormsModule } from '@angular/forms'; import { Router } from '@angular/router'; import { ClientsReportDto, ExpensesReportDto, NetReportDto, PortalApiService, SalesReportDto, TaxSummaryReportDto } from '../../core/portal-api.service'; import { PortalUiService } from '../../core/portal-ui.service'; import { EnumLabelPipe } from '../../core/enum-labels'; import { MoneyPipe, formatMoney } from '../../core/money.pipe';
-@Component({selector:'app-reports',standalone:true,imports:[...SORTABLE,CommonModule,FormsModule,EnumLabelPipe,MoneyPipe],template:`
+import { Component, OnInit, inject } from '@angular/core'; import { CommonModule } from '@angular/common'; import { FormsModule } from '@angular/forms'; import { Router, RouterLink } from '@angular/router'; import { ClientsReportDto, ExpensesReportDto, NetReportDto, PortalApiService, SalesReportDto, TaxSummaryReportDto } from '../../core/portal-api.service'; import { PortalUiService } from '../../core/portal-ui.service'; import { EnumLabelPipe } from '../../core/enum-labels'; import { MoneyPipe, formatMoney } from '../../core/money.pipe';
+@Component({selector:'app-reports',standalone:true,imports:[RouterLink,...SORTABLE,CommonModule,FormsModule,EnumLabelPipe,MoneyPipe],template:`
 <header class="flex justify-between items-end gap-4 flex-wrap">
   <div>
     <p class="stat-label">Reporte financiero</p>
@@ -91,16 +91,20 @@ import { Component, OnInit, inject } from '@angular/core'; import { CommonModule
     <div class="flex justify-between items-baseline gap-4"><h2 class="font-display text-lg font-semibold">Gastos por categoría</h2><span class="font-display text-lg tabular-nums">{{expenses.total|money}}</span></div>
     <ul class="mt-4 rep-rows" *ngIf="expenses.porCategoria.length;else noExpenses">
       <li *ngFor="let c of sortedCategories()">
-        <div class="flex justify-between gap-3 text-sm"><span>{{c.categoria|enumLabel:'expenseCategory'}}</span><span class="tabular-nums"><span class="text-muted text-xs mr-2">{{share(c.monto)|number:'1.0-0'}} %</span>{{c.monto|money}}</span></div>
+        <div class="flex justify-between gap-3 text-sm"><span>{{c.categoria}}</span><span class="tabular-nums"><span class="text-muted text-xs mr-2">{{share(c.monto)|number:'1.0-0'}} %</span>{{c.monto|money}}</span></div>
         <div class="rep-track mt-2"><div class="bar-expense-strong" [style.width.%]="share(c.monto)"></div></div>
       </li>
     </ul>
     <ng-template #noExpenses><p class="text-muted text-sm mt-4">No hay gastos en este periodo.</p></ng-template>
   </section>
   <section class="card p-6">
-    <div class="flex justify-between items-baseline gap-4"><h2 class="font-display text-lg font-semibold">IGV y Renta estimados</h2><span class="font-display text-lg tabular-nums">{{(taxSummary.igvEstimado+taxSummary.rentaEstimada)|money}}</span></div>
+    <div class="flex justify-between items-baseline gap-4"><h2 class="font-display text-lg font-semibold">IGV y Renta estimados</h2><span class="font-display text-lg tabular-nums">{{(taxSummary.igv.igvAPagar+taxSummary.rentaEstimada)|money}}</span></div>
     <div class="rep-statement mt-4">
-      <div class="rep-line"><span>IGV <span class="text-muted">({{taxSummary.tasa.igvRate|percent:'1.0-2'}})</span></span><span class="tabular-nums">{{taxSummary.igvEstimado|money}}</span></div>
+      <div class="rep-line"><span>IGV de ventas <span class="text-muted">(débito, {{taxSummary.tasa.igvRate|percent:'1.0-2'}})</span></span><span class="tabular-nums">{{taxSummary.igv.debitoFiscal|money}}</span></div>
+      <div class="rep-line"><span>− Crédito fiscal <span class="text-muted">(IGV de compras · <a routerLink="/admin/purchases" class="underline">registrar</a>)</span></span><span class="tabular-nums">{{taxSummary.igv.creditoFiscal|money}}</span></div>
+      <div class="rep-line" *ngIf="taxSummary.igv.saldoAFavorAnterior"><span>− Saldo a favor del periodo anterior</span><span class="tabular-nums">{{taxSummary.igv.saldoAFavorAnterior|money}}</span></div>
+      <div class="rep-line rep-subtotal"><span>IGV a pagar</span><span class="tabular-nums">{{taxSummary.igv.igvAPagar|money}}</span></div>
+      <div class="rep-line" *ngIf="taxSummary.igv.saldoAFavorSiguiente"><span>Saldo a favor para el siguiente periodo</span><span class="tabular-nums">{{taxSummary.igv.saldoAFavorSiguiente|money}}</span></div>
       <div class="rep-line"><span>Impuesto a la Renta <span class="text-muted">({{taxSummary.tasa.rentaRate|percent:'1.0-2'}})</span></span><span class="tabular-nums">{{taxSummary.rentaEstimada|money}}</span></div>
       <div class="rep-line rep-subtotal"><span>Ventas gravadas</span><span class="tabular-nums">{{taxSummary.ventasGravadasPen|money}}</span></div>
       <div class="rep-line"><span>Ventas no gravadas <span class="text-muted">(exportación)</span></span><span class="tabular-nums">{{taxSummary.ventasNoGravadasPen|money}}</span></div>

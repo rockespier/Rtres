@@ -56,7 +56,7 @@ public sealed class AccountController(RtresDbContext db, AccessEmailService acce
 }
 
 [ApiController, Authorize(Roles = "SuperAdmin"), Route("api/admin")]
-public sealed class AdminController(RtresDbContext db, PayPalCheckoutService checkoutService, ExchangeRateSyncJob exchangeRateSync, AccessEmailService accessEmail, TaxDocumentService taxDocuments, IBackgroundJobClient jobs, INotificationSender notifications) : ControllerBase
+public sealed partial class AdminController(RtresDbContext db, PayPalCheckoutService checkoutService, ExchangeRateSyncJob exchangeRateSync, AccessEmailService accessEmail, TaxDocumentService taxDocuments, IBackgroundJobClient jobs, INotificationSender notifications) : ControllerBase
 {
     private Guid UserId => Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
     [HttpGet("tickets")]
@@ -124,6 +124,10 @@ public sealed class AdminController(RtresDbContext db, PayPalCheckoutService che
         // Bajar el correlativo por debajo de lo ya emitido repetiría números: la serie solo puede avanzar.
         if (await LastNumberAsync(TaxDocumentType.Factura, facturaSeries, ct) is int lastF && facturaNext <= lastF) return BadRequest(new { message = $"La serie {facturaSeries} de facturas ya llegó al {lastF}: el próximo correlativo debe ser mayor." });
         if (await LastNumberAsync(TaxDocumentType.ReciboPorHonorarios, reciboSeries, ct) is int lastR && reciboNext <= lastR) return BadRequest(new { message = $"La serie {reciboSeries} de recibos ya llegó al {lastR}: el próximo correlativo debe ser mayor." });
+        var ruc = request.Ruc is null ? settings.Ruc : request.Ruc.Trim() is { Length: > 0 } trimmed ? trimmed : null;
+        if (ruc is not null && !Regex.IsMatch(ruc, "^(10|15|17|20)[0-9]{9}$")) return BadRequest(new { message = "El RUC tiene 11 dígitos y empieza con 10, 15, 17 o 20." });
+        settings.Ruc = ruc;
+        if (request.IsGoodTaxpayer is bool goodTaxpayer) settings.IsGoodTaxpayer = goodTaxpayer;
         if (request.IgvRate is decimal igvRate) settings.IgvRate = igvRate;
         if (request.RentaRate is decimal rentaRate) settings.RentaRate = rentaRate;
         (settings.FacturaSeries, settings.FacturaNextNumber, settings.ReciboSeries, settings.ReciboNextNumber) = (facturaSeries, facturaNext, reciboSeries, reciboNext);
@@ -133,7 +137,7 @@ public sealed class AdminController(RtresDbContext db, PayPalCheckoutService che
     }
 
     private Task<int?> LastNumberAsync(TaxDocumentType type, string series, CancellationToken ct) => db.TaxDocuments.Where(x => x.Type == type && x.Series == series).MaxAsync(x => (int?)x.Number, ct);
-    private static object TaxSettingsDto(TaxSettings x) => new { igvRate = x.IgvRate, rentaRate = x.RentaRate, facturaSeries = x.FacturaSeries, facturaNextNumber = x.FacturaNextNumber, reciboSeries = x.ReciboSeries, reciboNextNumber = x.ReciboNextNumber };
+    private static object TaxSettingsDto(TaxSettings x) => new { igvRate = x.IgvRate, rentaRate = x.RentaRate, facturaSeries = x.FacturaSeries, facturaNextNumber = x.FacturaNextNumber, reciboSeries = x.ReciboSeries, reciboNextNumber = x.ReciboNextNumber, ruc = x.Ruc, isGoodTaxpayer = x.IsGoodTaxpayer };
 
     private async Task<TaxSettings> TaxSettingsRow(CancellationToken ct)
     {
@@ -170,24 +174,26 @@ public sealed class AdminController(RtresDbContext db, PayPalCheckoutService che
     }
 
     [HttpGet("expenses")]
-    public async Task<ActionResult> Expenses(int? month, int? year, ExpenseCategory? category, CancellationToken ct) => Ok(await db.Expenses
-        .Where(x => (month == null || x.Date.Month == month) && (year == null || x.Date.Year == year) && (category == null || x.Category == category))
+    public async Task<ActionResult> Expenses(int? month, int? year, Guid? categoryId, CancellationToken ct) => Ok(await db.Expenses.Include(x => x.Category)
+        .Where(x => (month == null || x.Date.Month == month) && (year == null || x.Date.Year == year) && (categoryId == null || x.CategoryId == categoryId))
         .OrderByDescending(x => x.Date).Select(x => ExpenseDto(x)).ToListAsync(ct));
 
     [HttpPost("expenses")]
     public async Task<ActionResult> CreateExpense(ExpenseRequest request, CancellationToken ct)
     {
         if (string.IsNullOrWhiteSpace(request.Description) || string.IsNullOrWhiteSpace(request.Currency) || request.Amount <= 0) return BadRequest(new { message = "Descripción, moneda y un monto mayor a 0 son obligatorios." });
-        var expense = new Expense { Description = request.Description.Trim(), Category = request.Category, Type = request.Type, Amount = request.Amount, Currency = request.Currency.Trim().ToUpperInvariant(), Date = request.Date, Recurring = request.Recurring, RecurrenceCycle = request.RecurrenceCycle };
+        if (!await db.ExpenseCategories.AnyAsync(x => x.Id == request.CategoryId, ct)) return BadRequest(new { message = "Elige una categoría válida." });
+        var expense = new Expense { Description = request.Description.Trim(), CategoryId = request.CategoryId, Type = request.Type, Amount = request.Amount, Currency = request.Currency.Trim().ToUpperInvariant(), Date = request.Date, Recurring = request.Recurring, RecurrenceCycle = request.RecurrenceCycle };
         expense.AmountPen = expense.Amount * await db.RateToPenAsync(expense.Currency, expense.Date, ct);
         db.Expenses.Add(expense); await db.SaveChangesAsync(ct);
+        await db.Entry(expense).Reference(x => x.Category).LoadAsync(ct);
         return Created($"/api/admin/expenses/{expense.Id}", ExpenseDto(expense));
     }
 
     [HttpGet("expenses/import/template")]
-    public IActionResult ExpenseTemplate() => File(CreateWorkbook(
+    public async Task<IActionResult> ExpenseTemplate(CancellationToken ct) => File(CreateWorkbook(
         new("Description", true, "Texto libre, ej. Servidor VPS"),
-        new("Category", true, "Una de la lista", Enum.GetNames<ExpenseCategory>()),
+        new("Category", true, "Una de la lista (Configuración → Categorías de gastos)", [.. await db.ExpenseCategories.OrderBy(x => x.SortOrder).ThenBy(x => x.Name).Select(x => x.Name).ToListAsync(ct)]),
         new("Type", true, "Fijo o Variable", Enum.GetNames<ExpenseType>()),
         new("Amount", true, "Número mayor a 0 con punto decimal, ej. 49.90"),
         new("Currency", true, "PEN, USD o EUR", ["PEN", "USD", "EUR"]),
@@ -200,9 +206,10 @@ public sealed class AdminController(RtresDbContext db, PayPalCheckoutService che
     [HttpPost("expenses/import")]
     public async Task<ActionResult> ImportExpenses(IFormFile file, CancellationToken ct)
     {
+        var categories = await db.ExpenseCategories.ToListAsync(ct);
         var (failure, created, errors) = await Import(file, "gastos", async (row, rowNumber, errors) =>
         {
-            var error = ParseExpenseRow(row, out var expense);
+            var error = ParseExpenseRow(row, categories, out var expense);
             if (error is not null) { errors.Add(new(rowNumber, error)); return false; }
             expense!.AmountPen = expense.Amount * await db.RateToPenAsync(expense.Currency, expense.Date, ct);
             db.Expenses.Add(expense); return true;
@@ -240,12 +247,14 @@ public sealed class AdminController(RtresDbContext db, PayPalCheckoutService che
         _ => null,
     };
 
-    private static string? ParseExpenseRow(IXLRow row, out Expense? expense)
+    private static string? ParseExpenseRow(IXLRow row, IReadOnlyList<ExpenseCategory> categories, out Expense? expense)
     {
         expense = null;
         var description = Cell(row, 1).Trim();
         if (string.IsNullOrWhiteSpace(description)) return "La descripción es obligatoria.";
-        if (!TryEnum<ExpenseCategory>(Cell(row, 2), out var category)) return $"Categoría inválida: usa {string.Join(", ", Enum.GetNames<ExpenseCategory>())}.";
+        // Por nombre o por el código de las de sistema (ej. "SuscripcionesIA", como en plantillas antiguas), sin importar tildes ni mayúsculas.
+        var categoryText = Fold(Cell(row, 2));
+        if (categories.FirstOrDefault(x => Fold(x.Name) == categoryText || x.Code is not null && Fold(x.Code) == categoryText) is not { } category) return $"Categoría inválida: usa {string.Join(", ", categories.OrderBy(x => x.SortOrder).Select(x => x.Name))}.";
         if (!TryEnum<ExpenseType>(Cell(row, 3), out var type)) return "Tipo inválido: usa Fijo o Variable.";
         if (ReadDecimal(row.Cell(4)) is not decimal amount || amount <= 0) return "El monto debe ser un número mayor a 0.";
         var currency = Cell(row, 5).Trim().ToUpperInvariant();
@@ -258,7 +267,7 @@ public sealed class AdminController(RtresDbContext db, PayPalCheckoutService che
             if (!TryEnum<BillingCycle>(Cell(row, 8), out var parsed) || parsed is not (BillingCycle.Mensual or BillingCycle.Anual)) return "Un gasto recurrente necesita RecurrenceCycle: Mensual o Anual.";
             cycle = parsed;
         }
-        expense = new Expense { Description = description, Category = category, Type = type, Amount = amount, Currency = currency, Date = date, Recurring = recurring, RecurrenceCycle = cycle };
+        expense = new Expense { Description = description, CategoryId = category.Id, Type = type, Amount = amount, Currency = currency, Date = date, Recurring = recurring, RecurrenceCycle = cycle };
         return null;
     }
 
@@ -311,7 +320,7 @@ public sealed class AdminController(RtresDbContext db, PayPalCheckoutService che
     private IQueryable<Expense> ExpenseSeries(Expense expense)
     {
         var description = expense.Description.Trim();
-        return db.Expenses.Where(x => x.Recurring && x.Description.Trim() == description && x.Category == expense.Category && x.Currency == expense.Currency);
+        return db.Expenses.Where(x => x.Recurring && x.Description.Trim() == description && x.CategoryId == expense.CategoryId && x.Currency == expense.Currency);
     }
 
     [HttpPatch("expenses/{id:guid}")]
@@ -319,7 +328,11 @@ public sealed class AdminController(RtresDbContext db, PayPalCheckoutService che
     {
         var expense = await db.Expenses.FindAsync([id], ct); if (expense is null) return NotFound();
         if (request.Description is not null) expense.Description = request.Description.Trim();
-        if (request.Category is ExpenseCategory category) expense.Category = category;
+        if (request.CategoryId is Guid categoryId)
+        {
+            if (!await db.ExpenseCategories.AnyAsync(x => x.Id == categoryId, ct)) return BadRequest(new { message = "Elige una categoría válida." });
+            expense.CategoryId = categoryId;
+        }
         if (request.Type is ExpenseType type) expense.Type = type;
         if (request.Amount is decimal amount) expense.Amount = amount;
         if (request.Currency is not null) expense.Currency = request.Currency.Trim().ToUpperInvariant();
@@ -328,7 +341,7 @@ public sealed class AdminController(RtresDbContext db, PayPalCheckoutService che
         if (request.RecurrenceCycle is BillingCycle cycle) expense.RecurrenceCycle = cycle;
         if (string.IsNullOrWhiteSpace(expense.Description) || string.IsNullOrWhiteSpace(expense.Currency) || expense.Amount <= 0) return BadRequest(new { message = "Descripción, moneda y un monto mayor a 0 son obligatorios." });
         expense.AmountPen = expense.Amount * await db.RateToPenAsync(expense.Currency, expense.Date, ct);
-        await db.SaveChangesAsync(ct); return Ok(ExpenseDto(expense));
+        await db.SaveChangesAsync(ct); await db.Entry(expense).Reference(x => x.Category).LoadAsync(ct); return Ok(ExpenseDto(expense));
     }
 
     private const string TaxDisclaimer = "Estimación calculada con las tasas configuradas por el usuario en Configuración de tasas — no es una liquidación oficial ante SUNAT. El IGV sale de las facturas emitidas a clientes en Perú; las ventas al exterior y los recibos por honorarios no llevan IGV. El régimen tributario real (RER/MYPE/General) puede calcular la Renta sobre una base distinta (utilidad neta, no ventas brutas); confirma con tu contador antes de declarar.";
@@ -381,16 +394,57 @@ public sealed class AdminController(RtresDbContext db, PayPalCheckoutService che
         var (from, to) = Period(month, year);
         var sales = await SalesAsync(from, to, ct);
         decimal basePen = sales.Sum(x => x.BasePen), gravadasPen = sales.Where(x => x.Gravada).Sum(x => x.BasePen);
+        var igv = (await IgvMonthsAsync(to, ct)).Where(x => x.Month >= from).ToList();
         // La Renta se estima sobre todas las ventas sin IGV (gravadas y no gravadas).
-        return Ok(new { ventasGravadasPen = Math.Round(gravadasPen, 2), ventasNoGravadasPen = Math.Round(basePen - gravadasPen, 2), igvEstimado = Math.Round(sales.Sum(x => x.IgvPen), 2), rentaEstimada = Math.Round(basePen * settings.RentaRate, 2), tasa = new { igvRate = settings.IgvRate, rentaRate = settings.RentaRate }, disclaimer = TaxDisclaimer });
+        return Ok(new
+        {
+            ventasGravadasPen = Math.Round(gravadasPen, 2), ventasNoGravadasPen = Math.Round(basePen - gravadasPen, 2), igvEstimado = Math.Round(sales.Sum(x => x.IgvPen), 2), rentaEstimada = Math.Round(basePen * settings.RentaRate, 2), tasa = new { igvRate = settings.IgvRate, rentaRate = settings.RentaRate }, disclaimer = TaxDisclaimer,
+            // Cascada del IGV: débito (ventas) − crédito fiscal (compras) − saldo a favor del mes anterior.
+            igv = new
+            {
+                debitoFiscal = Math.Round(igv.Sum(x => x.Debito), 2), creditoFiscal = Math.Round(igv.Sum(x => x.Credito), 2),
+                saldoAFavorAnterior = Math.Round(igv.FirstOrDefault()?.SaldoAnterior ?? 0m, 2), igvAPagar = Math.Round(igv.Sum(x => x.APagar), 2),
+                saldoAFavorSiguiente = Math.Round(igv.LastOrDefault()?.SaldoSiguiente ?? 0m, 2),
+                meses = igv.Select(x => new { mes = x.Month.ToString("yyyy-MM"), debitoFiscal = Math.Round(x.Debito, 2), creditoFiscal = Math.Round(x.Credito, 2), saldoAFavorAnterior = Math.Round(x.SaldoAnterior, 2), igvAPagar = Math.Round(x.APagar, 2), saldoAFavorSiguiente = Math.Round(x.SaldoSiguiente, 2) }),
+            },
+        });
+    }
+
+    internal sealed record IgvMonth(DateOnly Month, decimal Debito, decimal Credito, decimal SaldoAnterior, decimal APagar, decimal SaldoSiguiente);
+
+    /// <summary>
+    /// IGV mes a mes desde el primer mes con ventas o compras hasta <paramref name="to"/>: a pagar = débito − crédito −
+    /// saldo a favor anterior; si sale negativo, es saldo a favor y se arrastra al mes siguiente.
+    /// </summary>
+    internal async Task<List<IgvMonth>> IgvMonthsAsync(DateOnly to, CancellationToken ct)
+    {
+        var end = new DateOnly(to.Year, to.Month, 1);
+        DateOnly? firstSale = await db.PaymentTransactions.OrderBy(x => x.CreatedAt).Select(x => (DateTime?)x.CreatedAt).FirstOrDefaultAsync(ct) is DateTime d ? DateOnly.FromDateTime(d) : null;
+        DateOnly? firstPurchase = await db.Purchases.OrderBy(x => x.Period).Select(x => (DateOnly?)x.Period).FirstOrDefaultAsync(ct);
+        var first = new[] { firstSale, firstPurchase }.Where(x => x is not null).Select(x => x!.Value).DefaultIfEmpty(end).Min();
+        var start = new DateOnly(first.Year, first.Month, 1);
+        if (start > end) start = end;
+        var sales = await SalesAsync(start, end.AddMonths(1).AddDays(-1), ct);
+        var purchases = await db.Purchases.Where(x => x.Period >= start && x.Period <= end).ToListAsync(ct);
+        var months = new List<IgvMonth>(); var carry = 0m;
+        for (var month = start; month <= end; month = month.AddMonths(1))
+        {
+            var monthEnd = month.AddMonths(1).AddDays(-1);
+            var debito = sales.Where(x => x.Date >= month && x.Date <= monthEnd).Sum(x => x.IgvPen);
+            var credito = purchases.Where(x => x.Period == month).Sum(x => x.TaxCreditPen);
+            var result = debito - credito - carry;
+            months.Add(new IgvMonth(month, debito, credito, carry, Math.Max(result, 0m), Math.Max(-result, 0m)));
+            carry = Math.Max(-result, 0m);
+        }
+        return months;
     }
 
     [HttpGet("reports/expenses")]
     public async Task<ActionResult> ExpensesReport(int? month, int year, CancellationToken ct)
     {
         var (from, to) = Period(month, year);
-        var expenses = await db.Expenses.Where(x => x.Date >= from && x.Date <= to).ToListAsync(ct);
-        return Ok(new { total = Math.Round(expenses.Sum(x => x.AmountPen), 2), porCategoria = expenses.GroupBy(x => x.Category).OrderByDescending(g => g.Sum(x => x.AmountPen)).Select(g => new { categoria = g.Key.ToString(), monto = Math.Round(g.Sum(x => x.AmountPen), 2) }) });
+        var expenses = await db.Expenses.Include(x => x.Category).Where(x => x.Date >= from && x.Date <= to).ToListAsync(ct);
+        return Ok(new { total = Math.Round(expenses.Sum(x => x.AmountPen), 2), porCategoria = expenses.GroupBy(x => x.Category?.Name ?? "Sin categoría").OrderByDescending(g => g.Sum(x => x.AmountPen)).Select(g => new { categoria = g.Key, monto = Math.Round(g.Sum(x => x.AmountPen), 2) }) });
     }
 
     /// <summary>
@@ -404,7 +458,7 @@ public sealed class AdminController(RtresDbContext db, PayPalCheckoutService che
         var settings = await TaxSettingsRow(ct);
         var (from, to) = Period(month, year);
         var sales = await SalesAsync(from, to, ct);
-        var expenses = await db.Expenses.Where(x => x.Date >= from && x.Date <= to).ToListAsync(ct);
+        var expenses = await db.Expenses.Include(x => x.Category).Where(x => x.Date >= from && x.Date <= to).ToListAsync(ct);
         var result = NetFigures(sales, expenses, settings.RentaRate);
         var serie = Enumerable.Range(0, month is null ? 12 : 1).Select(i => from.AddMonths(i)).Select(start =>
         {
@@ -427,7 +481,7 @@ public sealed class AdminController(RtresDbContext db, PayPalCheckoutService che
     private static (decimal Ventas, decimal Gastos, decimal Impuestos, decimal Neta) NetFigures(IEnumerable<Sale> sales, IEnumerable<Expense> expenses, decimal rentaRate)
     {
         var ventas = sales.Sum(x => x.BasePen);
-        var gastos = expenses.Where(x => x.Category != ExpenseCategory.ImpuestoRenta).Sum(x => x.AmountPen);
+        var gastos = expenses.Where(x => x.Category?.IsIncomeTax != true).Sum(x => x.AmountPen);
         var impuestos = ventas * rentaRate;
         return (ventas, gastos, impuestos, ventas - gastos - impuestos);
     }
@@ -465,7 +519,7 @@ public sealed class AdminController(RtresDbContext db, PayPalCheckoutService che
         var settings = await TaxSettingsRow(ct);
         var (from, to) = Period(month, year);
         var sales = await SalesAsync(from, to, ct);
-        var expenses = await db.Expenses.Where(x => x.Date >= from && x.Date <= to).ToListAsync(ct);
+        var expenses = await db.Expenses.Include(x => x.Category).Where(x => x.Date >= from && x.Date <= to).ToListAsync(ct);
         var net = NetFigures(sales, expenses, settings.RentaRate);
         var (_, ranking) = await ClientRankingAsync(month, year, ct);
 
@@ -709,7 +763,7 @@ public sealed class AdminController(RtresDbContext db, PayPalCheckoutService che
     public async Task<ActionResult> CreateProduct(ProductRequest request, CancellationToken ct)
     {
         var error = ValidateProduct(request); if (error is not null) return BadRequest(new { message = error });
-        var product = ToProduct(request); db.Products.Add(product); await db.SaveChangesAsync(ct); return Created($"/api/admin/products/{product.Id}", ProductDto(product));
+        var product = ToProduct(request); db.Products.Add(product); await EnsureProductCategoryAsync(product.Category, ct); await db.SaveChangesAsync(ct); return Created($"/api/admin/products/{product.Id}", ProductDto(product));
     }
 
     [HttpPatch("products/{id:guid}")]
@@ -718,6 +772,7 @@ public sealed class AdminController(RtresDbContext db, PayPalCheckoutService che
         var product = await db.Products.FindAsync([id], ct); if (product is null) return NotFound();
         if (request.Type is ProductType type) product.Type = type; if (request.Name is not null) product.Name = request.Name.Trim(); if (request.BillingCycle is BillingCycle cycle) product.BillingCycle = cycle; if (request.BasePrice is not null) product.BasePrice = request.BasePrice; if (request.Currency is not null) product.Currency = request.Currency.Trim().ToUpperInvariant(); if (request.Description is not null) product.Description = EmptyToNull(request.Description); if (request.IsActive is bool active) product.IsActive = active; if (request.Category is not null) product.Category = EmptyToNull(request.Category); if (request.Tags is not null) product.Tags = NormalizeTags(request.Tags); if (request.AllowsTickets is bool allowsTickets) product.AllowsTickets = allowsTickets; if (request.TaxDocumentType is TaxDocumentType taxType) product.TaxDocumentType = taxType;
         if (string.IsNullOrWhiteSpace(product.Name) || string.IsNullOrWhiteSpace(product.Currency)) return BadRequest(new { message = "Nombre y moneda son obligatorios." });
+        await EnsureProductCategoryAsync(product.Category, ct);
         await db.SaveChangesAsync(ct); return Ok(ProductDto(product));
     }
 
@@ -739,11 +794,11 @@ public sealed class AdminController(RtresDbContext db, PayPalCheckoutService che
     [HttpPost("products/import")]
     public async Task<ActionResult> ImportProducts(IFormFile file, CancellationToken ct)
     {
-        var (failure, created, errors) = await Import(file, "productos", (row, rowNumber, errors) =>
+        var (failure, created, errors) = await Import(file, "productos", async (row, rowNumber, errors) =>
     {
         var error = ParseProductRow(row, out var product);
-        if (error is not null) { errors.Add(new(rowNumber, error)); return Task.FromResult(false); }
-        db.Products.Add(product!); return Task.FromResult(true);
+        if (error is not null) { errors.Add(new(rowNumber, error)); return false; }
+        db.Products.Add(product!); await EnsureProductCategoryAsync(product!.Category, ct); return true;
         }, ct);
         return failure ?? Ok(new { created, skipped = errors.Count, errors });
     }
@@ -864,6 +919,19 @@ public sealed class AdminController(RtresDbContext db, PayPalCheckoutService che
     private static string? EmptyToNull(string? value) => string.IsNullOrWhiteSpace(value) ? null : value.Trim();
     private static string? ValidateClient(ClientRequest request) => string.IsNullOrWhiteSpace(request.CompanyName) || string.IsNullOrWhiteSpace(request.ContactName) || string.IsNullOrWhiteSpace(request.Email) || !request.Email.Contains('@') ? "Empresa, contacto y email válido son obligatorios." : request.PreferredLanguage.Trim().ToLowerInvariant() is not ("es" or "en" or "it") ? "Idioma inválido." : null;
     private static string? ValidateProduct(ProductRequest request) => string.IsNullOrWhiteSpace(request.Name) || string.IsNullOrWhiteSpace(request.Currency) ? "Nombre y moneda son obligatorios." : null;
+    /// <summary>Una categoría escrita en un producto (o en la importación) que aún no existe se agrega a la lista administrable.</summary>
+    private async Task EnsureProductCategoryAsync(string? name, CancellationToken ct)
+    {
+        if (string.IsNullOrWhiteSpace(name)) return;
+        name = name.Trim();
+        if (db.ProductCategories.Local.Any(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase)) || await db.ProductCategories.AnyAsync(x => x.Name == name, ct)) return;
+        db.ProductCategories.Add(new ProductCategory { Name = name, SortOrder = await db.ProductCategories.CountAsync(ct) + db.ProductCategories.Local.Count });
+    }
+
+    /// <summary>Minúsculas y sin tildes, para comparar nombres escritos a mano.</summary>
+    internal static string Fold(string value) => new(value.Trim().ToLowerInvariant().Normalize(System.Text.NormalizationForm.FormD)
+        .Where(c => System.Globalization.CharUnicodeInfo.GetUnicodeCategory(c) != System.Globalization.UnicodeCategory.NonSpacingMark).ToArray());
+
     private static Product ToProduct(ProductRequest r) => new() { Type = r.Type, Name = r.Name.Trim(), BillingCycle = r.BillingCycle, BasePrice = r.BasePrice, Currency = r.Currency.Trim().ToUpperInvariant(), Description = EmptyToNull(r.Description), IsActive = r.IsActive, TaxDocumentType = r.TaxDocumentType, Category = EmptyToNull(r.Category), Tags = NormalizeTags(r.Tags), AllowsTickets = r.AllowsTickets };
     /// <summary>Etiquetas sin espacios sobrantes ni repetidas, separadas por ", "; null si no hay ninguna.</summary>
     private static string? NormalizeTags(string? tags) => tags?.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).Distinct(StringComparer.OrdinalIgnoreCase).ToArray() is { Length: > 0 } list ? string.Join(", ", list) : null;
@@ -874,7 +942,7 @@ public sealed class AdminController(RtresDbContext db, PayPalCheckoutService che
     /// <summary>Precios sin IGV; <c>nextChargeTotal</c> es lo que se cobra, con el IGV de <paramref name="igvRate"/> (Perú + Factura).</summary>
     private static object ClientProductDto(ClientProduct x, decimal igvRate) => new { igvRate, nextChargeTotal = x.NextChargeTotal(igvRate), id = x.Id, clientId = x.ClientId, projectId = x.ProjectId, projectName = x.Project?.Name, productId = x.ProductId, productName = x.Product?.Name, productType = x.Product?.Type.ToString(), currency = x.Product?.Currency ?? "USD", billingCycle = x.BillingCycle.ToString(), isManualBilling = x.IsManualBilling, status = x.Status.ToString(), price = x.Price, listPrice = x.ListPrice(), discount = x.Discount, discountEndsAt = x.DiscountEndsAt == ClientProductPricing.NoEnd ? null : x.DiscountEndsAt, currentPrice = x.CurrentPrice(DateTime.UtcNow), nextChargePrice = x.NextChargePrice(), domainName = x.DomainName, priceLabelOverride = x.PriceLabelOverride, renewsAt = x.RenewsAt, nextChargeAt = x.NextChargeAt };
     private static object TaxDocumentDto(TaxDocument x) => new { id = x.Id, paymentTransactionId = x.PaymentTransactionId, clientId = x.ClientId, type = x.Type.ToString(), series = x.Series, number = x.Number, issueDate = x.IssueDate, currency = x.Currency, baseAmount = x.BaseAmount, igvAmount = x.IgvAmount, totalAmount = x.TotalAmount, notes = x.Notes, retentionAmount = x.RetentionAmount };
-    private static object ExpenseDto(Expense x) => new { id = x.Id, description = x.Description, category = x.Category.ToString(), type = x.Type.ToString(), amount = x.Amount, currency = x.Currency, amountPen = x.AmountPen, date = x.Date, recurring = x.Recurring, recurrenceCycle = x.RecurrenceCycle?.ToString(), recurrenceEndsAt = x.RecurrenceEndsAt };
+    private static object ExpenseDto(Expense x) => new { id = x.Id, description = x.Description, categoryId = x.CategoryId, categoryName = x.Category?.Name ?? "", type = x.Type.ToString(), amount = x.Amount, currency = x.Currency, amountPen = x.AmountPen, date = x.Date, recurring = x.Recurring, recurrenceCycle = x.RecurrenceCycle?.ToString(), recurrenceEndsAt = x.RecurrenceEndsAt };
 }
 
 public sealed record ProfileRequest(string Name);
@@ -895,8 +963,8 @@ public sealed record TemplateColumn(string Name, bool Required, string Accepted,
 public sealed record ClientAccess(string ClientName, string Email, string TemporaryPassword, bool EmailSent = false);
 public sealed record ProjectRequest(string? Name, string? Slug, string? GithubRepoOwner, string? GithubRepoName);
 public sealed record RepositoryRequest(string? Owner, string? Name, string? Label = null, bool? IsDefault = null);
-public sealed record TaxSettingsRequest(decimal? IgvRate, decimal? RentaRate, string? FacturaSeries = null, int? FacturaNextNumber = null, string? ReciboSeries = null, int? ReciboNextNumber = null);
+public sealed record TaxSettingsRequest(decimal? IgvRate, decimal? RentaRate, string? FacturaSeries = null, int? FacturaNextNumber = null, string? ReciboSeries = null, int? ReciboNextNumber = null, string? Ruc = null, bool? IsGoodTaxpayer = null);
 public sealed record TaxDocumentRequest(Guid ClientProductId, DateOnly IssueDate, string Currency, decimal TotalAmount, string? Notes, decimal? RetentionAmount = null);
-public sealed record ExpenseRequest(string Description, ExpenseCategory Category, ExpenseType Type, decimal Amount, string Currency, DateOnly Date, bool Recurring, BillingCycle? RecurrenceCycle);
+public sealed record ExpenseRequest(string Description, Guid CategoryId, ExpenseType Type, decimal Amount, string Currency, DateOnly Date, bool Recurring, BillingCycle? RecurrenceCycle);
 public sealed record EndRecurrenceRequest(DateOnly EndsAt);
-public sealed record ExpensePatchRequest(string? Description, ExpenseCategory? Category, ExpenseType? Type, decimal? Amount, string? Currency, DateOnly? Date, bool? Recurring, BillingCycle? RecurrenceCycle);
+public sealed record ExpensePatchRequest(string? Description, Guid? CategoryId, ExpenseType? Type, decimal? Amount, string? Currency, DateOnly? Date, bool? Recurring, BillingCycle? RecurrenceCycle);

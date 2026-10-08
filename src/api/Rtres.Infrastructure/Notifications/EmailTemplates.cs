@@ -16,6 +16,7 @@ namespace Rtres.Infrastructure.Notifications;
 /// <item><c>AccountAccess</c>: name, company, email, password (se envía en el momento, nunca por la cola de Hangfire)</item>
 /// <item><c>TransferRequested</c>: clientId, company, product, project, amount?, currency — aviso interno para Rtres, siempre en español</item>
 /// <item><c>TicketCreated</c>: ticketId, code, title, company, project, body — aviso interno para Rtres, siempre en español</item>
+/// <item><c>TaxDueReminder</c>: period (yyyy-MM), dueDate (yyyy-MM-dd), days — aviso interno para Rtres, siempre en español</item>
 /// </list>
 /// </summary>
 public static class EmailTemplates
@@ -25,7 +26,7 @@ public static class EmailTemplates
     public static (string Subject, string Html, string Text) Render(Notification notification, string? language, string portalUrl)
     {
         // Los avisos internos van al equipo de Rtres: el idioma del cliente no aplica.
-        var lang = notification.Type is NotificationType.TransferRequested or NotificationType.TicketCreated ? "es" : Languages.Contains(language) ? language! : "es";
+        var lang = notification.Type is NotificationType.TransferRequested or NotificationType.TicketCreated or NotificationType.TaxDueReminder ? "es" : Languages.Contains(language) ? language! : "es";
         var d = notification.Data;
         var t = Texts[lang];
         var portal = portalUrl.TrimEnd('/');
@@ -64,10 +65,21 @@ public static class EmailTemplates
                 string.Format(t["ticket-created.subject"], V("code"), V("company")),
                 new[] { string.Format(t["ticket-created.body"], V("company"), V("project"), V("title")), Quote(V("body")) },
                 t["cta.ticket"], $"{portal}/admin/tickets?ticketId={V("ticketId")}"),
+            NotificationType.TaxDueReminder => TaxDueReminder(t, V, portal),
             _ => throw new ArgumentOutOfRangeException(nameof(notification), notification.Type, null),
         };
-        var footer = notification.Type is NotificationType.TransferRequested or NotificationType.TicketCreated ? t["footer.staff"] : t["footer"];
+        var footer = notification.Type is NotificationType.TransferRequested or NotificationType.TicketCreated or NotificationType.TaxDueReminder ? t["footer.staff"] : t["footer"];
         return (subject, Html(footer, paragraphs, cta, link), Text(footer, paragraphs, cta, link));
+    }
+
+    private static (string, string[], string, string) TaxDueReminder(Dictionary<string, string> t, Func<string, string> v, string portal)
+    {
+        var es = Culture("es");
+        var period = DateTime.TryParseExact(v("period"), "yyyy-MM", CultureInfo.InvariantCulture, DateTimeStyles.None, out var p) ? p.ToString("MMMM yyyy", es).ToLower(es) : v("period");
+        var due = DateTime.TryParseExact(v("dueDate"), "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var d) ? d.ToString("dddd d 'de' MMMM", es) : v("dueDate");
+        var days = int.TryParse(v("days"), out var n) ? n : 0;
+        var when = days <= 0 ? t["tax-due.today"] : days == 1 ? t["renewal.tomorrow"] : string.Format(t["renewal.inDays"], days);
+        return (string.Format(t["tax-due.subject"], period, when), new[] { string.Format(t["tax-due.body"], period, due, when), t["tax-due.next"] }, t["cta.tax-due"], $"{portal}/admin/tax-calendar");
     }
 
     private static (string, string[], string, string) RenewalReminder(Dictionary<string, string> t, string lang, Func<string, string> v, string portal)
@@ -159,6 +171,11 @@ public static class EmailTemplates
             ["ticket-created.body"] = "{0} abrió el ticket «{2}» para el proyecto {1}. Atiéndelo desde el portal de administración:",
             ["cta.client"] = "Ver cliente",
             ["footer.staff"] = "Aviso interno del portal de clientes de Rtres.",
+            ["tax-due.subject"] = "SUNAT: la declaración de {0} vence {1}",
+            ["tax-due.body"] = "La declaración mensual de IGV-Renta del periodo {0} vence el {1} ({2}).",
+            ["tax-due.next"] = "Revisa el IGV y la Renta estimados en Reportes y, cuando presentes la declaración, márcala como presentada en el calendario para no recibir más avisos.",
+            ["tax-due.today"] = "hoy",
+            ["cta.tax-due"] = "Ver calendario",
         },
         ["en"] = new()
         {

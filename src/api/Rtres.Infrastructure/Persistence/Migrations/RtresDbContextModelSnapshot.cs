@@ -186,8 +186,8 @@ namespace Rtres.Infrastructure.Persistence.Migrations
                         .HasPrecision(12, 2)
                         .HasColumnType("decimal(12,2)");
 
-                    b.Property<int>("Category")
-                        .HasColumnType("int");
+                    b.Property<Guid>("CategoryId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Currency")
                         .IsRequired()
@@ -214,7 +214,147 @@ namespace Rtres.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CategoryId");
+
                     b.ToTable("Expenses");
+                });
+
+            modelBuilder.Entity("Rtres.Domain.ExpenseCategory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Code")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<bool>("IsIncomeTax")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("ExpenseCategories");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("e0000000-0000-0000-0000-000000000000"),
+                            Code = "Hosting",
+                            IsIncomeTax = false,
+                            Name = "Hosting",
+                            SortOrder = 0
+                        },
+                        new
+                        {
+                            Id = new Guid("e0000000-0000-0000-0000-000000000001"),
+                            Code = "Dominios",
+                            IsIncomeTax = false,
+                            Name = "Dominios",
+                            SortOrder = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("e0000000-0000-0000-0000-000000000002"),
+                            Code = "SuscripcionesIA",
+                            IsIncomeTax = false,
+                            Name = "Suscripciones IA",
+                            SortOrder = 2
+                        },
+                        new
+                        {
+                            Id = new Guid("e0000000-0000-0000-0000-000000000003"),
+                            Code = "ApisPorUso",
+                            IsIncomeTax = false,
+                            Name = "APIs por uso",
+                            SortOrder = 3
+                        },
+                        new
+                        {
+                            Id = new Guid("e0000000-0000-0000-0000-000000000004"),
+                            Code = "Sueldos",
+                            IsIncomeTax = false,
+                            Name = "Sueldos",
+                            SortOrder = 4
+                        },
+                        new
+                        {
+                            Id = new Guid("e0000000-0000-0000-0000-000000000005"),
+                            Code = "Otros",
+                            IsIncomeTax = false,
+                            Name = "Otros",
+                            SortOrder = 5
+                        },
+                        new
+                        {
+                            Id = new Guid("e0000000-0000-0000-0000-000000000006"),
+                            Code = "ImpuestoRenta",
+                            IsIncomeTax = true,
+                            Name = "Impuesto a la Renta",
+                            SortOrder = 6
+                        },
+                        new
+                        {
+                            Id = new Guid("e0000000-0000-0000-0000-000000000007"),
+                            Code = "Comisiones",
+                            IsIncomeTax = false,
+                            Name = "Comisiones",
+                            SortOrder = 7
+                        });
+                });
+
+            modelBuilder.Entity("Rtres.Domain.LearningVideo", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<bool>("IsPublished")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Language")
+                        .HasMaxLength(2)
+                        .HasColumnType("nvarchar(2)");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("YoutubeId")
+                        .IsRequired()
+                        .HasMaxLength(11)
+                        .HasColumnType("nvarchar(11)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("LearningVideos");
                 });
 
             modelBuilder.Entity("Rtres.Domain.NotificationLog", b =>
@@ -414,6 +554,28 @@ namespace Rtres.Infrastructure.Persistence.Migrations
                     b.ToTable("Products");
                 });
 
+            modelBuilder.Entity("Rtres.Domain.ProductCategory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("ProductCategories");
+                });
+
             modelBuilder.Entity("Rtres.Domain.Project", b =>
                 {
                     b.Property<Guid>("Id")
@@ -473,6 +635,101 @@ namespace Rtres.Infrastructure.Persistence.Migrations
                         .IsUnique();
 
                     b.ToTable("ProjectRepositories");
+                });
+
+            modelBuilder.Entity("Rtres.Domain.Purchase", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("BasePen")
+                        .HasPrecision(12, 2)
+                        .HasColumnType("decimal(12,2)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasMaxLength(3)
+                        .HasColumnType("nvarchar(3)");
+
+                    b.Property<int>("DocumentType")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("ExchangeRate")
+                        .HasPrecision(12, 6)
+                        .HasColumnType("decimal(12,6)");
+
+                    b.Property<Guid?>("ExpenseId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("GivesTaxCredit")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal>("Igv")
+                        .HasPrecision(12, 2)
+                        .HasColumnType("decimal(12,2)");
+
+                    b.Property<decimal>("IgvPen")
+                        .HasPrecision(12, 2)
+                        .HasColumnType("decimal(12,2)");
+
+                    b.Property<DateOnly>("IssueDate")
+                        .HasColumnType("date");
+
+                    b.Property<decimal>("NonTaxable")
+                        .HasPrecision(12, 2)
+                        .HasColumnType("decimal(12,2)");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Number")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<DateOnly>("Period")
+                        .HasColumnType("date");
+
+                    b.Property<string>("Series")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("SupplierName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("SupplierTaxId")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<decimal>("TaxBase")
+                        .HasPrecision(12, 2)
+                        .HasColumnType("decimal(12,2)");
+
+                    b.Property<decimal>("Total")
+                        .HasPrecision(12, 2)
+                        .HasColumnType("decimal(12,2)");
+
+                    b.Property<decimal>("TotalPen")
+                        .HasPrecision(12, 2)
+                        .HasColumnType("decimal(12,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Period");
+
+                    b.HasIndex("SupplierTaxId", "DocumentType", "Series", "Number")
+                        .IsUnique();
+
+                    b.ToTable("Purchases");
                 });
 
             modelBuilder.Entity("Rtres.Domain.TaxDocument", b =>
@@ -535,6 +792,193 @@ namespace Rtres.Infrastructure.Persistence.Migrations
                     b.ToTable("TaxDocuments");
                 });
 
+            modelBuilder.Entity("Rtres.Domain.TaxDueDate", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateOnly>("Digit0")
+                        .HasColumnType("date");
+
+                    b.Property<DateOnly>("Digit1")
+                        .HasColumnType("date");
+
+                    b.Property<DateOnly>("Digit2And3")
+                        .HasColumnType("date");
+
+                    b.Property<DateOnly>("Digit4And5")
+                        .HasColumnType("date");
+
+                    b.Property<DateOnly>("Digit6And7")
+                        .HasColumnType("date");
+
+                    b.Property<DateOnly>("Digit8And9")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime?>("FiledAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateOnly>("GoodTaxpayer")
+                        .HasColumnType("date");
+
+                    b.Property<DateOnly>("Period")
+                        .HasColumnType("date");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Period")
+                        .IsUnique();
+
+                    b.ToTable("TaxDueDates");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("7d000000-0000-0000-0000-202600000001"),
+                            Digit0 = new DateOnly(2026, 2, 16),
+                            Digit1 = new DateOnly(2026, 2, 17),
+                            Digit2And3 = new DateOnly(2026, 2, 18),
+                            Digit4And5 = new DateOnly(2026, 2, 19),
+                            Digit6And7 = new DateOnly(2026, 2, 20),
+                            Digit8And9 = new DateOnly(2026, 2, 23),
+                            GoodTaxpayer = new DateOnly(2026, 2, 24),
+                            Period = new DateOnly(2026, 1, 1)
+                        },
+                        new
+                        {
+                            Id = new Guid("7d000000-0000-0000-0000-202600000002"),
+                            Digit0 = new DateOnly(2026, 3, 16),
+                            Digit1 = new DateOnly(2026, 3, 17),
+                            Digit2And3 = new DateOnly(2026, 3, 18),
+                            Digit4And5 = new DateOnly(2026, 3, 19),
+                            Digit6And7 = new DateOnly(2026, 3, 20),
+                            Digit8And9 = new DateOnly(2026, 3, 23),
+                            GoodTaxpayer = new DateOnly(2026, 3, 24),
+                            Period = new DateOnly(2026, 2, 1)
+                        },
+                        new
+                        {
+                            Id = new Guid("7d000000-0000-0000-0000-202600000003"),
+                            Digit0 = new DateOnly(2026, 4, 17),
+                            Digit1 = new DateOnly(2026, 4, 20),
+                            Digit2And3 = new DateOnly(2026, 4, 21),
+                            Digit4And5 = new DateOnly(2026, 4, 22),
+                            Digit6And7 = new DateOnly(2026, 4, 23),
+                            Digit8And9 = new DateOnly(2026, 4, 24),
+                            GoodTaxpayer = new DateOnly(2026, 4, 27),
+                            Period = new DateOnly(2026, 3, 1)
+                        },
+                        new
+                        {
+                            Id = new Guid("7d000000-0000-0000-0000-202600000004"),
+                            Digit0 = new DateOnly(2026, 5, 18),
+                            Digit1 = new DateOnly(2026, 5, 19),
+                            Digit2And3 = new DateOnly(2026, 5, 20),
+                            Digit4And5 = new DateOnly(2026, 5, 21),
+                            Digit6And7 = new DateOnly(2026, 5, 22),
+                            Digit8And9 = new DateOnly(2026, 5, 25),
+                            GoodTaxpayer = new DateOnly(2026, 5, 26),
+                            Period = new DateOnly(2026, 4, 1)
+                        },
+                        new
+                        {
+                            Id = new Guid("7d000000-0000-0000-0000-202600000005"),
+                            Digit0 = new DateOnly(2026, 6, 15),
+                            Digit1 = new DateOnly(2026, 6, 16),
+                            Digit2And3 = new DateOnly(2026, 6, 17),
+                            Digit4And5 = new DateOnly(2026, 6, 18),
+                            Digit6And7 = new DateOnly(2026, 6, 19),
+                            Digit8And9 = new DateOnly(2026, 6, 22),
+                            GoodTaxpayer = new DateOnly(2026, 6, 23),
+                            Period = new DateOnly(2026, 5, 1)
+                        },
+                        new
+                        {
+                            Id = new Guid("7d000000-0000-0000-0000-202600000006"),
+                            Digit0 = new DateOnly(2026, 7, 15),
+                            Digit1 = new DateOnly(2026, 7, 16),
+                            Digit2And3 = new DateOnly(2026, 7, 17),
+                            Digit4And5 = new DateOnly(2026, 7, 20),
+                            Digit6And7 = new DateOnly(2026, 7, 21),
+                            Digit8And9 = new DateOnly(2026, 7, 22),
+                            GoodTaxpayer = new DateOnly(2026, 7, 24),
+                            Period = new DateOnly(2026, 6, 1)
+                        },
+                        new
+                        {
+                            Id = new Guid("7d000000-0000-0000-0000-202600000007"),
+                            Digit0 = new DateOnly(2026, 8, 18),
+                            Digit1 = new DateOnly(2026, 8, 19),
+                            Digit2And3 = new DateOnly(2026, 8, 20),
+                            Digit4And5 = new DateOnly(2026, 8, 21),
+                            Digit6And7 = new DateOnly(2026, 8, 24),
+                            Digit8And9 = new DateOnly(2026, 8, 25),
+                            GoodTaxpayer = new DateOnly(2026, 8, 26),
+                            Period = new DateOnly(2026, 7, 1)
+                        },
+                        new
+                        {
+                            Id = new Guid("7d000000-0000-0000-0000-202600000008"),
+                            Digit0 = new DateOnly(2026, 9, 15),
+                            Digit1 = new DateOnly(2026, 9, 16),
+                            Digit2And3 = new DateOnly(2026, 9, 17),
+                            Digit4And5 = new DateOnly(2026, 9, 18),
+                            Digit6And7 = new DateOnly(2026, 9, 21),
+                            Digit8And9 = new DateOnly(2026, 9, 22),
+                            GoodTaxpayer = new DateOnly(2026, 9, 23),
+                            Period = new DateOnly(2026, 8, 1)
+                        },
+                        new
+                        {
+                            Id = new Guid("7d000000-0000-0000-0000-202600000009"),
+                            Digit0 = new DateOnly(2026, 10, 16),
+                            Digit1 = new DateOnly(2026, 10, 19),
+                            Digit2And3 = new DateOnly(2026, 10, 20),
+                            Digit4And5 = new DateOnly(2026, 10, 21),
+                            Digit6And7 = new DateOnly(2026, 10, 22),
+                            Digit8And9 = new DateOnly(2026, 10, 23),
+                            GoodTaxpayer = new DateOnly(2026, 10, 26),
+                            Period = new DateOnly(2026, 9, 1)
+                        },
+                        new
+                        {
+                            Id = new Guid("7d000000-0000-0000-0000-202600000010"),
+                            Digit0 = new DateOnly(2026, 11, 16),
+                            Digit1 = new DateOnly(2026, 11, 17),
+                            Digit2And3 = new DateOnly(2026, 11, 18),
+                            Digit4And5 = new DateOnly(2026, 11, 19),
+                            Digit6And7 = new DateOnly(2026, 11, 20),
+                            Digit8And9 = new DateOnly(2026, 11, 23),
+                            GoodTaxpayer = new DateOnly(2026, 11, 24),
+                            Period = new DateOnly(2026, 10, 1)
+                        },
+                        new
+                        {
+                            Id = new Guid("7d000000-0000-0000-0000-202600000011"),
+                            Digit0 = new DateOnly(2026, 12, 17),
+                            Digit1 = new DateOnly(2026, 12, 18),
+                            Digit2And3 = new DateOnly(2026, 12, 21),
+                            Digit4And5 = new DateOnly(2026, 12, 22),
+                            Digit6And7 = new DateOnly(2026, 12, 23),
+                            Digit8And9 = new DateOnly(2026, 12, 24),
+                            GoodTaxpayer = new DateOnly(2026, 12, 28),
+                            Period = new DateOnly(2026, 11, 1)
+                        },
+                        new
+                        {
+                            Id = new Guid("7d000000-0000-0000-0000-202600000012"),
+                            Digit0 = new DateOnly(2027, 1, 18),
+                            Digit1 = new DateOnly(2027, 1, 19),
+                            Digit2And3 = new DateOnly(2027, 1, 20),
+                            Digit4And5 = new DateOnly(2027, 1, 21),
+                            Digit6And7 = new DateOnly(2027, 1, 22),
+                            Digit8And9 = new DateOnly(2027, 1, 25),
+                            GoodTaxpayer = new DateOnly(2027, 1, 26),
+                            Period = new DateOnly(2026, 12, 1)
+                        });
+                });
+
             modelBuilder.Entity("Rtres.Domain.TaxSettings", b =>
                 {
                     b.Property<Guid>("Id")
@@ -553,6 +997,9 @@ namespace Rtres.Infrastructure.Persistence.Migrations
                         .HasPrecision(5, 4)
                         .HasColumnType("decimal(5,4)");
 
+                    b.Property<bool>("IsGoodTaxpayer")
+                        .HasColumnType("bit");
+
                     b.Property<int>("ReciboNextNumber")
                         .HasColumnType("int");
 
@@ -564,6 +1011,10 @@ namespace Rtres.Infrastructure.Persistence.Migrations
                     b.Property<decimal>("RentaRate")
                         .HasPrecision(5, 4)
                         .HasColumnType("decimal(5,4)");
+
+                    b.Property<string>("Ruc")
+                        .HasMaxLength(11)
+                        .HasColumnType("nvarchar(11)");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -785,6 +1236,17 @@ namespace Rtres.Infrastructure.Persistence.Migrations
                     b.Navigation("Product");
 
                     b.Navigation("Project");
+                });
+
+            modelBuilder.Entity("Rtres.Domain.Expense", b =>
+                {
+                    b.HasOne("Rtres.Domain.ExpenseCategory", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Category");
                 });
 
             modelBuilder.Entity("Rtres.Domain.ProjectRepository", b =>
