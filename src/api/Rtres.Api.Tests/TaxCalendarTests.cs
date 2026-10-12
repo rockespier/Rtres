@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 using Rtres.Api.Controllers;
 using Rtres.Api.Jobs;
+using Rtres.Api.Notifications;
 using Rtres.Domain;
 using Rtres.Infrastructure.Persistence;
 
@@ -127,8 +128,11 @@ public class TaxCalendarTests
 
     private static DateTime Lima(int year, int month, int day) => new(year, month, day, 13, 30, 0, DateTimeKind.Utc); // 8:30 en Lima
 
-    private static TaxDueReminderJob Job(RtresDbContext db, FakeEmail email) => new(db, email,
-        new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?> { ["Notifications:StaffEmail"] = "equipo@rtres.net" }).Build(), NullLogger<TaxDueReminderJob>.Instance);
+    private static TaxDueReminderJob Job(RtresDbContext db, FakeEmail email) =>
+        new(db, Staff(db, email), NullLogger<TaxDueReminderJob>.Instance);
+
+    internal static StaffNotifier Staff(RtresDbContext db, FakeEmail email) => new(db, email,
+        new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?> { ["Notifications:StaffEmail"] = "equipo@rtres.net" }).Build(), NullLogger<StaffNotifier>.Instance);
 
     private static RtresDbContext Db(string? ruc)
     {

@@ -108,6 +108,8 @@ export interface TaxSettingsDto { igvRate:number; rentaRate:number; facturaSerie
 /** Fila del cronograma SUNAT: periodo (yyyy-MM) y vencimiento por último dígito del RUC; dueDate es el que le toca a Rtres. */
 export interface TaxDueDateDto { id:string; period:string; digit0:string; digit1:string; digit2And3:string; digit4And5:string; digit6And7:string; digit8And9:string; goodTaxpayer:string; dueDate:string|null; filedAt:string|null; igvPaid?:number|null; rentaPaid?:number|null; }
 export type TaxDueDateRequest = Pick<TaxDueDateDto,'digit0'|'digit1'|'digit2And3'|'digit4And5'|'digit6And7'|'digit8And9'|'goodTaxpayer'>;
+export type ContactLeadStatus = 'Nuevo'|'Contactado'|'Cliente'|'Descartado';
+export interface ContactLeadDto { id:string; name:string; email:string; phone:string|null; company:string|null; service:string|null; message:string; locale:string; sourcePage:string|null; status:ContactLeadStatus; notes:string|null; createdAt:string; }
 export interface AnnualTaxSettingsDto { id:string; year:number; uit:number; thresholdUits:number; lowRate:number; highRate:number; }
 export interface MypeIncomeTaxDto { limit:number; lowBase:number; lowTax:number; highBase:number; highTax:number; total:number; }
 export interface AnnualRentaMonth { mes:string; ventasPen:number; gastosPen:number; pagoACuentaPen:number; estimado:boolean; }
@@ -228,6 +230,8 @@ export class PortalApiService {
   /** Fechas en formato yyyy-MM-dd; null borra la fecha. */
   setClientProductDates(id:string,body:{renewsAt:string|null;nextChargeAt:string|null}) { return this.http.put<AdminClientProductDto>(`${this.base}/admin/client-products/${id}/dates`,body); }
 
+  getLeads(status?:ContactLeadStatus) { return this.http.get<ContactLeadDto[]>(`${this.base}/admin/leads${query({status})}`); }
+  updateLead(id:string, body:{status?:ContactLeadStatus;notes?:string}) { return this.http.patch<ContactLeadDto>(`${this.base}/admin/leads/${id}`,body); }
   getAnnualRenta(year:number) { return this.http.get<AnnualRentaDto>(`${this.base}/admin/reports/annual-renta?year=${year}`); }
   getAnnualTaxSettings() { return this.http.get<AnnualTaxSettingsDto[]>(`${this.base}/admin/annual-tax-settings`); }
   saveAnnualTaxSettings(year:number, body:Omit<AnnualTaxSettingsDto,'id'|'year'>) { return this.http.put<AnnualTaxSettingsDto>(`${this.base}/admin/annual-tax-settings/${year}`,body); }

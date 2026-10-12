@@ -1,3 +1,4 @@
+import { casePath } from '../../core/site-paths';
 /** Contenido de cada página de servicio. Una plantilla (ServicePageComponent) y un bloque de datos por servicio. */
 export interface ServiceRow { title: string; text: string; }
 export interface ServiceContent {
@@ -44,7 +45,7 @@ export const SERVICES: ServiceContent[] = [
     ],
     technologies: ['.NET', 'Angular', 'SQL Server', $localize`:@@service.tech.sap:Integración con SAP`, $localize`:@@service.tech.sunat:Facturación electrónica SUNAT`],
     relatedCase: {
-      path: '/casos/euroamerican-assistance',
+      path: casePath('euroamerican-assistance'),
       name: 'Euroamerican Assistance',
       scope: $localize`:@@home.cases.1.scope:Desde 2008 · Ventas, comisiones y BI`,
       quote: $localize`:@@service.software.case:Más de 15 años sosteniendo su sistema central de ventas, comisiones y cobranza.`,
@@ -103,7 +104,7 @@ export const SERVICES: ServiceContent[] = [
     ],
     technologies: [$localize`:@@service.tech.sap:Integración con SAP`, $localize`:@@service.tech.sunat:Facturación electrónica SUNAT`, 'REST APIs', 'PayPal', 'GitHub', '.NET'],
     relatedCase: {
-      path: '/casos/grupo-crosland',
+      path: casePath('grupo-crosland'),
       name: 'Grupo Crosland',
       scope: $localize`:@@home.cases.2.scope:DMS · SAP · Garantías`,
       quote: $localize`:@@service.integration.case:Talleres Kawasaki y una red de más de 300 talleres Bajaj sincronizados con SAP en tiempo real.`,

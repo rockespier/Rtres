@@ -1386,6 +1386,338 @@
         <source>La página que buscas no existe en rtres.net.</source>
         <target>La pagina che cerchi non esiste su rtres.net.</target>
       </trans-unit>
+      <trans-unit id="contactForm.sentLabel" datatype="html">
+        <source>MENSAJE ENVIADO</source>
+        <target>MESSAGGIO INVIATO</target>
+      </trans-unit>
+      <trans-unit id="contactForm.sentTitle" datatype="html">
+        <source>Gracias, <x id="INTERPOLATION" equiv-text="{{ firstName() }}"/>. Te escribimos pronto.</source>
+        <target>Grazie, <x id="INTERPOLATION" equiv-text="{{ firstName() }}"/>. Ti scriveremo presto.</target>
+      </trans-unit>
+      <trans-unit id="contactForm.sentText" datatype="html">
+        <source>Revisaremos lo que nos contaste y te responderemos por email o WhatsApp.</source>
+        <target>Analizzeremo quanto ci hai scritto e ti risponderemo via email o WhatsApp.</target>
+      </trans-unit>
+      <trans-unit id="contactForm.name" datatype="html">
+        <source>Nombre</source>
+        <target>Nome</target>
+      </trans-unit>
+      <trans-unit id="contactForm.email" datatype="html">
+        <source>Email</source>
+        <target>Email</target>
+      </trans-unit>
+      <trans-unit id="contactForm.phone" datatype="html">
+        <source>Teléfono o WhatsApp</source>
+        <target>Telefono o WhatsApp</target>
+      </trans-unit>
+      <trans-unit id="contactForm.company" datatype="html">
+        <source>Empresa</source>
+        <target>Azienda</target>
+      </trans-unit>
+      <trans-unit id="contactForm.service" datatype="html">
+        <source>¿Qué necesitas?</source>
+        <target>Di cosa hai bisogno?</target>
+      </trans-unit>
+      <trans-unit id="contactForm.serviceAny" datatype="html">
+        <source>Elige una opción</source>
+        <target>Scegli un'opzione</target>
+      </trans-unit>
+      <trans-unit id="contactForm.serviceApis" datatype="html">
+        <source>APIs de validación (RUC, DNI, cuentas bancarias)</source>
+        <target>API di validazione (RUC, DNI, conti bancari)</target>
+      </trans-unit>
+      <trans-unit id="contactForm.serviceOther" datatype="html">
+        <source>Otro</source>
+        <target>Altro</target>
+      </trans-unit>
+      <trans-unit id="contactForm.message" datatype="html">
+        <source>Cuéntanos tu proyecto</source>
+        <target>Raccontaci il tuo progetto</target>
+      </trans-unit>
+      <trans-unit id="contactForm.privacy" datatype="html">
+        <source>Usamos tus datos solo para responderte.</source>
+        <target>Usiamo i tuoi dati solo per risponderti.</target>
+      </trans-unit>
+      <trans-unit id="contactForm.send" datatype="html">
+        <source>Enviar mensaje</source>
+        <target>Invia messaggio</target>
+      </trans-unit>
+      <trans-unit id="contactForm.sending" datatype="html">
+        <source>Enviando…</source>
+        <target>Invio in corso…</target>
+      </trans-unit>
+      <trans-unit id="contactForm.errName" datatype="html">
+        <source>Escribe tu nombre.</source>
+        <target>Scrivi il tuo nome.</target>
+      </trans-unit>
+      <trans-unit id="contactForm.errEmail" datatype="html">
+        <source>Escribe un email válido para poder responderte.</source>
+        <target>Scrivi un'email valida per poterti rispondere.</target>
+      </trans-unit>
+      <trans-unit id="contactForm.errMessage" datatype="html">
+        <source>Cuéntanos en unas líneas qué necesitas.</source>
+        <target>Raccontaci in poche righe di cosa hai bisogno.</target>
+      </trans-unit>
+      <trans-unit id="contactForm.errTooMany" datatype="html">
+        <source>Recibimos varios mensajes desde tu conexión. Espera unos minutos o escríbenos a info@rtres.net.</source>
+        <target>Abbiamo ricevuto diversi messaggi dalla tua connessione. Attendi qualche minuto o scrivi a info@rtres.net.</target>
+      </trans-unit>
+      <trans-unit id="contactForm.errGeneric" datatype="html">
+        <source>No pudimos enviar el mensaje. Inténtalo de nuevo o escríbenos a info@rtres.net.</source>
+        <target>Non siamo riusciti a inviare il messaggio. Riprova o scrivi a info@rtres.net.</target>
+      </trans-unit>
+      <trans-unit id="contact.label" datatype="html">
+        <source>CONTACTO</source>
+        <target>CONTATTI</target>
+      </trans-unit>
+      <trans-unit id="contact.title" datatype="html">
+        <source>Hablemos de tu proyecto.</source>
+        <target>Parliamo del tuo progetto.</target>
+      </trans-unit>
+      <trans-unit id="contact.lead" datatype="html">
+        <source>Cuéntanos qué necesitas: un sistema a medida, una integración con SAP o SUNAT, una web o soporte para lo que ya tienes. Te respondemos con los siguientes pasos y, si hace falta, una propuesta.</source>
+        <target>Raccontaci di cosa hai bisogno: un software su misura, un'integrazione con SAP, un sito web o supporto per ciò che hai già. Ti risponderemo con i prossimi passi e, se serve, una proposta.</target>
+      </trans-unit>
+      <trans-unit id="contact.email" datatype="html">
+        <source>Email</source>
+        <target>Email</target>
+      </trans-unit>
+      <trans-unit id="contact.where" datatype="html">
+        <source>Dónde estamos</source>
+        <target>Dove siamo</target>
+      </trans-unit>
+      <trans-unit id="contact.whereText" datatype="html">
+        <source>Lima, Perú · operación en España e Italia</source>
+        <target>Lima, Perù · operativi in Spagna e Italia</target>
+      </trans-unit>
+      <trans-unit id="contact.metaTitle" datatype="html">
+        <source>Contacto — Rtres Web Solutions</source>
+        <target>Contatti — Rtres Web Solutions</target>
+      </trans-unit>
+      <trans-unit id="contact.meta" datatype="html">
+        <source>Cuéntanos tu proyecto de software a medida, integración con SAP o SUNAT, desarrollo web o soporte. Equipo en Lima, Perú, con operación en España e Italia.</source>
+        <target>Raccontaci il tuo progetto di software su misura, integrazione SAP, sviluppo web o supporto. Team a Lima, Perù, operativo in Spagna e Italia.</target>
+      </trans-unit>
+      <trans-unit id="site.localeCode" datatype="html">
+        <source>es</source>
+        <target>it</target>
+      </trans-unit>
+      <trans-unit id="service.software.aud1" datatype="html">
+        <source>Empresas cuya operación ya no cabe en hojas de cálculo ni en un sistema genérico: ventas, comisiones, cobranzas u órdenes de trabajo con reglas propias.</source>
+        <target>Aziende la cui operatività non sta più in un foglio di calcolo o in un gestionale generico: vendite, provvigioni, incassi o ordini di lavoro con regole proprie.</target>
+      </trans-unit>
+      <trans-unit id="service.software.aud2" datatype="html">
+        <source>Operaciones críticas que no pueden detenerse, como asistencia al viajero 24/7 o redes de talleres, y necesitan un sistema estable durante años.</source>
+        <target>Operazioni critiche che non possono fermarsi, come l'assistenza ai viaggiatori 24/7 o le reti di officine, e che hanno bisogno di un sistema stabile per anni.</target>
+      </trans-unit>
+      <trans-unit id="service.software.aud3" datatype="html">
+        <source>Equipos de TI que necesitan sumar desarrolladores .NET o especialistas en SAP sin contratar planilla: también trabajamos como extensión de tu equipo (staff augmentation).</source>
+        <target>Team IT che hanno bisogno di sviluppatori .NET o specialisti SAP senza assumere: lavoriamo anche come estensione del tuo team (staff augmentation).</target>
+      </trans-unit>
+      <trans-unit id="service.software.faq1.q" datatype="html">
+        <source>¿Cuánto cuesta desarrollar un software a medida?</source>
+        <target>Quanto costa sviluppare un software su misura?</target>
+      </trans-unit>
+      <trans-unit id="service.software.faq1.a" datatype="html">
+        <source>Depende del alcance. Después de una primera conversación definimos los módulos y estimamos las horas: el precio es esa estimación por nuestra tarifa, y lo dividimos en fases para que empieces a usar el sistema antes de terminarlo todo. Siempre recibes la propuesta por escrito antes de empezar.</source>
+        <target>Dipende dall'ambito. Dopo un primo colloquio definiamo i moduli e stimiamo le ore: il prezzo è quella stima per la nostra tariffa, suddiviso in fasi così da poter usare il sistema prima che sia tutto finito. Ricevi sempre la proposta per iscritto prima di iniziare.</target>
+      </trans-unit>
+      <trans-unit id="service.software.faq2.q" datatype="html">
+        <source>¿Cuánto tiempo toma?</source>
+        <target>Quanto tempo richiede?</target>
+      </trans-unit>
+      <trans-unit id="service.software.faq2.a" datatype="html">
+        <source>Lo que más influye es la cantidad de procesos e integraciones. Trabajamos por entregas: primero un prototipo navegable para validar el flujo y luego módulos que pasan a producción uno por uno. En la propuesta indicamos las fases y sus fechas estimadas.</source>
+        <target>Il fattore principale è il numero di processi e integrazioni. Lavoriamo per consegne: prima un prototipo navigabile per validare il flusso, poi moduli che vanno in produzione uno alla volta. Nella proposta indichiamo le fasi e le date stimate.</target>
+      </trans-unit>
+      <trans-unit id="service.software.faq3.q" datatype="html">
+        <source>¿El sistema puede integrarse con SAP o con la facturación electrónica de SUNAT?</source>
+        <target>Il sistema può integrarsi con SAP o con la fatturazione elettronica?</target>
+      </trans-unit>
+      <trans-unit id="service.software.faq3.a" datatype="html">
+        <source>Sí. Es una de nuestras especialidades: hemos integrado sistemas de talleres con SAP para consultar y reservar stock en tiempo real, sincronizar repuestos y validar garantías, y sistemas de gestión con la emisión de comprobantes electrónicos ante SUNAT.</source>
+        <target>Sì, è una delle nostre specialità: abbiamo integrato sistemi per officine con SAP per consultare e prenotare lo stock in tempo reale, sincronizzare i ricambi e validare le garanzie, e gestionali con l'emissione di documenti elettronici presso la SUNAT (agenzia fiscale del Perù).</target>
+      </trans-unit>
+      <trans-unit id="service.software.faq4.q" datatype="html">
+        <source>¿Qué pasa después de la entrega?</source>
+        <target>Cosa succede dopo la consegna?</target>
+      </trans-unit>
+      <trans-unit id="service.software.faq4.a" datatype="html">
+        <source>Seguimos contigo. El sistema queda en producción con documentación y capacitación, y el soporte y las mejoras se piden desde nuestro portal de clientes, con tickets y seguimiento. Clientes como Euroamerican Assistance y Alliance trabajan con nosotros desde 2008.</source>
+        <target>Restiamo con te. Il sistema va in produzione con documentazione e formazione, e supporto e miglioramenti si richiedono dal nostro portale clienti, con ticket e tracciamento. Clienti come Euroamerican Assistance e Alliance lavorano con noi dal 2008.</target>
+      </trans-unit>
+      <trans-unit id="service.software.faq5.q" datatype="html">
+        <source>¿El código y los datos son de mi empresa?</source>
+        <target>Il codice e i dati appartengono alla mia azienda?</target>
+      </trans-unit>
+      <trans-unit id="service.software.faq5.a" datatype="html">
+        <source>Sí. El sistema se construye para tu empresa y tus datos son tuyos. Las condiciones de propiedad, alojamiento y soporte quedan escritas en la propuesta antes de empezar.</source>
+        <target>Sì. Il sistema viene costruito per la tua azienda e i dati sono tuoi. Le condizioni di proprietà, hosting e supporto sono scritte nella proposta prima di iniziare.</target>
+      </trans-unit>
+      <trans-unit id="service.apps.aud1" datatype="html">
+        <source>Empresas que necesitan una web profesional que explique bien lo que hacen y convierta visitas en contactos, en uno o varios idiomas.</source>
+        <target>Aziende che hanno bisogno di un sito professionale che spieghi bene cosa fanno e trasformi le visite in contatti, in una o più lingue.</target>
+      </trans-unit>
+      <trans-unit id="service.apps.aud2" datatype="html">
+        <source>Negocios que quieren vender en línea con una tienda propia, con su catálogo, pagos y pedidos.</source>
+        <target>Attività che vogliono vendere online con un proprio negozio, con catalogo, pagamenti e ordini.</target>
+      </trans-unit>
+      <trans-unit id="service.apps.aud3" datatype="html">
+        <source>Empresas que atienden a sus clientes con procesos repetitivos (pedidos, renovaciones, consultas) y quieren un portal de autoservicio.</source>
+        <target>Aziende che servono i propri clienti con processi ripetitivi (ordini, rinnovi, richieste) e vogliono un portale self-service.</target>
+      </trans-unit>
+      <trans-unit id="service.apps.faq1.q" datatype="html">
+        <source>¿Cuánto cuesta una página web?</source>
+        <target>Quanto costa un sito web?</target>
+      </trans-unit>
+      <trans-unit id="service.apps.faq1.a" datatype="html">
+        <source>Tenemos planes de sitio web desde US$ 400 y tiendas online desde US$ 600, ambos en pago único, más el hosting y el dominio. Los portales y aplicaciones a medida se cotizan según su alcance.</source>
+        <target>I nostri piani per siti web partono da 400 US$ e i negozi online da 600 US$, entrambi con pagamento unico, più hosting e dominio. Portali e applicazioni su misura si quotano in base all'ambito.</target>
+      </trans-unit>
+      <trans-unit id="service.apps.faq2.q" datatype="html">
+        <source>¿Puedo actualizar el contenido yo mismo?</source>
+        <target>Posso aggiornare i contenuti da solo?</target>
+      </trans-unit>
+      <trans-unit id="service.apps.faq2.a" datatype="html">
+        <source>Sí. Según el proyecto usamos un gestor de contenidos (como WordPress) o un panel propio, para que cambies textos, imágenes y productos sin depender de nosotros. Si prefieres, también lo hacemos por ti desde el portal de soporte.</source>
+        <target>Sì. A seconda del progetto usiamo un CMS (come WordPress) o un pannello dedicato, così puoi cambiare testi, immagini e prodotti in autonomia. Se preferisci, lo facciamo noi tramite il portale di supporto.</target>
+      </trans-unit>
+      <trans-unit id="service.apps.faq3.q" datatype="html">
+        <source>¿La web aparecerá en Google?</source>
+        <target>Il sito comparirà su Google?</target>
+      </trans-unit>
+      <trans-unit id="service.apps.faq3.a" datatype="html">
+        <source>La construimos para eso: páginas rápidas, una por servicio, con títulos y descripciones pensados para búsquedas reales, versiones por idioma bien enlazadas y datos estructurados. Posicionar también requiere contenido y tiempo, y te explicamos qué esperar.</source>
+        <target>Lo costruiamo per questo: pagine veloci, una per servizio, con titoli e descrizioni pensati per ricerche reali, versioni linguistiche collegate correttamente e dati strutturati. Posizionarsi richiede anche contenuti e tempo, e ti spieghiamo cosa aspettarti.</target>
+      </trans-unit>
+      <trans-unit id="service.apps.faq4.q" datatype="html">
+        <source>¿Funcionará bien en celulares?</source>
+        <target>Funzionerà bene sugli smartphone?</target>
+      </trans-unit>
+      <trans-unit id="service.apps.faq4.a" datatype="html">
+        <source>Sí. Diseñamos primero para el celular, donde llega la mayoría de visitas, y probamos cada página en distintos tamaños de pantalla antes de publicarla.</source>
+        <target>Sì. Progettiamo prima per lo smartphone, da cui arriva la maggior parte delle visite, e testiamo ogni pagina su schermi di dimensioni diverse prima di pubblicarla.</target>
+      </trans-unit>
+      <trans-unit id="service.apps.faq5.q" datatype="html">
+        <source>¿Hacen sitios en varios idiomas?</source>
+        <target>Realizzate siti in più lingue?</target>
+      </trans-unit>
+      <trans-unit id="service.apps.faq5.a" datatype="html">
+        <source>Sí. Trabajamos con clientes en Perú, España e Italia, y construimos sitios en español, inglés e italiano, cada idioma con sus propias direcciones para que Google muestre la versión correcta a cada visitante.</source>
+        <target>Sì. Lavoriamo con clienti in Perù, Spagna e Italia e realizziamo siti in spagnolo, inglese e italiano, ogni lingua con i propri indirizzi così che Google mostri la versione giusta a ogni visitatore.</target>
+      </trans-unit>
+      <trans-unit id="service.integration.aud1" datatype="html">
+        <source>Empresas que usan SAP y necesitan que sus sistemas operativos (talleres, ventas, almacenes) consulten y actualicen la información sin digitarla dos veces.</source>
+        <target>Aziende che usano SAP e hanno bisogno che i propri sistemi operativi (officine, vendite, magazzini) leggano e aggiornino i dati senza digitarli due volte.</target>
+      </trans-unit>
+      <trans-unit id="service.integration.aud2" datatype="html">
+        <source>Negocios en Perú que deben emitir comprobantes electrónicos ante SUNAT desde su propio sistema de ventas o gestión.</source>
+        <target>Aziende in Perù che devono emettere documenti elettronici presso la SUNAT dal proprio sistema di vendita o gestionale.</target>
+      </trans-unit>
+      <trans-unit id="service.integration.aud3" datatype="html">
+        <source>Equipos que pierden horas en tareas repetitivas: validar RUC, DNI o cuentas bancarias, consolidar reportes o mover datos entre sistemas.</source>
+        <target>Team che perdono ore in attività ripetitive: validare codici fiscali peruviani (RUC, DNI) o conti bancari, consolidare report o spostare dati tra sistemi.</target>
+      </trans-unit>
+      <trans-unit id="service.integration.faq1.q" datatype="html">
+        <source>¿Con qué versiones de SAP trabajan?</source>
+        <target>Con quali versioni di SAP lavorate?</target>
+      </trans-unit>
+      <trans-unit id="service.integration.faq1.a" datatype="html">
+        <source>Nos adaptamos a la que ya tiene tu empresa. Antes de proponer, revisamos con tu equipo cómo se expone la información (servicios, interfaces o archivos) y diseñamos la integración sobre eso, sin reingenierías costosas.</source>
+        <target>Ci adattiamo a quella che la tua azienda già usa. Prima di proporre, verifichiamo con il tuo team come vengono esposti i dati (servizi, interfacce o file) e progettiamo l'integrazione su questa base, senza costose reingegnerizzazioni.</target>
+      </trans-unit>
+      <trans-unit id="service.integration.faq2.q" datatype="html">
+        <source>¿Qué se puede integrar con SAP?</source>
+        <target>Cosa si può integrare con SAP?</target>
+      </trans-unit>
+      <trans-unit id="service.integration.faq2.a" datatype="html">
+        <source>Por ejemplo: consulta de stock en tiempo real y reserva en almacén, sincronización de repuestos, validación y seguimiento de garantías, y el envío de pedidos o facturas. Lo hemos hecho para el taller Kawasaki y la red de más de 300 talleres Bajaj de Grupo Crosland.</source>
+        <target>Ad esempio: consultazione dello stock in tempo reale e prenotazione in magazzino, sincronizzazione dei ricambi, validazione e tracciamento delle garanzie, invio di ordini o fatture. Lo abbiamo fatto per l'officina Kawasaki e la rete di oltre 300 officine Bajaj del Grupo Crosland.</target>
+      </trans-unit>
+      <trans-unit id="service.integration.faq3.q" datatype="html">
+        <source>¿Pueden conectar mi sistema con la facturación electrónica de SUNAT?</source>
+        <target>Potete collegare il mio sistema alla fatturazione elettronica della SUNAT?</target>
+      </trans-unit>
+      <trans-unit id="service.integration.faq3.a" datatype="html">
+        <source>Sí. Hemos desarrollado interfaces para emitir y validar facturas electrónicas desde el sistema de gestión del cliente, de modo que el comprobante se genera al cerrar la venta, sin volver a digitarlo.</source>
+        <target>Sì. Abbiamo sviluppato interfacce per emettere e validare fatture elettroniche dal gestionale del cliente, così il documento si genera alla chiusura della vendita, senza doverlo digitare di nuovo.</target>
+      </trans-unit>
+      <trans-unit id="service.integration.faq4.q" datatype="html">
+        <source>¿Qué son sus APIs de validación?</source>
+        <target>Cosa sono le vostre API di validazione?</target>
+      </trans-unit>
+      <trans-unit id="service.integration.faq4.a" datatype="html">
+        <source>Son servicios que tu sistema puede consultar para validar datos de RUC y DNI, y de cuentas bancarias, al registrar un cliente o un pago. Se contratan como suscripción mensual desde nuestro portal de clientes; si te interesan, escríbenos y te enviamos los detalles.</source>
+        <target>Sono servizi che il tuo sistema può interrogare per validare i dati di RUC e DNI (codici fiscali e documenti peruviani) e dei conti bancari, quando registri un cliente o un pagamento. Si attivano come abbonamento mensile dal nostro portale clienti; scrivici e ti inviamo i dettagli.</target>
+      </trans-unit>
+      <trans-unit id="service.integration.faq5.q" datatype="html">
+        <source>¿Qué pasa si SAP o SUNAT cambian algo?</source>
+        <target>Cosa succede se SAP o la SUNAT cambiano qualcosa?</target>
+      </trans-unit>
+      <trans-unit id="service.integration.faq5.a" datatype="html">
+        <source>Las integraciones necesitan mantenimiento. Monitoreamos las que construimos y, cuando cambia una norma o una versión, las ajustamos dentro del soporte, que se gestiona desde el portal de clientes.</source>
+        <target>Le integrazioni richiedono manutenzione. Monitoriamo quelle che costruiamo e, quando cambia una norma o una versione, le adeguiamo nell'ambito del supporto, gestito dal portale clienti.</target>
+      </trans-unit>
+      <trans-unit id="service.hosting.aud1" datatype="html">
+        <source>Empresas que no tienen un equipo de TI propio y quieren que su web, su correo y sus sistemas estén siempre en línea, sin preocuparse por la parte técnica.</source>
+        <target>Aziende senza un proprio team IT che vogliono sito, email e sistemi sempre online, senza preoccuparsi della parte tecnica.</target>
+      </trans-unit>
+      <trans-unit id="service.hosting.aud2" datatype="html">
+        <source>Negocios con varios dominios, certificados y renovaciones que hoy se gestionan en distintos lugares y a veces vencen sin aviso.</source>
+        <target>Attività con diversi domini, certificati e rinnovi gestiti oggi in posti diversi, che a volte scadono senza preavviso.</target>
+      </trans-unit>
+      <trans-unit id="service.hosting.aud3" datatype="html">
+        <source>Clientes que ya tienen un sistema o una web y necesitan soporte continuo con tiempos y prioridades claros.</source>
+        <target>Clienti che hanno già un sistema o un sito e hanno bisogno di supporto continuo con tempi e priorità chiari.</target>
+      </trans-unit>
+      <trans-unit id="service.hosting.faq1.q" datatype="html">
+        <source>¿Cuánto cuesta el hosting?</source>
+        <target>Quanto costa l'hosting?</target>
+      </trans-unit>
+      <trans-unit id="service.hosting.faq1.a" datatype="html">
+        <source>Los planes de hosting cloud empiezan en US$ 110 al año, y hay planes para WordPress y para empresas con más tráfico. Los dominios .com desde US$ 25 al año y los .pe desde US$ 40. Puedes ver y contratar los planes desde nuestro portal de clientes.</source>
+        <target>I piani di hosting cloud partono da 110 US$ all'anno, con piani per WordPress e per aziende con più traffico. I domini .com partono da 25 US$ all'anno e i .pe da 40 US$. Puoi vedere e attivare i piani dal nostro portale clienti.</target>
+      </trans-unit>
+      <trans-unit id="service.hosting.faq2.q" datatype="html">
+        <source>¿Me avisan antes de que venza mi dominio o mi hosting?</source>
+        <target>Mi avvisate prima che scadano dominio o hosting?</target>
+      </trans-unit>
+      <trans-unit id="service.hosting.faq2.a" datatype="html">
+        <source>Sí. El portal te envía recordatorios por correo 30, 7 y 1 día antes de cada vencimiento, y puedes renovar en línea con PayPal o por transferencia bancaria.</source>
+        <target>Sì. Il portale ti invia promemoria via email 30, 7 e 1 giorno prima di ogni scadenza, e puoi rinnovare online con PayPal o con bonifico bancario.</target>
+      </trans-unit>
+      <trans-unit id="service.hosting.faq3.q" datatype="html">
+        <source>¿Cómo pido soporte?</source>
+        <target>Come richiedo supporto?</target>
+      </trans-unit>
+      <trans-unit id="service.hosting.faq3.a" datatype="html">
+        <source>Desde el portal de clientes registras un ticket (un error, una mejora o un requerimiento) y ves su estado hasta que se resuelve. Te avisamos por correo cada vez que hay una respuesta o un cambio.</source>
+        <target>Dal portale clienti apri un ticket (un errore, un miglioramento o una richiesta) e ne segui lo stato fino alla risoluzione. Ti avvisiamo via email ogni volta che c'è una risposta o un cambiamento.</target>
+      </trans-unit>
+      <trans-unit id="service.hosting.faq4.q" datatype="html">
+        <source>¿Incluye copias de seguridad?</source>
+        <target>Sono inclusi i backup?</target>
+      </trans-unit>
+      <trans-unit id="service.hosting.faq4.a" datatype="html">
+        <source>Ofrecemos backups programados de bases de datos y sitios como servicio, para que puedas recuperar tu información si algo falla. Te recomendamos el plan según la importancia de tus datos.</source>
+        <target>Offriamo backup programmati di database e siti come servizio, così puoi recuperare le tue informazioni se qualcosa va storto. Ti consigliamo il piano in base all'importanza dei tuoi dati.</target>
+      </trans-unit>
+      <trans-unit id="service.hosting.faq5.q" datatype="html">
+        <source>¿Puedo pagar en soles o por transferencia?</source>
+        <target>Posso pagare con bonifico?</target>
+      </trans-unit>
+      <trans-unit id="service.hosting.faq5.a" datatype="html">
+        <source>Sí. Además de PayPal, aceptamos transferencia bancaria a nuestras cuentas en soles, dólares o euros: reportas el pago con el número de operación o la constancia y lo confirmamos.</source>
+        <target>Sì. Oltre a PayPal, accettiamo bonifici sui nostri conti in soles, dollari o euro: segnali il pagamento con il numero dell'operazione o la ricevuta e lo confermiamo.</target>
+      </trans-unit>
+      <trans-unit id="service.audience.label" datatype="html">
+        <source>PARA QUIÉN ES</source>
+        <target>PER CHI È</target>
+      </trans-unit>
+      <trans-unit id="service.faq.label" datatype="html">
+        <source>PREGUNTAS FRECUENTES</source>
+        <target>DOMANDE FREQUENTI</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

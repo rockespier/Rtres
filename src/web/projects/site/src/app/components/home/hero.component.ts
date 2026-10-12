@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { PATHS } from '../../core/site-paths';
 
 @Component({
   selector: 'app-home-hero',
@@ -10,7 +11,7 @@ import { RouterLink } from '@angular/router';
       <div class="copy" style="background-image:url('assets/hero-dashboard.webp')">
         <h1 class="v2-display" i18n="@@home.hero.title">Tecnología que<br>hace avanzar<br>tu negocio.</h1>
         <p i18n="@@home.hero.sub">Software a medida, infraestructura y soporte para convertir tus proyectos en realidad.</p>
-        <a class="v2-btn-lime" routerLink="/" fragment="contacto" i18n="@@home.cta.talk">Hablemos de tu proyecto</a>
+        <a class="v2-btn-lime" [routerLink]="paths.contact" i18n="@@home.cta.talk">Hablemos de tu proyecto</a>
         <a class="v2-btn-outline outline" routerLink="/" fragment="portal" i18n="@@home.cta.portal">Portal de asistencia</a>
       </div>
     </section>
@@ -31,4 +32,4 @@ import { RouterLink } from '@angular/router';
     }
   `],
 })
-export class HomeHeroComponent {}
+export class HomeHeroComponent { readonly paths = PATHS; }

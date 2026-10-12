@@ -1,12 +1,12 @@
 // Genera en la raíz del site estático (dist/site/browser) los archivos SEO que no produce Angular:
-//   - sitemap.xml con cada página prerenderizada y sus versiones es/en/it (xhtml:link hreflang + x-default);
+//   - sitemap.xml con cada página prerenderizada y sus versiones en otros idiomas. Las URLs y los hreflang se leen del
+//     propio HTML (canonical y <link rel="alternate">, que pone SeoService): los slugs cambian por idioma (site-paths.ts);
 //   - robots.txt que apunta al sitemap;
 //   - favicon.ico (copiado de scripts/deploy).
 // La página 404 de cada idioma la elige site.htaccess.
 // Uso: node scripts/deploy/seo-files.mjs <ruta a dist/site/browser>
-// Las URLs van sin "/" final (salvo el home de cada idioma), igual que el canonical que pone SeoService.
-import { copyFileSync, existsSync, readdirSync, statSync, writeFileSync } from 'node:fs';
-import { dirname, join, relative, sep } from 'node:path';
+import { copyFileSync, existsSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const SITE = 'https://rtres.net';
@@ -17,30 +17,35 @@ if (!root || !existsSync(join(root, 'es', 'index.html'))) {
   process.exit(1);
 }
 
-/** Rutas prerenderizadas de un idioma: carpetas con index.html ("" = home), sin la 404. */
-function routes(dir, base = dir) {
-  const found = [];
+/** Páginas prerenderizadas (index.html) de un idioma, sin la 404 ni los assets. */
+function pages(dir) {
+  const found = existsSync(join(dir, 'index.html')) ? [join(dir, 'index.html')] : [];
   for (const name of readdirSync(dir)) {
     const full = join(dir, name);
-    if (!statSync(full).isDirectory() || name === 'assets') continue;
-    if (existsSync(join(full, 'index.html'))) found.push(relative(base, full).split(sep).join('/'));
-    found.push(...routes(full, base));
+    if (statSync(full).isDirectory() && name !== 'assets' && name !== '404') found.push(...pages(full));
   }
   return found;
 }
 
-const paths = ['', ...new Set(routes(join(root, 'es')))].filter(p => p !== '404').sort();
-const url = (locale, path) => `${SITE}/${locale}/${path}`.replace(/\/$/, path ? '' : '/');
+const attr = (tag, name) => tag.match(new RegExp(`${name}="([^"]*)"`))?.[1];
 const today = new Date().toISOString().slice(0, 10);
-
-const entries = paths.flatMap(path => LOCALES.map(locale => [
-  '  <url>',
-  `    <loc>${url(locale, path)}</loc>`,
-  `    <lastmod>${today}</lastmod>`,
-  ...LOCALES.map(l => `    <xhtml:link rel="alternate" hreflang="${l}" href="${url(l, path)}"/>`),
-  `    <xhtml:link rel="alternate" hreflang="x-default" href="${url('es', path)}"/>`,
-  '  </url>',
-].join('\n')));
+const entries = [];
+for (const locale of LOCALES) {
+  for (const file of pages(join(root, locale))) {
+    const html = readFileSync(file, 'utf8');
+    if (/<meta name="robots" content="[^"]*noindex/.test(html)) continue;
+    const canonical = html.match(/<link rel="canonical"[^>]*>/)?.[0];
+    if (!canonical) { console.warn(`Sin canonical: ${file}`); continue; }
+    const alternates = [...html.matchAll(/<link rel="alternate"[^>]*hreflang[^>]*>/g)].map(m => m[0]);
+    entries.push([
+      '  <url>',
+      `    <loc>${attr(canonical, 'href')}</loc>`,
+      `    <lastmod>${today}</lastmod>`,
+      ...alternates.map(tag => `    <xhtml:link rel="alternate" hreflang="${attr(tag, 'hreflang')}" href="${attr(tag, 'href')}"/>`),
+      '  </url>',
+    ].join('\n'));
+  }
+}
 
 writeFileSync(join(root, 'sitemap.xml'),
   `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${entries.join('\n')}\n</urlset>\n`);
@@ -48,4 +53,5 @@ writeFileSync(join(root, 'robots.txt'), `User-agent: *\nAllow: /\nDisallow: /*/4
 
 const here = dirname(fileURLToPath(import.meta.url));
 copyFileSync(join(here, 'favicon.ico'), join(root, 'favicon.ico'));
-console.log(`sitemap.xml: ${entries.length} URLs (${paths.length} páginas × ${LOCALES.length} idiomas); robots.txt y favicon.ico listos.`);
+
+console.log(`sitemap.xml: ${entries.length} URLs; robots.txt y favicon.ico listos.`);

@@ -1,3 +1,4 @@
+import { casePath, servicePath } from '../../core/site-paths';
 /** Contenido de cada caso de éxito. Fuente: Documentacion/Casos de exito Rtres.docx y Opiniones.docx. */
 export interface CaseStat { value: string; label: string; }
 export interface CaseGroup { title: string | null; rows: { title: string; text: string }[]; }
@@ -53,10 +54,10 @@ export const CASES: CaseContent[] = [
       role: $localize`:@@case.eua.role:Gerente comercial, Euroamerican Assistance`,
     },
     services: [
-      { path: '/servicios/software-a-medida', label: $localize`:@@home.services.1.title:Software a medida` },
-      { path: '/servicios/hosting-dominios-y-soporte', label: $localize`:@@home.services.4.title:Hosting, dominios y soporte` },
+      { path: servicePath('software-a-medida'), label: $localize`:@@home.services.1.title:Software a medida` },
+      { path: servicePath('hosting-dominios-y-soporte'), label: $localize`:@@home.services.4.title:Hosting, dominios y soporte` },
     ],
-    next: { path: '/casos/grupo-crosland', name: 'Grupo Crosland' },
+    next: { path: casePath('grupo-crosland'), name: 'Grupo Crosland' },
   },
   {
     slug: 'grupo-crosland',
@@ -93,9 +94,9 @@ export const CASES: CaseContent[] = [
     impact: $localize`:@@case.crosland.impact:Un flujo de trabajo técnico optimizado y control absoluto del inventario de repuestos en toda la red.`,
     testimonial: null,
     services: [
-      { path: '/servicios/software-a-medida', label: $localize`:@@home.services.1.title:Software a medida` },
-      { path: '/servicios/integracion-y-automatizacion', label: $localize`:@@home.services.3.title:Integración y automatización` },
+      { path: servicePath('software-a-medida'), label: $localize`:@@home.services.1.title:Software a medida` },
+      { path: servicePath('integracion-y-automatizacion'), label: $localize`:@@home.services.3.title:Integración y automatización` },
     ],
-    next: { path: '/casos/euroamerican-assistance', name: 'Euroamerican Assistance' },
+    next: { path: casePath('euroamerican-assistance'), name: 'Euroamerican Assistance' },
   },
 ];

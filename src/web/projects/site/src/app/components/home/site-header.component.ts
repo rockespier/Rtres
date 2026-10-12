@@ -3,6 +3,7 @@ import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/ro
 import { filter } from 'rxjs';
 import { CASE_LINKS, NavLink, SERVICE_LINKS } from '../../core/site-nav';
 import { LangLinksComponent } from './lang-links.component';
+import { PATHS } from '../../core/site-paths';
 
 type Menu = 'services' | 'cases' | null;
 
@@ -25,12 +26,12 @@ type Menu = 'services' | 'cases' | null;
           <button type="button" [attr.aria-expanded]="open() === 'cases'" aria-controls="menu-cases" (click)="toggle('cases')"><ng-container i18n="@@home.nav.cases">Casos de éxito</ng-container> <span class="chev" aria-hidden="true">⌄</span></button>
           @if (open() === 'cases') { <ul id="menu-cases">@for (l of cases; track l.path) {<li><a [routerLink]="l.path" routerLinkActive="active" (click)="closeAll()">{{ l.label }}</a></li>}</ul> }
         </div>
-        <a routerLink="/nosotros" routerLinkActive="active" i18n="@@home.nav.about">Nosotros</a>
-        <a routerLink="/recursos" routerLinkActive="active" i18n="@@home.nav.resources">Recursos</a>
+        <a [routerLink]="paths.about" routerLinkActive="active" i18n="@@home.nav.about">Nosotros</a>
+        <a [routerLink]="paths.resources" routerLinkActive="active" i18n="@@home.nav.resources">Recursos</a>
       </nav>
 
       <div class="actions">
-        <a class="v2-btn-lime" routerLink="/" fragment="contacto" i18n="@@home.cta.talk">Hablemos de tu proyecto</a>
+        <a class="v2-btn-lime" [routerLink]="paths.contact" i18n="@@home.cta.talk">Hablemos de tu proyecto</a>
         <a class="portal-link" routerLink="/" fragment="portal" i18n="@@home.cta.portal">Portal de asistencia</a>
         <button type="button" class="burger" [attr.aria-expanded]="mobile()" aria-controls="mobile-menu" (click)="mobile.set(!mobile())">
           <span class="sr-only" i18n="@@site.nav.menu">Menú</span><i></i><i></i><i></i>
@@ -45,9 +46,9 @@ type Menu = 'services' | 'cases' | null;
         <p class="v2-label" i18n="@@home.nav.cases">Casos de éxito</p>
         @for (l of cases; track l.path) {<a [routerLink]="l.path" (click)="closeAll()">{{ l.label }}</a>}
         <hr>
-        <a routerLink="/nosotros" (click)="closeAll()" i18n="@@home.nav.about">Nosotros</a>
-        <a routerLink="/recursos" (click)="closeAll()" i18n="@@home.nav.resources">Recursos</a>
-        <a class="v2-btn-lime cta" routerLink="/" fragment="contacto" (click)="closeAll()" i18n="@@home.cta.talk">Hablemos de tu proyecto</a>
+        <a [routerLink]="paths.about" (click)="closeAll()" i18n="@@home.nav.about">Nosotros</a>
+        <a [routerLink]="paths.resources" (click)="closeAll()" i18n="@@home.nav.resources">Recursos</a>
+        <a class="v2-btn-lime cta" [routerLink]="paths.contact" (click)="closeAll()" i18n="@@home.cta.talk">Hablemos de tu proyecto</a>
         <a class="v2-btn-outline cta-portal" routerLink="/" fragment="portal" (click)="closeAll()" i18n="@@home.cta.portal">Portal de asistencia</a>
         <div class="langs"><app-lang-links separator=" · " /></div>
       </div>
@@ -91,6 +92,7 @@ type Menu = 'services' | 'cases' | null;
   `],
 })
 export class HomeHeaderComponent {
+  readonly paths = PATHS;
   readonly services: NavLink[] = SERVICE_LINKS;
   readonly cases: NavLink[] = CASE_LINKS;
   open = signal<Menu>(null);

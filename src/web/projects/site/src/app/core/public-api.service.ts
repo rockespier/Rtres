@@ -5,6 +5,8 @@ import { environment } from '../../environments/environment';
 
 export interface WordPressProject { name: string; category: string; photoUrl: string | null; }
 export interface WordPressReview { author: string; quote: string; }
+/** Formulario de contacto; website es el campo trampa (oculto) contra bots. */
+export interface ContactRequest { name: string; email: string; phone: string; company: string; service: string; message: string; locale: string; page: string; website: string; }
 export interface PublicStats { activeClients: number; }
 export interface PublicVideo { youtubeId: string; title: string; category: string; description: string | null; }
 
@@ -30,6 +32,11 @@ export class PublicApiService {
   /** Cifras públicas (clientes activos en el portal); null si la API no responde. */
   getStats(): Observable<PublicStats | null> {
     return this.safeGet<PublicStats | null>(`${environment.apiBaseUrl}/public/stats`, null);
+  }
+
+  /** Envía el formulario de contacto. A diferencia de las lecturas, los errores llegan al componente para mostrarlos. */
+  sendContact(body: ContactRequest): Observable<unknown> {
+    return this.http.post(`${environment.apiBaseUrl}/public/contact`, body).pipe(timeout(15000));
   }
 
   getHeroPhoto(): Observable<{ url: string }> {

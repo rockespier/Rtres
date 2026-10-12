@@ -28,6 +28,7 @@ builder.Services.AddScoped<PayPalCheckoutService>();
 builder.Services.AddScoped<PayPalPaymentService>();
 builder.Services.AddScoped<TaxDocumentService>();
 builder.Services.AddScoped<BankTransferService>();
+builder.Services.AddScoped<StaffNotifier>();
 builder.Services.AddCors(options => options.AddDefaultPolicy(policy => policy
     .WithOrigins(PayPalCheckoutService.AllowedOrigins(builder.Configuration))
     .AllowAnyHeader().AllowAnyMethod()));
@@ -51,7 +52,13 @@ builder.Services.Configure<ForwardedHeadersOptions>(o =>
 builder.Services.AddRateLimiter(o =>
 {
     o.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
-    o.OnRejected = (ctx, ct) => new ValueTask(ctx.HttpContext.Response.WriteAsJsonAsync(new { message = "Demasiados intentos de inicio de sesión. Espera un minuto e inténtalo de nuevo." }, ct));
+    o.OnRejected = (ctx, ct) => new ValueTask(ctx.HttpContext.Response.WriteAsJsonAsync(new { message = ctx.HttpContext.Request.Path.StartsWithSegments("/api/public/contact")
+        ? "Recibimos varios mensajes desde tu conexión. Espera unos minutos o escríbenos a info@rtres.net."
+        : "Demasiados intentos de inicio de sesión. Espera un minuto e inténtalo de nuevo." }, ct));
+    // Formulario de contacto: 5 envíos cada 10 minutos por IP.
+    o.AddPolicy(ContactController.RateLimitPolicy, http => RateLimitPartition.GetFixedWindowLimiter(
+        http.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+        _ => new FixedWindowRateLimiterOptions { PermitLimit = 5, Window = TimeSpan.FromMinutes(10), QueueLimit = 0 }));
     o.AddPolicy(AuthController.LoginRateLimitPolicy, http => RateLimitPartition.GetFixedWindowLimiter(
         http.Connection.RemoteIpAddress?.ToString() ?? "unknown",
         _ => new FixedWindowRateLimiterOptions { PermitLimit = 10, Window = TimeSpan.FromMinutes(1), QueueLimit = 0 }));

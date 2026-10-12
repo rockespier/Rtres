@@ -1,5 +1,6 @@
 import { Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { PATHS } from '../../core/site-paths';
 
 /** Banda de cierre de las páginas internas: fondo papel con filete lima, para no fundirse con el pie lima. */
 @Component({
@@ -10,7 +11,7 @@ import { RouterLink } from '@angular/router';
     <section>
       <h2>{{ title() }}</h2>
       <div>
-        <a class="dark-btn" routerLink="/" fragment="contacto" i18n="@@home.contact.proposal">Pedir una propuesta</a>
+        <a class="dark-btn" [routerLink]="paths.contact" i18n="@@home.contact.proposal">Pedir una propuesta</a>
         <a class="whatsapp" href="https://wa.me/393281915399" target="_blank" rel="noopener" i18n="@@home.contact.whatsapp">Escribir por WhatsApp ↗</a>
       </div>
     </section>
@@ -29,5 +30,6 @@ import { RouterLink } from '@angular/router';
   `],
 })
 export class ClosingCtaComponent {
+  readonly paths = PATHS;
   title = input.required<string>();
 }

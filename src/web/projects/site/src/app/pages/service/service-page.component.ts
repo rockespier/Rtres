@@ -3,6 +3,9 @@ import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ClosingCtaComponent } from '../../components/home/closing-cta.component';
 import { PROCESS_STEPS, SERVICES, ServiceContent } from './service-content';
+import { PATHS } from '../../core/site-paths';
+import { SeoService } from '../../core/seo.service';
+import { SERVICE_EXTRAS, ServiceExtras } from './service-extras';
 
 /** Plantilla de las páginas de servicio; el contenido sale de SERVICES según el slug de la ruta. */
 @Component({
@@ -17,7 +20,7 @@ import { PROCESS_STEPS, SERVICES, ServiceContent } from './service-content';
           <h1 class="v2-display">{{ s.title }}</h1>
           <p class="lead">{{ s.lead }}</p>
           <div class="ctas">
-            <a class="v2-btn-lime" routerLink="/" fragment="contacto" i18n="@@home.cta.talk">Hablemos de tu proyecto</a>
+            <a class="v2-btn-lime" [routerLink]="paths.contact" [queryParams]="{ servicio: s.slug }" i18n="@@home.cta.talk">Hablemos de tu proyecto</a>
             @if (s.relatedCase) { <a class="v2-btn-outline" [routerLink]="s.relatedCase.path" i18n="@@service.seeCase">Ver un caso real</a> }
           </div>
         </div>
@@ -37,6 +40,13 @@ import { PROCESS_STEPS, SERVICES, ServiceContent } from './service-content';
           }
         </ol>
       </section>
+
+      @if (extras; as x) {
+        <section class="audience">
+          <p class="v2-label" i18n="@@service.audience.label">PARA QUIÉN ES</p>
+          <ul>@for (a of x.audience; track a) {<li>{{ a }}</li>}</ul>
+        </section>
+      }
 
       <section class="specs">
         <div>
@@ -63,6 +73,17 @@ import { PROCESS_STEPS, SERVICES, ServiceContent } from './service-content';
         </a>
       }
 
+      @if (extras; as x) {
+        <section class="faq">
+          <p class="v2-label" i18n="@@service.faq.label">PREGUNTAS FRECUENTES</p>
+          <div class="faq-list">
+            @for (f of x.faqs; track f.q; let i = $index) {
+              <details [open]="i === 0"><summary><h3>{{ f.q }}</h3><span aria-hidden="true">+</span></summary><p>{{ f.a }}</p></details>
+            }
+          </div>
+        </section>
+      }
+
       <app-closing-cta [title]="s.ctaTitle" />
     }
   `,
@@ -77,6 +98,20 @@ import { PROCESS_STEPS, SERVICES, ServiceContent } from './service-content';
     .problem{display:grid;grid-template-columns:1fr 3fr;gap:30px;padding:100px 5%;background:var(--v2-paper)}
     .statement{margin:0;font:clamp(1.9rem,3vw,3rem)/1.12 Georgia,serif;letter-spacing:-.03em;text-wrap:balance}
     .build{padding:100px 5% 60px}
+    .audience{display:grid;grid-template-columns:1fr 3fr;gap:30px;padding:70px 5%;background:var(--v2-paper)}
+    .audience ul{list-style:none;margin:0;padding:0;display:grid;gap:0}
+    .audience li{padding:20px 0 20px 34px;border-top:1px solid var(--v2-rule);font-size:19px;line-height:1.45;position:relative}
+    .audience li:last-child{border-bottom:1px solid var(--v2-rule)}
+    .audience li:before{content:"→";position:absolute;left:0;color:var(--v2-mark,#141414);font-weight:bold}
+    .faq{display:grid;grid-template-columns:1fr 3fr;gap:30px;padding:100px 5%}
+    .faq-list details{border-top:1px solid var(--v2-rule)}
+    .faq-list details:last-child{border-bottom:1px solid var(--v2-rule)}
+    .faq-list summary{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:24px 0;cursor:pointer;list-style:none}
+    .faq-list summary::-webkit-details-marker{display:none}
+    .faq-list h3{margin:0;font-size:clamp(1.15rem,1.7vw,1.45rem);letter-spacing:-.02em}
+    .faq-list summary span{font-size:28px;line-height:1;transition:transform .2s}
+    .faq-list details[open] summary span{transform:rotate(45deg)}
+    .faq-list p{margin:0 0 26px;max-width:760px;font-size:17px;line-height:1.6;color:var(--v2-muted)}
     .build ol{list-style:none;margin:30px 0 0;padding:0}
     .build li{display:grid;grid-template-columns:60px 1fr 1fr;gap:20px;align-items:baseline;padding:28px 0;border-top:1px solid var(--v2-rule)}
     .build li:last-child{border-bottom:1px solid var(--v2-rule)}
@@ -107,7 +142,8 @@ import { PROCESS_STEPS, SERVICES, ServiceContent } from './service-content';
       .hero{grid-template-columns:1fr}
       .visual{min-height:280px;order:-1}
       .copy{padding:50px 7%}
-      .problem,.specs{grid-template-columns:1fr;gap:20px}
+      .problem,.specs,.audience,.faq{grid-template-columns:1fr;gap:20px}
+      .audience,.faq{padding:60px 7%}
       .build li{grid-template-columns:35px 1fr}
       .build em{grid-column:2}
       .process{grid-template-columns:1fr 1fr}
@@ -115,17 +151,22 @@ import { PROCESS_STEPS, SERVICES, ServiceContent } from './service-content';
   `],
 })
 export class ServicePageComponent implements OnInit {
+  readonly paths = PATHS;
   private route = inject(ActivatedRoute);
   private title = inject(Title);
   private meta = inject(Meta);
   readonly steps = PROCESS_STEPS;
+  private seo = inject(SeoService);
   s: ServiceContent | undefined;
+  extras: ServiceExtras | undefined;
 
   ngOnInit() {
     this.s = SERVICES.find(x => x.slug === this.route.snapshot.data['slug']);
     if (!this.s) return;
     this.title.setTitle(`${this.s.title} — Rtres Web Solutions`);
     this.meta.updateTag({ name: 'description', content: this.s.metaDescription });
+    this.extras = SERVICE_EXTRAS[this.s.slug];
+    if (this.extras) this.seo.setFaq(this.extras.faqs);
   }
 
   pad(n: number) { return n.toString().padStart(2, '0'); }

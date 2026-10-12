@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CASE_LINKS, SERVICE_LINKS } from '../../core/site-nav';
 import { LangLinksComponent } from './lang-links.component';
+import { PATHS } from '../../core/site-paths';
 
 @Component({
   selector: 'app-home-footer',
@@ -20,9 +21,9 @@ import { LangLinksComponent } from './lang-links.component';
       </div>
       <div>
         <b i18n="@@home.footer.company">Empresa</b>
-        <a routerLink="/nosotros" i18n="@@home.nav.about">Nosotros</a>
+        <a [routerLink]="paths.about" i18n="@@home.nav.about">Nosotros</a>
         @for (l of cases; track l.path) {<a [routerLink]="l.path">{{ l.label }}</a>}
-        <a routerLink="/recursos" i18n="@@home.nav.resources">Recursos</a>
+        <a [routerLink]="paths.resources" i18n="@@home.nav.resources">Recursos</a>
         <a routerLink="/" fragment="portal" i18n="@@home.footer.reviews">Opiniones</a>
       </div>
       <div>
@@ -56,6 +57,7 @@ import { LangLinksComponent } from './lang-links.component';
   `],
 })
 export class HomeFooterComponent {
+  readonly paths = PATHS;
   readonly services = SERVICE_LINKS;
   readonly cases = CASE_LINKS;
   readonly year = new Date().getFullYear();

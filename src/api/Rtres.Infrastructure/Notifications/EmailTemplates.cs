@@ -18,6 +18,7 @@ namespace Rtres.Infrastructure.Notifications;
 /// <item><c>TicketCreated</c>: ticketId, code, title, company, project, body — aviso interno para Rtres, siempre en español</item>
 /// <item><c>TransferReported</c>: reportId, company, product, amount, currency, operation? — aviso interno para Rtres, siempre en español</item>
 /// <item><c>TransferRejected</c>: product, amount, currency, reason</item>
+/// <item><c>ContactLead</c>: leadId, name, email, phone?, company?, service?, message, locale, page? — aviso interno para Rtres, siempre en español</item>
 /// <item><c>TaxDueReminder</c>: period (yyyy-MM), dueDate (yyyy-MM-dd), days — aviso interno para Rtres, siempre en español</item>
 /// </list>
 /// </summary>
@@ -28,7 +29,7 @@ public static class EmailTemplates
     public static (string Subject, string Html, string Text) Render(Notification notification, string? language, string portalUrl)
     {
         // Los avisos internos van al equipo de Rtres: el idioma del cliente no aplica.
-        var lang = notification.Type is NotificationType.TransferRequested or NotificationType.TicketCreated or NotificationType.TaxDueReminder or NotificationType.TransferReported ? "es" : Languages.Contains(language) ? language! : "es";
+        var lang = notification.Type is NotificationType.TransferRequested or NotificationType.TicketCreated or NotificationType.TaxDueReminder or NotificationType.TransferReported or NotificationType.ContactLead ? "es" : Languages.Contains(language) ? language! : "es";
         var d = notification.Data;
         var t = Texts[lang];
         var portal = portalUrl.TrimEnd('/');
@@ -74,13 +75,17 @@ public static class EmailTemplates
                     ? new[] { string.Format(t["reported.body"], V("company"), V("product"), Money(lang, V("amount"), V("currency"))), t["reported.next"] }
                     : new[] { string.Format(t["reported.body"], V("company"), V("product"), Money(lang, V("amount"), V("currency"))), string.Format(t["reported.operation"], V("operation")), t["reported.next"] },
                 t["cta.review"], $"{portal}/admin/transfer-reports"),
+            NotificationType.ContactLead => (
+                string.Format(t["lead.subject"], V("name"), string.IsNullOrWhiteSpace(V("company")) ? V("email") : V("company")),
+                new[] { string.Format(t["lead.who"], V("name"), V("email"), string.IsNullOrWhiteSpace(V("phone")) ? "—" : V("phone"), string.IsNullOrWhiteSpace(V("company")) ? "—" : V("company")), string.Format(t["lead.what"], string.IsNullOrWhiteSpace(V("service")) ? "—" : V("service"), V("locale").ToUpperInvariant(), string.IsNullOrWhiteSpace(V("page")) ? "/" : V("page")), Quote(V("message")) },
+                t["cta.leads"], $"{portal}/admin/leads"),
             NotificationType.TransferRejected => (
                 string.Format(t["rejected.subject"], V("product")),
                 new[] { string.Format(t["rejected.body"], Money(lang, V("amount"), V("currency")), V("product")), string.Format(t["rejected.reason"], V("reason")), t["rejected.next"] },
                 t["cta.services"], $"{portal}/services"),
             _ => throw new ArgumentOutOfRangeException(nameof(notification), notification.Type, null),
         };
-        var footer = notification.Type is NotificationType.TransferRequested or NotificationType.TicketCreated or NotificationType.TaxDueReminder or NotificationType.TransferReported ? t["footer.staff"] : t["footer"];
+        var footer = notification.Type is NotificationType.TransferRequested or NotificationType.TicketCreated or NotificationType.TaxDueReminder or NotificationType.TransferReported or NotificationType.ContactLead ? t["footer.staff"] : t["footer"];
         return (subject, Html(footer, paragraphs, cta, link), Text(footer, paragraphs, cta, link));
     }
 
@@ -198,6 +203,10 @@ public static class EmailTemplates
             ["rejected.reason"] = "Motivo: {0}",
             ["rejected.next"] = "Puedes volver a reportar el pago desde Mis servicios con los datos correctos o responder a este correo si tienes dudas.",
             ["cta.services"] = "Ir a Mis servicios",
+            ["lead.subject"] = "Nuevo contacto desde la web: {0} ({1})",
+            ["lead.who"] = "Nombre: {0}\nEmail: {1}\nTeléfono: {2}\nEmpresa: {3}",
+            ["lead.what"] = "Servicio: {0} · Idioma: {1} · Página: {2}",
+            ["cta.leads"] = "Ver contactos",
         },
         ["en"] = new()
         {

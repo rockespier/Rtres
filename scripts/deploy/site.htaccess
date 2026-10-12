@@ -18,6 +18,27 @@ RewriteRule ^ https://rtres.net%{REQUEST_URI} [L,R=301]
 # La raíz va al español (mismo comportamiento que serve-site.mjs). URL absoluta: una relativa saldría con http://.
 RewriteRule ^$ https://rtres.net/es/ [L,R=302]
 
+# Slugs traducidos (PLAN-seo.md, T6): las URLs viejas en español bajo /en y /it redirigen a la versión traducida.
+# Misma tabla que projects/site/src/app/core/site-paths.ts: si cambia un slug allí, actualízalo aquí.
+RewriteRule ^en/servicios/software-a-medida/?$ https://rtres.net/en/services/custom-software [L,R=301]
+RewriteRule ^it/servicios/software-a-medida/?$ https://rtres.net/it/servizi/software-su-misura [L,R=301]
+RewriteRule ^en/servicios/apps-y-experiencias-web/?$ https://rtres.net/en/services/web-apps [L,R=301]
+RewriteRule ^it/servicios/apps-y-experiencias-web/?$ https://rtres.net/it/servizi/app-web [L,R=301]
+RewriteRule ^en/servicios/integracion-y-automatizacion/?$ https://rtres.net/en/services/integration-and-automation [L,R=301]
+RewriteRule ^it/servicios/integracion-y-automatizacion/?$ https://rtres.net/it/servizi/integrazione-e-automazione [L,R=301]
+RewriteRule ^en/servicios/hosting-dominios-y-soporte/?$ https://rtres.net/en/services/hosting-domains-and-support [L,R=301]
+RewriteRule ^it/servicios/hosting-dominios-y-soporte/?$ https://rtres.net/it/servizi/hosting-domini-e-supporto [L,R=301]
+RewriteRule ^en/casos/euroamerican-assistance/?$ https://rtres.net/en/case-studies/euroamerican-assistance [L,R=301]
+RewriteRule ^it/casos/euroamerican-assistance/?$ https://rtres.net/it/casi-di-successo/euroamerican-assistance [L,R=301]
+RewriteRule ^en/casos/grupo-crosland/?$ https://rtres.net/en/case-studies/grupo-crosland [L,R=301]
+RewriteRule ^it/casos/grupo-crosland/?$ https://rtres.net/it/casi-di-successo/grupo-crosland [L,R=301]
+RewriteRule ^en/nosotros/?$ https://rtres.net/en/about [L,R=301]
+RewriteRule ^it/nosotros/?$ https://rtres.net/it/chi-siamo [L,R=301]
+RewriteRule ^en/recursos/?$ https://rtres.net/en/resources [L,R=301]
+RewriteRule ^it/recursos/?$ https://rtres.net/it/risorse [L,R=301]
+RewriteRule ^en/contacto/?$ https://rtres.net/en/contact [L,R=301]
+RewriteRule ^it/contacto/?$ https://rtres.net/it/contatti [L,R=301]
+
 # URL canónica de cada página: SIN "/" final (/es/nosotros), igual que los enlaces del sitio y el sitemap.
 # El home de cada idioma sí lleva barra (/es/).
 RewriteRule ^(es|en|it)$ https://rtres.net/$1/ [L,R=301]
