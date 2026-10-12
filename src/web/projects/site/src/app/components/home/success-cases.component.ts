@@ -3,7 +3,7 @@ import { RouterLink } from '@angular/router';
 import { CASE_LINKS } from '../../core/site-nav';
 import { CASES, CaseContent } from '../../pages/case/case-content';
 
-/** shot: el mismo recorte de casos_exito.png que muestra el detalle del caso. */
+/** shot: el mismo recorte de casos_exito.webp que muestra el detalle del caso. */
 interface SuccessCase { sector: string; name: string; scope: string; shot: CaseContent['shot']; path: string; }
 
 @Component({
@@ -21,7 +21,7 @@ interface SuccessCase { sector: string; name: string; scope: string; shot: CaseC
             <small>{{ c.sector }}</small>
             <h3>{{ c.name }}</h3>
             <b>{{ c.scope }}</b>
-            <div class="shot" role="img" [attr.aria-label]="c.name" style="background-image:url('assets/casos_exito.png')" [style.aspect-ratio]="c.shot.ratio" [style.background-size]="c.shot.size" [style.background-position]="c.shot.position"></div>
+            <div class="shot" role="img" [attr.aria-label]="c.name" style="background-image:url('assets/casos_exito.webp')" [style.aspect-ratio]="c.shot.ratio" [style.background-size]="c.shot.size" [style.background-position]="c.shot.position"></div>
             <a class="see" [routerLink]="c.path"><ng-container i18n="@@home.cases.see">Ver el caso</ng-container> <b aria-hidden="true">→</b></a>
           </article>
         }

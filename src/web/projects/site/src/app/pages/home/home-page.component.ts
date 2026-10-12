@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
+import { Meta, Title } from '@angular/platform-browser';
 import { HomeHeroComponent } from '../../components/home/hero.component';
 import { HomeProofComponent } from '../../components/home/proof-strip.component';
 import { HomeServicesComponent } from '../../components/home/services.component';
@@ -20,4 +21,13 @@ import { HomeContactComponent } from '../../components/home/contact.component';
     <app-home-contact />
   `,
 })
-export class HomePageComponent {}
+export class HomePageComponent implements OnInit {
+  private title = inject(Title);
+  private meta = inject(Meta);
+
+  /** Título y description del home: el servicio y el lugar, que es lo que se busca (ver PLAN-seo.md, S3). */
+  ngOnInit() {
+    this.title.setTitle($localize`:@@home.metaTitle:Software a medida y desarrollo web en Lima, Perú | Rtres`);
+    this.meta.updateTag({ name: 'description', content: $localize`:@@home.meta:Desarrollamos software a medida, apps web e integraciones con SAP y SUNAT para empresas en Perú, Italia y España. Socios tecnológicos desde 2007.` });
+  }
+}

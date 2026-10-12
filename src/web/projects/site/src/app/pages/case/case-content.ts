@@ -8,8 +8,8 @@ export interface CaseContent {
   intro: string;
   metaDescription: string;
   stats: CaseStat[];
-  /** Recorte de casos_exito.png: tamaño y posición del fondo, y proporción del recuadro. */
-  /** Recorte de casos_exito.png; width = ancho real del recorte en px (no se muestra más grande para que no pierda nitidez). */
+  /** Recorte de casos_exito.webp: tamaño y posición del fondo, y proporción del recuadro. */
+  /** Recorte de casos_exito.webp; width = ancho real del recorte en px (no se muestra más grande para que no pierda nitidez). */
   shot: { size: string; position: string; ratio: string; width: number };
   challenge: string;
   solution: CaseGroup[];

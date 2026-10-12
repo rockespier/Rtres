@@ -1,7 +1,8 @@
 # Site público estático (prerender de Angular) en el hosting Linux: /es, /en, /it.
 Options -Indexes -MultiViews
 DirectoryIndex index.html
-# Apache arma la redirección de la barra final con http:// (el SSL termina en Nginx): se hace a mano más abajo.
+# Sin la redirección automática a la barra final (Apache la arma con http:// porque el SSL termina en Nginx):
+# las carpetas de las páginas se sirven más abajo sin redirigir.
 DirectorySlash Off
 
 <IfModule mod_rewrite.c>
@@ -17,15 +18,27 @@ RewriteRule ^ https://rtres.net%{REQUEST_URI} [L,R=301]
 # La raíz va al español (mismo comportamiento que serve-site.mjs). URL absoluta: una relativa saldría con http://.
 RewriteRule ^$ https://rtres.net/es/ [L,R=302]
 
-# Carpeta sin barra final (/es/servicios/software-a-medida) -> con barra, directo a https.
+# URL canónica de cada página: SIN "/" final (/es/nosotros), igual que los enlaces del sitio y el sitemap.
+# El home de cada idioma sí lleva barra (/es/).
+RewriteRule ^(es|en|it)$ https://rtres.net/$1/ [L,R=301]
+# Versión con barra de una página interna -> sin barra (consolida enlaces viejos o externos).
+RewriteRule ^(es|en|it)/(.+)/$ https://rtres.net/$1/$2 [L,R=301]
+# Página prerenderizada: se sirve su index.html sin redirigir.
 RewriteCond %{REQUEST_FILENAME} -d
-RewriteRule ^(.+[^/])$ https://rtres.net/$1/ [L,R=301]
+RewriteCond %{REQUEST_FILENAME}/index.html -f
+RewriteRule ^(.+[^/])$ /$1/index.html [END]
 
-# Ruta de un idioma que no existe como archivo: la resuelve el router de Angular de ese idioma.
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(es|en|it)/ /$1/index.html [L]
 </IfModule>
+
+# Todo está prerenderizado: lo que no existe devuelve un 404 real, con la página 404 del idioma de la URL.
+# (En el raíz con <If>, no con un .htaccess por carpeta: ese anularía las reglas de reescritura de arriba.)
+ErrorDocument 404 /es/404/index.html
+<If "%{REQUEST_URI} =~ m#^/en/#">
+ErrorDocument 404 /en/404/index.html
+</If>
+<If "%{REQUEST_URI} =~ m#^/it/#">
+ErrorDocument 404 /it/404/index.html
+</If>
 
 # El HTML se revalida siempre; los .js/.css llevan hash en el nombre (build production) y pueden cachearse un año.
 <IfModule mod_headers.c>

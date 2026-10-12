@@ -1350,6 +1350,42 @@
         <source>Destacado</source>
         <target>Featured</target>
       </trans-unit>
+      <trans-unit id="home.metaTitle" datatype="html">
+        <source>Software a medida y desarrollo web en Lima, Perú | Rtres</source>
+        <target>Custom software and web development from Lima, Peru | Rtres</target>
+      </trans-unit>
+      <trans-unit id="home.meta" datatype="html">
+        <source>Desarrollamos software a medida, apps web e integraciones con SAP y SUNAT para empresas en Perú, Italia y España. Socios tecnológicos desde 2007.</source>
+        <target>We build custom software, web apps and SAP and SUNAT integrations for companies in Peru, Italy and Spain. Your technology partner since 2007.</target>
+      </trans-unit>
+      <trans-unit id="notFound.label" datatype="html">
+        <source>ERROR 404</source>
+        <target>ERROR 404</target>
+      </trans-unit>
+      <trans-unit id="notFound.title" datatype="html">
+        <source>Esta página no existe.</source>
+        <target>This page does not exist.</target>
+      </trans-unit>
+      <trans-unit id="notFound.lead" datatype="html">
+        <source>Puede que el enlace esté mal escrito o que la página se haya movido. Estas te pueden servir:</source>
+        <target>The link may be mistyped or the page may have moved. These may help:</target>
+      </trans-unit>
+      <trans-unit id="notFound.home" datatype="html">
+        <source>Inicio</source>
+        <target>Home</target>
+      </trans-unit>
+      <trans-unit id="notFound.contact" datatype="html">
+        <source>Contacto</source>
+        <target>Contact</target>
+      </trans-unit>
+      <trans-unit id="notFound.metaTitle" datatype="html">
+        <source>Página no encontrada — Rtres Web Solutions</source>
+        <target>Page not found — Rtres Web Solutions</target>
+      </trans-unit>
+      <trans-unit id="notFound.meta" datatype="html">
+        <source>La página que buscas no existe en rtres.net.</source>
+        <target>The page you are looking for does not exist on rtres.net.</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

@@ -34,6 +34,9 @@ import { CategoryDto, PortalApiService } from '../../core/portal-api.service';
               </p>
               <p class="text-xs text-muted">{{ c.usageCount === 0 ? 'Sin uso' : c.usageCount + ' ' + (c.usageCount === 1 ? unit()[0] : unit()[1]) }}</p>
             </div>
+            @if (kind() === 'expense' && !c.isIncomeTax) {
+              <label class="flex items-center gap-1.5 text-xs text-muted whitespace-nowrap" title="Si sus gastos se restan de la utilidad en la Renta anual"><input type="checkbox" [checked]="c.isDeductible !== false" [disabled]="busy()" (change)="setDeductible(c, $any($event.target).checked)"> Deducible</label>
+            }
             <button type="button" class="btn btn-ghost btn-sm" (click)="startRename(c)">Renombrar</button>
             @if (!c.isSystem) {
               <button type="button" class="btn btn-ghost btn-sm text-red-600" [disabled]="c.usageCount > 0" [title]="c.usageCount > 0 ? 'Tiene ' + unit()[1] + ': cámbialos de categoría primero' : ''" (click)="startDelete(c)">Eliminar</button>
@@ -76,6 +79,7 @@ export class CategoryManagerComponent implements OnInit {
 
   add() { this.run(this.api.createCategory(this.kind(), this.newName.trim()), () => this.newName = ''); }
   rename(c: CategoryDto) { this.run(this.api.renameCategory(this.kind(), c.id, this.renameValue.trim()), () => this.renamingId.set(null)); }
+  setDeductible(c: CategoryDto, value: boolean) { this.run(this.api.setCategoryDeductible(c.id, value), () => {}); }
   remove(c: CategoryDto) { this.run(this.api.deleteCategory(this.kind(), c.id), () => this.deletingId.set(null)); }
 
   private run(call: Observable<unknown>, done: () => void) {

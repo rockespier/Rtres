@@ -39,6 +39,8 @@ public sealed class RecurringExpenseJob(RtresDbContext db, ILogger<RecurringExpe
                 {
                     Description = last.Description, CategoryId = last.CategoryId, Type = last.Type, Amount = last.Amount, Currency = last.Currency,
                     Date = next, Recurring = true, RecurrenceCycle = last.RecurrenceCycle,
+                    // Hereda cómo cuenta para impuestos (no deducible, servicio de no domiciliado); el pago del 1662 es de cada cuota.
+                    IsNonDeductible = last.IsNonDeductible, IsNonDomiciledService = last.IsNonDomiciledService, ForeignSupplierName = last.ForeignSupplierName, ForeignSupplierCountry = last.ForeignSupplierCountry,
                     // Tipo de cambio más cercano disponible: para una fecha futura es una estimación.
                     AmountPen = last.Amount * await db.RateToPenAsync(last.Currency, next, cancellationToken),
                 });

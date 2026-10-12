@@ -1,2 +1,2 @@
-import { Component } from '@angular/core'; import { RouterOutlet } from '@angular/router';
-@Component({selector:'app-root',standalone:true,imports:[RouterOutlet],template:'<router-outlet />'}) export class SiteComponent {}
+import { Component, inject } from '@angular/core'; import { RouterOutlet } from '@angular/router'; import { SeoService } from './core/seo.service';
+@Component({selector:'app-root',standalone:true,imports:[RouterOutlet],template:'<router-outlet />'}) export class SiteComponent { constructor() { inject(SeoService).init(); } }

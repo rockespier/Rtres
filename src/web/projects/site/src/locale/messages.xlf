@@ -1960,6 +1960,33 @@
           <context context-type="linenumber">62,66</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="home.metaTitle" datatype="html">
+        <source>Software a medida y desarrollo web en Lima, Perú | Rtres</source>
+      </trans-unit>
+      <trans-unit id="home.meta" datatype="html">
+        <source>Desarrollamos software a medida, apps web e integraciones con SAP y SUNAT para empresas en Perú, Italia y España. Socios tecnológicos desde 2007.</source>
+      </trans-unit>
+      <trans-unit id="notFound.label" datatype="html">
+        <source>ERROR 404</source>
+      </trans-unit>
+      <trans-unit id="notFound.title" datatype="html">
+        <source>Esta página no existe.</source>
+      </trans-unit>
+      <trans-unit id="notFound.lead" datatype="html">
+        <source>Puede que el enlace esté mal escrito o que la página se haya movido. Estas te pueden servir:</source>
+      </trans-unit>
+      <trans-unit id="notFound.home" datatype="html">
+        <source>Inicio</source>
+      </trans-unit>
+      <trans-unit id="notFound.contact" datatype="html">
+        <source>Contacto</source>
+      </trans-unit>
+      <trans-unit id="notFound.metaTitle" datatype="html">
+        <source>Página no encontrada — Rtres Web Solutions</source>
+      </trans-unit>
+      <trans-unit id="notFound.meta" datatype="html">
+        <source>La página que buscas no existe en rtres.net.</source>
+      </trans-unit>
     </body>
   </file>
 </xliff>

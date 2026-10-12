@@ -35,10 +35,11 @@ public class SalesReportTests
         Assert.Equal((675m, 18m, 693m), (Prop(sales, "baseImponible"), Prop(sales, "igv"), Prop(sales, "total")));
 
         var tax = Assert.IsType<OkObjectResult>(await admin.TaxSummaryReport(today.Month, today.Year, CancellationToken.None)).Value!;
-        Assert.Equal((100m, 575m, 18m, 67.5m), (Prop(tax, "ventasGravadasPen"), Prop(tax, "ventasNoGravadasPen"), Prop(tax, "igvEstimado"), Prop(tax, "rentaEstimada")));
+        // Pago a cuenta de la MYPE: 10 % de 475 (factura + exterior); el recibo por honorarios (200) es del titular como persona natural.
+        Assert.Equal((100m, 575m, 18m, 47.5m), (Prop(tax, "ventasGravadasPen"), Prop(tax, "ventasNoGravadasPen"), Prop(tax, "igvEstimado"), Prop(tax, "rentaEstimada")));
 
         var net = Assert.IsType<OkObjectResult>(await admin.NetReport(today.Month, today.Year, CancellationToken.None)).Value!;
-        Assert.Equal((675m, 67.5m, 607.5m), (Prop(net, "ventasPen"), Prop(net, "impuestosPen"), Prop(net, "utilidadNetaPen")));
+        Assert.Equal((675m, 47.5m, 627.5m), (Prop(net, "ventasPen"), Prop(net, "impuestosPen"), Prop(net, "utilidadNetaPen")));
     }
 
     private static ClientProduct AddProduct(RtresDbContext db, Guid clientId, Guid projectId, TaxDocumentType taxType)

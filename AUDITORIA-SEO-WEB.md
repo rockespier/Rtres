@@ -1,3 +1,5 @@
+> **Reemplazada por `PLAN-seo.md` (12/10/2026).** Esta auditoría describe el sitio anterior de una sola página; se conserva como historial.
+
 # Auditoría SEO y de conversión — Sitio público Rtres
 
 **Fecha:** 1 de octubre de 2026
