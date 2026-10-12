@@ -1,8 +1,11 @@
 import { Component } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { PATHS } from '../../core/site-paths';
 
 @Component({
   selector: 'app-home-contact',
   standalone: true,
+  imports: [RouterLink],
   template: `
     <section id="contacto">
       <div class="copy">
@@ -10,7 +13,7 @@ import { Component } from '@angular/core';
         <h2 class="v2-display" i18n="@@home.contact.title">Cuéntanos qué necesita<br>tu negocio.</h2>
         <p class="contact-copy" i18n="@@home.contact.text">Analizamos tu contexto, definimos el camino y construimos una solución que puedas sostener.</p>
         <div class="actions">
-          <a class="v2-btn-lime" href="mailto:info&#64;rtres.net" i18n="@@home.contact.proposal">Pedir una propuesta</a>
+          <a class="v2-btn-lime" [routerLink]="paths.contact" i18n="@@home.contact.proposal">Pedir una propuesta</a>
           <a class="whatsapp" href="https://wa.me/393281915399" target="_blank" rel="noopener" i18n="@@home.contact.whatsapp">Escribir por WhatsApp ↗</a>
         </div>
       </div>
@@ -35,4 +38,4 @@ import { Component } from '@angular/core';
     }
   `],
 })
-export class HomeContactComponent {}
+export class HomeContactComponent { readonly paths = PATHS; }

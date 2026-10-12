@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
 import { SERVICE_LINKS } from '../../core/site-nav';
+import { PATHS } from '../../core/site-paths';
 
 /**
  * Página 404. Se prerenderiza en /{idioma}/404 y el .htaccess la sirve con estado 404 para cualquier URL que no exista;
@@ -19,7 +20,7 @@ import { SERVICE_LINKS } from '../../core/site-nav';
       <ul>
         <li><a routerLink="/" i18n="@@notFound.home">Inicio</a></li>
         @for (s of services; track s.path) {<li><a [routerLink]="s.path">{{ s.label }}</a></li>}
-        <li><a routerLink="/" fragment="contacto" i18n="@@notFound.contact">Contacto</a></li>
+        <li><a [routerLink]="paths.contact" i18n="@@notFound.contact">Contacto</a></li>
       </ul>
     </section>
   `,
@@ -37,6 +38,7 @@ import { SERVICE_LINKS } from '../../core/site-nav';
   `],
 })
 export class NotFoundPageComponent implements OnInit, OnDestroy {
+  readonly paths = PATHS;
   private title = inject(Title);
   private meta = inject(Meta);
   readonly services = SERVICE_LINKS;

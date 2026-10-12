@@ -2,6 +2,7 @@ import { DOCUMENT } from '@angular/common';
 import { Injectable, LOCALE_ID, inject } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs';
+import { Locale, translatePath } from './site-paths';
 
 export const SITE_URL = 'https://rtres.net';
 export const SITE_LOCALES = ['es', 'en', 'it'] as const;
@@ -21,6 +22,10 @@ export class SeoService {
   private router = inject(Router);
   private locale = inject(LOCALE_ID).slice(0, 2);
 
+  /** Preguntas frecuentes de la página actual (FAQPage); la página las fija en ngOnInit y valen solo para esa navegación. */
+  private faq: { q: string; a: string }[] | null = null;
+  setFaq(items: { q: string; a: string }[]) { this.faq = items; }
+
   init() {
     // Las páginas fijan título y description en ngOnInit: se leen después de que la vista nueva se haya creado.
     this.router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe(() => setTimeout(() => this.update()));
@@ -34,6 +39,8 @@ export class SeoService {
   }
 
   private url(locale: string, path: string) { return `${SITE_URL}/${locale}${path || '/'}`; }
+  /** La misma página en otro idioma (los slugs están traducidos: core/site-paths.ts). */
+  private alternate(locale: Locale, path: string) { return this.url(locale, path ? translatePath(path, locale, this.locale as Locale) : ''); }
 
   update() {
     const head = this.document.head;
@@ -47,8 +54,8 @@ export class SeoService {
     if (noindex) head.querySelectorAll('link[rel="canonical"], link[rel="alternate"][hreflang]').forEach(el => el.remove());
     else {
       this.link('canonical', canonical);
-      for (const l of SITE_LOCALES) this.link('alternate', this.url(l, path), l);
-      this.link('alternate', this.url('es', path), 'x-default');
+      for (const l of SITE_LOCALES) this.link('alternate', this.alternate(l, path), l);
+      this.link('alternate', this.alternate('es', path), 'x-default');
     }
 
     const image = `${SITE_URL}/${this.locale}/assets/og-image.jpg`;
@@ -73,6 +80,11 @@ export class SeoService {
       address: { '@type': 'PostalAddress', addressLocality: 'Lima', addressCountry: 'PE' },
       areaServed: ['PE', 'IT', 'ES'],
     });
+    this.jsonLd('ld-faq', this.faq?.length && !noindex ? {
+      '@context': 'https://schema.org', '@type': 'FAQPage',
+      mainEntity: this.faq.map(f => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+    } : null);
+    this.faq = null;
     // Páginas internas: Inicio › página (el nombre es el título sin la marca).
     this.jsonLd('ld-breadcrumb', path && !noindex ? {
       '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [

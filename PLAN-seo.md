@@ -88,12 +88,17 @@ La base es buena: HTML prerenderizado, un H1 por página, URLs limpias, título 
 ### Fase 2 — Este trimestre (contenido y autoridad)
 - [ ] **T1.** Landing de las APIs (RUC, DNI, cuentas bancarias), con precios y botón "Contratar" que lleva al portal.
 - [ ] **T2.** Landings "Sistema para talleres (DMS)" e "Integración SUNAT / SAP", enlazadas a los casos Crosland y Euroamerican.
-- [ ] **T3.** Página `/contacto` con formulario que envíe el lead al API y avise por correo, con medición de conversiones.
+- [x] **T3.** Página `/contacto` con formulario que envía el lead al API y avisa por correo, con medición de conversiones.
+  > Hecho (12/10/2026): `ContactController` (límite de 5 envíos cada 10 min por IP y campo trampa contra bots), entidad `ContactLead` (migración `ContactLeads`) y aviso al equipo con `StaffNotifier`. Portal: Operación → Contactos de la web, con estado y página de origen. Site: `/contacto`, y todos los CTA "Hablemos de tu proyecto" llevan ahí; desde un servicio llega preseleccionado.
 - [ ] **T4.** Señales locales: Google Business Profile en Lima, teléfono +51 y los mismos datos de contacto (NAP) en la web, LinkedIn y directorios como Clutch o Elioplus.
 - [ ] **T5.** Ampliar servicios y casos a 700–1,000 palabras: proceso, tecnologías y FAQ con schema `FAQPage`.
-- [ ] **T6.** Slugs traducidos en EN/IT (`/en/services/custom-software`, `/it/servizi/software-su-misura`) con 301 desde los actuales.
+  > Servicios hechos (12/10/2026): secciones "Para quién es" (3 perfiles) y "Preguntas frecuentes" (5 por servicio, con schema `FAQPage`) en ES/EN/IT, en `pages/service/service-extras.ts`. Las páginas pasaron de ~300 a 575–660 palabras sin relleno; las respuestas se apoyan en los documentos comerciales y en los precios "desde" del catálogo. **Pendiente:** los casos de éxito, que necesitan más datos reales (cifras, plazos, citas) para no inventar.
+  > Guía de T4 para el usuario: `GUIA-SEO-LOCAL.md`.
+- [x] **T6.** Slugs traducidos en EN/IT (`/en/services/custom-software`, `/it/servizi/software-su-misura`) con 301 desde los actuales.
+  > Hecho (12/10/2026): la tabla única `site/src/app/core/site-paths.ts` alimenta rutas, menús, enlaces, hreflang, el selector de idioma y el sitemap (que lee los hreflang del prerender). Hay 18 redirecciones 301 en `site.htaccess` desde los slugs en español bajo /en y /it. **Si cambia un slug, hay que actualizar las dos tablas.**
 - [ ] **T7.** Velocidad del hosting: revisar la microcaché con Webempresa o poner Cloudflare delante del sitio estático.
-- [ ] **T8.** Reducir las fuentes a 2 familias y precargar la fuente del H1.
+- [x] **T8.** Reducir las fuentes a 2 familias y precargar la fuente del H1.
+  > Hecho (12/10/2026), mejor que lo previsto: el diseño v2 ya se veía en Arial y Georgia (fuentes del sistema), pero el `body` declaraba Inter y se descargaba sin usarse, y cada página llevaba 48 `@font-face` incrustadas. Se quitó Google Fonts y el `body` usa Arial: ninguna fuente web que descargar ni precargar. El HTML del home pasó de 56 KB a 40 KB y la tipografía no cambió.
 
 ## Verificación
 - Después de cada despliegue: `curl` a `/robots.txt`, `/sitemap.xml`, `/favicon.ico` y una URL inexistente, que debe dar 404. Revisar en el HTML de cada página el canonical, los alternates, `og:*` y el JSON-LD.
