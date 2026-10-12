@@ -22,7 +22,9 @@ public enum ExpenseType { Fijo, Variable }
 /// <summary>Categoría de gasto administrable desde Configuración. Las de sistema (con <see cref="Code"/>) no se borran.</summary>
 public sealed class ExpenseCategory { public Guid Id { get; set; } = Guid.NewGuid(); public string Name { get; set; } = string.Empty; /// <summary>Nombre fijo de las categorías de sistema (los del antiguo enum): lo aceptan la importación de Excel y los scripts.</summary>
  public string? Code { get; set; } /// <summary>Pagos de Impuesto a la Renta a SUNAT: en los reportes se restan como impuestos, no como gasto operativo. El IGV pagado no se registra: se cobra al cliente y no es costo.</summary>
- public bool IsIncomeTax { get; set; } public int SortOrder { get; set; } }
+ public bool IsIncomeTax { get; set; } public int SortOrder { get; set; }
+    /// <summary>Se resta de la utilidad en la Renta anual. Las de <see cref="IsIncomeTax"/> nunca lo son.</summary>
+    public bool IsDeductible { get; set; } = true; }
 
 /// <summary>Ids fijos de las categorías de sistema (sembradas por migración con los valores del antiguo enum).</summary>
 public static class ExpenseCategoryIds
@@ -146,7 +148,13 @@ public sealed class TaxDocument { public Guid Id { get; set; } = Guid.NewGuid();
     public decimal? RetentionAmount { get; set; } }
 
 public sealed class Expense { public Guid Id { get; set; } = Guid.NewGuid(); public string Description { get; set; } = string.Empty; public Guid CategoryId { get; set; } public ExpenseCategory? Category { get; set; } public ExpenseType Type { get; set; } public decimal Amount { get; set; } public string Currency { get; set; } = "PEN"; public decimal AmountPen { get; set; } public DateOnly Date { get; set; } public bool Recurring { get; set; } public BillingCycle? RecurrenceCycle { get; set; } /// <summary>Último pago de un gasto recurrente que se dio de baja; null = sigue vigente.</summary>
- public DateOnly? RecurrenceEndsAt { get; set; } }
+ public DateOnly? RecurrenceEndsAt { get; set; }
+    /// <summary>No se resta en la Renta anual aunque su categoría sea deducible (p. ej. cuotas de deuda con SUNAT o un préstamo).</summary>
+    public bool IsNonDeductible { get; set; }
+    /// <summary>Servicio de un proveedor no domiciliado (OpenAI, Anthropic, Google…): su IGV se paga con el Formulario 1662 (tributo 1041).</summary>
+    public bool IsNonDomiciledService { get; set; } public string? ForeignSupplierName { get; set; } public string? ForeignSupplierCountry { get; set; }
+    /// <summary>Fecha y N° de orden del Formulario 1662 pagado; null = aún no se pagó.</summary>
+    public DateOnly? Form1662PaidAt { get; set; } public string? Form1662Number { get; set; } }
 
 /// <summary>Fila única (singleton): tasas de IGV/Renta configurables — el sistema no valida el régimen tributario real, solo aplica la tasa configurada.</summary>
 public sealed class TaxSettings
@@ -158,6 +166,18 @@ public sealed class TaxSettings
     public string ReciboSeries { get; set; } = "E001"; public int ReciboNextNumber { get; set; } = 1;
     /// <summary>RUC de Rtres: su último dígito elige la columna del cronograma de vencimientos (<see cref="TaxDueDate"/>).</summary>
     public string? Ruc { get; set; } public bool IsGoodTaxpayer { get; set; }
+    /// <summary>Suma el IGV pagado con el Formulario 1662 al crédito fiscal del mes en que se pagó. Apagado mientras no se declare el 1662.</summary>
+    public bool Use1662AsCredit { get; set; }
+}
+
+/// <summary>
+/// Parámetros de la Renta anual del Régimen MYPE Tributario para un ejercicio: UIT del año y tasas por tramo (10 % hasta
+/// 15 UIT de renta neta, 29.5 % por el exceso). Los ingresa el usuario: el sistema no asume valores oficiales.
+/// </summary>
+public sealed class AnnualTaxSettings
+{
+    public Guid Id { get; set; } = Guid.NewGuid(); public int Year { get; set; } public decimal Uit { get; set; }
+    public decimal ThresholdUits { get; set; } = 15m; public decimal LowRate { get; set; } = 0.10m; public decimal HighRate { get; set; } = 0.295m;
 }
 
 /// <summary>
@@ -174,6 +194,8 @@ public sealed class TaxDueDate
     /// <summary>Buenos contribuyentes y UESP.</summary>
     public DateOnly GoodTaxpayer { get; set; }
     public DateTime? FiledAt { get; set; }
+    /// <summary>Lo realmente pagado al presentar (en soles); null = no se registró y los reportes usan el estimado.</summary>
+    public decimal? IgvPaid { get; set; } public decimal? RentaPaid { get; set; }
 
     /// <summary>Vencimiento que aplica a un RUC (por su último dígito) o a un buen contribuyente; null si el RUC no es válido.</summary>
     public DateOnly? DueFor(string? ruc, bool goodTaxpayer)

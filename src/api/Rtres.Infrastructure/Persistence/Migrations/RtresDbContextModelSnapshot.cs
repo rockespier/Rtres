@@ -22,6 +22,50 @@ namespace Rtres.Infrastructure.Persistence.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("Rtres.Domain.AnnualTaxSettings", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("HighRate")
+                        .HasPrecision(5, 4)
+                        .HasColumnType("decimal(5,4)");
+
+                    b.Property<decimal>("LowRate")
+                        .HasPrecision(5, 4)
+                        .HasColumnType("decimal(5,4)");
+
+                    b.Property<decimal>("ThresholdUits")
+                        .HasPrecision(6, 2)
+                        .HasColumnType("decimal(6,2)");
+
+                    b.Property<decimal>("Uit")
+                        .HasPrecision(12, 2)
+                        .HasColumnType("decimal(12,2)");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Year")
+                        .IsUnique();
+
+                    b.ToTable("AnnualTaxSettings");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("a7000000-0000-0000-0000-000000002026"),
+                            HighRate = 0.295m,
+                            LowRate = 0.10m,
+                            ThresholdUits = 15m,
+                            Uit = 5500m,
+                            Year = 2026
+                        });
+                });
+
             modelBuilder.Entity("Rtres.Domain.BankAccount", b =>
                 {
                     b.Property<Guid>("Id")
@@ -246,6 +290,27 @@ namespace Rtres.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ForeignSupplierCountry")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("ForeignSupplierName")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Form1662Number")
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
+                    b.Property<DateOnly?>("Form1662PaidAt")
+                        .HasColumnType("date");
+
+                    b.Property<bool>("IsNonDeductible")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsNonDomiciledService")
+                        .HasColumnType("bit");
+
                     b.Property<int?>("RecurrenceCycle")
                         .HasColumnType("int");
 
@@ -275,6 +340,9 @@ namespace Rtres.Infrastructure.Persistence.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<bool>("IsDeductible")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsIncomeTax")
                         .HasColumnType("bit");
 
@@ -298,6 +366,7 @@ namespace Rtres.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("e0000000-0000-0000-0000-000000000000"),
                             Code = "Hosting",
+                            IsDeductible = true,
                             IsIncomeTax = false,
                             Name = "Hosting",
                             SortOrder = 0
@@ -306,6 +375,7 @@ namespace Rtres.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("e0000000-0000-0000-0000-000000000001"),
                             Code = "Dominios",
+                            IsDeductible = true,
                             IsIncomeTax = false,
                             Name = "Dominios",
                             SortOrder = 1
@@ -314,6 +384,7 @@ namespace Rtres.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("e0000000-0000-0000-0000-000000000002"),
                             Code = "SuscripcionesIA",
+                            IsDeductible = true,
                             IsIncomeTax = false,
                             Name = "Suscripciones IA",
                             SortOrder = 2
@@ -322,6 +393,7 @@ namespace Rtres.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("e0000000-0000-0000-0000-000000000003"),
                             Code = "ApisPorUso",
+                            IsDeductible = true,
                             IsIncomeTax = false,
                             Name = "APIs por uso",
                             SortOrder = 3
@@ -330,6 +402,7 @@ namespace Rtres.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("e0000000-0000-0000-0000-000000000004"),
                             Code = "Sueldos",
+                            IsDeductible = true,
                             IsIncomeTax = false,
                             Name = "Sueldos",
                             SortOrder = 4
@@ -338,6 +411,7 @@ namespace Rtres.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("e0000000-0000-0000-0000-000000000005"),
                             Code = "Otros",
+                            IsDeductible = true,
                             IsIncomeTax = false,
                             Name = "Otros",
                             SortOrder = 5
@@ -346,6 +420,7 @@ namespace Rtres.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("e0000000-0000-0000-0000-000000000006"),
                             Code = "ImpuestoRenta",
+                            IsDeductible = true,
                             IsIncomeTax = true,
                             Name = "Impuesto a la Renta",
                             SortOrder = 6
@@ -354,6 +429,7 @@ namespace Rtres.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("e0000000-0000-0000-0000-000000000007"),
                             Code = "Comisiones",
+                            IsDeductible = true,
                             IsIncomeTax = false,
                             Name = "Comisiones",
                             SortOrder = 7
@@ -888,8 +964,16 @@ namespace Rtres.Infrastructure.Persistence.Migrations
                     b.Property<DateOnly>("GoodTaxpayer")
                         .HasColumnType("date");
 
+                    b.Property<decimal?>("IgvPaid")
+                        .HasPrecision(12, 2)
+                        .HasColumnType("decimal(12,2)");
+
                     b.Property<DateOnly>("Period")
                         .HasColumnType("date");
+
+                    b.Property<decimal?>("RentaPaid")
+                        .HasPrecision(12, 2)
+                        .HasColumnType("decimal(12,2)");
 
                     b.HasKey("Id");
 
@@ -1084,6 +1168,9 @@ namespace Rtres.Infrastructure.Persistence.Migrations
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool>("Use1662AsCredit")
+                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 

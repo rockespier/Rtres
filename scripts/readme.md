@@ -69,6 +69,13 @@ Uso en el servidor (PowerShell 7 como administrador)
   7. Backups: programa un respaldo diario de la base en SQL Server (con SQL Agent, o una tarea programada con sqlcmd si es la edición Express).
 
   Para los próximos deploys:
-  .\scripts\Deploy-Local.ps1 -ApiDestination "D:\IISSites\api.rtres.net" -PortalDestination "<carpeta del portal>" `
+  .\scripts\Deploy-Local.ps1 -ApiDestination "C:\repo\rtres-net\Rtres\publish\api" -PortalDestination "C:\repo\rtres-net\Rtres\publish\portal" `
     -ApiAppPool 'api.rtres.net' -PortalAppPool '<pool del portal>' -SkipNpmCi
+	
   Si el deploy trae migraciones nuevas, ejecuta publish\migrations.sql antes. Después sube publish\site.zip al Linux.
+  
+  .\scripts\Deploy-Local.ps1 `
+    -ApiDestination "C:\inetpub\rtres\api" `
+    -PortalDestination "C:\inetpub\rtres\portal" `
+    -ApiAppPool "api.rtres.net" -PortalAppPool "portal.rtres.net" `
+    -SkipNpmCi

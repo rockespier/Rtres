@@ -53,11 +53,23 @@ public sealed class TaxCalendarController(RtresDbContext db) : ControllerBase
         return Ok(ToDto(row, await db.TaxSettings.FirstOrDefaultAsync(ct) ?? new TaxSettings()));
     }
 
+    /// <summary>Marca el periodo como presentado y, opcionalmente, lo pagado (IGV y Renta): la Renta anual usa esos montos reales.</summary>
     [HttpPost("{id:guid}/filed")]
-    public async Task<ActionResult> MarkFiled(Guid id, CancellationToken ct) => await SetFiledAsync(id, DateTime.UtcNow, ct);
+    public async Task<ActionResult> MarkFiled(Guid id, TaxPeriodPaymentRequest? request, CancellationToken ct)
+    {
+        if (request?.IgvPaid < 0 || request?.RentaPaid < 0) return BadRequest(new { message = "Los montos pagados no pueden ser negativos." });
+        var row = await db.TaxDueDates.FindAsync([id], ct); if (row is null) return NotFound();
+        (row.IgvPaid, row.RentaPaid) = (request?.IgvPaid, request?.RentaPaid);
+        return await SetFiledAsync(id, DateTime.UtcNow, ct);
+    }
 
     [HttpDelete("{id:guid}/filed")]
-    public async Task<ActionResult> UnmarkFiled(Guid id, CancellationToken ct) => await SetFiledAsync(id, null, ct);
+    public async Task<ActionResult> UnmarkFiled(Guid id, CancellationToken ct)
+    {
+        var row = await db.TaxDueDates.FindAsync([id], ct); if (row is null) return NotFound();
+        (row.IgvPaid, row.RentaPaid) = (null, null);
+        return await SetFiledAsync(id, null, ct);
+    }
 
     /// <summary>Marca como presentados todos los periodos ya vencidos (para ponerse al día al empezar a usar el calendario).</summary>
     [HttpPost("filed-overdue")]
@@ -81,9 +93,10 @@ public sealed class TaxCalendarController(RtresDbContext db) : ControllerBase
     private static string Month(DateOnly period) => period.ToString("MMMM yyyy", CultureInfo.GetCultureInfo("es-PE")).ToLowerInvariant();
 
     private static TaxDueDateDto ToDto(TaxDueDate x, TaxSettings settings) => new(x.Id, x.Period.ToString("yyyy-MM", CultureInfo.InvariantCulture),
-        x.Digit0, x.Digit1, x.Digit2And3, x.Digit4And5, x.Digit6And7, x.Digit8And9, x.GoodTaxpayer, x.DueFor(settings.Ruc, settings.IsGoodTaxpayer), x.FiledAt);
+        x.Digit0, x.Digit1, x.Digit2And3, x.Digit4And5, x.Digit6And7, x.Digit8And9, x.GoodTaxpayer, x.DueFor(settings.Ruc, settings.IsGoodTaxpayer), x.FiledAt, x.IgvPaid, x.RentaPaid);
 }
 
 public sealed record TaxDueDateRequest(DateOnly Digit0, DateOnly Digit1, DateOnly Digit2And3, DateOnly Digit4And5, DateOnly Digit6And7, DateOnly Digit8And9, DateOnly GoodTaxpayer);
-public sealed record TaxDueDateDto(Guid Id, string Period, DateOnly Digit0, DateOnly Digit1, DateOnly Digit2And3, DateOnly Digit4And5, DateOnly Digit6And7, DateOnly Digit8And9, DateOnly GoodTaxpayer, DateOnly? DueDate, DateTime? FiledAt);
+public sealed record TaxDueDateDto(Guid Id, string Period, DateOnly Digit0, DateOnly Digit1, DateOnly Digit2And3, DateOnly Digit4And5, DateOnly Digit6And7, DateOnly Digit8And9, DateOnly GoodTaxpayer, DateOnly? DueDate, DateTime? FiledAt, decimal? IgvPaid = null, decimal? RentaPaid = null);
+public sealed record TaxPeriodPaymentRequest(decimal? IgvPaid, decimal? RentaPaid);
 public sealed record TaxCalendarDto(string? Ruc, bool IsGoodTaxpayer, DateOnly Today, int Year, List<int> Years, List<TaxDueDateDto> Rows, TaxDueDateDto? Next, List<string> Overdue, bool MissingNextYear);

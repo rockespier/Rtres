@@ -12,7 +12,16 @@ public sealed class CategoriesController(RtresDbContext db) : ControllerBase
 {
     [HttpGet("expense-categories")]
     public async Task<ActionResult> ExpenseCategories(CancellationToken ct) => Ok(await db.ExpenseCategories.OrderBy(x => x.SortOrder).ThenBy(x => x.Name)
-        .Select(x => new CategoryDto(x.Id, x.Name, x.Code != null, x.IsIncomeTax, db.Expenses.Count(e => e.CategoryId == x.Id))).ToListAsync(ct));
+        .Select(x => new CategoryDto(x.Id, x.Name, x.Code != null, x.IsIncomeTax, db.Expenses.Count(e => e.CategoryId == x.Id), x.IsDeductible && !x.IsIncomeTax)).ToListAsync(ct));
+
+    /// <summary>Si los gastos de la categoría se restan en la Renta anual. Las de impuesto a la Renta nunca son deducibles.</summary>
+    [HttpPatch("expense-categories/{id:guid}/deductible")]
+    public async Task<ActionResult> SetExpenseCategoryDeductible(Guid id, CategoryDeductibleRequest request, CancellationToken ct)
+    {
+        var category = await db.ExpenseCategories.FindAsync([id], ct); if (category is null) return NotFound();
+        if (category.IsIncomeTax && request.IsDeductible) return BadRequest(new { message = "Los pagos de Renta no son gasto deducible." });
+        category.IsDeductible = request.IsDeductible; await db.SaveChangesAsync(ct); return NoContent();
+    }
 
     [HttpPost("expense-categories")]
     public async Task<ActionResult> CreateExpenseCategory(CategoryRequest request, CancellationToken ct)
@@ -84,5 +93,6 @@ public sealed class CategoriesController(RtresDbContext db) : ControllerBase
     }
 }
 
-public sealed record CategoryDto(Guid Id, string Name, bool IsSystem, bool IsIncomeTax, int UsageCount);
+public sealed record CategoryDto(Guid Id, string Name, bool IsSystem, bool IsIncomeTax, int UsageCount, bool IsDeductible = true);
+public sealed record CategoryDeductibleRequest(bool IsDeductible);
 public sealed record CategoryRequest(string Name);

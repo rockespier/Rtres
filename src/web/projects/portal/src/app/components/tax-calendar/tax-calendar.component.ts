@@ -89,7 +89,7 @@ interface Row extends TaxDueDateDto { label: string; status: 'Presentada' | 'Ven
           <tr *ngFor="let r of rows | sortBy:s.key():s.dir()" [class.is-next]="r.id === data.next?.id">
             <td class="capitalize whitespace-nowrap font-medium">{{r.label}}</td>
             <td class="whitespace-nowrap tabular-nums">{{r.dueDate ? fmt(r.dueDate, { weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric' }) : '—'}}</td>
-            <td><span class="pill" [ngClass]="tone(r.status)"><i class="pill-dot"></i>{{r.status}}</span><span *ngIf="r.filedAt" class="block text-xs text-muted mt-1">{{r.filedAt | date:'dd/MM/yyyy'}}</span></td>
+            <td><span class="pill" [ngClass]="tone(r.status)"><i class="pill-dot"></i>{{r.status}}</span><span *ngIf="r.filedAt" class="block text-xs text-muted mt-1">{{r.filedAt | date:'dd/MM/yyyy'}}</span><span *ngIf="r.filedAt && (r.igvPaid != null || r.rentaPaid != null)" class="block text-xs text-muted">IGV {{(r.igvPaid ?? 0) | money}} · Renta {{(r.rentaPaid ?? 0) | money}}</span></td>
             <td *ngFor="let c of columns" class="text-center tabular-nums whitespace-nowrap" [class.mine]="c.key === myColumn">{{r[c.key] | date:'dd/MM'}}</td>
             <td class="whitespace-nowrap text-right">
               <button class="btn btn-ghost btn-sm" (click)="toggleFiled(r, !r.filedAt)" [disabled]="busy">{{r.filedAt ? 'Desmarcar' : 'Presentada'}}</button>
@@ -101,6 +101,18 @@ interface Row extends TaxDueDateDto { label: string; status: 'Presentada' | 'Ven
       <ng-template #empty><p class="p-6 text-muted">No hay cronograma cargado para {{data.year}}. Agrega sus periodos con las fechas que publica SUNAT.</p></ng-template>
     </div>
     <p class="text-xs text-muted mt-3">Cronograma 2026: Anexo I de la R.S. N.º 000281-2022/SUNAT. Verifica las fechas en sunat.gob.pe; si SUNAT las modifica (feriados, prórrogas), corrígelas con "Editar".</p>
+
+    <div class="fixed inset-0 z-50 bg-black/40 grid place-items-center p-4" *ngIf="filing as f">
+      <form class="card p-6 w-full max-w-sm space-y-3" role="dialog" aria-modal="true" aria-label="Periodo presentado" (ngSubmit)="confirmFiled()">
+        <h2 class="font-display text-xl capitalize">Presentada · {{ monthLabel(f.period) }}</h2>
+        <p class="text-sm text-muted">¿Cuánto pagaste? La Renta anual usa estos montos en lugar del estimado. Puedes dejarlos vacíos.</p>
+        <div class="grid grid-cols-2 gap-3">
+          <label class="field-label">IGV pagado (S/)<input class="field tabular-nums" type="number" min="0" step="1" [(ngModel)]="igvPaid" name="igvPaid"></label>
+          <label class="field-label">Renta pagada (S/)<input class="field tabular-nums" type="number" min="0" step="1" [(ngModel)]="rentaPaid" name="rentaPaid"></label>
+        </div>
+        <div class="flex justify-end gap-2"><button type="button" class="btn btn-ghost btn-sm" (click)="filing=null">Cancelar</button><button class="btn btn-primary btn-sm" [disabled]="busy">Guardar</button></div>
+      </form>
+    </div>
 
     <div class="fixed inset-0 z-50 bg-black/40 grid place-items-center p-4 overflow-y-auto" *ngIf="form">
       <form class="card p-6 w-full max-w-2xl space-y-4 my-8" role="dialog" aria-modal="true" aria-label="Fechas del periodo" (ngSubmit)="saveForm()">
@@ -162,9 +174,22 @@ export class TaxCalendarComponent implements OnInit {
     });
   }
 
+  /** Marcar como presentada pide lo pagado (se propone el estimado del próximo vencimiento); desmarcar no pregunta. */
   toggleFiled(r: TaxDueDateDto, filed: boolean) {
+    if (filed) {
+      const isNext = r.id === this.data?.next?.id && !!this.summary;
+      this.igvPaid = isNext ? Math.round(this.summary!.igv.igvAPagar) : null;
+      this.rentaPaid = isNext ? Math.round(this.summary!.rentaEstimada) : null;
+      this.filing = r; return;
+    }
     this.busy = true;
-    this.api.setTaxPeriodFiled(r.id, filed).subscribe({ next: () => { this.busy = false; this.load(this.data?.year); }, error: () => this.busy = false });
+    this.api.setTaxPeriodFiled(r.id, false).subscribe({ next: () => { this.busy = false; this.load(this.data?.year); }, error: () => this.busy = false });
+  }
+  filing: TaxDueDateDto | null = null; igvPaid: number | null = null; rentaPaid: number | null = null;
+  confirmFiled() {
+    const r = this.filing; if (!r) return;
+    this.busy = true;
+    this.api.setTaxPeriodFiled(r.id, true, { igvPaid: this.igvPaid ?? null, rentaPaid: this.rentaPaid ?? null }).subscribe({ next: () => { this.busy = false; this.filing = null; this.load(this.data?.year); }, error: () => this.busy = false });
   }
   markOverdue() {
     this.busy = true;

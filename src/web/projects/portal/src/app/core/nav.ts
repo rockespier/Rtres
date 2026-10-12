@@ -34,6 +34,8 @@ export function navFor(role: PortalRole | undefined, viewingClient: string | nul
         { label: 'Gastos', link: '/admin/expenses', icon: 'wallet' },
         { label: 'Compras', link: '/admin/purchases', icon: 'receipt' },
         { label: 'Vencimientos SUNAT', link: '/admin/tax-calendar', icon: 'calendar' },
+        { label: 'Renta anual', link: '/admin/annual-renta', icon: 'chart' },
+        { label: 'Formulario 1662', link: '/admin/form-1662', icon: 'file' },
         { label: 'Configuración', link: '/admin/tax-settings', icon: 'percent' },
       ] },
     ];

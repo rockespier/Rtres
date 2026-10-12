@@ -24,7 +24,7 @@ import { CASES, CaseContent } from './case-content';
           <p class="v2-label" i18n="@@case.challenge.label">EL DESAFÍO</p>
           <p class="statement">{{ c.challenge }}</p>
         </div>
-        <div class="shot" [style.max-width.px]="c.shot.width" role="img" [attr.aria-label]="c.name" style="background-image:url('assets/casos_exito.png')" [style.aspect-ratio]="c.shot.ratio" [style.background-size]="c.shot.size" [style.background-position]="c.shot.position"></div>
+        <div class="shot" [style.max-width.px]="c.shot.width" role="img" [attr.aria-label]="c.name" style="background-image:url('assets/casos_exito.webp')" [style.aspect-ratio]="c.shot.ratio" [style.background-size]="c.shot.size" [style.background-position]="c.shot.position"></div>
       </section>
 
       <section class="solution">

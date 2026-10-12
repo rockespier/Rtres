@@ -128,6 +128,7 @@ public sealed partial class AdminController(RtresDbContext db, PayPalCheckoutSer
         if (ruc is not null && !Regex.IsMatch(ruc, "^(10|15|17|20)[0-9]{9}$")) return BadRequest(new { message = "El RUC tiene 11 dígitos y empieza con 10, 15, 17 o 20." });
         settings.Ruc = ruc;
         if (request.IsGoodTaxpayer is bool goodTaxpayer) settings.IsGoodTaxpayer = goodTaxpayer;
+        if (request.Use1662AsCredit is bool use1662) settings.Use1662AsCredit = use1662;
         if (request.IgvRate is decimal igvRate) settings.IgvRate = igvRate;
         if (request.RentaRate is decimal rentaRate) settings.RentaRate = rentaRate;
         (settings.FacturaSeries, settings.FacturaNextNumber, settings.ReciboSeries, settings.ReciboNextNumber) = (facturaSeries, facturaNext, reciboSeries, reciboNext);
@@ -137,7 +138,7 @@ public sealed partial class AdminController(RtresDbContext db, PayPalCheckoutSer
     }
 
     private Task<int?> LastNumberAsync(TaxDocumentType type, string series, CancellationToken ct) => db.TaxDocuments.Where(x => x.Type == type && x.Series == series).MaxAsync(x => (int?)x.Number, ct);
-    private static object TaxSettingsDto(TaxSettings x) => new { igvRate = x.IgvRate, rentaRate = x.RentaRate, facturaSeries = x.FacturaSeries, facturaNextNumber = x.FacturaNextNumber, reciboSeries = x.ReciboSeries, reciboNextNumber = x.ReciboNextNumber, ruc = x.Ruc, isGoodTaxpayer = x.IsGoodTaxpayer };
+    private static object TaxSettingsDto(TaxSettings x) => new { igvRate = x.IgvRate, rentaRate = x.RentaRate, facturaSeries = x.FacturaSeries, facturaNextNumber = x.FacturaNextNumber, reciboSeries = x.ReciboSeries, reciboNextNumber = x.ReciboNextNumber, ruc = x.Ruc, isGoodTaxpayer = x.IsGoodTaxpayer, use1662AsCredit = x.Use1662AsCredit };
 
     private async Task<TaxSettings> TaxSettingsRow(CancellationToken ct)
     {
@@ -183,7 +184,8 @@ public sealed partial class AdminController(RtresDbContext db, PayPalCheckoutSer
     {
         if (string.IsNullOrWhiteSpace(request.Description) || string.IsNullOrWhiteSpace(request.Currency) || request.Amount <= 0) return BadRequest(new { message = "Descripción, moneda y un monto mayor a 0 son obligatorios." });
         if (!await db.ExpenseCategories.AnyAsync(x => x.Id == request.CategoryId, ct)) return BadRequest(new { message = "Elige una categoría válida." });
-        var expense = new Expense { Description = request.Description.Trim(), CategoryId = request.CategoryId, Type = request.Type, Amount = request.Amount, Currency = request.Currency.Trim().ToUpperInvariant(), Date = request.Date, Recurring = request.Recurring, RecurrenceCycle = request.RecurrenceCycle };
+        var expense = new Expense { Description = request.Description.Trim(), CategoryId = request.CategoryId, Type = request.Type, Amount = request.Amount, Currency = request.Currency.Trim().ToUpperInvariant(), Date = request.Date, Recurring = request.Recurring, RecurrenceCycle = request.RecurrenceCycle, IsNonDeductible = request.IsNonDeductible };
+        ApplyForeignService(expense, request.IsNonDomiciledService, request.ForeignSupplierName, request.ForeignSupplierCountry);
         expense.AmountPen = expense.Amount * await db.RateToPenAsync(expense.Currency, expense.Date, ct);
         db.Expenses.Add(expense); await db.SaveChangesAsync(ct);
         await db.Entry(expense).Reference(x => x.Category).LoadAsync(ct);
@@ -339,6 +341,8 @@ public sealed partial class AdminController(RtresDbContext db, PayPalCheckoutSer
         if (request.Date is DateOnly date) expense.Date = date;
         if (request.Recurring is bool recurring) expense.Recurring = recurring;
         if (request.RecurrenceCycle is BillingCycle cycle) expense.RecurrenceCycle = cycle;
+        if (request.IsNonDeductible is bool nonDeductible) expense.IsNonDeductible = nonDeductible;
+        if (request.IsNonDomiciledService is bool foreign) ApplyForeignService(expense, foreign, request.ForeignSupplierName, request.ForeignSupplierCountry);
         if (string.IsNullOrWhiteSpace(expense.Description) || string.IsNullOrWhiteSpace(expense.Currency) || expense.Amount <= 0) return BadRequest(new { message = "Descripción, moneda y un monto mayor a 0 son obligatorios." });
         expense.AmountPen = expense.Amount * await db.RateToPenAsync(expense.Currency, expense.Date, ct);
         await db.SaveChangesAsync(ct); await db.Entry(expense).Reference(x => x.Category).LoadAsync(ct); return Ok(ExpenseDto(expense));
@@ -354,7 +358,14 @@ public sealed partial class AdminController(RtresDbContext db, PayPalCheckoutSer
     private static (DateOnly From, DateOnly To) PreviousPeriod(int? month, int year) =>
         month is int m ? Period(m == 1 ? 12 : m - 1, m == 1 ? year - 1 : year) : Period(null, year - 1);
 
-    private sealed record Sale(Guid ClientId, DateOnly Date, decimal BasePen, decimal IgvPen, bool Gravada, decimal RetentionPen);
+    /// <summary>
+    /// <see cref="PersonaNatural"/>: cobro con recibo por honorarios, ingreso de 4ta categoría del titular como persona natural.
+    /// No entra en la Renta de la MYPE (facturas y cobros sin comprobante) ni en su pago a cuenta.
+    /// </summary>
+    private sealed record Sale(Guid ClientId, DateOnly Date, decimal BasePen, decimal IgvPen, bool Gravada, decimal RetentionPen, bool PersonaNatural = false)
+    {
+        public bool Mype => !PersonaNatural;
+    }
 
     /// <summary>
     /// Ventas del periodo en PEN, una por cobro (cada cobro es un ingreso; su comprobante no se cuenta aparte). Lo cobrado ya
@@ -372,7 +383,7 @@ public sealed partial class AdminController(RtresDbContext db, PayPalCheckoutSer
             var isFactura = document?.Type == TaxDocumentType.Factura;
             var basePen = isFactura ? x.AmountPen * document!.BaseAmount / document.TotalAmount : x.AmountPen;
             var retentionPen = document?.RetentionAmount is decimal retention ? x.AmountPen * retention / document.TotalAmount : 0m;
-            return new Sale(x.ClientId, DateOnly.FromDateTime(x.CreatedAt), basePen, x.AmountPen - basePen, isFactura, retentionPen);
+            return new Sale(x.ClientId, DateOnly.FromDateTime(x.CreatedAt), basePen, x.AmountPen - basePen, isFactura, retentionPen, document?.Type == TaxDocumentType.ReciboPorHonorarios);
         }).ToList();
     }
 
@@ -395,10 +406,10 @@ public sealed partial class AdminController(RtresDbContext db, PayPalCheckoutSer
         var sales = await SalesAsync(from, to, ct);
         decimal basePen = sales.Sum(x => x.BasePen), gravadasPen = sales.Where(x => x.Gravada).Sum(x => x.BasePen);
         var igv = (await IgvMonthsAsync(to, ct)).Where(x => x.Month >= from).ToList();
-        // La Renta se estima sobre todas las ventas sin IGV (gravadas y no gravadas).
+        // El pago a cuenta de la MYPE se estima sobre sus ventas sin IGV (gravadas y no gravadas); los recibos por honorarios son del titular.
         return Ok(new
         {
-            ventasGravadasPen = Math.Round(gravadasPen, 2), ventasNoGravadasPen = Math.Round(basePen - gravadasPen, 2), igvEstimado = Math.Round(sales.Sum(x => x.IgvPen), 2), rentaEstimada = Math.Round(basePen * settings.RentaRate, 2), tasa = new { igvRate = settings.IgvRate, rentaRate = settings.RentaRate }, disclaimer = TaxDisclaimer,
+            ventasGravadasPen = Math.Round(gravadasPen, 2), ventasNoGravadasPen = Math.Round(basePen - gravadasPen, 2), igvEstimado = Math.Round(sales.Sum(x => x.IgvPen), 2), rentaEstimada = Math.Round(sales.Where(x => x.Mype).Sum(x => x.BasePen) * settings.RentaRate, 2), ventasPersonaNaturalPen = Math.Round(sales.Where(x => x.PersonaNatural).Sum(x => x.BasePen), 2), tasa = new { igvRate = settings.IgvRate, rentaRate = settings.RentaRate }, disclaimer = TaxDisclaimer,
             // Cascada del IGV: débito (ventas) − crédito fiscal (compras) − saldo a favor del mes anterior.
             igv = new
             {
@@ -426,12 +437,18 @@ public sealed partial class AdminController(RtresDbContext db, PayPalCheckoutSer
         if (start > end) start = end;
         var sales = await SalesAsync(start, end.AddMonths(1).AddDays(-1), ct);
         var purchases = await db.Purchases.Where(x => x.Period >= start && x.Period <= end).ToListAsync(ct);
+        // IGV pagado con el Formulario 1662: crédito fiscal del mes en que se pagó, solo si está habilitado en Configuración.
+        var settings = await TaxSettingsRow(ct);
+        var form1662 = settings.Use1662AsCredit
+            ? (await db.Expenses.Where(x => x.IsNonDomiciledService && x.Form1662PaidAt != null && x.Form1662PaidAt >= start && x.Form1662PaidAt <= end.AddMonths(1).AddDays(-1)).ToListAsync(ct))
+                .GroupBy(x => new DateOnly(x.Form1662PaidAt!.Value.Year, x.Form1662PaidAt.Value.Month, 1)).ToDictionary(g => g.Key, g => g.Sum(x => Form1662.Igv(x, settings.IgvRate)))
+            : [];
         var months = new List<IgvMonth>(); var carry = 0m;
         for (var month = start; month <= end; month = month.AddMonths(1))
         {
             var monthEnd = month.AddMonths(1).AddDays(-1);
             var debito = sales.Where(x => x.Date >= month && x.Date <= monthEnd).Sum(x => x.IgvPen);
-            var credito = purchases.Where(x => x.Period == month).Sum(x => x.TaxCreditPen);
+            var credito = purchases.Where(x => x.Period == month).Sum(x => x.TaxCreditPen) + form1662.GetValueOrDefault(month);
             var result = debito - credito - carry;
             months.Add(new IgvMonth(month, debito, credito, carry, Math.Max(result, 0m), Math.Max(-result, 0m)));
             carry = Math.Max(-result, 0m);
@@ -482,7 +499,7 @@ public sealed partial class AdminController(RtresDbContext db, PayPalCheckoutSer
     {
         var ventas = sales.Sum(x => x.BasePen);
         var gastos = expenses.Where(x => x.Category?.IsIncomeTax != true).Sum(x => x.AmountPen);
-        var impuestos = ventas * rentaRate;
+        var impuestos = sales.Where(x => x.Mype).Sum(x => x.BasePen) * rentaRate; // pago a cuenta de la MYPE
         return (ventas, gastos, impuestos, ventas - gastos - impuestos);
     }
 
@@ -968,7 +985,15 @@ public sealed partial class AdminController(RtresDbContext db, PayPalCheckoutSer
     /// <summary>Precios sin IGV; <c>nextChargeTotal</c> es lo que se cobra, con el IGV de <paramref name="igvRate"/> (Perú + Factura).</summary>
     private static object ClientProductDto(ClientProduct x, decimal igvRate) => new { igvRate, nextChargeTotal = x.NextChargeTotal(igvRate), id = x.Id, clientId = x.ClientId, projectId = x.ProjectId, projectName = x.Project?.Name, productId = x.ProductId, productName = x.Product?.Name, productType = x.Product?.Type.ToString(), currency = x.Product?.Currency ?? "USD", billingCycle = x.BillingCycle.ToString(), isManualBilling = x.IsManualBilling, status = x.Status.ToString(), price = x.Price, listPrice = x.ListPrice(), discount = x.Discount, discountEndsAt = x.DiscountEndsAt == ClientProductPricing.NoEnd ? null : x.DiscountEndsAt, currentPrice = x.CurrentPrice(DateTime.UtcNow), nextChargePrice = x.NextChargePrice(), domainName = x.DomainName, priceLabelOverride = x.PriceLabelOverride, renewsAt = x.RenewsAt, nextChargeAt = x.NextChargeAt };
     private static object TaxDocumentDto(TaxDocument x) => new { id = x.Id, paymentTransactionId = x.PaymentTransactionId, clientId = x.ClientId, type = x.Type.ToString(), series = x.Series, number = x.Number, issueDate = x.IssueDate, currency = x.Currency, baseAmount = x.BaseAmount, igvAmount = x.IgvAmount, totalAmount = x.TotalAmount, notes = x.Notes, retentionAmount = x.RetentionAmount };
-    private static object ExpenseDto(Expense x) => new { id = x.Id, description = x.Description, categoryId = x.CategoryId, categoryName = x.Category?.Name ?? "", type = x.Type.ToString(), amount = x.Amount, currency = x.Currency, amountPen = x.AmountPen, date = x.Date, recurring = x.Recurring, recurrenceCycle = x.RecurrenceCycle?.ToString(), recurrenceEndsAt = x.RecurrenceEndsAt };
+    /// <summary>Servicio de no domiciliado: el proveedor del exterior se guarda solo si el gasto está marcado (lo pide el 1662).</summary>
+    private static void ApplyForeignService(Expense expense, bool foreign, string? name, string? country)
+    {
+        expense.IsNonDomiciledService = foreign;
+        (expense.ForeignSupplierName, expense.ForeignSupplierCountry) = foreign ? (EmptyToNull(name), EmptyToNull(country)) : (null, null);
+        if (!foreign) (expense.Form1662PaidAt, expense.Form1662Number) = (null, null);
+    }
+
+    private static object ExpenseDto(Expense x) => new { id = x.Id, description = x.Description, categoryId = x.CategoryId, categoryName = x.Category?.Name ?? "", type = x.Type.ToString(), amount = x.Amount, currency = x.Currency, amountPen = x.AmountPen, date = x.Date, recurring = x.Recurring, recurrenceCycle = x.RecurrenceCycle?.ToString(), recurrenceEndsAt = x.RecurrenceEndsAt, isNonDeductible = x.IsNonDeductible, isNonDomiciledService = x.IsNonDomiciledService, foreignSupplierName = x.ForeignSupplierName, foreignSupplierCountry = x.ForeignSupplierCountry, form1662PaidAt = x.Form1662PaidAt, form1662Number = x.Form1662Number };
 }
 
 public sealed record ProfileRequest(string Name);
@@ -989,8 +1014,8 @@ public sealed record TemplateColumn(string Name, bool Required, string Accepted,
 public sealed record ClientAccess(string ClientName, string Email, string TemporaryPassword, bool EmailSent = false);
 public sealed record ProjectRequest(string? Name, string? Slug, string? GithubRepoOwner, string? GithubRepoName);
 public sealed record RepositoryRequest(string? Owner, string? Name, string? Label = null, bool? IsDefault = null);
-public sealed record TaxSettingsRequest(decimal? IgvRate, decimal? RentaRate, string? FacturaSeries = null, int? FacturaNextNumber = null, string? ReciboSeries = null, int? ReciboNextNumber = null, string? Ruc = null, bool? IsGoodTaxpayer = null);
+public sealed record TaxSettingsRequest(decimal? IgvRate, decimal? RentaRate, string? FacturaSeries = null, int? FacturaNextNumber = null, string? ReciboSeries = null, int? ReciboNextNumber = null, string? Ruc = null, bool? IsGoodTaxpayer = null, bool? Use1662AsCredit = null);
 public sealed record TaxDocumentRequest(Guid ClientProductId, DateOnly IssueDate, string Currency, decimal TotalAmount, string? Notes, decimal? RetentionAmount = null);
-public sealed record ExpenseRequest(string Description, Guid CategoryId, ExpenseType Type, decimal Amount, string Currency, DateOnly Date, bool Recurring, BillingCycle? RecurrenceCycle);
+public sealed record ExpenseRequest(string Description, Guid CategoryId, ExpenseType Type, decimal Amount, string Currency, DateOnly Date, bool Recurring, BillingCycle? RecurrenceCycle, bool IsNonDeductible = false, bool IsNonDomiciledService = false, string? ForeignSupplierName = null, string? ForeignSupplierCountry = null);
 public sealed record EndRecurrenceRequest(DateOnly EndsAt);
-public sealed record ExpensePatchRequest(string? Description, Guid? CategoryId, ExpenseType? Type, decimal? Amount, string? Currency, DateOnly? Date, bool? Recurring, BillingCycle? RecurrenceCycle);
+public sealed record ExpensePatchRequest(string? Description, Guid? CategoryId, ExpenseType? Type, decimal? Amount, string? Currency, DateOnly? Date, bool? Recurring, BillingCycle? RecurrenceCycle, bool? IsNonDeductible = null, bool? IsNonDomiciledService = null, string? ForeignSupplierName = null, string? ForeignSupplierCountry = null);

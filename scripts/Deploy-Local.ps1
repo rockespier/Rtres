@@ -98,6 +98,9 @@ foreach ($required in (Join-Path $siteDist 'es\index.html'), (Join-Path $siteDis
     if (-not (Test-Path -LiteralPath $required)) { throw "El build no genero $required" }
 }
 
+# SEO: sitemap.xml, robots.txt y favicon.ico en la raiz del site (ver PLAN-seo.md, S1 y S9).
+Invoke-Checked { node (Join-Path $deployTemplates 'seo-files.mjs') $siteDist } 'Generando sitemap.xml y robots.txt'
+
 # Site: solo los archivos estaticos (el SSR no se usa en produccion) + .htaccess de Apache.
 Copy-Item -Path (Join-Path $siteDist '*') -Destination $sitePackage -Recurse -Force
 Copy-Item -LiteralPath (Join-Path $deployTemplates 'site.htaccess') -Destination (Join-Path $sitePackage '.htaccess') -Force
