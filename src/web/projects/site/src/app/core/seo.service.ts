@@ -58,7 +58,8 @@ export class SeoService {
       this.link('alternate', this.alternate('es', path), 'x-default');
     }
 
-    const image = `${SITE_URL}/${this.locale}/assets/og-image.jpg`;
+    // Una imagen por idioma (texto traducido): se generan con scripts/og/generate-og.mjs.
+    const image = `${SITE_URL}/${this.locale}/assets/og-image-${this.locale}.jpg`;
     this.meta('property', 'og:type', 'website');
     this.meta('property', 'og:site_name', 'Rtres Web Solutions');
     this.meta('property', 'og:title', title);

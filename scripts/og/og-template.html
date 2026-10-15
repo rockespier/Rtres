@@ -1,0 +1,46 @@
+<!doctype html>
+<!-- Plantilla de la imagen Open Graph (1200x630). La renderiza generate-og.mjs con ?lang=es|en|it. -->
+<html>
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500&display=block" rel="stylesheet">
+<style>
+  * { margin: 0; box-sizing: border-box; }
+  html, body { width: 1200px; height: 630px; overflow: hidden; background: #fff; }
+  body { display: grid; grid-template-columns: 600px 600px; font-family: 'Inter', Arial, sans-serif; color: #12140f; }
+  body::before { content: ''; position: absolute; inset: 0 0 auto 0; height: 8px; background: linear-gradient(90deg, #6f9a35, #c6f269); }
+  .copy { padding: 64px 40px 56px 64px; display: flex; flex-direction: column; }
+  .logo { height: 54px; width: auto; align-self: flex-start; }
+  .badge { margin-top: 44px; align-self: flex-start; background: #c6f269; color: #2c3f12; font: 700 18px/1 'Space Grotesk', sans-serif;
+    padding: 9px 16px; border-radius: 999px; }
+  h1 { margin-top: 20px; font: 700 56px/1.02 'Space Grotesk', sans-serif; letter-spacing: -1.6px; }
+  p { margin-top: 20px; font-size: 21px; line-height: 1.4; color: #5c6355; max-width: 480px; }
+  .foot { margin-top: auto; display: flex; align-items: center; gap: 20px; }
+  .cta { background: #12140f; color: #fff; font: 700 19px/1 'Space Grotesk', sans-serif; padding: 16px 24px; border-radius: 999px; }
+  .url { font: 500 18px/1 'Space Grotesk', sans-serif; color: #5c6355; }
+  .photo { background: url(og-photo.jpg) 62% center / cover; }
+</style>
+</head>
+<body>
+  <div class="copy">
+    <img class="logo" src="logo-rtres.png" alt="">
+    <span class="badge" data-t="badge"></span>
+    <h1 data-t="title"></h1>
+    <p data-t="desc"></p>
+    <div class="foot"><span class="cta" data-t="cta"></span><span class="url">rtres.net</span></div>
+  </div>
+  <div class="photo"></div>
+<script>
+  const T = {
+    es: { badge: 'Socios tecnológicos desde 2007', title: 'Software a medida y desarrollo web',
+      desc: 'Apps web e integraciones con SAP y SUNAT para empresas en Perú, Italia y España.', cta: 'Hablemos de tu proyecto →' },
+    en: { badge: 'Technology partners since 2007', title: 'Custom software and web development',
+      desc: 'Web apps and SAP integrations for companies in Peru, Italy and Spain.', cta: 'Let’s talk about your project →' },
+    it: { badge: 'Partner tecnologici dal 2007', title: 'Software su misura e sviluppo web',
+      desc: 'App web e integrazioni SAP per aziende in Perù, Italia e Spagna.', cta: 'Parliamo del tuo progetto →' },
+  };
+  const t = T[new URLSearchParams(location.search).get('lang')] ?? T.es;
+  document.querySelectorAll('[data-t]').forEach(el => el.textContent = t[el.dataset.t]);
+</script>
+</body>
+</html>
