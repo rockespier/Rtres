@@ -52,7 +52,7 @@ Sigue las instrucciones de la opción que te dé. La revisión puede tardar de u
 - **Servicios:** agrega cada uno con una línea de descripción: Software a medida · Apps y experiencias web · Integración y automatización (SAP, SUNAT) · Hosting, dominios y soporte · APIs de validación (RUC, DNI, cuentas bancarias) · Staff augmentation .NET/SAP.
 - **Fecha de apertura:** 2007.
 - **Horario:** el del paso 0.
-- **Fotos:** logo (cuadrado; usa `src/web/projects/site/src/assets/apple-touch-icon.png` o tu logo), una portada (por ejemplo `og-image.jpg`), fotos del equipo y capturas de los sistemas. Los perfiles con fotos reciben más interacción.
+- **Fotos:** logo (cuadrado; usa `src/web/projects/site/src/assets/apple-touch-icon.png` o tu logo), una portada (por ejemplo `og-image-es.jpg`), fotos del equipo y capturas de los sistemas. Los perfiles con fotos reciben más interacción.
 - **Enlace para contactar:** `https://rtres.net/es/contacto`.
 
 ### 1.4 Reseñas (lo que más pesa)
