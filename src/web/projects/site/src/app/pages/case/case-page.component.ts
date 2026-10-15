@@ -24,7 +24,11 @@ import { CASES, CaseContent } from './case-content';
           <p class="v2-label" i18n="@@case.challenge.label">EL DESAFÍO</p>
           <p class="statement">{{ c.challenge }}</p>
         </div>
-        <div class="shot" [style.max-width.px]="c.shot.width" role="img" [attr.aria-label]="c.name" style="background-image:url('assets/casos_exito.webp')" [style.aspect-ratio]="c.shot.ratio" [style.background-size]="c.shot.size" [style.background-position]="c.shot.position"></div>
+        @if (c.shot; as shot) {
+          <div class="shot" [style.max-width.px]="shot.width" role="img" [attr.aria-label]="c.name" style="background-image:url('assets/casos_exito.webp')" [style.aspect-ratio]="shot.ratio" [style.background-size]="shot.size" [style.background-position]="shot.position"></div>
+        } @else {
+          <div class="shot plain" aria-hidden="true"><small>{{ c.sector }}</small><strong>{{ c.name }}</strong><span>@for (x of c.integrations; track x; let last = $last) {{{ x }}@if (!last) { · }}</span></div>
+        }
       </section>
 
       <section class="solution">
@@ -76,6 +80,10 @@ import { CASES, CaseContent } from './case-content';
     .stats dt{font-weight:900;font-size:clamp(2.4rem,4.4vw,4.2rem);letter-spacing:-.05em;line-height:1}
     .stats dd{margin:10px 0 0;color:var(--v2-muted);font-size:15px}
     .shot{width:100%;justify-self:end;background-color:#202826;background-repeat:no-repeat;border:1px solid var(--v2-line);box-shadow:0 30px 60px -40px rgba(0,0,0,.45)}
+    .plain{display:flex;flex-direction:column;justify-content:flex-end;gap:14px;aspect-ratio:16/9;padding:36px;color:#fff}
+    .plain small{color:var(--v2-lime);font-size:11px;letter-spacing:.2em;text-transform:uppercase}
+    .plain strong{font-weight:900;font-size:clamp(2.2rem,4.5vw,4.4rem);letter-spacing:-.05em;line-height:.95}
+    .plain span{color:#c9c9c4;font-size:15px}
     .challenge{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:60px;align-items:center;padding:40px 5% 100px}
     .statement{margin:0;font:clamp(1.7rem,2.4vw,2.5rem)/1.15 Georgia,serif;letter-spacing:-.03em;text-wrap:balance}
     .solution{padding:20px 5% 100px}

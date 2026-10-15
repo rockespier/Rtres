@@ -1,5 +1,5 @@
 import { casePath, servicePath } from '../../core/site-paths';
-/** Contenido de cada caso de éxito. Fuente: Documentacion/Casos de exito Rtres.docx y Opiniones.docx. */
+/** Contenido de cada caso de éxito. Fuente: Documentacion/Casos de exito Rtres.docx, Opiniones.docx y caso-exito-alas.md. */
 export interface CaseStat { value: string; label: string; }
 export interface CaseGroup { title: string | null; rows: { title: string; text: string }[]; }
 export interface CaseContent {
@@ -9,9 +9,8 @@ export interface CaseContent {
   intro: string;
   metaDescription: string;
   stats: CaseStat[];
-  /** Recorte de casos_exito.webp: tamaño y posición del fondo, y proporción del recuadro. */
-  /** Recorte de casos_exito.webp; width = ancho real del recorte en px (no se muestra más grande para que no pierda nitidez). */
-  shot: { size: string; position: string; ratio: string; width: number };
+  /** Recorte de casos_exito.webp; width = ancho real del recorte en px (no se muestra más grande para que no pierda nitidez). Sin captura: null (panel con el nombre). */
+  shot: { size: string; position: string; ratio: string; width: number } | null;
   challenge: string;
   solution: CaseGroup[];
   integrations: string[];
@@ -96,6 +95,48 @@ export const CASES: CaseContent[] = [
     services: [
       { path: servicePath('software-a-medida'), label: $localize`:@@home.services.1.title:Software a medida` },
       { path: servicePath('integracion-y-automatizacion'), label: $localize`:@@home.services.3.title:Integración y automatización` },
+    ],
+    next: { path: casePath('alas-global-tour'), name: 'ALAS Global Tour' },
+  },
+  {
+    slug: 'alas-global-tour',
+    sector: $localize`:@@case.alas.sector:Deportes y eventos internacionales`,
+    name: 'ALAS Global Tour',
+    intro: $localize`:@@case.alas.intro:Circuito internacional de surf, con campeonatos en varios países y una comunidad de atletas, organizadores y aficionados. Plataforma en desarrollo.`,
+    metaDescription: $localize`:@@case.alas.meta:Caso de éxito: plataforma web multiidioma para ALAS Global Tour, con inscripciones, pagos online y en playa, resultados de surf en vivo y rankings.`,
+    stats: [
+      { value: '70%', label: $localize`:@@case.alas.stat1:menos tiempo de inscripción (objetivo)` },
+      { value: '85%', label: $localize`:@@case.alas.stat2:menos trabajo administrativo manual (objetivo)` },
+      { value: '3', label: $localize`:@@case.alas.stat3:idiomas: español, inglés y portugués` },
+    ],
+    shot: null,
+    challenge: $localize`:@@case.alas.challenge:Pasar de un portal en ASP clásico lleno de procesos manuales a una plataforma que conecte inscripciones, pagos, resultados y contenidos de un circuito que compite en varios países.`,
+    solution: [
+      {
+        title: $localize`:@@case.alas.group1:Atletas y aficionados`,
+        rows: [
+          { title: $localize`:@@case.alas.row1.title:Inscripciones digitales`, text: $localize`:@@case.alas.row1.text:El atleta elige campeonato y categoría, valida sus datos y se inscribe desde el teléfono.` },
+          { title: $localize`:@@case.alas.row2.title:Pago online o en playa`, text: $localize`:@@case.alas.row2.text:Pasarela de pago integrada, o inscripción con pago pendiente que el staff confirma en el evento. Todo en un mismo control.` },
+          { title: $localize`:@@case.alas.row3.title:Resultados en vivo`, text: $localize`:@@case.alas.row3.text:Integración con el sistema de puntuación de los jueces: heats, rondas y posiciones sin republicar nada a mano.` },
+          { title: $localize`:@@case.alas.row4.title:Rankings y perfiles de atletas`, text: $localize`:@@case.alas.row4.text:Cada atleta tiene un perfil con su historial y resultados; rankings por temporada, país y categoría.` },
+        ],
+      },
+      {
+        title: $localize`:@@case.alas.group2:Organización`,
+        rows: [
+          { title: $localize`:@@case.alas.row5.title:Administración por roles`, text: $localize`:@@case.alas.row5.text:Campeonatos, sedes, categorías, noticias y multimedia, gestionados por administradores, editores y staff sin depender de soporte técnico.` },
+          { title: $localize`:@@case.alas.row6.title:Control de inscritos e ingresos`, text: $localize`:@@case.alas.row6.text:Inscritos, pagos pendientes y confirmados en una sola vista, con exportaciones e indicadores.` },
+          { title: $localize`:@@case.alas.row7.title:Calendario y streaming`, text: $localize`:@@case.alas.row7.text:Calendario interactivo de campeonatos, transmisiones en vivo, galerías y noticias en tres idiomas.` },
+        ],
+      },
+    ],
+    integrations: ['Angular + .NET', $localize`:@@case.alas.int2:Pasarela de pago`, $localize`:@@case.alas.int3:Sistema de puntuación`, 'Streaming'],
+    impact: $localize`:@@case.alas.impact:Una sola plataforma para procesos que hoy van por separado. Objetivos del proyecto: 90 % de inscripciones digitales, resultados publicados un 95 % más rápido y 45 % más tráfico internacional.`,
+    // Testimonio pendiente: llega en unos días.
+    testimonial: null,
+    services: [
+      { path: servicePath('apps-y-experiencias-web'), label: $localize`:@@home.services.2.title:Apps y experiencias web` },
+      { path: servicePath('software-a-medida'), label: $localize`:@@home.services.1.title:Software a medida` },
     ],
     next: { path: casePath('euroamerican-assistance'), name: 'Euroamerican Assistance' },
   },

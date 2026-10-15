@@ -19,6 +19,7 @@ export const PAGE_PATHS = {
   'service:hosting-dominios-y-soporte': { es: 'servicios/hosting-dominios-y-soporte', en: 'services/hosting-domains-and-support', it: 'servizi/hosting-domini-e-supporto' },
   'case:euroamerican-assistance': { es: 'casos/euroamerican-assistance', en: 'case-studies/euroamerican-assistance', it: 'casi-di-successo/euroamerican-assistance' },
   'case:grupo-crosland': { es: 'casos/grupo-crosland', en: 'case-studies/grupo-crosland', it: 'casi-di-successo/grupo-crosland' },
+  'case:alas-global-tour': { es: 'casos/alas-global-tour', en: 'case-studies/alas-global-tour', it: 'casi-di-successo/alas-global-tour' },
   about: { es: 'nosotros', en: 'about', it: 'chi-siamo' },
   resources: { es: 'recursos', en: 'resources', it: 'risorse' },
   contact: { es: 'contacto', en: 'contact', it: 'contatti' },
