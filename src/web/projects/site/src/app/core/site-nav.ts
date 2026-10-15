@@ -12,6 +12,7 @@ export const SERVICE_LINKS: NavLink[] = [
 export const CASE_LINKS: NavLink[] = [
   { path: casePath('euroamerican-assistance'), label: 'Euroamerican Assistance' },
   { path: casePath('grupo-crosland'), label: 'Grupo Crosland' },
+  { path: casePath('alas-global-tour'), label: 'ALAS Global Tour' },
 ];
 
 export const PORTAL_URL = 'https://portal.rtres.net';

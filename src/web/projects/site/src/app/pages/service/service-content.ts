@@ -76,7 +76,12 @@ export const SERVICES: ServiceContent[] = [
       $localize`:@@service.apps.d5:Hosting, dominio y certificado SSL incluidos si los necesitas`,
     ],
     technologies: ['Angular', 'WordPress', 'PayPal', $localize`:@@service.tech.multilang:Multi-idioma (ES · EN · IT)`],
-    relatedCase: null,
+    relatedCase: {
+      path: casePath('alas-global-tour'),
+      name: 'ALAS Global Tour',
+      scope: $localize`:@@home.cases.3.scope:Inscripciones · Pagos · Resultados en vivo`,
+      quote: $localize`:@@service.apps.case:Plataforma multiidioma con inscripciones, pagos y resultados de surf en vivo para un circuito internacional.`,
+    },
     ctaTitle: $localize`:@@service.apps.cta:¿Tu web está a la altura de tu empresa?`,
   },
   {

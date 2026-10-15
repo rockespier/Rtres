@@ -14,14 +14,18 @@ interface SuccessCase { sector: string; name: string; scope: string; shot: CaseC
     <section id="casos">
       <p class="v2-label case-label" i18n="@@home.cases.label">CASOS DE ÉXITO</p>
       <h2 class="v2-display" i18n="@@home.cases.title">Sistemas que sostienen <mark>operaciones reales.</mark></h2>
-      <p class="intro" i18n="@@home.cases.sub">Dos proyectos, dos sectores y años de evolución tecnológica.</p>
+      <p class="intro" i18n="@@home.cases.sub">Tres proyectos, tres sectores y años de evolución tecnológica.</p>
       <div class="cases">
         @for (c of cases; track c.name) {
           <article>
             <small>{{ c.sector }}</small>
             <h3>{{ c.name }}</h3>
             <b>{{ c.scope }}</b>
-            <div class="shot" role="img" [attr.aria-label]="c.name" style="background-image:url('assets/casos_exito.webp')" [style.aspect-ratio]="c.shot.ratio" [style.background-size]="c.shot.size" [style.background-position]="c.shot.position"></div>
+            @if (c.shot; as shot) {
+              <div class="shot" role="img" [attr.aria-label]="c.name" style="background-image:url('assets/casos_exito.webp')" [style.aspect-ratio]="shot.ratio" [style.background-size]="shot.size" [style.background-position]="shot.position"></div>
+            } @else {
+              <div class="shot plain" aria-hidden="true">{{ c.name }}</div>
+            }
             <a class="see" [routerLink]="c.path"><ng-container i18n="@@home.cases.see">Ver el caso</ng-container> <b aria-hidden="true">→</b></a>
           </article>
         }
@@ -40,11 +44,13 @@ interface SuccessCase { sector: string; name: string; scope: string; shot: CaseC
     h2{font-size:clamp(2.7rem,5.5vw,5.1rem);text-wrap:balance}
     mark{background:none;color:var(--v2-mark)}
     .intro{margin:22px 0 0;font-size:clamp(1.25rem,2vw,1.75rem);line-height:1.3}
-    .cases{display:grid;grid-template-columns:1fr 1fr;margin-top:48px}
+    .cases{display:grid;grid-template-columns:repeat(3,1fr);margin-top:48px}
     article{padding-right:35px}
-    article+article{padding-left:35px;padding-right:0;border-left:1px solid var(--v2-rule)}
-    h3{font-size:40px;margin:15px 0}
+    article+article{padding-left:35px;border-left:1px solid var(--v2-rule)}
+    article:last-child{padding-right:0}
+    h3{font-size:clamp(28px,2.8vw,40px);margin:15px 0}
     .shot{width:100%;margin-top:25px;background-color:#202826;background-repeat:no-repeat;border:1px solid var(--v2-line)}
+    .plain{display:flex;align-items:flex-end;aspect-ratio:783/330;padding:22px;color:#fff;font-weight:900;font-size:28px;letter-spacing:-.04em;line-height:1}
     .see{display:inline-flex;align-items:center;gap:12px;margin:22px 0 40px;font-size:11px;letter-spacing:.2em;text-transform:uppercase;font-weight:bold}
     .see b{font:300 24px Arial;transition:transform .25s}
     .see:hover b{transform:translateX(6px)}
@@ -73,6 +79,13 @@ export class HomeCasesComponent {
       scope: $localize`:@@home.cases.2.scope:DMS · SAP · Garantías`,
       shot: shotFor(CASE_LINKS[1].path),
       path: CASE_LINKS[1].path,
+    },
+    {
+      sector: $localize`:@@home.cases.3.sector:SECTOR · DEPORTES / EVENTOS`,
+      name: 'ALAS Global Tour',
+      scope: $localize`:@@home.cases.3.scope:Inscripciones · Pagos · Resultados en vivo`,
+      shot: shotFor(CASE_LINKS[2].path),
+      path: CASE_LINKS[2].path,
     },
   ];
 }

@@ -76,6 +76,7 @@ export class SeoService {
     this.jsonLd('ld-organization', {
       '@context': 'https://schema.org', '@type': 'Organization', '@id': `${SITE_URL}/#organization`,
       name: 'Rtres Web Solutions', url: `${SITE_URL}/${this.locale}/`, logo: `${SITE_URL}/es/assets/logo-rtres.png`,
+      image: `${SITE_URL}/es/assets/logo-rtres.png`,
       email: 'info@rtres.net', telephone: '+39 328 191 5399', foundingDate: '2007',
       address: { '@type': 'PostalAddress', addressLocality: 'Lima', addressCountry: 'PE' },
       areaServed: ['PE', 'IT', 'ES'],

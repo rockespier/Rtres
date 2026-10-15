@@ -323,8 +323,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="home.cases.sub" datatype="html">
-        <source>Dos proyectos, dos sectores y años de evolución tecnológica.</source>
-        <target>Two projects, two industries and years of technological evolution.</target>
+        <source>Tres proyectos, tres sectores y años de evolución tecnológica.</source>
+        <target>Three projects, three industries and years of technological evolution.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/components/home/success-cases.component.ts</context>
           <context context-type="linenumber">12,15</context>
@@ -1717,6 +1717,122 @@
       <trans-unit id="service.faq.label" datatype="html">
         <source>PREGUNTAS FRECUENTES</source>
         <target>FREQUENTLY ASKED QUESTIONS</target>
+      </trans-unit>
+      <trans-unit id="case.alas.sector" datatype="html">
+        <source>Deportes y eventos internacionales</source>
+        <target>Sports and international events</target>
+      </trans-unit>
+      <trans-unit id="case.alas.intro" datatype="html">
+        <source>Circuito internacional de surf, con campeonatos en varios países y una comunidad de atletas, organizadores y aficionados. Plataforma en desarrollo.</source>
+        <target>International surf circuit, with championships in several countries and a community of athletes, organizers and fans. Platform in development.</target>
+      </trans-unit>
+      <trans-unit id="case.alas.meta" datatype="html">
+        <source>Caso de éxito: plataforma web multiidioma para ALAS Global Tour, con inscripciones, pagos online y en playa, resultados de surf en vivo y rankings.</source>
+        <target>Case study: multilingual web platform for ALAS Global Tour, with registrations, online and on-site payments, live surf results and rankings.</target>
+      </trans-unit>
+      <trans-unit id="case.alas.stat1" datatype="html">
+        <source>menos tiempo de inscripción (objetivo)</source>
+        <target>less registration time (target)</target>
+      </trans-unit>
+      <trans-unit id="case.alas.stat2" datatype="html">
+        <source>menos trabajo administrativo manual (objetivo)</source>
+        <target>less manual admin work (target)</target>
+      </trans-unit>
+      <trans-unit id="case.alas.stat3" datatype="html">
+        <source>idiomas: español, inglés y portugués</source>
+        <target>languages: Spanish, English and Portuguese</target>
+      </trans-unit>
+      <trans-unit id="case.alas.challenge" datatype="html">
+        <source>Pasar de un portal en ASP clásico lleno de procesos manuales a una plataforma que conecte inscripciones, pagos, resultados y contenidos de un circuito que compite en varios países.</source>
+        <target>Move from a classic ASP portal full of manual processes to a platform that connects registrations, payments, results and content for a circuit that competes across several countries.</target>
+      </trans-unit>
+      <trans-unit id="case.alas.group1" datatype="html">
+        <source>Atletas y aficionados</source>
+        <target>Athletes and fans</target>
+      </trans-unit>
+      <trans-unit id="case.alas.row1.title" datatype="html">
+        <source>Inscripciones digitales</source>
+        <target>Online registration</target>
+      </trans-unit>
+      <trans-unit id="case.alas.row1.text" datatype="html">
+        <source>El atleta elige campeonato y categoría, valida sus datos y se inscribe desde el teléfono.</source>
+        <target>Athletes choose the championship and category, validate their details and register from their phone.</target>
+      </trans-unit>
+      <trans-unit id="case.alas.row2.title" datatype="html">
+        <source>Pago online o en playa</source>
+        <target>Pay online or at the beach</target>
+      </trans-unit>
+      <trans-unit id="case.alas.row2.text" datatype="html">
+        <source>Pasarela de pago integrada, o inscripción con pago pendiente que el staff confirma en el evento. Todo en un mismo control.</source>
+        <target>Integrated payment gateway, or registration with a pending payment that staff confirm at the event. Everything in one place.</target>
+      </trans-unit>
+      <trans-unit id="case.alas.row3.title" datatype="html">
+        <source>Resultados en vivo</source>
+        <target>Live results</target>
+      </trans-unit>
+      <trans-unit id="case.alas.row3.text" datatype="html">
+        <source>Integración con el sistema de puntuación de los jueces: heats, rondas y posiciones sin republicar nada a mano.</source>
+        <target>Integration with the judges' scoring system: heats, rounds and standings with no manual republishing.</target>
+      </trans-unit>
+      <trans-unit id="case.alas.row4.title" datatype="html">
+        <source>Rankings y perfiles de atletas</source>
+        <target>Rankings and athlete profiles</target>
+      </trans-unit>
+      <trans-unit id="case.alas.row4.text" datatype="html">
+        <source>Cada atleta tiene un perfil con su historial y resultados; rankings por temporada, país y categoría.</source>
+        <target>Each athlete has a profile with their history and results; rankings by season, country and category.</target>
+      </trans-unit>
+      <trans-unit id="case.alas.group2" datatype="html">
+        <source>Organización</source>
+        <target>Organization</target>
+      </trans-unit>
+      <trans-unit id="case.alas.row5.title" datatype="html">
+        <source>Administración por roles</source>
+        <target>Role-based administration</target>
+      </trans-unit>
+      <trans-unit id="case.alas.row5.text" datatype="html">
+        <source>Campeonatos, sedes, categorías, noticias y multimedia, gestionados por administradores, editores y staff sin depender de soporte técnico.</source>
+        <target>Championships, venues, categories, news and media, managed by admins, editors and staff without relying on tech support.</target>
+      </trans-unit>
+      <trans-unit id="case.alas.row6.title" datatype="html">
+        <source>Control de inscritos e ingresos</source>
+        <target>Registrations and revenue control</target>
+      </trans-unit>
+      <trans-unit id="case.alas.row6.text" datatype="html">
+        <source>Inscritos, pagos pendientes y confirmados en una sola vista, con exportaciones e indicadores.</source>
+        <target>Registrants, pending and confirmed payments in a single view, with exports and dashboards.</target>
+      </trans-unit>
+      <trans-unit id="case.alas.row7.title" datatype="html">
+        <source>Calendario y streaming</source>
+        <target>Calendar and streaming</target>
+      </trans-unit>
+      <trans-unit id="case.alas.row7.text" datatype="html">
+        <source>Calendario interactivo de campeonatos, transmisiones en vivo, galerías y noticias en tres idiomas.</source>
+        <target>Interactive championship calendar, live streaming, galleries and news in three languages.</target>
+      </trans-unit>
+      <trans-unit id="case.alas.int2" datatype="html">
+        <source>Pasarela de pago</source>
+        <target>Payment gateway</target>
+      </trans-unit>
+      <trans-unit id="case.alas.int3" datatype="html">
+        <source>Sistema de puntuación</source>
+        <target>Scoring system</target>
+      </trans-unit>
+      <trans-unit id="case.alas.impact" datatype="html">
+        <source>Una sola plataforma para procesos que hoy van por separado. Objetivos del proyecto: 90 % de inscripciones digitales, resultados publicados un 95 % más rápido y 45 % más tráfico internacional.</source>
+        <target>One platform for processes that run separately today. Project targets: 90% of registrations online, results published 95% faster and 45% more international traffic.</target>
+      </trans-unit>
+      <trans-unit id="home.cases.3.scope" datatype="html">
+        <source>Inscripciones · Pagos · Resultados en vivo</source>
+        <target>Registrations · Payments · Live results</target>
+      </trans-unit>
+      <trans-unit id="service.apps.case" datatype="html">
+        <source>Plataforma multiidioma con inscripciones, pagos y resultados de surf en vivo para un circuito internacional.</source>
+        <target>Multilingual platform with registrations, payments and live surf results for an international circuit.</target>
+      </trans-unit>
+      <trans-unit id="home.cases.3.sector" datatype="html">
+        <source>SECTOR · DEPORTES / EVENTOS</source>
+        <target>INDUSTRY · SPORTS / EVENTS</target>
       </trans-unit>
     </body>
   </file>
