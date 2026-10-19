@@ -95,6 +95,22 @@ public class TaxDocumentTests
     private static PayPalPaymentService Payments(RtresDbContext db) =>
         new(db, null!, new FakeNotifications(), PayPalPaymentTests.TaxDocuments(db), NullLogger<PayPalPaymentService>.Instance);
 
+    [Fact]
+    public async Task List_shows_amounts_in_soles_with_the_exchange_rate_of_the_payment()
+    {
+        using var db = TestData.Db(out var seed);
+        seed.Client.RequiresTaxDocument = true; db.SaveChanges();
+        db.ExchangeRates.Add(new ExchangeRate { Date = new DateOnly(2026, 9, 1), CurrencyCode = "USD", RateToPen = 3.75m, Source = "SUNAT" }); db.SaveChanges();
+        var item = AddProduct(db, seed, TaxDocumentType.Factura);
+        var admin = Admin(db);
+        await admin.CreateTaxDocument(new TaxDocumentRequest(item.Id, new DateOnly(2026, 9, 1), "USD", 118m, null), CancellationToken.None);
+        // Un cambio posterior del tipo de cambio no altera un comprobante ya emitido.
+        db.ExchangeRates.Single().RateToPen = 4m; db.SaveChanges();
+
+        var row = Assert.Single((IEnumerable<object>)Assert.IsType<OkObjectResult>(await admin.TaxDocuments(null, 9, 2026, CancellationToken.None)).Value!);
+        Assert.Equal((3.75m, 375m, 67.5m, 442.5m), (Prop<decimal>(row, "exchangeRate"), Prop<decimal>(row, "basePen"), Prop<decimal>(row, "igvPen"), Prop<decimal>(row, "totalPen")));
+    }
+
     private static AdminController Admin(RtresDbContext db) =>
         new(db, null!, null!, ClientOnboardingTests.AccessEmail(db, new FakeEmail()), PayPalPaymentTests.TaxDocuments(db), null!, new FakeNotifications()) { ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() } };
 

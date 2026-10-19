@@ -120,7 +120,9 @@ export interface TaxCalendarDto { ruc:string|null; isGoodTaxpayer:boolean; today
 export interface TaxDocumentRequest { clientProductId:string; issueDate:string; currency:string; totalAmount:number; notes:string|null; retentionAmount?:number|null; }
 export interface ExchangeRateDto { date:string; currencyCode:string; rateToPen:number; source:string; }
 export type TaxDocumentType = 'Factura'|'ReciboPorHonorarios';
-export interface TaxDocumentDto { id:string; paymentTransactionId:string|null; clientId:string; type:TaxDocumentType; series:string; number:number; issueDate:string; currency:string; baseAmount:number; igvAmount:number; totalAmount:number; notes:string|null; }
+export interface TaxDocumentDto { id:string; paymentTransactionId:string|null; clientId:string; type:TaxDocumentType; series:string; number:number; issueDate:string; currency:string; baseAmount:number; igvAmount:number; totalAmount:number; notes:string|null;
+  /** Tipo de cambio a soles del cobro (1 en PEN) y los importes convertidos con él: los mismos que usan los reportes de impuestos. */
+  exchangeRate:number; basePen:number; igvPen:number; totalPen:number; }
 /** Video de la página Recursos del sitio. language null = los tres idiomas. */
 export interface LearningVideoDto { id:string; youtubeId:string; title:string; category:string; language:string|null; description:string|null; sortOrder:number; isPublished:boolean; }
 export interface LearningVideoRequest { url:string; title:string; category:string; language:string|null; description:string|null; isPublished:boolean; }

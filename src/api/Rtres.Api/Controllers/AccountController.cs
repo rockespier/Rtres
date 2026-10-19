@@ -148,9 +148,22 @@ public sealed partial class AdminController(RtresDbContext db, PayPalCheckoutSer
     }
 
     [HttpGet("tax-documents")]
-    public async Task<ActionResult> TaxDocuments(Guid? clientId, int? month, int? year, CancellationToken ct) => Ok(await db.TaxDocuments
-        .Where(x => (clientId == null || x.ClientId == clientId) && (month == null || x.IssueDate.Month == month) && (year == null || x.IssueDate.Year == year))
-        .OrderByDescending(x => x.IssueDate).ThenByDescending(x => x.Number).Select(x => TaxDocumentDto(x)).ToListAsync(ct));
+    public async Task<ActionResult> TaxDocuments(Guid? clientId, int? month, int? year, CancellationToken ct)
+    {
+        var rows = await db.TaxDocuments
+            .Where(x => (clientId == null || x.ClientId == clientId) && (month == null || x.IssueDate.Month == month) && (year == null || x.IssueDate.Year == year))
+            .OrderByDescending(x => x.IssueDate).ThenByDescending(x => x.Number)
+            .Select(x => new { Document = x, Payment = db.PaymentTransactions.Where(p => p.Id == x.PaymentTransactionId).Select(p => new { p.Amount, p.AmountPen }).FirstOrDefault() })
+            .ToListAsync(ct);
+        var result = new List<object>(rows.Count);
+        foreach (var x in rows)
+        {
+            // Mismo tipo de cambio que los reportes de impuestos: el que se guardó en el cobro (AmountPen / Amount).
+            var rate = x.Payment is { Amount: > 0 } p ? p.AmountPen / p.Amount : await db.RateToPenAsync(x.Document.Currency, x.Document.IssueDate, ct);
+            result.Add(TaxDocumentDto(x.Document, rate));
+        }
+        return Ok(result);
+    }
 
     /// <summary>Emisión manual (cobros fuera de PayPal): el tipo sale del producto y la serie/correlativo se asignan solos.</summary>
     [HttpPost("tax-documents")]
@@ -171,7 +184,7 @@ public sealed partial class AdminController(RtresDbContext db, PayPalCheckoutSer
         db.PaymentTransactions.Add(payment); await db.SaveChangesAsync(ct);
         var document = await taxDocuments.IssueAsync(client.Id, item.Product.TaxDocumentType, request.IssueDate, currency, request.TotalAmount, EmptyToNull(request.Notes), payment.Id, ct);
         if (request.RetentionAmount > 0) { document.RetentionAmount = request.RetentionAmount; await db.SaveChangesAsync(ct); }
-        return Created($"/api/admin/tax-documents/{document.Id}", TaxDocumentDto(document));
+        return Created($"/api/admin/tax-documents/{document.Id}", TaxDocumentDto(document, payment.Amount > 0 ? payment.AmountPen / payment.Amount : 1m));
     }
 
     [HttpGet("expenses")]
@@ -984,7 +997,9 @@ public sealed partial class AdminController(RtresDbContext db, PayPalCheckoutSer
     private async Task<object> ClientProductDtoAsync(ClientProduct x, CancellationToken ct) => ClientProductDto(x, x.Product is null ? 0m : await db.IgvRateForAsync(x.ClientId, x.Product, ct));
     /// <summary>Precios sin IGV; <c>nextChargeTotal</c> es lo que se cobra, con el IGV de <paramref name="igvRate"/> (Perú + Factura).</summary>
     private static object ClientProductDto(ClientProduct x, decimal igvRate) => new { igvRate, nextChargeTotal = x.NextChargeTotal(igvRate), id = x.Id, clientId = x.ClientId, projectId = x.ProjectId, projectName = x.Project?.Name, productId = x.ProductId, productName = x.Product?.Name, productType = x.Product?.Type.ToString(), currency = x.Product?.Currency ?? "USD", billingCycle = x.BillingCycle.ToString(), isManualBilling = x.IsManualBilling, status = x.Status.ToString(), price = x.Price, listPrice = x.ListPrice(), discount = x.Discount, discountEndsAt = x.DiscountEndsAt == ClientProductPricing.NoEnd ? null : x.DiscountEndsAt, currentPrice = x.CurrentPrice(DateTime.UtcNow), nextChargePrice = x.NextChargePrice(), domainName = x.DomainName, priceLabelOverride = x.PriceLabelOverride, renewsAt = x.RenewsAt, nextChargeAt = x.NextChargeAt };
-    private static object TaxDocumentDto(TaxDocument x) => new { id = x.Id, paymentTransactionId = x.PaymentTransactionId, clientId = x.ClientId, type = x.Type.ToString(), series = x.Series, number = x.Number, issueDate = x.IssueDate, currency = x.Currency, baseAmount = x.BaseAmount, igvAmount = x.IgvAmount, totalAmount = x.TotalAmount, notes = x.Notes, retentionAmount = x.RetentionAmount };
+    /// <summary>Comprobante con sus importes en soles al tipo de cambio <paramref name="rateToPen"/> (1 si ya está en PEN).</summary>
+    private static object TaxDocumentDto(TaxDocument x, decimal rateToPen) => new { id = x.Id, paymentTransactionId = x.PaymentTransactionId, clientId = x.ClientId, type = x.Type.ToString(), series = x.Series, number = x.Number, issueDate = x.IssueDate, currency = x.Currency, baseAmount = x.BaseAmount, igvAmount = x.IgvAmount, totalAmount = x.TotalAmount, notes = x.Notes, retentionAmount = x.RetentionAmount,
+        exchangeRate = x.Currency == "PEN" ? 1m : Math.Round(rateToPen, 3), basePen = Math.Round(x.BaseAmount * rateToPen, 2), igvPen = Math.Round(x.IgvAmount * rateToPen, 2), totalPen = Math.Round(x.TotalAmount * rateToPen, 2) };
     /// <summary>Servicio de no domiciliado: el proveedor del exterior se guarda solo si el gasto está marcado (lo pide el 1662).</summary>
     private static void ApplyForeignService(Expense expense, bool foreign, string? name, string? country)
     {
