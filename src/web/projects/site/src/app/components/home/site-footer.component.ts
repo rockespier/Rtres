@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CASE_LINKS, SERVICE_LINKS } from '../../core/site-nav';
 import { LangLinksComponent } from './lang-links.component';
 import { PATHS } from '../../core/site-paths';
+import { CookieConsentService } from '../cookie-consent/cookie-consent.service';
 
 @Component({
   selector: 'app-home-footer',
@@ -33,7 +34,7 @@ import { PATHS } from '../../core/site-paths';
         <a href="https://wa.me/393281915399" target="_blank" rel="noopener">WhatsApp ↗</a>
       </div>
       <div class="bottom">
-        <small>© {{ year }} Rtres Web Solutions</small>
+        <small>© {{ year }} Rtres Web Solutions · <button type="button" class="cc" (click)="consent.reopen()" i18n="@@cookies.settings">Cookies</button></small>
         <div class="langs"><app-lang-links separator=" · " /></div>
       </div>
     </footer>
@@ -47,6 +48,7 @@ import { PATHS } from '../../core/site-paths';
     footer>div:not(.brand)>a{display:block;margin-bottom:10px}
     footer a:hover{text-decoration:underline;text-underline-offset:3px}
     .bottom{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;gap:20px;margin-top:30px;padding-top:22px;border-top:1px solid rgba(20,20,20,.25);font-size:12px}
+    .cc{background:none;border:0;padding:0;font:inherit;color:inherit;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
     .langs{letter-spacing:.12em}
     .langs ::ng-deep a{display:inline;margin:0}
     @media(max-width:850px){
@@ -57,6 +59,7 @@ import { PATHS } from '../../core/site-paths';
   `],
 })
 export class HomeFooterComponent {
+  readonly consent = inject(CookieConsentService);
   readonly paths = PATHS;
   readonly services = SERVICE_LINKS;
   readonly cases = CASE_LINKS;

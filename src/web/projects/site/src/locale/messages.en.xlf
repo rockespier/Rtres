@@ -1834,6 +1834,26 @@
         <source>SECTOR · DEPORTES / EVENTOS</source>
         <target>INDUSTRY · SPORTS / EVENTS</target>
       </trans-unit>
+      <trans-unit id="cookies.title" datatype="html">
+        <source>Cookies</source>
+        <target>Cookies</target>
+      </trans-unit>
+      <trans-unit id="cookies.text" datatype="html">
+        <source>Usamos cookies de Google Analytics para medir visitas y mejorar el sitio. Solo se activan si las aceptas.</source>
+        <target>We use Google Analytics cookies to measure visits and improve the site. They are only enabled if you accept.</target>
+      </trans-unit>
+      <trans-unit id="cookies.reject" datatype="html">
+        <source>Rechazar</source>
+        <target>Reject</target>
+      </trans-unit>
+      <trans-unit id="cookies.accept" datatype="html">
+        <source>Aceptar</source>
+        <target>Accept</target>
+      </trans-unit>
+      <trans-unit id="cookies.settings" datatype="html">
+        <source>Cookies</source>
+        <target>Cookies</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
