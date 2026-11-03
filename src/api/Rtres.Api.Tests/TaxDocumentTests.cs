@@ -92,6 +92,35 @@ public class TaxDocumentTests
         Assert.Empty(db.TaxDocuments);
     }
 
+    [Fact]
+    public async Task One_document_can_include_several_products_of_the_client()
+    {
+        using var db = TestData.Db(out var seed);
+        seed.Client.RequiresTaxDocument = true; db.SaveChanges();
+        var hosting = AddProduct(db, seed, TaxDocumentType.Factura);
+        var dominio = AddProduct(db, seed, TaxDocumentType.Factura);
+        var request = new TaxDocumentRequest(null, new DateOnly(2026, 11, 1), "PEN", 0m, null, Items: [new(hosting.Id, 118m), new(dominio.Id, 59m)]);
+
+        var doc = Doc(Assert.IsType<CreatedResult>(await Admin(db).CreateTaxDocument(request, CancellationToken.None)));
+        Assert.Equal(("F001", 1, 150m), (doc.Series, doc.Number, doc.BaseAmount));
+        Assert.Equal([118m, 59m], db.TaxDocumentLines.OrderBy(x => x.Order).Select(x => x.Amount));
+        // Un solo cobro por el total: cuenta una vez en los reportes y no apunta a un producto concreto.
+        var payment = Assert.Single(db.PaymentTransactions);
+        Assert.Equal((177m, (Guid?)null), (payment.Amount, payment.ClientProductId));
+    }
+
+    [Fact]
+    public async Task Products_with_different_document_types_cannot_be_mixed()
+    {
+        using var db = TestData.Db(out var seed);
+        seed.Client.RequiresTaxDocument = true; db.SaveChanges();
+        var factura = AddProduct(db, seed, TaxDocumentType.Factura);
+        var recibo = AddProduct(db, seed, TaxDocumentType.ReciboPorHonorarios);
+        var request = new TaxDocumentRequest(null, new DateOnly(2026, 11, 1), "PEN", 0m, null, Items: [new(factura.Id, 118m), new(recibo.Id, 500m)]);
+        Assert.IsType<BadRequestObjectResult>(await Admin(db).CreateTaxDocument(request, CancellationToken.None));
+        Assert.Empty(db.TaxDocuments); Assert.Empty(db.PaymentTransactions);
+    }
+
     private static PayPalPaymentService Payments(RtresDbContext db) =>
         new(db, null!, new FakeNotifications(), PayPalPaymentTests.TaxDocuments(db), NullLogger<PayPalPaymentService>.Instance);
 

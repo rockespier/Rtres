@@ -117,10 +117,12 @@ export interface AnnualRentaDto { year:number; uit:number; tasas:{thresholdUits:
 export interface Form1662Item { id:string; date:string; description:string; supplier:string|null; country:string|null; amount:number; currency:string; exchangeRate:number; basePen:number; igvPen:number; paidAt:string|null; number:string|null; }
 export interface Form1662Dto { periodo:string; tributo:string; igvRate:number; usedAsCredit:boolean; totalIgvPen:number; pendientes:number; items:Form1662Item[]; }
 export interface TaxCalendarDto { ruc:string|null; isGoodTaxpayer:boolean; today:string; year:number; years:number[]; rows:TaxDueDateDto[]; next:TaxDueDateDto|null; overdue:string[]; missingNextYear:boolean; }
-export interface TaxDocumentRequest { clientProductId:string; issueDate:string; currency:string; totalAmount:number; notes:string|null; retentionAmount?:number|null; }
+export interface TaxDocumentItemRequest { clientProductId:string; amount:number; }
+export interface TaxDocumentRequest { issueDate:string; currency:string; notes:string|null; retentionAmount?:number|null; items:TaxDocumentItemRequest[]; }
+export interface TaxDocumentLineDto { clientProductId:string|null; description:string; amount:number; }
 export interface ExchangeRateDto { date:string; currencyCode:string; rateToPen:number; source:string; }
 export type TaxDocumentType = 'Factura'|'ReciboPorHonorarios';
-export interface TaxDocumentDto { id:string; paymentTransactionId:string|null; clientId:string; type:TaxDocumentType; series:string; number:number; issueDate:string; currency:string; baseAmount:number; igvAmount:number; totalAmount:number; notes:string|null;
+export interface TaxDocumentDto { id:string; paymentTransactionId:string|null; clientId:string; lines:TaxDocumentLineDto[]; type:TaxDocumentType; series:string; number:number; issueDate:string; currency:string; baseAmount:number; igvAmount:number; totalAmount:number; notes:string|null;
   /** Tipo de cambio a soles del cobro (1 en PEN) y los importes convertidos con él: los mismos que usan los reportes de impuestos. */
   exchangeRate:number; basePen:number; igvPen:number; totalPen:number; }
 /** Video de la página Recursos del sitio. language null = los tres idiomas. */
