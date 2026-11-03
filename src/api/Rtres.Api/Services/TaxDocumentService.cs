@@ -25,7 +25,7 @@ public sealed class TaxDocumentService(RtresDbContext db, ILogger<TaxDocumentSer
             var item = await db.ClientProducts.Include(x => x.Product).SingleAsync(x => x.Id == payment.ClientProductId, ct);
             var client = await db.Clients.SingleAsync(x => x.Id == item.ClientId, ct);
             if (!client.RequiresTaxDocument || item.Product is null) return null;
-            return await IssueAsync(client.Id, item.Product.TaxDocumentType, LimaToday(payment.CreatedAt), payment.Currency, payment.Amount, payment.Years > 1 ? $"Pago {payment.InternalCode} ({payment.Years} años por adelantado)" : $"Pago {payment.InternalCode}", payment.Id, ct);
+            return await IssueAsync(client.Id, item.Product.TaxDocumentType, LimaToday(payment.CreatedAt), payment.Currency, payment.Amount, payment.Years > 1 ? $"Pago {payment.InternalCode} ({payment.Years} años por adelantado)" : $"Pago {payment.InternalCode}", payment.Id, ct, [new TaxDocumentLine { ClientProductId = item.Id, Description = LineDescription(item), Amount = payment.Amount }]);
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
@@ -39,7 +39,7 @@ public sealed class TaxDocumentService(RtresDbContext db, ILogger<TaxDocumentSer
     /// Asigna serie y correlativo y guarda el documento. <paramref name="total"/> es lo cobrado: en la Factura incluye
     /// el IGV (se desglosa con la tasa configurada); el Recibo por honorarios no lleva IGV.
     /// </summary>
-    public async Task<TaxDocument> IssueAsync(Guid clientId, TaxDocumentType type, DateOnly issueDate, string currency, decimal total, string? notes, Guid? paymentTransactionId, CancellationToken ct)
+    public async Task<TaxDocument> IssueAsync(Guid clientId, TaxDocumentType type, DateOnly issueDate, string currency, decimal total, string? notes, Guid? paymentTransactionId, CancellationToken ct, IReadOnlyList<TaxDocumentLine>? lines = null)
     {
         for (var attempt = 1; ; attempt++)
         {
@@ -53,6 +53,8 @@ public sealed class TaxDocumentService(RtresDbContext db, ILogger<TaxDocumentSer
             var baseAmount = isFactura ? Math.Round(total / (1 + settings.IgvRate), 2) : total;
             var document = new TaxDocument { ClientId = clientId, Type = type, Series = series, Number = number, IssueDate = issueDate, Currency = currency, BaseAmount = baseAmount, IgvAmount = total - baseAmount, TotalAmount = total, Notes = notes, PaymentTransactionId = paymentTransactionId };
             db.TaxDocuments.Add(document);
+            var docLines = (lines ?? []).Select((x, i) => new TaxDocumentLine { TaxDocumentId = document.Id, ClientProductId = x.ClientProductId, Description = x.Description, Amount = x.Amount, Order = i }).ToList();
+            db.TaxDocumentLines.AddRange(docLines);
             if (isFactura) settings.FacturaNextNumber = number + 1; else settings.ReciboNextNumber = number + 1;
             try { await db.SaveChangesAsync(ct); return document; }
             catch (DbUpdateException)
@@ -60,9 +62,18 @@ public sealed class TaxDocumentService(RtresDbContext db, ILogger<TaxDocumentSer
                 // Otro documento tomó el mismo correlativo en paralelo (índice único Tipo+Serie+Número): se recalcula.
                 // Se suelta el documento para que un SaveChanges posterior del mismo contexto no lo reintente.
                 db.Entry(document).State = EntityState.Detached;
+                foreach (var line in docLines) db.Entry(line).State = EntityState.Detached;
                 await db.Entry(settings).ReloadAsync(ct);
                 if (attempt >= MaxAttempts) throw;
             }
         }
+    }
+
+    /// <summary>Texto de la línea: producto y, si tiene, su dominio.</summary>
+    public static string LineDescription(ClientProduct item)
+    {
+        var name = item.Product?.Name ?? "Producto";
+        var text = string.IsNullOrWhiteSpace(item.DomainName) ? name : $"{name} — {item.DomainName}";
+        return text.Length > 300 ? text[..300] : text;
     }
 }

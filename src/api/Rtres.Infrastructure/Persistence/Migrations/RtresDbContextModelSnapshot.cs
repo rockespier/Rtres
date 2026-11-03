@@ -995,6 +995,39 @@ namespace Rtres.Infrastructure.Persistence.Migrations
                     b.ToTable("TaxDocuments");
                 });
 
+            modelBuilder.Entity("Rtres.Domain.TaxDocumentLine", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("Amount")
+                        .HasPrecision(12, 2)
+                        .HasColumnType("decimal(12,2)");
+
+                    b.Property<Guid?>("ClientProductId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("TaxDocumentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClientProductId");
+
+                    b.HasIndex("TaxDocumentId");
+
+                    b.ToTable("TaxDocumentLines");
+                });
+
             modelBuilder.Entity("Rtres.Domain.TaxDueDate", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1546,6 +1579,20 @@ namespace Rtres.Infrastructure.Persistence.Migrations
                     b.HasOne("Rtres.Domain.Project", null)
                         .WithMany("Repositories")
                         .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Rtres.Domain.TaxDocumentLine", b =>
+                {
+                    b.HasOne("Rtres.Domain.ClientProduct", null)
+                        .WithMany()
+                        .HasForeignKey("ClientProductId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("Rtres.Domain.TaxDocument", null)
+                        .WithMany()
+                        .HasForeignKey("TaxDocumentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
