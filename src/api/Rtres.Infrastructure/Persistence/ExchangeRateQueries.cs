@@ -6,6 +6,14 @@ namespace Rtres.Infrastructure.Persistence;
 /// <summary>Snapshot del tipo de cambio a usar en una fecha dada — nunca se recalcula después (un mes cerrado no cambia de valor).</summary>
 public static class ExchangeRateQueries
 {
+    /// <summary>Siguiente código interno de cobro. Sale del mayor existente y no del conteo: un extorno borra cobros y el conteo repetiría códigos.</summary>
+    public static async Task<string> NextInternalCodeAsync(this RtresDbContext db, CancellationToken ct)
+    {
+        const string prefix = "RT-INT-";
+        var last = await db.PaymentTransactions.Where(x => x.InternalCode != null && x.InternalCode.StartsWith(prefix)).MaxAsync(x => x.InternalCode, ct);
+        return $"{prefix}{1 + (int.TryParse(last?[prefix.Length..], out var number) ? number : 0):000000}";
+    }
+
     public static async Task<decimal> RateToPenAsync(this RtresDbContext db, string currency, DateOnly date, CancellationToken ct)
     {
         if (currency == "PEN") return 1m;

@@ -56,6 +56,52 @@ public class DiscountTests
         Assert.Equal((120m, 100m, 120m), (Prop<decimal>(dto, "listPrice"), Prop<decimal>(dto, "currentPrice"), Prop<decimal>(dto, "nextChargePrice")));
     }
 
+    [Fact]
+    public async Task Surcharge_on_an_active_product_goes_to_the_next_charge_only()
+    {
+        using var db = TestData.Db(out var seed);
+        var item = AddProduct(db, seed, ClientProductStatus.Activo, DateTime.UtcNow.AddMonths(3));
+        var admin = Admin(db);
+
+        var ok = Assert.IsType<OkObjectResult>(await admin.UpdateClientProduct(item.Id, new ClientProductPatchRequest(null, null, null, null, null, null, Discount: -30), CancellationToken.None));
+        Assert.Equal((120m, 150m), (Prop<decimal>(ok.Value!, "listPrice"), Prop<decimal>(ok.Value!, "nextChargePrice")));
+        Assert.Null(item.DiscountEndsAt);
+        Assert.Equal(177m, item.NextChargeTotal(0.18m));
+
+        await Payments(db).ApplyPaymentAsync(item, "ORD-REC", 150m, "USD", CancellationToken.None);
+        Assert.Equal(item.RenewsAt, item.DiscountEndsAt); // cubre el periodo recién pagado
+        Assert.Equal((150m, 120m), (item.CurrentPrice(DateTime.UtcNow), item.NextChargePrice()));
+
+        await Payments(db).ApplyPaymentAsync(item, "ORD-REN", 120m, "USD", CancellationToken.None);
+        Assert.Equal((null, null, 120m), (item.Discount, item.DiscountEndsAt, item.NextChargePrice()));
+    }
+
+    [Fact]
+    public void Surcharge_only_raises_the_first_of_the_prepaid_years_and_comes_back_when_the_payment_is_reversed()
+    {
+        using var db = TestData.Db(out var seed);
+        var item = AddProduct(db, seed, ClientProductStatus.Pendiente, null);
+        Assert.Null(item.SetDiscount(-30));
+        Assert.Equal(390m, item.ChargeTotal(0m, 3)); // 150 + 2 × 120
+
+        var paidEnd = new DateTime(2027, 9, 1, 0, 0, 0, DateTimeKind.Utc);
+        item.DiscountEndsAt = paidEnd;
+        item.OnPaymentReversed(paidEnd);
+        Assert.Equal(150m, item.NextChargePrice());
+    }
+
+    [Fact]
+    public void Surcharge_is_rejected_on_a_running_PayPal_subscription_but_a_discount_is_not()
+    {
+        using var db = TestData.Db(out var seed);
+        var item = AddProduct(db, seed, ClientProductStatus.Activo, DateTime.UtcNow.AddMonths(3));
+        item.PayPalSubscriptionId = "SUB-1";
+
+        Assert.NotNull(item.SetDiscount(-30));
+        Assert.Null(item.Discount);
+        Assert.Null(item.SetDiscount(30));
+    }
+
     private static ClientProduct AddProduct(RtresDbContext db, Seed seed, ClientProductStatus status, DateTime? renewsAt)
     {
         var product = new Product { Name = "Hosting", Type = ProductType.Hosting, BillingCycle = BillingCycle.Anual, BasePrice = 120 };

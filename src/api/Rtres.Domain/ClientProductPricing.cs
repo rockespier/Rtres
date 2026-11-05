@@ -5,6 +5,8 @@ namespace Rtres.Domain;
 /// precio menor lleva un descuento de monto fijo que cubre un solo periodo: al renovar se cobra el precio del catálogo.
 /// <see cref="ClientProduct.DiscountEndsAt"/> en null = el descuento aún no se usó (se aplica al próximo cobro);
 /// con fecha = cubre el periodo pagado que termina en esa fecha, y el próximo cobro ya es la renovación sin descuento.
+/// Un <see cref="ClientProduct.Discount"/> negativo es un recargo: sube el precio con el mismo ciclo de vida, pero siempre
+/// entra en el próximo cobro (un periodo ya pagado no se puede encarecer).
 /// </summary>
 public static class ClientProductPricing
 {
@@ -14,7 +16,9 @@ public static class ClientProductPricing
     /// <summary>Precio del catálogo; el precio propio del cliente solo cuenta si el producto no tiene precio de catálogo.</summary>
     public static decimal? ListPrice(this ClientProduct item, Product? product = null) => (product ?? item.Product)?.BasePrice ?? item.Price;
 
-    public static bool DiscountPendingUse(this ClientProduct item) => item.Discount > 0 && item.DiscountEndsAt is null;
+    private static bool HasAdjustment(this ClientProduct item) => item.Discount is not (null or 0m);
+
+    public static bool DiscountPendingUse(this ClientProduct item) => item.HasAdjustment() && item.DiscountEndsAt is null;
 
     /// <summary>Lo que se cobrará en el próximo pago: con descuento solo si todavía no se usó; si no, precio de lista.</summary>
     public static decimal? NextChargePrice(this ClientProduct item, Product? product = null) =>
@@ -49,19 +53,23 @@ public static class ClientProductPricing
 
     /// <summary>Precio vigente del periodo actual (lo que muestra el portal).</summary>
     public static decimal? CurrentPrice(this ClientProduct item, DateTime now, Product? product = null) =>
-        item.ListPrice(product) is decimal list ? list - (item.Discount > 0 && (item.DiscountEndsAt is null || now < item.DiscountEndsAt) ? item.Discount!.Value : 0m) : null;
+        item.ListPrice(product) is decimal list ? list - (item.HasAdjustment() && (item.DiscountEndsAt is null || now < item.DiscountEndsAt) ? item.Discount!.Value : 0m) : null;
 
     /// <summary>
     /// Fija (o quita, con null/0) el descuento. Si el producto ya tiene un periodo pagado (no está Pendiente), el
-    /// descuento cubre ese periodo y termina con él; si está Pendiente, se aplica al primer cobro. Devuelve el error de validación.
+    /// descuento cubre ese periodo y termina con él; si está Pendiente, se aplica al primer cobro. Un valor negativo es un
+    /// recargo: siempre queda para el próximo cobro. Devuelve el error de validación.
     /// </summary>
     public static string? SetDiscount(this ClientProduct item, decimal? discount, Product? product = null)
     {
         if (discount is null or 0) { item.Discount = null; item.DiscountEndsAt = null; return null; }
-        if (item.ListPrice(product) is not decimal list) return "El producto no tiene precio: no se le puede aplicar un descuento.";
-        if (discount < 0 || discount > list) return $"El descuento debe estar entre 0 y el precio del catálogo ({list:0.00}).";
+        if (item.ListPrice(product) is not decimal list) return "El producto no tiene precio: no se le puede aplicar un descuento ni un recargo.";
+        if (discount > list) return $"El descuento no puede superar el precio del catálogo ({list:0.00}).";
+        // PayPal cobra solo el precio del plan: en una suscripción en curso el recargo nunca llegaría al cobro.
+        if (discount < 0 && !string.IsNullOrWhiteSpace(item.PayPalSubscriptionId) && item.Status is not (ClientProductStatus.Pendiente or ClientProductStatus.Cancelado))
+            return "El producto tiene una suscripción de PayPal en curso: su precio no se puede subir con un recargo.";
         item.Discount = Math.Round(discount.Value, 2);
-        item.DiscountEndsAt = item.Status == ClientProductStatus.Pendiente ? null : item.PeriodEnd() ?? NoEnd;
+        item.DiscountEndsAt = discount < 0 || item.Status == ClientProductStatus.Pendiente ? null : item.PeriodEnd() ?? NoEnd;
         return null;
     }
 
@@ -71,9 +79,19 @@ public static class ClientProductPricing
     /// </summary>
     public static void OnPaymentApplied(this ClientProduct item)
     {
-        if (!(item.Discount > 0)) return;
+        if (!item.HasAdjustment()) return;
         if (item.DiscountEndsAt is null) item.DiscountEndsAt = item.PeriodEnd() ?? NoEnd;
         else { item.Discount = null; item.DiscountEndsAt = null; }
+    }
+
+    /// <summary>
+    /// Deshace <see cref="OnPaymentApplied"/> al extornar un pago: si ese pago usó el descuento (terminaba con el periodo
+    /// pagado, <paramref name="paidPeriodEnd"/>), vuelve a quedar pendiente de uso. Si el pago lo había quitado no se repone:
+    /// ya estaba usado y el próximo cobro es a precio de lista de todos modos.
+    /// </summary>
+    public static void OnPaymentReversed(this ClientProduct item, DateTime? paidPeriodEnd)
+    {
+        if (item.HasAdjustment() && (item.DiscountEndsAt == NoEnd || item.DiscountEndsAt == paidPeriodEnd)) item.DiscountEndsAt = null;
     }
 
     /// <summary>Si el descuento cubría un periodo sin fecha y ahora se le pone una, termina con esa fecha.</summary>

@@ -105,12 +105,13 @@ export class ProductCardComponent implements OnInit {
     const money = formatMoney(amount, p.product.currency || 'USD');
     return `${money}${igvSuffix(p)}${CYCLE_SUFFIX[p.billingCycle] ?? ''}`;
   });
-  /** Precio especial del periodo actual: se avisa que la renovación va a precio de catálogo. */
+  /** Precio especial o con recargo (descuento negativo): se avisa que la renovación va a precio de catálogo. */
   discountLabel = computed(() => {
     const p = this.product, list = listPrice(p);
     if (!discountActive(p) || list == null) return '';
     const money = formatMoney(list, p.product.currency || 'USD');
     const end = endDate(p.discountEndsAt);
+    if (p.discount! < 0) return end ? `Incluye un recargo hasta el ${end.toLocaleDateString('es-PE')}; luego ${money}${igvSuffix(p)}.` : `Incluye un recargo (catálogo: ${money}${igvSuffix(p)}).`;
     return end ? `Precio especial hasta el ${end.toLocaleDateString('es-PE')}; luego ${money}${igvSuffix(p)}.` : `Precio especial (catálogo: ${money}${igvSuffix(p)}).`;
   });
   canCancel = computed(() => !this.product.isManualBilling && this.product.status === 'Activo' && isSubscriptionCycle(this.product.billingCycle) && !!this.product.payPalSubscriptionId);

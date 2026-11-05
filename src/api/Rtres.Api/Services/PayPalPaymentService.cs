@@ -68,7 +68,7 @@ public sealed class PayPalPaymentService(RtresDbContext db, IPayPalClient payPal
         var when = paidAt ?? DateTime.UtcNow;
         var paidYears = item.BillingCycle == BillingCycle.Anual ? Math.Clamp(years ?? (transactionKey == item.PayPalOrderId ? item.PayPalOrderYears : null) ?? 1, 1, ClientProductPricing.MaxPrepaidYears) : 1;
         var transaction = new PaymentTransaction { ClientId = item.ClientId, ClientProductId = item.Id, PayPalOrderIdOrSubscriptionId = transactionKey, Amount = amount, Currency = currency ?? item.Product?.Currency ?? "USD", Status = "COMPLETED", Method = method, CreatedAt = when, Years = paidYears };
-        transaction.InternalCode = $"RT-INT-{1 + await db.PaymentTransactions.CountAsync(ct):000000}";
+        transaction.InternalCode = await db.NextInternalCodeAsync(ct);
         transaction.AmountPen = amount * await db.RateToPenAsync(transaction.Currency, DateOnly.FromDateTime(transaction.CreatedAt), ct);
         db.PaymentTransactions.Add(transaction);
         item.Status = ClientProductStatus.Activo;
@@ -116,6 +116,25 @@ public sealed class PayPalPaymentService(RtresDbContext db, IPayPalClient payPal
         }
     }
 
-    private Task<bool> PaymentExistsAsync(string transactionKey, CancellationToken ct) =>
-        db.PaymentTransactions.AnyAsync(x => x.PayPalOrderIdOrSubscriptionId == transactionKey, ct);
+    /// <summary>
+    /// Deshace <see cref="ExtendPeriod"/> al extornar un pago: Anual resta los años pagados; en suscripciones el próximo
+    /// cobro solo vuelve atrás si este era el último pago (<paramref name="isLatestPayment"/>), porque cada pago lo fija de nuevo.
+    /// </summary>
+    public static void RollbackPeriod(ClientProduct item, int years, bool isLatestPayment)
+    {
+        switch (item.BillingCycle)
+        {
+            case BillingCycle.Anual:
+                item.RenewsAt = item.RenewsAt?.AddYears(-years);
+                break;
+            case var cycle when cycle.SubscriptionMonths() is int months && isLatestPayment:
+                item.NextChargeAt = item.NextChargeAt?.AddMonths(-months);
+                break;
+        }
+    }
+
+    /// <summary>Un cobro de PayPal extornado cuenta como existente: el webhook y la conciliación no deben volver a crearlo.</summary>
+    private async Task<bool> PaymentExistsAsync(string transactionKey, CancellationToken ct) =>
+        await db.PaymentTransactions.AnyAsync(x => x.PayPalOrderIdOrSubscriptionId == transactionKey, ct)
+        || await db.PaymentReversals.AnyAsync(x => x.PaymentKey == transactionKey && x.Method == PaymentMethods.PayPal, ct);
 }
