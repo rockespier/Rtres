@@ -266,6 +266,9 @@ public sealed class GitHubIssuesClient(IConfiguration configuration, HttpClient 
 {
     private const int GraphQlBatch = 50;
 
+    /// <summary>Los adjuntos van a una rama propia: la rama por defecto suele exigir pull request y rechaza commits directos.</summary>
+    public const string AttachmentsBranch = "rtres-attachments";
+
     public async Task<IReadOnlyDictionary<int, GitHubIssueState>> GetIssueStatesAsync(ProjectRepository repository, IReadOnlyCollection<int> issueNumbers, CancellationToken cancellationToken = default)
     {
         var result = new Dictionary<int, GitHubIssueState>();
@@ -322,9 +325,29 @@ public sealed class GitHubIssuesClient(IConfiguration configuration, HttpClient 
 
     public async Task<string> UploadFileAsync(ProjectRepository repository, string path, byte[] content, string message, CancellationToken cancellationToken = default)
     {
-        var result = await Client(repository.Owner).Repository.Content.CreateFile(repository.Owner, repository.Name, path, new CreateFileRequest(message, Convert.ToBase64String(content), convertContentToBase64: false));
+        var client = Client(repository.Owner);
+        await EnsureAttachmentsBranchAsync(client, repository);
+        var result = await client.Repository.Content.CreateFile(repository.Owner, repository.Name, path, BuildUploadRequest(message, content));
         // ?raw=true: el issue muestra la imagen incluso en repos privados (GitHub la sirve con la sesión del lector).
         return result.Content.HtmlUrl + "?raw=true";
+    }
+
+    public static CreateFileRequest BuildUploadRequest(string message, byte[] content) =>
+        new(message, Convert.ToBase64String(content), AttachmentsBranch, convertContentToBase64: false);
+
+    /// <summary>Crea la rama de adjuntos desde la rama por defecto la primera vez que un repo la necesita.</summary>
+    private static async Task EnsureAttachmentsBranchAsync(GitHubClient client, ProjectRepository repository)
+    {
+        try
+        {
+            await client.Git.Reference.Get(repository.Owner, repository.Name, $"heads/{AttachmentsBranch}");
+        }
+        catch (NotFoundException)
+        {
+            var defaultBranch = (await client.Repository.Get(repository.Owner, repository.Name)).DefaultBranch;
+            var head = await client.Git.Reference.Get(repository.Owner, repository.Name, $"heads/{defaultBranch}");
+            await client.Git.Reference.Create(repository.Owner, repository.Name, new NewReference($"refs/heads/{AttachmentsBranch}", head.Object.Sha));
+        }
     }
 
     /// <summary>Ruta del adjunto en el repo: carpeta por ticket y el id delante para que dos archivos con el mismo nombre no choquen.</summary>
