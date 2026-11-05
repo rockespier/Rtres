@@ -284,6 +284,15 @@ public class TicketAttachmentTests
         Assert.Contains("![diseño final.png](https://github.com/", github.LastBody);
         Assert.Contains("- [log.txt](https://github.com/", github.LastBody);
     }
+
+    [Fact]
+    public void Attachments_are_committed_to_their_own_branch_not_the_protected_default()
+    {
+        var request = GitHubIssuesClient.BuildUploadRequest("Adjunto de RT-107: log.txt", [1, 2, 3]);
+
+        Assert.Equal("rtres-attachments", request.Branch);
+        Assert.Equal(Convert.ToBase64String([1, 2, 3]), request.Content);
+    }
 }
 
 public class TicketFromProductTests

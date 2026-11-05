@@ -50,7 +50,7 @@ Un token fine-grained solo cubre **un** resource owner (tu usuario o una organiz
 | `GitHub__Tokens__<owner>` | `GitHub__Tokens__mi-organizacion=github_pat_…` | Una variable por organización. `<owner>` = valor de **Owner** del repo en el proyecto (no distingue mayúsculas). |
 | `GitHub__WebhookSecret` | `openssl rand -hex 32` | Mismo valor que el *Secret* del webhook en GitHub (`https://<api>/api/webhooks/github`). |
 
-Permisos de cada token: **Issues: Read and write** + **Contents: Read and write** (adjuntos de tickets, se suben a `.rtres/attachments/` del repo) + **Metadata: Read**, con el resource owner correcto. Caducan: anota las fechas de renovación.
+Permisos de cada token: **Issues: Read and write** + **Contents: Read and write** (adjuntos de tickets, se suben a `.rtres/attachments/` en la rama `rtres-attachments`, que se crea sola; si un ruleset protege todas las ramas, excluye esa) + **Metadata: Read**, con el resource owner correcto. Caducan: anota las fechas de renovación.
 
 Para que mover la tarjeta en un **GitHub Project** cambie el estado del ticket (job `github-project-status`, cada 5 min), el token también necesita leer proyectos:
 - Organización: *Organization permissions* → **Projects: Read-only**.
