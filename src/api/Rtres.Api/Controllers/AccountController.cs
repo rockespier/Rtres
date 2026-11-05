@@ -153,7 +153,7 @@ public sealed partial class AdminController(RtresDbContext db, PayPalCheckoutSer
         var rows = await db.TaxDocuments
             .Where(x => (clientId == null || x.ClientId == clientId) && (month == null || x.IssueDate.Month == month) && (year == null || x.IssueDate.Year == year))
             .OrderByDescending(x => x.IssueDate).ThenByDescending(x => x.Number)
-            .Select(x => new { Document = x, Payment = db.PaymentTransactions.Where(p => p.Id == x.PaymentTransactionId).Select(p => new { p.Amount, p.AmountPen }).FirstOrDefault() })
+            .Select(x => new { Document = x, Payment = db.PaymentTransactions.Where(p => p.Id == x.PaymentTransactionId).Select(p => new { p.Amount, p.AmountPen, p.Method }).FirstOrDefault() })
             .ToListAsync(ct);
         var docIds = rows.Select(x => x.Document.Id).ToList();
         var lines = (await db.TaxDocumentLines.Where(x => docIds.Contains(x.TaxDocumentId)).OrderBy(x => x.Order).ToListAsync(ct)).ToLookup(x => x.TaxDocumentId);
@@ -162,7 +162,7 @@ public sealed partial class AdminController(RtresDbContext db, PayPalCheckoutSer
         {
             // Mismo tipo de cambio que los reportes de impuestos: el que se guardó en el cobro (AmountPen / Amount).
             var rate = x.Payment is { Amount: > 0 } p ? p.AmountPen / p.Amount : await db.RateToPenAsync(x.Document.Currency, x.Document.IssueDate, ct);
-            result.Add(TaxDocumentDto(x.Document, rate, lines[x.Document.Id]));
+            result.Add(TaxDocumentDto(x.Document, rate, lines[x.Document.Id], x.Payment?.Method));
         }
         return Ok(result);
     }
@@ -193,14 +193,24 @@ public sealed partial class AdminController(RtresDbContext db, PayPalCheckoutSer
         var currency = request.Currency.Trim().ToUpperInvariant();
         var payment = new PaymentTransaction { ClientId = client.Id, ClientProductId = items.Count == 1 ? items[0].ClientProductId : null, Amount = total, Currency = currency, Status = "COMPLETED", Method = PaymentMethods.Transferencia, CreatedAt = request.IssueDate.ToDateTime(new TimeOnly(12, 0), DateTimeKind.Utc), Notes = EmptyToNull(request.Notes) };
         payment.PayPalOrderIdOrSubscriptionId = $"MANUAL-{payment.Id:N}";
-        payment.InternalCode = $"RT-INT-{1 + await db.PaymentTransactions.CountAsync(ct):000000}";
+        payment.InternalCode = await db.NextInternalCodeAsync(ct);
         payment.AmountPen = payment.Amount * await db.RateToPenAsync(currency, request.IssueDate, ct);
         db.PaymentTransactions.Add(payment); await db.SaveChangesAsync(ct);
         var lines = items.Select(x => new TaxDocumentLine { ClientProductId = x.ClientProductId, Description = TaxDocumentService.LineDescription(products.Single(p => p.Id == x.ClientProductId)), Amount = x.Amount }).ToList();
         var document = await taxDocuments.IssueAsync(client.Id, types[0], request.IssueDate, currency, total, EmptyToNull(request.Notes), payment.Id, ct, lines);
         if (request.RetentionAmount > 0) { document.RetentionAmount = request.RetentionAmount; await db.SaveChangesAsync(ct); }
         var saved = await db.TaxDocumentLines.Where(x => x.TaxDocumentId == document.Id).OrderBy(x => x.Order).ToListAsync(ct);
-        return Created($"/api/admin/tax-documents/{document.Id}", TaxDocumentDto(document, payment.Amount > 0 ? payment.AmountPen / payment.Amount : 1m, saved));
+        return Created($"/api/admin/tax-documents/{document.Id}", TaxDocumentDto(document, payment.Amount > 0 ? payment.AmountPen / payment.Amount : 1m, saved, payment.Method));
+    }
+
+    /// <summary>Extorno de un comprobante registrado por error: lo elimina junto con su cobro. Ver <see cref="TaxDocumentService.ReverseAsync"/>.</summary>
+    [HttpPost("tax-documents/{id:guid}/reverse")]
+    public async Task<ActionResult> ReverseTaxDocument(Guid id, ReverseTaxDocumentRequest request, CancellationToken ct)
+    {
+        var reason = request.Reason?.Trim();
+        if (string.IsNullOrEmpty(reason)) return BadRequest(new { message = "Indica el motivo del extorno." });
+        if (reason.Length > 500) return BadRequest(new { message = "El motivo no puede pasar de 500 caracteres." });
+        return await taxDocuments.ReverseAsync(id, reason, request.NotIssued, UserId, ct) is TaxDocumentReversalResult result ? Ok(result) : NotFound();
     }
 
     [HttpGet("expenses")]
@@ -1015,7 +1025,7 @@ public sealed partial class AdminController(RtresDbContext db, PayPalCheckoutSer
     /// <summary>Precios sin IGV; <c>nextChargeTotal</c> es lo que se cobra, con el IGV de <paramref name="igvRate"/> (Perú + Factura).</summary>
     private static object ClientProductDto(ClientProduct x, decimal igvRate) => new { igvRate, nextChargeTotal = x.NextChargeTotal(igvRate), id = x.Id, clientId = x.ClientId, projectId = x.ProjectId, projectName = x.Project?.Name, productId = x.ProductId, productName = x.Product?.Name, productType = x.Product?.Type.ToString(), currency = x.Product?.Currency ?? "USD", billingCycle = x.BillingCycle.ToString(), isManualBilling = x.IsManualBilling, status = x.Status.ToString(), price = x.Price, listPrice = x.ListPrice(), discount = x.Discount, discountEndsAt = x.DiscountEndsAt == ClientProductPricing.NoEnd ? null : x.DiscountEndsAt, currentPrice = x.CurrentPrice(DateTime.UtcNow), nextChargePrice = x.NextChargePrice(), domainName = x.DomainName, priceLabelOverride = x.PriceLabelOverride, renewsAt = x.RenewsAt, nextChargeAt = x.NextChargeAt };
     /// <summary>Comprobante con sus importes en soles al tipo de cambio <paramref name="rateToPen"/> (1 si ya está en PEN).</summary>
-    private static object TaxDocumentDto(TaxDocument x, decimal rateToPen, IEnumerable<TaxDocumentLine> lines) => new { lines = lines.Select(l => new { clientProductId = l.ClientProductId, description = l.Description, amount = l.Amount }).ToList(), id = x.Id, paymentTransactionId = x.PaymentTransactionId, clientId = x.ClientId, type = x.Type.ToString(), series = x.Series, number = x.Number, issueDate = x.IssueDate, currency = x.Currency, baseAmount = x.BaseAmount, igvAmount = x.IgvAmount, totalAmount = x.TotalAmount, notes = x.Notes, retentionAmount = x.RetentionAmount,
+    private static object TaxDocumentDto(TaxDocument x, decimal rateToPen, IEnumerable<TaxDocumentLine> lines, string? paymentMethod) => new { paymentMethod, lines = lines.Select(l => new { clientProductId = l.ClientProductId, description = l.Description, amount = l.Amount }).ToList(), id = x.Id, paymentTransactionId = x.PaymentTransactionId, clientId = x.ClientId, type = x.Type.ToString(), series = x.Series, number = x.Number, issueDate = x.IssueDate, currency = x.Currency, baseAmount = x.BaseAmount, igvAmount = x.IgvAmount, totalAmount = x.TotalAmount, notes = x.Notes, retentionAmount = x.RetentionAmount,
         exchangeRate = x.Currency == "PEN" ? 1m : Math.Round(rateToPen, 3), basePen = Math.Round(x.BaseAmount * rateToPen, 2), igvPen = Math.Round(x.IgvAmount * rateToPen, 2), totalPen = Math.Round(x.TotalAmount * rateToPen, 2) };
     /// <summary>Servicio de no domiciliado: el proveedor del exterior se guarda solo si el gasto está marcado (lo pide el 1662).</summary>
     private static void ApplyForeignService(Expense expense, bool foreign, string? name, string? country)
@@ -1050,6 +1060,7 @@ public sealed record TaxSettingsRequest(decimal? IgvRate, decimal? RentaRate, st
 /// <summary>Varios productos van en <c>Items</c>; <c>ClientProductId</c> + <c>TotalAmount</c> se mantienen para emitir con uno solo.</summary>
 public sealed record TaxDocumentRequest(Guid? ClientProductId, DateOnly IssueDate, string Currency, decimal TotalAmount, string? Notes, decimal? RetentionAmount = null, IReadOnlyList<TaxDocumentItemRequest>? Items = null);
 public sealed record TaxDocumentItemRequest(Guid ClientProductId, decimal Amount);
+public sealed record ReverseTaxDocumentRequest(string? Reason, bool NotIssued);
 public sealed record ExpenseRequest(string Description, Guid CategoryId, ExpenseType Type, decimal Amount, string Currency, DateOnly Date, bool Recurring, BillingCycle? RecurrenceCycle, bool IsNonDeductible = false, bool IsNonDomiciledService = false, string? ForeignSupplierName = null, string? ForeignSupplierCountry = null);
 public sealed record EndRecurrenceRequest(DateOnly EndsAt);
 public sealed record ExpensePatchRequest(string? Description, Guid? CategoryId, ExpenseType? Type, decimal? Amount, string? Currency, DateOnly? Date, bool? Recurring, BillingCycle? RecurrenceCycle, bool? IsNonDeductible = null, bool? IsNonDomiciledService = null, string? ForeignSupplierName = null, string? ForeignSupplierCountry = null);

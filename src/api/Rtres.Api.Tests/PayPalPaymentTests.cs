@@ -272,9 +272,11 @@ public class PayPalPaymentTests
         await checkout.StartAsync(new ClientProduct { BillingCycle = BillingCycle.Mensual, Discount = 20 }, product, local, CancellationToken.None);
         Assert.Equal(("PLAN-1", 2), (product.PayPalPlanId, payPal.PlansCreated)); // descuento → plan propio, el del producto no cambia
         Assert.Equal((90m, (decimal?)70m), payPal.Plans[^1]); // solo el primer mes rebajado, luego precio de catálogo
+        await checkout.StartAsync(new ClientProduct { BillingCycle = BillingCycle.Mensual, Discount = -20 }, product, local, CancellationToken.None);
+        Assert.Equal((90m, (decimal?)110m), payPal.Plans[^1]); // recargo: solo el primer mes más caro
         product.BasePrice = 95;
         await checkout.StartAsync(new ClientProduct { BillingCycle = BillingCycle.Mensual }, product, local, CancellationToken.None);
-        Assert.Equal(("PLAN-3", 95m), (product.PayPalPlanId, product.PayPalPlanPrice)); // cambió el precio base → plan nuevo
+        Assert.Equal(("PLAN-4", 95m), (product.PayPalPlanId, product.PayPalPlanPrice)); // cambió el precio base → plan nuevo
 
         await Assert.ThrowsAsync<InvalidOperationException>(() => checkout.StartAsync(new ClientProduct { BillingCycle = BillingCycle.Mensual, Discount = 95 }, product, local, CancellationToken.None));
     }

@@ -147,6 +147,16 @@ public sealed class ExchangeRate { public Guid Id { get; set; } = Guid.NewGuid()
 public sealed class TaxDocument { public Guid Id { get; set; } = Guid.NewGuid(); public Guid? PaymentTransactionId { get; set; } public Guid ClientId { get; set; } public TaxDocumentType Type { get; set; } public string Series { get; set; } = string.Empty; public int Number { get; set; } public DateOnly IssueDate { get; set; } public string Currency { get; set; } = "PEN"; public decimal BaseAmount { get; set; } public decimal IgvAmount { get; set; } public decimal TotalAmount { get; set; } public string? Notes { get; set; } /// <summary>Retención de Renta que hizo el cliente (Recibo por honorarios, 8 %): impuesto ya pagado, en la moneda del documento.</summary>
     public decimal? RetentionAmount { get; set; } }
 
+/// <summary>
+/// Constancia de un extorno: un pago y/o comprobante registrados por error se eliminan y aquí queda qué se borró, por qué y
+/// quién lo hizo. Además evita que PayPal (webhook o conciliación) vuelva a crear un cobro extornado: ver <see cref="PaymentKey"/>.
+/// </summary>
+public sealed class PaymentReversal { public Guid Id { get; set; } = Guid.NewGuid(); public Guid ClientId { get; set; } public Guid? ClientProductId { get; set; } /// <summary>Identificador del cobro eliminado; null si el comprobante no tenía cobro.</summary>
+    public string? PaymentKey { get; set; } public string? Method { get; set; } public string? InternalCode { get; set; } public decimal Amount { get; set; } public string Currency { get; set; } = "PEN"; public decimal? AmountPen { get; set; } public DateTime? PaidAt { get; set; }
+    public TaxDocumentType DocumentType { get; set; } public string Series { get; set; } = string.Empty; public int Number { get; set; } public DateOnly IssueDate { get; set; }
+    public string Reason { get; set; } = string.Empty; /// <summary>El usuario indicó que el comprobante no llegó a emitirse en SUNAT.</summary>
+    public bool NotIssued { get; set; } public bool NumberReleased { get; set; } public Guid? ReversedByUserId { get; set; } public DateTime ReversedAt { get; set; } = DateTime.UtcNow; }
+
 /// <summary>Producto del cliente incluido en un comprobante. <see cref="Amount"/> es lo cobrado por esa línea en la moneda del documento (con IGV en facturas).</summary>
 public sealed class TaxDocumentLine { public Guid Id { get; set; } = Guid.NewGuid(); public Guid TaxDocumentId { get; set; } public Guid? ClientProductId { get; set; } public string Description { get; set; } = string.Empty; public decimal Amount { get; set; } public int Order { get; set; } }
 

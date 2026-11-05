@@ -36,6 +36,7 @@ export interface ClientProductApiDto {
   nextChargeAt: string | null;
   lastBackupAt: string | null;
   price: number | null;
+  /** Negativo = recargo. */
   discount?: number | null;
   discountEndsAt?: string | null;
   /** IGV que se suma a este producto (0 si no aplica): los precios son sin IGV. */
@@ -122,7 +123,8 @@ export interface TaxDocumentRequest { issueDate:string; currency:string; notes:s
 export interface TaxDocumentLineDto { clientProductId:string|null; description:string; amount:number; }
 export interface ExchangeRateDto { date:string; currencyCode:string; rateToPen:number; source:string; }
 export type TaxDocumentType = 'Factura'|'ReciboPorHonorarios';
-export interface TaxDocumentDto { id:string; paymentTransactionId:string|null; clientId:string; lines:TaxDocumentLineDto[]; type:TaxDocumentType; series:string; number:number; issueDate:string; currency:string; baseAmount:number; igvAmount:number; totalAmount:number; notes:string|null;
+export interface TaxDocumentReversalDto { numberReleased:boolean; paymentMethod:string|null; productStatus:string|null; renewsAt:string|null; nextChargeAt:string|null; }
+export interface TaxDocumentDto { id:string; paymentTransactionId:string|null; paymentMethod:string|null; clientId:string; lines:TaxDocumentLineDto[]; type:TaxDocumentType; series:string; number:number; issueDate:string; currency:string; baseAmount:number; igvAmount:number; totalAmount:number; notes:string|null;
   /** Tipo de cambio a soles del cobro (1 en PEN) y los importes convertidos con él: los mismos que usan los reportes de impuestos. */
   exchangeRate:number; basePen:number; igvPen:number; totalPen:number; }
 /** Video de la página Recursos del sitio. language null = los tres idiomas. */
@@ -251,6 +253,7 @@ export class PortalApiService {
   syncExchangeRates() { return this.http.post<ExchangeRateDto[]>(`${this.base}/admin/exchange-rates/sync`,{}); }
   getExchangeRates() { return this.http.get<ExchangeRateDto[]>(`${this.base}/admin/exchange-rates`); }
   getTaxDocuments(params:{clientId?:string;month?:number;year?:number}={}) { return this.http.get<TaxDocumentDto[]>(`${this.base}/admin/tax-documents${query(params)}`); }
+  reverseTaxDocument(id:string,body:{reason:string;notIssued:boolean}) { return this.http.post<TaxDocumentReversalDto>(`${this.base}/admin/tax-documents/${id}/reverse`,body); }
   createTaxDocument(body:TaxDocumentRequest) { return this.http.post<TaxDocumentDto>(`${this.base}/admin/tax-documents`,body); }
   getLearningVideos() { return this.http.get<LearningVideoDto[]>(`${this.base}/admin/learning-videos`); }
   saveLearningVideo(id:string|null, body:LearningVideoRequest) { return id ? this.http.put<LearningVideoDto>(`${this.base}/admin/learning-videos/${id}`,body) : this.http.post<LearningVideoDto>(`${this.base}/admin/learning-videos`,body); }
