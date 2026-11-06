@@ -1854,6 +1854,90 @@
         <source>Cookies</source>
         <target>Cookie</target>
       </trans-unit>
+      <trans-unit id="home.nav.blog" datatype="html">
+        <source>Blog</source>
+        <target>Blog</target>
+      </trans-unit>
+      <trans-unit id="blog.label" datatype="html">
+        <source>BLOG</source>
+        <target>BLOG</target>
+      </trans-unit>
+      <trans-unit id="blog.title" datatype="html">
+        <source>Ideas para<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br&gt;"/>construir mejor.</source>
+        <target>Idee per<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br&gt;"/>costruire meglio.</target>
+      </trans-unit>
+      <trans-unit id="blog.lead" datatype="html">
+        <source>Lo que aprendemos desarrollando software, integrando sistemas y manteniendo sitios en producción, contado sin rodeos.</source>
+        <target>Quello che impariamo sviluppando software, integrando sistemi e mantenendo siti in produzione, raccontato senza giri di parole.</target>
+      </trans-unit>
+      <trans-unit id="blog.loading" datatype="html">
+        <source>Cargando artículos…</source>
+        <target>Caricamento degli articoli…</target>
+      </trans-unit>
+      <trans-unit id="blog.error" datatype="html">
+        <source>No pudimos cargar los artículos. Vuelve a intentarlo en unos minutos.</source>
+        <target>Non siamo riusciti a caricare gli articoli. Riprova tra qualche minuto.</target>
+      </trans-unit>
+      <trans-unit id="blog.empty" datatype="html">
+        <source>Muy pronto publicaremos aquí nuestros primeros artículos.</source>
+        <target>Molto presto pubblicheremo qui i nostri primi articoli.</target>
+      </trans-unit>
+      <trans-unit id="blog.latest" datatype="html">
+        <source>Lo último</source>
+        <target>Ultimo articolo</target>
+      </trans-unit>
+      <trans-unit id="blog.read" datatype="html">
+        <source>Leer artículo</source>
+        <target>Leggi l'articolo</target>
+      </trans-unit>
+      <trans-unit id="blog.filter" datatype="html">
+        <source>Filtrar por tema</source>
+        <target>Filtra per argomento</target>
+      </trans-unit>
+      <trans-unit id="blog.all" datatype="html">
+        <source>Todos</source>
+        <target>Tutti</target>
+      </trans-unit>
+      <trans-unit id="blog.articles" datatype="html">
+        <source>Artículos</source>
+        <target>Articoli</target>
+      </trans-unit>
+      <trans-unit id="blog.more" datatype="html">
+        <source>Ver más artículos</source>
+        <target>Vedi altri articoli</target>
+      </trans-unit>
+      <trans-unit id="blog.cta" datatype="html">
+        <source>¿Tienes un proyecto en mente?</source>
+        <target>Hai un progetto in mente?</target>
+      </trans-unit>
+      <trans-unit id="blog.metaTitle" datatype="html">
+        <source>Blog — Rtres Web Solutions</source>
+        <target>Blog — Rtres Web Solutions</target>
+      </trans-unit>
+      <trans-unit id="blog.meta" datatype="html">
+        <source>Artículos de Rtres sobre software a medida, integración de sistemas, automatización y hosting para empresas.</source>
+        <target>Articoli di Rtres su software su misura, integrazione di sistemi, automazione e hosting per le aziende.</target>
+      </trans-unit>
+      <trans-unit id="blog.readingSuffix" datatype="html">
+        <source>de lectura</source>
+        <target>di lettura</target>
+      </trans-unit>
+      <trans-unit id="blog.next" datatype="html">
+        <source>Sigue leyendo</source>
+        <target>Continua a leggere</target>
+      </trans-unit>
+      <trans-unit id="blog.nextLabel" datatype="html">
+        <source>SIGUE LEYENDO</source>
+        <target>CONTINUA A LEGGERE</target>
+      </trans-unit>
+      <trans-unit id="blog.postError" datatype="html">
+        <source>No pudimos cargar este artículo. Vuelve a intentarlo en unos minutos.</source>
+        <target>Non siamo riusciti a caricare questo articolo. Riprova tra qualche minuto.</target>
+      </trans-unit>
+      <trans-unit id="blog.postLoading" datatype="html">
+        <source>Cargando artículo…</source>
+        <target>Caricamento dell'articolo…</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

@@ -9,8 +9,12 @@ export interface WordPressReview { author: string; quote: string; }
 export interface ContactRequest { name: string; email: string; phone: string; company: string; service: string; message: string; locale: string; page: string; website: string; }
 export interface PublicStats { activeClients: number; }
 export interface PublicVideo { youtubeId: string; title: string; category: string; description: string | null; }
+export interface BlogPostSummary { slug: string; title: string; excerpt: string; tag: string | null; publishedAt: string; readingMinutes: number; coverUrl: string | null; coverAlt: string | null; }
+export interface BlogPost extends BlogPostSummary { html: string; updatedAt: string; related: BlogPostSummary[]; }
 
 const REQUEST_TIMEOUT_MS = 5000;
+/** El blog lee todos los posts del idioma de WordPress cuando vence el caché de la API. */
+const BLOG_TIMEOUT_MS = 20000;
 
 @Injectable({ providedIn: 'root' })
 export class PublicApiService {
@@ -27,6 +31,19 @@ export class PublicApiService {
   /** Videos publicados para la página Recursos (los administra el portal). */
   getVideos(locale: string): Observable<PublicVideo[] | null> {
     return this.safeGet<PublicVideo[] | null>(`${environment.apiBaseUrl}/public/${locale}/videos`, null);
+  }
+
+  /** Posts del idioma, sin el contenido; null si la API no responde. */
+  getBlogPosts(locale: string): Observable<BlogPostSummary[] | null> {
+    return this.http.get<BlogPostSummary[]>(`${environment.apiBaseUrl}/public/${locale}/blog`).pipe(timeout(BLOG_TIMEOUT_MS), catchError(() => of(null)));
+  }
+
+  /** Un post; null si no existe y 'error' si la API no responde (no es lo mismo: solo el primero es un 404). */
+  getBlogPost(locale: string, slug: string): Observable<BlogPost | null | 'error'> {
+    return this.http.get<BlogPost>(`${environment.apiBaseUrl}/public/${locale}/blog/${encodeURIComponent(slug)}`).pipe(
+      timeout(BLOG_TIMEOUT_MS),
+      catchError(error => of(error?.status === 404 ? null : 'error' as const)),
+    );
   }
 
   /** Cifras públicas (clientes activos en el portal); null si la API no responde. */

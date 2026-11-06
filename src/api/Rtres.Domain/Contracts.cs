@@ -3,6 +3,8 @@ namespace Rtres.Domain;
 public record WordPressPage(string Locale, string Slug, string Title, string Html, DateTimeOffset UpdatedAt);
 public record WordPressProject(string Name, string Category, string? PhotoUrl);
 public record WordPressReview(string Author, string Quote);
+/// <summary>Artículo del blog. <c>Html</c> es el contenido de WordPress sin sanear: el sitio lo sanea al mostrarlo.</summary>
+public record WordPressBlogPost(string Slug, string Title, string Excerpt, string Html, string? Tag, DateTimeOffset PublishedAt, DateTimeOffset UpdatedAt, int ReadingMinutes, string? CoverUrl, string? CoverAlt);
 public record PayPalCheckout(string Id, string ApprovalUrl);
 /// <summary>Resultado de capturar una orden aprobada. <c>Status</c> es el de la captura: COMPLETED, PENDING, DECLINED…</summary>
 public record PayPalCapture(string OrderId, string Status, decimal? Amount, string? Currency);
@@ -19,6 +21,8 @@ public interface IWordPressContentClient
     Task<WordPressPage?> GetPageAsync(string locale, string slug, CancellationToken cancellationToken = default);
     Task<IReadOnlyList<WordPressProject>> GetProjectsAsync(string locale, CancellationToken cancellationToken = default);
     Task<IReadOnlyList<WordPressReview>> GetReviewsAsync(string locale, CancellationToken cancellationToken = default);
+    /// <summary>Artículos publicados del idioma, del más reciente al más antiguo. Lanza <see cref="HttpRequestException"/> si WordPress falla y no hay una copia anterior.</summary>
+    Task<IReadOnlyList<WordPressBlogPost>> GetBlogPostsAsync(string locale, CancellationToken cancellationToken = default);
     Task<string?> GetHeroPhotoUrlAsync(CancellationToken cancellationToken = default);
 }
 

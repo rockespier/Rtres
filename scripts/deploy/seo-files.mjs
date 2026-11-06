@@ -5,7 +5,7 @@
 //   - favicon.ico (copiado de scripts/deploy).
 // La página 404 de cada idioma la elige site.htaccess.
 // Uso: node scripts/deploy/seo-files.mjs <ruta a dist/site/browser>
-import { copyFileSync, existsSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
+import { copyFileSync, existsSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -17,12 +17,25 @@ if (!root || !existsSync(join(root, 'es', 'index.html'))) {
   process.exit(1);
 }
 
-/** Páginas prerenderizadas (index.html) de un idioma, sin la 404 ni los assets. */
+/**
+ * Angular prerenderiza cada post en los 3 idiomas, pero cada idioma tiene los suyos: las páginas que salieron como 404
+ * (noindex) se borran. Lo mismo si la API falló en el build: esa URL la atenderá la página base (site.htaccess).
+ */
+for (const locale of LOCALES) {
+  const blog = join(root, locale, 'blog');
+  if (!existsSync(blog)) continue;
+  for (const name of readdirSync(blog)) {
+    const file = join(blog, name, 'index.html');
+    if (name !== '_post' && existsSync(file) && /<meta name="robots" content="[^"]*noindex/.test(readFileSync(file, 'utf8'))) rmSync(join(blog, name), { recursive: true });
+  }
+}
+
+/** Páginas prerenderizadas (index.html) de un idioma, sin la 404, la página base del blog ni los assets. */
 function pages(dir) {
   const found = existsSync(join(dir, 'index.html')) ? [join(dir, 'index.html')] : [];
   for (const name of readdirSync(dir)) {
     const full = join(dir, name);
-    if (statSync(full).isDirectory() && name !== 'assets' && name !== '404') found.push(...pages(full));
+    if (statSync(full).isDirectory() && name !== 'assets' && name !== '404' && name !== '_post') found.push(...pages(full));
   }
   return found;
 }

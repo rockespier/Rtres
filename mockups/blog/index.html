@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Blog — Rtres Web Solutions</title>
+<link rel="stylesheet" href="assets/blog.css">
+</head>
+<body>
+<div class="top">
+  <header>
+    <a class="logo" href="index.html"><img src="assets/logo-rtres.png" alt="Rtres — inicio"></a>
+    <nav aria-label="Principal">
+      <a href="#">Soluciones ▾</a><a href="#">Casos de éxito ▾</a><a href="#">Nosotros</a><a href="#">Recursos</a><a class="active" href="index.html">Blog</a>
+    </nav>
+    <div><a class="v2-btn-lime" href="#">Hablemos de tu proyecto</a><button class="burger" type="button" aria-label="Menú" aria-expanded="false" aria-controls="mobile"><i></i><i></i><i></i></button></div>
+  </header>
+  <div class="mobile" id="mobile"><a href="#">Soluciones</a><a href="#">Casos de éxito</a><a href="#">Nosotros</a><a href="#">Recursos</a><a href="index.html">Blog</a></div>
+</div>
+
+<main>
+  <section class="hero">
+    <div>
+      <p class="v2-label">BLOG</p>
+      <h1 class="v2-display">Ideas para<br>construir mejor.</h1>
+    </div>
+    <p class="lead">Lo que aprendemos desarrollando software, integrando sistemas y manteniendo sitios en producción, contado sin rodeos.</p>
+  </section>
+
+  <a class="lead-post" href="post.html" data-cat="Software">
+    <div class="photo"><img src="assets/integration-servers.jpg" alt=""></div>
+    <div class="txt">
+      <span class="badge">Lo último</span>
+      <p class="meta">Software · 4 nov 2026 · 7 min</p>
+      <h2>Cuándo conviene software a medida y cuándo no</h2>
+      <p class="ex">Cinco preguntas para decidir antes de gastar en desarrollo, y las señales de que un producto del mercado te basta.</p>
+      <span class="read">Leer artículo →</span>
+    </div>
+  </a>
+
+  <div class="filters" role="group" aria-label="Filtrar por tema">
+    <button type="button" class="on" aria-pressed="true" data-f="">Todos</button>
+    <button type="button" aria-pressed="false" data-f="Software">Software</button>
+    <button type="button" aria-pressed="false" data-f="Hosting">Hosting</button>
+    <button type="button" aria-pressed="false" data-f="Automatización">Automatización</button>
+  </div>
+
+  <section class="index" aria-label="Artículos">
+    <a class="row" href="post.html" data-cat="Hosting">
+      <span class="n">01</span>
+      <div><p class="meta">Hosting · 28 oct 2026 · 5 min</p><h3>Qué revisar antes de renovar tu hosting</h3><p class="ex">Copias, certificados, soporte y límites reales: la lista que usamos con nuestros clientes.</p></div>
+      <div class="photo"><img src="assets/hosting-servers.jpg" alt=""></div>
+    </a>
+    <a class="row" href="post.html" data-cat="Automatización">
+      <span class="n">02</span>
+      <div><p class="meta">Automatización · 15 oct 2026 · 6 min</p><h3>Tres procesos que puedes dejar de hacer a mano este mes</h3><p class="ex">Facturas, recordatorios y reportes: por dónde empezar sin cambiar todos tus sistemas.</p></div>
+      <div class="photo"><img src="assets/contact-team.jpg" alt=""></div>
+    </a>
+    <a class="row" href="post.html" data-cat="Software">
+      <span class="n">03</span>
+      <div><p class="meta">Software · 2 oct 2026 · 4 min</p><h3>App móvil o web app: cómo elegir para tu negocio</h3><p class="ex">Costos, mantenimiento y alcance. Una comparación honesta para empresas pequeñas.</p></div>
+      <div class="photo"><img src="assets/apps-phone.jpg" alt=""></div>
+    </a>
+    <button class="more" type="button">Ver más artículos</button>
+  </section>
+
+  <section class="closing"><h2>¿Tienes un proyecto en mente?</h2><a href="#">Pedir una propuesta</a></section>
+</main>
+
+<footer>
+  <div><img src="assets/logo-rtres.png" alt="Rtres"><p>Profesionales en soluciones web.</p></div>
+  <div><b>Empresa</b><a href="#">Nosotros</a><a href="#">Recursos</a><a href="index.html">Blog</a></div>
+  <div><b>Contacto</b><a href="#">info@rtres.net</a><a href="#">WhatsApp ↗</a></div>
+</footer>
+
+<script>
+  const burger = document.querySelector('.burger'), mobile = document.getElementById('mobile');
+  burger.onclick = () => burger.setAttribute('aria-expanded', mobile.classList.toggle('open'));
+  document.querySelectorAll('.filters button').forEach(b => b.onclick = () => {
+    document.querySelectorAll('.filters button').forEach(x => { x.classList.toggle('on', x === b); x.setAttribute('aria-pressed', x === b); });
+    document.querySelectorAll('.row').forEach(r => r.style.display = (!b.dataset.f || r.dataset.cat === b.dataset.f) ? '' : 'none');
+  });
+</script>
+</body>
+</html>

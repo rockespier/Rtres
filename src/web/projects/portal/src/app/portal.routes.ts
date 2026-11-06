@@ -25,6 +25,7 @@ export const portalRoutes: Routes=[
       {path:'clients/:id',component:AdminClientDetailComponent},
       {path:'products',component:AdminProductsComponent},
       {path:'tickets',component:AdminTicketsComponent},
+      {path:'tickets/:id',component:TicketDetailComponent,data:{inbox:true}},
       {path:'reports',component:ReportsComponent},
       {path:'tax-documents',component:TaxDocumentsComponent},
       {path:'expenses',component:ExpensesComponent},

@@ -1854,6 +1854,90 @@
         <source>Cookies</source>
         <target>Cookies</target>
       </trans-unit>
+      <trans-unit id="home.nav.blog" datatype="html">
+        <source>Blog</source>
+        <target>Blog</target>
+      </trans-unit>
+      <trans-unit id="blog.label" datatype="html">
+        <source>BLOG</source>
+        <target>BLOG</target>
+      </trans-unit>
+      <trans-unit id="blog.title" datatype="html">
+        <source>Ideas para<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br&gt;"/>construir mejor.</source>
+        <target>Ideas for<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br&gt;"/>building better.</target>
+      </trans-unit>
+      <trans-unit id="blog.lead" datatype="html">
+        <source>Lo que aprendemos desarrollando software, integrando sistemas y manteniendo sitios en producción, contado sin rodeos.</source>
+        <target>What we learn building software, integrating systems and keeping sites in production, told plainly.</target>
+      </trans-unit>
+      <trans-unit id="blog.loading" datatype="html">
+        <source>Cargando artículos…</source>
+        <target>Loading articles…</target>
+      </trans-unit>
+      <trans-unit id="blog.error" datatype="html">
+        <source>No pudimos cargar los artículos. Vuelve a intentarlo en unos minutos.</source>
+        <target>We couldn't load the articles. Please try again in a few minutes.</target>
+      </trans-unit>
+      <trans-unit id="blog.empty" datatype="html">
+        <source>Muy pronto publicaremos aquí nuestros primeros artículos.</source>
+        <target>We'll publish our first articles here very soon.</target>
+      </trans-unit>
+      <trans-unit id="blog.latest" datatype="html">
+        <source>Lo último</source>
+        <target>Latest</target>
+      </trans-unit>
+      <trans-unit id="blog.read" datatype="html">
+        <source>Leer artículo</source>
+        <target>Read article</target>
+      </trans-unit>
+      <trans-unit id="blog.filter" datatype="html">
+        <source>Filtrar por tema</source>
+        <target>Filter by topic</target>
+      </trans-unit>
+      <trans-unit id="blog.all" datatype="html">
+        <source>Todos</source>
+        <target>All</target>
+      </trans-unit>
+      <trans-unit id="blog.articles" datatype="html">
+        <source>Artículos</source>
+        <target>Articles</target>
+      </trans-unit>
+      <trans-unit id="blog.more" datatype="html">
+        <source>Ver más artículos</source>
+        <target>See more articles</target>
+      </trans-unit>
+      <trans-unit id="blog.cta" datatype="html">
+        <source>¿Tienes un proyecto en mente?</source>
+        <target>Have a project in mind?</target>
+      </trans-unit>
+      <trans-unit id="blog.metaTitle" datatype="html">
+        <source>Blog — Rtres Web Solutions</source>
+        <target>Blog — Rtres Web Solutions</target>
+      </trans-unit>
+      <trans-unit id="blog.meta" datatype="html">
+        <source>Artículos de Rtres sobre software a medida, integración de sistemas, automatización y hosting para empresas.</source>
+        <target>Rtres articles on custom software, systems integration, automation and hosting for businesses.</target>
+      </trans-unit>
+      <trans-unit id="blog.readingSuffix" datatype="html">
+        <source>de lectura</source>
+        <target>read</target>
+      </trans-unit>
+      <trans-unit id="blog.next" datatype="html">
+        <source>Sigue leyendo</source>
+        <target>Keep reading</target>
+      </trans-unit>
+      <trans-unit id="blog.nextLabel" datatype="html">
+        <source>SIGUE LEYENDO</source>
+        <target>KEEP READING</target>
+      </trans-unit>
+      <trans-unit id="blog.postError" datatype="html">
+        <source>No pudimos cargar este artículo. Vuelve a intentarlo en unos minutos.</source>
+        <target>We couldn't load this article. Please try again in a few minutes.</target>
+      </trans-unit>
+      <trans-unit id="blog.postLoading" datatype="html">
+        <source>Cargando artículo…</source>
+        <target>Loading article…</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

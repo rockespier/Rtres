@@ -22,6 +22,7 @@ export const PAGE_PATHS = {
   'case:alas-global-tour': { es: 'casos/alas-global-tour', en: 'case-studies/alas-global-tour', it: 'casi-di-successo/alas-global-tour' },
   about: { es: 'nosotros', en: 'about', it: 'chi-siamo' },
   resources: { es: 'recursos', en: 'resources', it: 'risorse' },
+  blog: { es: 'blog', en: 'blog', it: 'blog' },
   contact: { es: 'contacto', en: 'contact', it: 'contatti' },
 } satisfies Record<string, Record<Locale, string>>;
 
@@ -31,16 +32,22 @@ export type PageId = keyof typeof PAGE_PATHS;
 export const pagePath = (id: PageId) => '/' + PAGE_PATHS[id][LOCALE];
 export const servicePath = (slug: string) => pagePath(`service:${slug}` as PageId);
 export const casePath = (slug: string) => pagePath(`case:${slug}` as PageId);
+export const blogPostPath = (slug: string) => `${pagePath('blog')}/${slug}`;
+
+/** Página base de los posts que aún no tienen HTML propio: site.htaccess la sirve hasta el siguiente deploy. */
+export const BLOG_SHELL_SLUG = '_post';
 
 /** Accesos directos para las plantillas. */
-export const PATHS = { about: pagePath('about'), resources: pagePath('resources'), contact: pagePath('contact') };
+export const PATHS = { about: pagePath('about'), resources: pagePath('resources'), blog: pagePath('blog'), contact: pagePath('contact') };
 
 /**
  * La misma página en otro idioma: "/services/custom-software" (en) → "/servicios/software-a-medida" (es). Las rutas que
- * no están en la tabla (el home, la 404) son iguales en todos los idiomas.
+ * no están en la tabla (el home, la 404) son iguales en todos los idiomas. Cada idioma tiene sus propios posts: desde un
+ * post se va a la lista del blog del otro idioma.
  */
 export function translatePath(path: string, to: Locale, from: Locale = LOCALE) {
   const clean = path.replace(/^\/+|\/+$/g, '');
+  if (clean.startsWith(`${PAGE_PATHS.blog[from]}/`)) return `/${PAGE_PATHS.blog[to]}`;
   const entry = Object.values(PAGE_PATHS).find(p => p[from] === clean);
   return '/' + (entry ? entry[to] : clean);
 }

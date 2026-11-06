@@ -67,7 +67,11 @@
                   "with": "projects/site/src/environments/environment.production.ts"
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "prerender": {
+                "discoverRoutes": true,
+                "routesFile": "projects/site/prerender-routes.generated.txt"
+              }
             }
           }
         },
