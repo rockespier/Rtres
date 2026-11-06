@@ -87,6 +87,8 @@ try {
     }
     # production: apiBaseUrl = https://api.rtres.net/api y bundles con hash. El prerender del site lee WordPress
     # a traves de esa API, asi que api.rtres.net debe estar en linea al compilar.
+    # Posts del blog a prerenderizar: lee la API de produccion (si no responde, el build sigue sin ellos).
+    Invoke-Checked { node (Join-Path $deployTemplates 'blog-routes.mjs') (Join-Path $webRoot 'projects\site\prerender-routes.generated.txt') } 'Listando posts del blog'
     Invoke-Checked { npx ng build site --configuration production } 'Compilando site (prerender es/en/it)'
     Invoke-Checked { npx ng build portal --configuration production } 'Compilando portal'
 }

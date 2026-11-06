@@ -75,7 +75,14 @@ Uso en el servidor (PowerShell 7 como administrador)
   Si el deploy trae migraciones nuevas, ejecuta publish\migrations.sql antes. Después sube publish\site.zip al Linux.
   
   .\scripts\Deploy-Local.ps1 `
-    -ApiDestination "C:\inetpub\rtres\api" `
-    -PortalDestination "C:\inetpub\rtres\portal" `
-    -ApiAppPool "api.rtres.net" -PortalAppPool "portal.rtres.net" `
+    -ApiDestination "x" `
+    -PortalDestination "x" `
+    -ApiAppPool "x" -PortalAppPool "x" `
     -SkipNpmCi
+	
+	.\scripts\Deploy-Stage.ps1 `
+    -StageComputerName "x" `
+    -ApiDestination "x" `
+    -FrontendDestination "x" `
+    -PackageOnly `
+	-SkipNpmCi

@@ -2,19 +2,21 @@ import { DOCUMENT } from '@angular/common';
 import { Injectable, LOCALE_ID, inject } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs';
-import { Locale, translatePath } from './site-paths';
+import { BLOG_SHELL_SLUG, Locale, translatePath } from './site-paths';
 
 export const SITE_URL = 'https://rtres.net';
 export const SITE_LOCALES = ['es', 'en', 'it'] as const;
 const OG_LOCALES: Record<string, string> = { es: 'es_PE', en: 'en_US', it: 'it_IT' };
 const HOME_LABEL: Record<string, string> = { es: 'Inicio', en: 'Home', it: 'Home' };
 
+export interface ArticleSeo { headline: string; image: string | null; datePublished: string; dateModified: string; }
+
 /**
  * Etiquetas SEO que dependen de la URL, en cada navegación (también en el prerender):
  * - canonical absoluto: sin "/" final, salvo el home de cada idioma (/es/);
  * - alternates hreflang es/en/it y x-default (español);
  * - Open Graph y Twitter con el título y la descripción que fijó la página;
- * - JSON-LD: Organization en todo el sitio y BreadcrumbList en las páginas internas.
+ * - JSON-LD: Organization en todo el sitio, BreadcrumbList en las páginas internas y BlogPosting en los posts.
  */
 @Injectable({ providedIn: 'root' })
 export class SeoService {
@@ -25,6 +27,10 @@ export class SeoService {
   /** Preguntas frecuentes de la página actual (FAQPage); la página las fija en ngOnInit y valen solo para esa navegación. */
   private faq: { q: string; a: string }[] | null = null;
   setFaq(items: { q: string; a: string }[]) { this.faq = items; }
+
+  /** Post del blog en pantalla. Los datos llegan después de la navegación: la página llama a update() al tenerlos. */
+  private article: ArticleSeo | null = null;
+  setArticle(article: ArticleSeo | null) { this.article = article; }
 
   init() {
     // Las páginas fijan título y description en ngOnInit: se leen después de que la vista nueva se haya creado.
@@ -51,23 +57,35 @@ export class SeoService {
 
     // Una página noindex (404) no declara canonical ni versiones en otros idiomas.
     const noindex = !!head.querySelector('meta[name="robots"][content*="noindex"]');
-    if (noindex) head.querySelectorAll('link[rel="canonical"], link[rel="alternate"][hreflang]').forEach(el => el.remove());
+    // La página base del blog la sirve el .htaccess bajo la URL de un post: su canonical lo pone el post al cargar.
+    const shell = path.endsWith(`/${BLOG_SHELL_SLUG}`);
+    const article = noindex ? null : this.article;
+    const alternates = 'link[rel="alternate"][hreflang]';
+    if (noindex || shell) head.querySelectorAll(`link[rel="canonical"], ${alternates}`).forEach(el => el.remove());
     else {
       this.link('canonical', canonical);
-      for (const l of SITE_LOCALES) this.link('alternate', this.alternate(l, path), l);
-      this.link('alternate', this.alternate('es', path), 'x-default');
+      // Los posts no están vinculados entre idiomas: cada uno solo se declara a sí mismo.
+      if (article) head.querySelectorAll(alternates).forEach(el => el.remove());
+      else {
+        for (const l of SITE_LOCALES) this.link('alternate', this.alternate(l, path), l);
+        this.link('alternate', this.alternate('es', path), 'x-default');
+      }
     }
 
     // Una imagen por idioma (texto traducido): se generan con scripts/og/generate-og.mjs.
-    const image = `${SITE_URL}/${this.locale}/assets/og-image-${this.locale}.jpg`;
-    this.meta('property', 'og:type', 'website');
+    const image = article?.image ?? `${SITE_URL}/${this.locale}/assets/og-image-${this.locale}.jpg`;
+    this.meta('property', 'og:type', article ? 'article' : 'website');
     this.meta('property', 'og:site_name', 'Rtres Web Solutions');
     this.meta('property', 'og:title', title);
     this.meta('property', 'og:description', description);
     this.meta('property', 'og:url', canonical);
     this.meta('property', 'og:image', image);
-    this.meta('property', 'og:image:width', '1200');
-    this.meta('property', 'og:image:height', '630');
+    // La portada de un post viene de WordPress con otras medidas.
+    if (article?.image) head.querySelectorAll('meta[property="og:image:width"], meta[property="og:image:height"]').forEach(el => el.remove());
+    else {
+      this.meta('property', 'og:image:width', '1200');
+      this.meta('property', 'og:image:height', '630');
+    }
     this.meta('property', 'og:locale', OG_LOCALES[this.locale] ?? 'es_PE');
     this.meta('name', 'twitter:card', 'summary_large_image');
     this.meta('name', 'twitter:title', title);
@@ -87,12 +105,20 @@ export class SeoService {
       mainEntity: this.faq.map(f => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
     } : null);
     this.faq = null;
-    // Páginas internas: Inicio › página (el nombre es el título sin la marca).
-    this.jsonLd('ld-breadcrumb', path && !noindex ? {
-      '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
-        { '@type': 'ListItem', position: 1, name: HOME_LABEL[this.locale] ?? 'Inicio', item: this.url(this.locale, '') },
-        { '@type': 'ListItem', position: 2, name: title.split(' — ')[0], item: canonical },
-      ],
+    this.jsonLd('ld-article', article ? {
+      '@context': 'https://schema.org', '@type': 'BlogPosting', headline: article.headline, description, image,
+      datePublished: article.datePublished, dateModified: article.dateModified, inLanguage: this.locale, mainEntityOfPage: canonical,
+      author: { '@id': `${SITE_URL}/#organization` }, publisher: { '@id': `${SITE_URL}/#organization` },
+    } : null);
+    // Páginas internas: Inicio › página (el nombre es el título sin la marca); los posts van dentro de Blog.
+    const crumbs = [
+      { name: HOME_LABEL[this.locale] ?? 'Inicio', item: this.url(this.locale, '') },
+      ...(article ? [{ name: 'Blog', item: this.url(this.locale, '/blog') }] : []),
+      { name: article?.headline ?? title.split(' — ')[0], item: canonical },
+    ];
+    this.jsonLd('ld-breadcrumb', path && !noindex && !shell ? {
+      '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+      itemListElement: crumbs.map((crumb, i) => ({ '@type': 'ListItem', position: i + 1, ...crumb })),
     } : null);
   }
 

@@ -25,6 +25,7 @@ import { CookieConsentService } from '../cookie-consent/cookie-consent.service';
         <a [routerLink]="paths.about" i18n="@@home.nav.about">Nosotros</a>
         @for (l of cases; track l.path) {<a [routerLink]="l.path">{{ l.label }}</a>}
         <a [routerLink]="paths.resources" i18n="@@home.nav.resources">Recursos</a>
+        <a [routerLink]="paths.blog" i18n="@@home.nav.blog">Blog</a>
         <a routerLink="/" fragment="portal" i18n="@@home.footer.reviews">Opiniones</a>
       </div>
       <div>

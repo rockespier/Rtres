@@ -189,9 +189,10 @@ export class PortalApiService {
     const q = [`page=${page}`, filters.status ? `status=${filters.status}` : '', filters.type ? `type=${filters.type}` : ''].filter(Boolean).join('&');
     return this.http.get<TicketsPage>(this.scoped(`/tickets?${q}`));
   }
-  getTicket(id: string) { return this.http.get<TicketDetailDto>(this.scoped(`/tickets/${id}`)); }
+  /** <c>inbox</c>: bandeja del SuperAdmin, sin acotar al cliente que esté viendo. */
+  getTicket(id: string, inbox = false) { const path = `/tickets/${id}`; return this.http.get<TicketDetailDto>(inbox ? `${this.base}${path}` : this.scoped(path)); }
   /** Blob (no URL directa): la descarga necesita el header Authorization. */
-  getTicketAttachment(ticketId: string, attachmentId: string) { return this.http.get(this.scoped(`/tickets/${ticketId}/attachments/${attachmentId}`), { responseType: 'blob' }); }
+  getTicketAttachment(ticketId: string, attachmentId: string, inbox = false) { const path = `/tickets/${ticketId}/attachments/${attachmentId}`; return this.http.get(inbox ? `${this.base}${path}` : this.scoped(path), { responseType: 'blob' }); }
   addTicketComment(id: string, body: string) { return this.http.post<TicketCommentDto>(`${this.base}/tickets/${id}/comments`, { body }); }
   /** Multipart: los adjuntos viajan con el ticket para que el issue de GitHub se cree ya con ellos. */
   createTicket(body: CreateTicketRequest, files: File[] = []) {

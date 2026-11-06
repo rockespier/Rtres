@@ -112,6 +112,18 @@ public class NotificationJobTests
         Assert.Equal(2, (int)staff.GetType().GetProperty("unread")!.GetValue(staff)!); // Rtres ve todo, con su propio "leído"
     }
 
+    [Fact]
+    public async Task SuperAdmin_opens_any_ticket_from_the_inbox_but_a_client_only_its_own()
+    {
+        using var db = TestData.Db(out var seed);
+        var id = seed.Ticket.Id;
+
+        Assert.IsType<OkObjectResult>(await Portal(db, seed, "SuperAdmin", null).Ticket(id, null, CancellationToken.None));
+        Assert.IsType<NotFoundResult>(await Portal(db, seed, "SuperAdmin", null).Ticket(id, Guid.NewGuid(), CancellationToken.None)); // con cliente seleccionado, acotado a él
+        Assert.IsType<OkObjectResult>(await Portal(db, seed, "Cliente", seed.Client.Id).Ticket(id, null, CancellationToken.None));
+        Assert.IsType<NotFoundResult>(await Portal(db, seed, "Cliente", Guid.NewGuid()).Ticket(id, seed.Client.Id, CancellationToken.None));
+    }
+
     private static PortalController Portal(RtresDbContext db, Seed seed, string role, Guid? clientId)
     {
         var user = role == "SuperAdmin" ? new UserAccount { Email = "admin@rtres.net", Role = UserRole.SuperAdmin } : seed.User;

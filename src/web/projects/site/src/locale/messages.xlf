@@ -2822,6 +2822,69 @@
           <context context-type="linenumber">78,80</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="home.nav.blog" datatype="html">
+        <source>Blog</source>
+      </trans-unit>
+      <trans-unit id="blog.label" datatype="html">
+        <source>BLOG</source>
+      </trans-unit>
+      <trans-unit id="blog.title" datatype="html">
+        <source>Ideas para<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br&gt;"/>construir mejor.</source>
+      </trans-unit>
+      <trans-unit id="blog.lead" datatype="html">
+        <source>Lo que aprendemos desarrollando software, integrando sistemas y manteniendo sitios en producción, contado sin rodeos.</source>
+      </trans-unit>
+      <trans-unit id="blog.loading" datatype="html">
+        <source>Cargando artículos…</source>
+      </trans-unit>
+      <trans-unit id="blog.error" datatype="html">
+        <source>No pudimos cargar los artículos. Vuelve a intentarlo en unos minutos.</source>
+      </trans-unit>
+      <trans-unit id="blog.empty" datatype="html">
+        <source>Muy pronto publicaremos aquí nuestros primeros artículos.</source>
+      </trans-unit>
+      <trans-unit id="blog.latest" datatype="html">
+        <source>Lo último</source>
+      </trans-unit>
+      <trans-unit id="blog.read" datatype="html">
+        <source>Leer artículo</source>
+      </trans-unit>
+      <trans-unit id="blog.filter" datatype="html">
+        <source>Filtrar por tema</source>
+      </trans-unit>
+      <trans-unit id="blog.all" datatype="html">
+        <source>Todos</source>
+      </trans-unit>
+      <trans-unit id="blog.articles" datatype="html">
+        <source>Artículos</source>
+      </trans-unit>
+      <trans-unit id="blog.more" datatype="html">
+        <source>Ver más artículos</source>
+      </trans-unit>
+      <trans-unit id="blog.cta" datatype="html">
+        <source>¿Tienes un proyecto en mente?</source>
+      </trans-unit>
+      <trans-unit id="blog.metaTitle" datatype="html">
+        <source>Blog — Rtres Web Solutions</source>
+      </trans-unit>
+      <trans-unit id="blog.meta" datatype="html">
+        <source>Artículos de Rtres sobre software a medida, integración de sistemas, automatización y hosting para empresas.</source>
+      </trans-unit>
+      <trans-unit id="blog.readingSuffix" datatype="html">
+        <source>de lectura</source>
+      </trans-unit>
+      <trans-unit id="blog.next" datatype="html">
+        <source>Sigue leyendo</source>
+      </trans-unit>
+      <trans-unit id="blog.nextLabel" datatype="html">
+        <source>SIGUE LEYENDO</source>
+      </trans-unit>
+      <trans-unit id="blog.postError" datatype="html">
+        <source>No pudimos cargar este artículo. Vuelve a intentarlo en unos minutos.</source>
+      </trans-unit>
+      <trans-unit id="blog.postLoading" datatype="html">
+        <source>Cargando artículo…</source>
+      </trans-unit>
     </body>
   </file>
 </xliff>

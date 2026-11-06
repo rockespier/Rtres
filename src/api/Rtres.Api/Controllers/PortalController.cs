@@ -60,8 +60,10 @@ public sealed class PortalController(RtresDbContext db, IBackgroundJobClient job
     [HttpGet("tickets/{id:guid}")]
     public async Task<IActionResult> Ticket(Guid id, Guid? clientId, CancellationToken ct)
     {
-        var error = ResolveClientId(clientId, out var client); if (error is not null) return error;
-        var t = await db.Tickets.SingleOrDefaultAsync(x => x.Id == id && x.ClientId == client, ct); if (t is null) return NotFound();
+        // SuperAdmin sin cliente seleccionado: abre cualquier ticket desde la bandeja de atención.
+        var anyClient = IsSuperAdmin && clientId is null; var client = Guid.Empty;
+        if (!anyClient && ResolveClientId(clientId, out client) is { } error) return error;
+        var t = await db.Tickets.SingleOrDefaultAsync(x => x.Id == id && (anyClient || x.ClientId == client), ct); if (t is null) return NotFound();
         var project = await db.Projects.Include(x => x.Repositories).Where(x => x.Id == t.ProjectId).SingleAsync(ct);
         // El componente solo aporta si el proyecto tiene varios repos; con uno es siempre el mismo.
         var component = project.Repositories.Count > 1 ? project.Repositories.RepositoryFor(t.RepositoryId) is { } r ? r.Label ?? r.Name : null : null;
@@ -74,8 +76,9 @@ public sealed class PortalController(RtresDbContext db, IBackgroundJobClient job
     [HttpGet("tickets/{id:guid}/attachments/{attachmentId:guid}")]
     public async Task<IActionResult> Attachment(Guid id, Guid attachmentId, Guid? clientId, CancellationToken ct)
     {
-        var error = ResolveClientId(clientId, out var client); if (error is not null) return error;
-        var a = await db.TicketAttachments.SingleOrDefaultAsync(x => x.Id == attachmentId && x.TicketId == id && db.Tickets.Any(t => t.Id == id && t.ClientId == client), ct);
+        var anyClient = IsSuperAdmin && clientId is null; var client = Guid.Empty;
+        if (!anyClient && ResolveClientId(clientId, out client) is { } error) return error;
+        var a = await db.TicketAttachments.SingleOrDefaultAsync(x => x.Id == attachmentId && x.TicketId == id && db.Tickets.Any(t => t.Id == id && (anyClient || t.ClientId == client)), ct);
         return a is null ? NotFound() : File(a.Content, a.ContentType, a.FileName);
     }
     [HttpPost("tickets/{id:guid}/comments")]

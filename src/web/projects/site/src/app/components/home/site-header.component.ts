@@ -28,6 +28,7 @@ type Menu = 'services' | 'cases' | null;
         </div>
         <a [routerLink]="paths.about" routerLinkActive="active" i18n="@@home.nav.about">Nosotros</a>
         <a [routerLink]="paths.resources" routerLinkActive="active" i18n="@@home.nav.resources">Recursos</a>
+        <a [routerLink]="paths.blog" routerLinkActive="active" i18n="@@home.nav.blog">Blog</a>
       </nav>
 
       <div class="actions">
@@ -48,6 +49,7 @@ type Menu = 'services' | 'cases' | null;
         <hr>
         <a [routerLink]="paths.about" (click)="closeAll()" i18n="@@home.nav.about">Nosotros</a>
         <a [routerLink]="paths.resources" (click)="closeAll()" i18n="@@home.nav.resources">Recursos</a>
+        <a [routerLink]="paths.blog" (click)="closeAll()" i18n="@@home.nav.blog">Blog</a>
         <a class="v2-btn-lime cta" [routerLink]="paths.contact" (click)="closeAll()" i18n="@@home.cta.talk">Hablemos de tu proyecto</a>
         <a class="v2-btn-outline cta-portal" routerLink="/" fragment="portal" (click)="closeAll()" i18n="@@home.cta.portal">Portal de asistencia</a>
         <div class="langs"><app-lang-links separator=" · " /></div>
@@ -63,7 +65,7 @@ type Menu = 'services' | 'cases' | null;
     .logo img{width:120px;transition:width .2s}
     :host(.scrolled) .logo img{width:96px}
     nav{display:flex;justify-content:center;align-items:center;gap:30px;font-size:14px}
-    nav>a,.dd>button{padding:8px 0;border-bottom:2px solid transparent;background:none;font:inherit;color:inherit;cursor:pointer}
+    nav>a,.dd>button{white-space:nowrap;padding:8px 0;border-bottom:2px solid transparent;background:none;font:inherit;color:inherit;cursor:pointer}
     nav>a.active,nav>a:hover,.dd>button:hover,.dd>button[aria-expanded=true]{border-color:var(--v2-lime)}
     .dd{position:relative}
     .dd ul{position:absolute;top:100%;left:-18px;min-width:260px;margin:0;padding:10px 0;list-style:none;background:#fff;border:1px solid var(--v2-line);box-shadow:0 18px 40px -24px rgba(0,0,0,.35)}
@@ -83,7 +85,8 @@ type Menu = 'services' | 'cases' | null;
     .mobile .cta-portal{margin-top:10px;text-align:center;font-size:16px}
     .mobile .langs{margin-top:16px;font-size:12px;letter-spacing:.12em}
     .mobile .langs ::ng-deep a{padding:0;font-size:12px}
-    @media(max-width:850px){
+    /* Con 5 enlaces, el menú completo necesita unos 1180px: por debajo pasa al panel, que ya incluye el portal. */
+    @media(max-width:1180px){
       header,:host(.scrolled) header{grid-template-columns:1fr auto;height:76px;padding-block:9px}
       nav,.portal-link,.actions>.v2-btn-lime{display:none}
       .burger{display:flex}

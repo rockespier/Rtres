@@ -14,6 +14,7 @@ appsettings.*.local.json
 
 # Artefactos de Deploy-Local.ps1
 publish/
+src/web/projects/site/prerender-routes.generated.txt
 
 # Notas internas con credenciales: nunca al repositorio
 Documentacion/informacion.md

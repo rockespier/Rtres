@@ -1,7 +1,9 @@
 using System.Globalization;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -47,6 +49,90 @@ public sealed class WordPressContentClient(HttpClient httpClient, IMemoryCache c
             var posts = await GetPostsByCategorySlugAsync($"resenas-{locale}", cancellationToken, useContentAsText: true);
             return (IReadOnlyList<WordPressReview>)posts.Select(p => new WordPressReview(p.Title, p.Text)).ToList();
         }) ?? [];
+    }
+
+    public async Task<IReadOnlyList<WordPressBlogPost>> GetBlogPostsAsync(string locale, CancellationToken cancellationToken = default)
+    {
+        var key = $"wp:blog:{locale}";
+        var lastKey = $"{key}:last";
+        if (cache.TryGetValue<IReadOnlyList<WordPressBlogPost>>(key, out var cached) && cached is not null) return cached;
+        try
+        {
+            var posts = await FetchBlogPostsAsync(locale, cancellationToken);
+            cache.Set(key, posts, CacheTtl);
+            cache.Set(lastKey, posts);
+            return posts;
+        }
+        catch (HttpRequestException)
+        {
+            // El hosting de WordPress responde 503 bajo ráfagas: un fallo pasajero no debe vaciar el blog.
+            if (cache.TryGetValue<IReadOnlyList<WordPressBlogPost>>(lastKey, out var last) && last is not null) return last;
+            throw;
+        }
+    }
+
+    private async Task<IReadOnlyList<WordPressBlogPost>> FetchBlogPostsAsync(string locale, CancellationToken cancellationToken)
+    {
+        using var categoryResponse = await httpClient.GetAsync($"wp-json/wp/v2/categories?slug=blog-{locale}", cancellationToken);
+        categoryResponse.EnsureSuccessStatusCode();
+        using var categories = JsonDocument.Parse(await categoryResponse.Content.ReadAsStringAsync(cancellationToken));
+        var category = categories.RootElement.EnumerateArray().FirstOrDefault();
+        if (category.ValueKind == JsonValueKind.Undefined) return [];
+        var categoryId = category.GetProperty("id").GetInt32();
+
+        var posts = new List<WordPressBlogPost>();
+        var page = 1;
+        int totalPages;
+        do
+        {
+            using var response = await httpClient.GetAsync($"wp-json/wp/v2/posts?categories={categoryId}&_embed&per_page=100&page={page}&orderby=date&order=desc", cancellationToken);
+            response.EnsureSuccessStatusCode();
+            totalPages = response.Headers.TryGetValues("X-WP-TotalPages", out var values) && int.TryParse(values.FirstOrDefault(), out var total) ? total : 1;
+            using var json = JsonDocument.Parse(await response.Content.ReadAsStringAsync(cancellationToken));
+            posts.AddRange(json.RootElement.EnumerateArray().Select(ParseBlogPost).OfType<WordPressBlogPost>());
+        } while (page++ < totalPages);
+        return posts;
+    }
+
+    /// <summary>Convierte un post de <c>wp/v2/posts?_embed</c>. Los protegidos con contraseña no se publican (devuelve null).</summary>
+    public static WordPressBlogPost? ParseBlogPost(JsonElement post)
+    {
+        var content = post.GetProperty("content");
+        if (content.TryGetProperty("protected", out var isProtected) && isProtected.ValueKind == JsonValueKind.True) return null;
+        var html = content.GetProperty("rendered").GetString() ?? "";
+        var words = WebUtility.HtmlDecode(Regex.Replace(html, "<[^>]+>", " ")).Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries).Length;
+        var excerpt = WebUtility.HtmlDecode(StripHtml(post.GetProperty("excerpt").GetProperty("rendered").GetString() ?? ""));
+        return new WordPressBlogPost(
+            post.GetProperty("slug").GetString() ?? "",
+            WebUtility.HtmlDecode(post.GetProperty("title").GetProperty("rendered").GetString() ?? ""),
+            Regex.Replace(excerpt, @"\s*\[…\]$", "…"),
+            html,
+            ExtractTag(post),
+            ParseGmt(post.GetProperty("date_gmt").GetString()),
+            ParseGmt(post.GetProperty("modified_gmt").GetString()),
+            Math.Max(1, (int)Math.Ceiling(words / 200.0)),
+            ExtractFeaturedMediaUrl(post),
+            ExtractFeaturedMediaAlt(post));
+    }
+
+    private static DateTimeOffset ParseGmt(string? value) => DateTimeOffset.Parse($"{value}Z", CultureInfo.InvariantCulture);
+
+    /// <summary>La primera etiqueta del post: es el tema que se muestra y por el que se filtra.</summary>
+    private static string? ExtractTag(JsonElement post)
+    {
+        if (!post.TryGetProperty("_embedded", out var embedded) || !embedded.TryGetProperty("wp:term", out var terms)) return null;
+        foreach (var term in terms.EnumerateArray().SelectMany(group => group.EnumerateArray()))
+            if (term.TryGetProperty("taxonomy", out var taxonomy) && taxonomy.GetString() == "post_tag" && term.TryGetProperty("name", out var name))
+                return WebUtility.HtmlDecode(name.GetString());
+        return null;
+    }
+
+    private static string? ExtractFeaturedMediaAlt(JsonElement post)
+    {
+        if (!post.TryGetProperty("_embedded", out var embedded) || !embedded.TryGetProperty("wp:featuredmedia", out var media)) return null;
+        var first = media.EnumerateArray().FirstOrDefault();
+        if (first.ValueKind == JsonValueKind.Undefined || !first.TryGetProperty("alt_text", out var alt)) return null;
+        return string.IsNullOrWhiteSpace(alt.GetString()) ? null : alt.GetString();
     }
 
     public async Task<string?> GetHeroPhotoUrlAsync(CancellationToken cancellationToken = default)
@@ -103,7 +189,7 @@ public sealed class WordPressContentClient(HttpClient httpClient, IMemoryCache c
         return first.TryGetProperty("source_url", out var url) ? url.GetString() : null;
     }
 
-    private static string StripHtml(string html) => System.Text.RegularExpressions.Regex.Replace(html, "<.*?>", "").Trim();
+    private static string StripHtml(string html) => Regex.Replace(html, "<.*?>", "").Trim();
 }
 
 public sealed class PayPalClient(HttpClient httpClient, IConfiguration configuration) : IPayPalClient

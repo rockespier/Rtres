@@ -39,7 +39,7 @@ const STEPS: { status: TicketDto['status']; label: string }[] = [
       <div class="card p-10 text-center max-w-lg mx-auto mt-10">
         <p class="font-display text-lg font-semibold">No encontramos este ticket</p>
         <p class="text-sm text-muted mt-1">Puede que no exista o que pertenezca a otro cliente.</p>
-        <a routerLink="/tickets" class="btn btn-ghost btn-sm mt-5">Volver a tickets</a>
+        <a [routerLink]="listLink" class="btn btn-ghost btn-sm mt-5">Volver a tickets</a>
       </div>
     }
     @if (detail(); as d) {
@@ -57,8 +57,8 @@ const STEPS: { status: TicketDto['status']; label: string }[] = [
 
         @if (t.status !== 'Cerrado') {
           <ol class="flex gap-3 mt-7" aria-label="Progreso del ticket">
-            @for (s of steps; track s.status; let i = $index) {
-              <li class="td-step" [class.done]="i < stepIndex(t)" [class.current]="i === stepIndex(t)" [attr.aria-current]="i === stepIndex(t) ? 'step' : null">
+            @for (s of steps; track s.status; let i = $index; let last = $last) {
+              <li class="td-step" [class.done]="i < stepIndex(t) || (last && i === stepIndex(t))" [class.current]="!last && i === stepIndex(t)" [attr.aria-current]="i === stepIndex(t) ? 'step' : null">
                 <span class="td-bar"></span>
                 <span class="text-xs" [class.font-semibold]="i <= stepIndex(t)" [class.text-muted]="i > stepIndex(t)">{{ s.label }}</span>
               </li>
@@ -165,6 +165,9 @@ export class TicketDetailComponent implements OnInit, OnDestroy {
   private auth = inject(AuthService);
   private route = inject(ActivatedRoute);
 
+  /** Abierto desde la bandeja del SuperAdmin (/admin/tickets/:id): no depende de tener un cliente seleccionado. */
+  private readonly inbox = !!this.route.snapshot.data['inbox'];
+  readonly listLink = this.inbox ? '/admin/tickets' : '/tickets';
   readonly steps = STEPS;
   detail = signal<TicketDetailDto | null>(null);
   comments = signal<TicketCommentDto[]>([]);
@@ -174,13 +177,13 @@ export class TicketDetailComponent implements OnInit, OnDestroy {
   preview = signal<TicketAttachmentDto | null>(null);
 
   ngOnInit(): void {
-    this.ui.breadcrumb.set({ parentLabel: 'Tickets', parentLink: '/tickets', current: 'Detalle' });
-    this.api.getTicket(this.route.snapshot.paramMap.get('id')!).subscribe({
+    this.ui.breadcrumb.set({ parentLabel: 'Tickets', parentLink: this.listLink, current: 'Detalle' });
+    this.api.getTicket(this.route.snapshot.paramMap.get('id')!, this.inbox).subscribe({
       next: d => {
         this.detail.set(d);
         this.comments.set(d.comments);
-        this.ui.breadcrumb.set({ parentLabel: 'Tickets', parentLink: '/tickets', current: d.ticket.code });
-        for (const a of this.images(d)) this.api.getTicketAttachment(d.ticket.id, a.id).subscribe(blob => this.urls.update(u => ({ ...u, [a.id]: URL.createObjectURL(blob) })));
+        this.ui.breadcrumb.set({ parentLabel: 'Tickets', parentLink: this.listLink, current: d.ticket.code });
+        for (const a of this.images(d)) this.api.getTicketAttachment(d.ticket.id, a.id, this.inbox).subscribe(blob => this.urls.update(u => ({ ...u, [a.id]: URL.createObjectURL(blob) })));
       },
       error: () => this.notFound.set(true),
     });
@@ -206,7 +209,7 @@ export class TicketDetailComponent implements OnInit, OnDestroy {
     };
     const cached = this.urls()[a.id];
     if (cached) { save(cached, false); return; }
-    this.api.getTicketAttachment(this.detail()!.ticket.id, a.id).subscribe(blob => save(URL.createObjectURL(blob), true));
+    this.api.getTicketAttachment(this.detail()!.ticket.id, a.id, this.inbox).subscribe(blob => save(URL.createObjectURL(blob), true));
   }
 
   onAdded(comment: TicketCommentDto): void { this.comments.update(list => [...list, comment]); }
