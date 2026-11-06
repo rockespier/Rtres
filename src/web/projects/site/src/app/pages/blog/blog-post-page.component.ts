@@ -84,9 +84,10 @@ const postKey = (slug: string) => makeStateKey<BlogPost>(`blog-post:${slug}`);
     .content ::ng-deep blockquote p{margin:0;font-weight:900;font-size:clamp(1.4rem,2.2vw,1.9rem);letter-spacing:-.03em;line-height:1.15;color:var(--v2-ink)}
     .content ::ng-deep pre{overflow-x:auto;margin:0 0 24px;padding:20px;background:var(--v2-dark);color:#e8e8e8;font-size:14px;line-height:1.6}
     .content ::ng-deep code{font-size:.9em}
-    .content ::ng-deep figure{grid-column:1/-1;margin:26px 0 34px}
+    .content ::ng-deep figure{margin:26px 0 34px}
+    .content ::ng-deep .wp-block-table{overflow-x:auto}
     .content ::ng-deep img{display:block;max-width:100%;height:auto;margin-inline:auto}
-    .content ::ng-deep figcaption{max-width:700px;margin:12px auto 0;color:var(--v2-muted);font-size:14px}
+    .content ::ng-deep figcaption{margin:12px 0 0;color:var(--v2-muted);font-size:14px}
     .content ::ng-deep table{width:100%;margin:0 0 24px;border-collapse:collapse;font-size:16px}
     .content ::ng-deep th,.content ::ng-deep td{padding:10px 12px;border-bottom:1px solid var(--v2-line);text-align:left}
 

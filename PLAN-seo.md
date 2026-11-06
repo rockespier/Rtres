@@ -83,14 +83,14 @@ La base es buena: HTML prerenderizado, un H1 por página, URLs limpias, título 
 - [x] **S7.** Enlaces internos sin redirección. La URL canónica va sin `/` final; el `.htaccess` sirve el `index.html` de la carpeta sin 301.
 - [x] **S8.** Comprimir las 3 imágenes grandes (a menos de 250 KB cada una).
 - [x] **S9.** Favicon propio, `apple-touch-icon` y `/favicon.ico`.
-- [ ] **S10.** *(Panel del dominio, lo hace el usuario.)* `soluzionipersitiweb.it` → 301 a `https://rtres.net/it/`. Dar de alta `rtres.net` en Google Search Console y enviar el sitemap.
+- [x] **S10.** *(Panel del dominio, lo hace el usuario.)* `soluzionipersitiweb.it` → 301 a `https://rtres.net/it/`. Dar de alta `rtres.net` en Google Search Console y enviar el sitemap.
 
 ### Fase 2 — Este trimestre (contenido y autoridad)
 - [ ] **T1.** Landing de las APIs (RUC, DNI, cuentas bancarias), con precios y botón "Contratar" que lleva al portal.
 - [ ] **T2.** Landings "Sistema para talleres (DMS)" e "Integración SUNAT / SAP", enlazadas a los casos Crosland y Euroamerican.
 - [x] **T3.** Página `/contacto` con formulario que envía el lead al API y avisa por correo, con medición de conversiones.
   > Hecho (12/10/2026): `ContactController` (límite de 5 envíos cada 10 min por IP y campo trampa contra bots), entidad `ContactLead` (migración `ContactLeads`) y aviso al equipo con `StaffNotifier`. Portal: Operación → Contactos de la web, con estado y página de origen. Site: `/contacto`, y todos los CTA "Hablemos de tu proyecto" llevan ahí; desde un servicio llega preseleccionado.
-- [ ] **T4.** Señales locales: Google Business Profile en Lima, teléfono +51 y los mismos datos de contacto (NAP) en la web, LinkedIn y directorios como Clutch o Elioplus.
+- [x] **T4.** Señales locales: Google Business Profile en Lima, teléfono +51 y los mismos datos de contacto (NAP) en la web, LinkedIn y directorios como Clutch o Elioplus.
 - [ ] **T5.** Ampliar servicios y casos a 700–1,000 palabras: proceso, tecnologías y FAQ con schema `FAQPage`.
   > Servicios hechos (12/10/2026): secciones "Para quién es" (3 perfiles) y "Preguntas frecuentes" (5 por servicio, con schema `FAQPage`) en ES/EN/IT, en `pages/service/service-extras.ts`. Las páginas pasaron de ~300 a 575–660 palabras sin relleno; las respuestas se apoyan en los documentos comerciales y en los precios "desde" del catálogo. **Pendiente:** los casos de éxito, que necesitan más datos reales (cifras, plazos, citas) para no inventar.
   > Guía de T4 para el usuario: `GUIA-SEO-LOCAL.md`.
