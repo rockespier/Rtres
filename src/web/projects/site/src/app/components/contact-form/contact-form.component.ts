@@ -3,7 +3,8 @@ import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { PublicApiService } from '../../core/public-api.service';
-import { SERVICE_LINKS } from '../../core/site-nav';
+import { SERVICE_LINKS, SERVICE_SLUGS } from '../../core/site-nav';
+import { servicePath } from '../../core/site-paths';
 
 /**
  * Formulario de contacto: llega al portal (Contactos de la web) y avisa al equipo por email. El campo "website" está
@@ -33,7 +34,7 @@ import { SERVICE_LINKS } from '../../core/site-nav';
         <label><span i18n="@@contactForm.service">¿Qué necesitas?</span>
           <select name="service" [(ngModel)]="model.service">
             <option value="" i18n="@@contactForm.serviceAny">Elige una opción</option>
-            @for (s of services; track s.path) { <option [value]="slug(s.path)">{{ s.label }}</option> }
+            @for (s of services; track s.slug) { <option [value]="s.slug">{{ s.label }}</option> }
             <option value="apis" i18n="@@contactForm.serviceApis">APIs de validación (RUC, DNI, cuentas bancarias)</option>
             <option value="otro" i18n="@@contactForm.serviceOther">Otro</option>
           </select>
@@ -72,10 +73,11 @@ export class ContactFormComponent implements OnInit {
   private document = inject(DOCUMENT);
   private browser = isPlatformBrowser(inject(PLATFORM_ID));
   private locale = inject(LOCALE_ID).slice(0, 2);
-  /** Servicio preseleccionado (slug), p. ej. desde la página del servicio. */
+  /** Servicio preseleccionado (slug canónico en español, igual en todos los idiomas), p. ej. desde la página del servicio. */
   @Input() service = '';
 
-  readonly services = SERVICE_LINKS;
+  /** Opciones de servicio: el valor es el slug canónico (el que envían las páginas de servicio y conoce el portal). */
+  readonly services = SERVICE_SLUGS.map(slug => ({ slug, label: SERVICE_LINKS.find(l => l.path === servicePath(slug))!.label }));
   readonly sendLabel = $localize`:@@contactForm.send:Enviar mensaje`;
   readonly sendingLabel = $localize`:@@contactForm.sending:Enviando…`;
   model = { name: '', email: '', phone: '', company: '', service: '', message: '', website: '' };
@@ -83,7 +85,6 @@ export class ContactFormComponent implements OnInit {
 
   ngOnInit() { this.model.service = this.service; }
 
-  slug(path: string) { return path.split('/').pop() ?? ''; }
   firstName() { return this.model.name.trim().split(/\s+/)[0]; }
 
   submit() {
