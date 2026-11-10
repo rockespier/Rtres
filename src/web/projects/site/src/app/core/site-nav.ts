@@ -2,6 +2,9 @@ import { casePath, servicePath } from './site-paths';
 /** Enlaces del menú, del pie y de la home: una sola lista para que todos apunten a las mismas páginas. */
 export interface NavLink { path: string; label: string; }
 
+/** Slugs canónicos (en español) de los servicios: los mismos en todos los idiomas; los usa el formulario de contacto. */
+export const SERVICE_SLUGS = ['software-a-medida', 'apps-y-experiencias-web', 'integracion-y-automatizacion', 'hosting-dominios-y-soporte'];
+
 export const SERVICE_LINKS: NavLink[] = [
   { path: servicePath('software-a-medida'), label: $localize`:@@home.services.1.title:Software a medida` },
   { path: servicePath('apps-y-experiencias-web'), label: $localize`:@@home.services.2.title:Apps y experiencias web` },

@@ -84,7 +84,7 @@ import { SERVICE_EXTRAS, ServiceExtras } from './service-extras';
         </section>
       }
 
-      <app-closing-cta [title]="s.ctaTitle" />
+      <app-closing-cta [title]="s.ctaTitle" [service]="s.slug" />
     }
   `,
   styles: [`
