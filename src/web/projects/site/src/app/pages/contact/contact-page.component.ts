@@ -16,6 +16,7 @@ import { ContactFormComponent } from '../../components/contact-form/contact-form
         <p class="lead" i18n="@@contact.lead">Cuéntanos qué necesitas: un sistema a medida, una integración con SAP o SUNAT, una web o soporte para lo que ya tienes. Te respondemos con los siguientes pasos y, si hace falta, una propuesta.</p>
         <dl class="channels">
           <div><dt i18n="@@contact.email">Email</dt><dd><a href="mailto:info&#64;rtres.net">info&#64;rtres.net</a></dd></div>
+          <div><dt i18n="@@contact.phone">Teléfono (Lima)</dt><dd><a href="tel:+51942670094">+51 942 670 094</a></dd></div>
           <div><dt>WhatsApp</dt><dd><a href="https://wa.me/393281915399" target="_blank" rel="noopener">+39 328 191 5399 ↗</a></dd></div>
           <div><dt i18n="@@contact.where">Dónde estamos</dt><dd i18n="@@contact.whereText">Lima, Perú · operación en España e Italia</dd></div>
         </dl>

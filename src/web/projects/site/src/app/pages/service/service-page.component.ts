@@ -163,8 +163,9 @@ export class ServicePageComponent implements OnInit {
   ngOnInit() {
     this.s = SERVICES.find(x => x.slug === this.route.snapshot.data['slug']);
     if (!this.s) return;
-    this.title.setTitle(`${this.s.title} — Rtres Web Solutions`);
+    this.title.setTitle(`${this.s.metaTitle ?? this.s.title} — Rtres Web Solutions`);
     this.meta.updateTag({ name: 'description', content: this.s.metaDescription });
+    this.seo.setService({ name: this.s.title });
     this.extras = SERVICE_EXTRAS[this.s.slug];
     if (this.extras) this.seo.setFaq(this.extras.faqs);
   }

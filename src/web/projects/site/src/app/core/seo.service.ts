@@ -8,6 +8,16 @@ export const SITE_URL = 'https://rtres.net';
 export const SITE_LOCALES = ['es', 'en', 'it'] as const;
 const OG_LOCALES: Record<string, string> = { es: 'es_PE', en: 'en_US', it: 'it_IT' };
 const HOME_LABEL: Record<string, string> = { es: 'Inicio', en: 'Home', it: 'Home' };
+export const PHONE_PE = '+51 942 670 094';
+export const PHONE_IT = '+39 328 191 5399';
+/** Ficha de Google Business Profile (CID de Maps). */
+const GBP_URL = 'https://maps.google.com/?cid=1846831983078032863';
+/** Perfiles externos de la empresa (señal de entidad para Google y las IA). */
+const SAME_AS = [
+  GBP_URL,
+  'https://pe.linkedin.com/company/rtres-web-solutions',
+  'https://clutch.co/profile/rtres-web-solutions',
+];
 
 export interface ArticleSeo { headline: string; image: string | null; datePublished: string; dateModified: string; }
 
@@ -27,6 +37,10 @@ export class SeoService {
   /** Preguntas frecuentes de la página actual (FAQPage); la página las fija en ngOnInit y valen solo para esa navegación. */
   private faq: { q: string; a: string }[] | null = null;
   setFaq(items: { q: string; a: string }[]) { this.faq = items; }
+
+  /** Servicio de la página actual (schema Service); como setFaq, vale solo para esa navegación. */
+  private service: { name: string } | null = null;
+  setService(service: { name: string }) { this.service = service; }
 
   /** Post del blog en pantalla. Los datos llegan después de la navegación: la página llama a update() al tenerlos. */
   private article: ArticleSeo | null = null;
@@ -92,14 +106,37 @@ export class SeoService {
     this.meta('name', 'twitter:description', description);
     this.meta('name', 'twitter:image', image);
 
+    // Organization + ProfessionalService: negocio local en Lima para Google/Gemini. Mismos datos (NAP) que la web,
+    // Google Business Profile, LinkedIn y Clutch (GUIA-SEO-LOCAL.md).
     this.jsonLd('ld-organization', {
-      '@context': 'https://schema.org', '@type': 'Organization', '@id': `${SITE_URL}/#organization`,
+      '@context': 'https://schema.org', '@type': ['Organization', 'ProfessionalService'], '@id': `${SITE_URL}/#organization`,
       name: 'Rtres Web Solutions', url: `${SITE_URL}/${this.locale}/`, logo: `${SITE_URL}/es/assets/logo-rtres.png`,
       image: `${SITE_URL}/es/assets/logo-rtres.png`,
-      email: 'info@rtres.net', telephone: '+39 328 191 5399', foundingDate: '2007',
-      address: { '@type': 'PostalAddress', addressLocality: 'Lima', addressCountry: 'PE' },
-      areaServed: ['PE', 'IT', 'ES'],
+      email: 'info@rtres.net', telephone: PHONE_PE, foundingDate: '2007',
+      contactPoint: [
+        { '@type': 'ContactPoint', telephone: PHONE_PE, contactType: 'sales', areaServed: 'PE', availableLanguage: ['es', 'en'] },
+        { '@type': 'ContactPoint', telephone: PHONE_IT, contactType: 'sales', areaServed: ['IT', 'ES'], availableLanguage: ['it', 'es', 'en'] },
+      ],
+      address: { '@type': 'PostalAddress', addressLocality: 'Lima', addressRegion: 'Lima', addressCountry: 'PE' },
+      geo: { '@type': 'GeoCoordinates', latitude: -12.2020061, longitude: -77.0130139 },
+      hasMap: GBP_URL,
+      areaServed: [
+        { '@type': 'City', name: 'Lima' },
+        { '@type': 'Country', name: 'Perú' }, { '@type': 'Country', name: 'Italia' }, { '@type': 'Country', name: 'España' },
+      ],
+      openingHoursSpecification: {
+        '@type': 'OpeningHoursSpecification', dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'], opens: '09:00', closes: '18:00',
+      },
+      priceRange: '$$',
+      knowsAbout: ['Desarrollo de software a medida', 'Desarrollo web', 'Integración con SAP', 'Facturación electrónica SUNAT', '.NET', 'Angular'],
+      sameAs: SAME_AS,
     });
+    this.jsonLd('ld-service', this.service && !noindex ? {
+      '@context': 'https://schema.org', '@type': 'Service', name: this.service.name, serviceType: this.service.name,
+      description, url: canonical, provider: { '@id': `${SITE_URL}/#organization` },
+      areaServed: [{ '@type': 'City', name: 'Lima' }, { '@type': 'Country', name: 'Perú' }],
+    } : null);
+    this.service = null;
     this.jsonLd('ld-faq', this.faq?.length && !noindex ? {
       '@context': 'https://schema.org', '@type': 'FAQPage',
       mainEntity: this.faq.map(f => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),

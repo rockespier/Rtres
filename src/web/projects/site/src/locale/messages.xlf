@@ -242,11 +242,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/components/home/site-header.component.ts</context>
-          <context context-type="linenumber">34,35</context>
+          <context context-type="linenumber">35,36</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/components/home/site-header.component.ts</context>
-          <context context-type="linenumber">51,52</context>
+          <context context-type="linenumber">53,54</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-page.component.ts</context>
@@ -261,11 +261,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/components/home/site-header.component.ts</context>
-          <context context-type="linenumber">35,36</context>
+          <context context-type="linenumber">36,37</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/components/home/site-header.component.ts</context>
-          <context context-type="linenumber">52,55</context>
+          <context context-type="linenumber">54,57</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.proof.text" datatype="html">
@@ -446,7 +446,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/components/home/site-header.component.ts</context>
-          <context context-type="linenumber">49,50</context>
+          <context context-type="linenumber">50,51</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.nav.resources" datatype="html">
@@ -457,32 +457,47 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/components/home/site-header.component.ts</context>
-          <context context-type="linenumber">30,34</context>
+          <context context-type="linenumber">30,31</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/components/home/site-header.component.ts</context>
-          <context context-type="linenumber">50,51</context>
+          <context context-type="linenumber">51,52</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="home.nav.blog" datatype="html">
+        <source>Blog</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/components/home/site-footer.component.ts</context>
+          <context context-type="linenumber">29</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/components/home/site-header.component.ts</context>
+          <context context-type="linenumber">32,35</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/components/home/site-header.component.ts</context>
+          <context context-type="linenumber">53</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.footer.reviews" datatype="html">
         <source>Opiniones</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/components/home/site-footer.component.ts</context>
-          <context context-type="linenumber">28,32</context>
+          <context context-type="linenumber">29,33</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.footer.contact" datatype="html">
         <source>Contacto</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/components/home/site-footer.component.ts</context>
-          <context context-type="linenumber">31,33</context>
+          <context context-type="linenumber">32,34</context>
         </context-group>
       </trans-unit>
       <trans-unit id="cookies.settings" datatype="html">
         <source>Cookies</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/components/home/site-footer.component.ts</context>
-          <context context-type="linenumber">37,39</context>
+          <context context-type="linenumber">39,41</context>
         </context-group>
       </trans-unit>
       <trans-unit id="site.nav.aria" datatype="html">
@@ -500,7 +515,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/components/home/site-header.component.ts</context>
-          <context context-type="linenumber">44,45</context>
+          <context context-type="linenumber">45,46</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.nav.cases" datatype="html">
@@ -511,14 +526,14 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/components/home/site-header.component.ts</context>
-          <context context-type="linenumber">46,47</context>
+          <context context-type="linenumber">47,48</context>
         </context-group>
       </trans-unit>
       <trans-unit id="site.nav.menu" datatype="html">
         <source>Menú</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/components/home/site-header.component.ts</context>
-          <context context-type="linenumber">37,42</context>
+          <context context-type="linenumber">38,43</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.cases.label" datatype="html">
@@ -596,7 +611,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">50</context>
+          <context context-type="linenumber">53</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.cases.2.sector" datatype="html">
@@ -614,7 +629,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">114</context>
+          <context context-type="linenumber">117</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.cases.3.sector" datatype="html">
@@ -632,7 +647,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">82</context>
+          <context context-type="linenumber">85</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.support.label" datatype="html">
@@ -973,6 +988,154 @@
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/about/about-page.component.ts</context>
           <context context-type="linenumber">117</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="blog.label" datatype="html">
+        <source>BLOG</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/blog/blog-page.component.ts</context>
+          <context context-type="linenumber">25</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="blog.title" datatype="html">
+        <source>Ideas para<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br&gt;"/>construir mejor.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/blog/blog-page.component.ts</context>
+          <context context-type="linenumber">25,26</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="blog.lead" datatype="html">
+        <source>Lo que aprendemos desarrollando software, integrando sistemas y manteniendo sitios en producción, contado sin rodeos.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/blog/blog-page.component.ts</context>
+          <context context-type="linenumber">27,31</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="blog.loading" datatype="html">
+        <source>Cargando artículos…</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/blog/blog-page.component.ts</context>
+          <context context-type="linenumber">31,33</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="blog.error" datatype="html">
+        <source>No pudimos cargar los artículos. Vuelve a intentarlo en unos minutos.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/blog/blog-page.component.ts</context>
+          <context context-type="linenumber">33,35</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="blog.empty" datatype="html">
+        <source>Muy pronto publicaremos aquí nuestros primeros artículos.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/blog/blog-page.component.ts</context>
+          <context context-type="linenumber">35,38</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="blog.latest" datatype="html">
+        <source>Lo último</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/blog/blog-page.component.ts</context>
+          <context context-type="linenumber">41,43</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="blog.read" datatype="html">
+        <source>Leer artículo</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/blog/blog-page.component.ts</context>
+          <context context-type="linenumber">45,50</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="blog.filter" datatype="html">
+        <source>Filtrar por tema</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/blog/blog-page.component.ts</context>
+          <context context-type="linenumber">51,52</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="blog.all" datatype="html">
+        <source>Todos</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/blog/blog-page.component.ts</context>
+          <context context-type="linenumber">52,53</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="blog.articles" datatype="html">
+        <source>Artículos</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/blog/blog-page.component.ts</context>
+          <context context-type="linenumber">57,58</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="blog.more" datatype="html">
+        <source>Ver más artículos</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/blog/blog-page.component.ts</context>
+          <context context-type="linenumber">60,65</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="blog.cta" datatype="html">
+        <source>¿Tienes un proyecto en mente?</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/blog/blog-page.component.ts</context>
+          <context context-type="linenumber">113</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/blog/blog-post-page.component.ts</context>
+          <context context-type="linenumber">116</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="blog.metaTitle" datatype="html">
+        <source>Blog — Rtres Web Solutions</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/blog/blog-page.component.ts</context>
+          <context context-type="linenumber">131</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/blog/blog-post-page.component.ts</context>
+          <context context-type="linenumber">141</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="blog.meta" datatype="html">
+        <source>Artículos de Rtres sobre software a medida, integración de sistemas, automatización y hosting para empresas.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/blog/blog-page.component.ts</context>
+          <context context-type="linenumber">132</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="blog.readingSuffix" datatype="html">
+        <source>de lectura</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/blog/blog-post-page.component.ts</context>
+          <context context-type="linenumber">34,36</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="blog.next" datatype="html">
+        <source>Sigue leyendo</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/blog/blog-post-page.component.ts</context>
+          <context context-type="linenumber">41,43</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="blog.nextLabel" datatype="html">
+        <source>SIGUE LEYENDO</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/blog/blog-post-page.component.ts</context>
+          <context context-type="linenumber">42,43</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="blog.postError" datatype="html">
+        <source>No pudimos cargar este artículo. Vuelve a intentarlo en unos minutos.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/blog/blog-post-page.component.ts</context>
+          <context context-type="linenumber">47,49</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="blog.postLoading" datatype="html">
+        <source>Cargando artículo…</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/blog/blog-post-page.component.ts</context>
+          <context context-type="linenumber">49,55</context>
         </context-group>
       </trans-unit>
       <trans-unit id="case.eua.sector" datatype="html">
@@ -1563,32 +1726,39 @@
           <context context-type="linenumber">18,19</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="contact.phone" datatype="html">
+        <source>Teléfono (Lima)</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/contact/contact-page.component.ts</context>
+          <context context-type="linenumber">19,20</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="contact.where" datatype="html">
         <source>Dónde estamos</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/contact/contact-page.component.ts</context>
-          <context context-type="linenumber">20,21</context>
+          <context context-type="linenumber">21,22</context>
         </context-group>
       </trans-unit>
       <trans-unit id="contact.whereText" datatype="html">
         <source>Lima, Perú · operación en España e Italia</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/contact/contact-page.component.ts</context>
-          <context context-type="linenumber">20,23</context>
+          <context context-type="linenumber">21,24</context>
         </context-group>
       </trans-unit>
       <trans-unit id="contact.metaTitle" datatype="html">
         <source>Contacto — Rtres Web Solutions</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/contact/contact-page.component.ts</context>
-          <context context-type="linenumber">46</context>
+          <context context-type="linenumber">47</context>
         </context-group>
       </trans-unit>
       <trans-unit id="contact.meta" datatype="html">
         <source>Cuéntanos tu proyecto de software a medida, integración con SAP o SUNAT, desarrollo web o soporte. Equipo en Lima, Perú, con operación en España e Italia.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/contact/contact-page.component.ts</context>
-          <context context-type="linenumber">47</context>
+          <context context-type="linenumber">48</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.metaTitle" datatype="html">
@@ -1756,636 +1926,643 @@
         <source>Software a medida</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">26</context>
+          <context context-type="linenumber">28</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.software.lead" datatype="html">
         <source>Sistemas hechos para cómo trabaja tu empresa: ventas, comisiones, operaciones e indicadores en una sola plataforma que crece contigo.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">27</context>
+          <context context-type="linenumber">29</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="service.software.metaTitle" datatype="html">
+        <source>Desarrollo de software a medida en Lima, Perú</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
+          <context context-type="linenumber">30</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.software.meta" datatype="html">
-        <source>Desarrollo de software a medida para empresas: sistemas de ventas, comisiones, gestión de talleres y business intelligence. Desde 2007.</source>
+        <source>Empresa de desarrollo de software a medida en Lima, Perú: sistemas de ventas, comisiones, gestión de talleres, integración con SAP y SUNAT, y business intelligence. Desde 2007.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">28</context>
+          <context context-type="linenumber">31</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.problem.label" datatype="html">
         <source>EL PROBLEMA</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">31</context>
+          <context context-type="linenumber">34</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">63</context>
+          <context context-type="linenumber">66</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">95</context>
+          <context context-type="linenumber">98</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">127</context>
+          <context context-type="linenumber">130</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.software.problem" datatype="html">
         <source>Las hojas de cálculo y los sistemas genéricos llegan hasta un punto. Después, cada proceso nuevo es un parche, la información vive en lugares distintos y nadie confía del todo en los números.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">32</context>
+          <context context-type="linenumber">35</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.software.row1.title" datatype="html">
         <source>Sistemas de ventas y comisiones</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">34</context>
+          <context context-type="linenumber">37</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.software.row1.text" datatype="html">
         <source>Productos, tarifas, agentes y cálculo automático de comisiones e incentivos, sin planillas paralelas.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">34</context>
+          <context context-type="linenumber">37</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.software.row2.title" datatype="html">
         <source>Gestión de operaciones</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">35</context>
+          <context context-type="linenumber">38</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.software.row2.text" datatype="html">
         <source>Órdenes de trabajo, presupuestos, garantías y flujos de aprobación adaptados a tu proceso real.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">35</context>
+          <context context-type="linenumber">38</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.software.row3.title" datatype="html">
         <source>Business intelligence</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">36</context>
+          <context context-type="linenumber">39</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.software.row3.text" datatype="html">
         <source>Tableros e informes ejecutivos con datos al día para decidir con números, no con intuición.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">36</context>
+          <context context-type="linenumber">39</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.software.row4.title" datatype="html">
         <source>Cobranza y finanzas</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">37</context>
+          <context context-type="linenumber">40</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.software.row4.text" datatype="html">
         <source>Módulos de cobranza, facturación y conciliación conectados al resto de la operación.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">37</context>
+          <context context-type="linenumber">40</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.software.d1" datatype="html">
         <source>Análisis del proceso y alcance por etapas</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">40</context>
+          <context context-type="linenumber">43</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.software.d2" datatype="html">
         <source>Prototipo navegable antes de programar</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">41</context>
+          <context context-type="linenumber">44</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.software.d3" datatype="html">
         <source>Sistema web en producción con usuarios y permisos</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">42</context>
+          <context context-type="linenumber">45</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.software.d4" datatype="html">
         <source>Documentación y capacitación del equipo</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">43</context>
+          <context context-type="linenumber">46</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.software.d5" datatype="html">
         <source>Soporte y evolución continua desde el portal</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">44</context>
+          <context context-type="linenumber">47</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.tech.sap" datatype="html">
         <source>Integración con SAP</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">46</context>
+          <context context-type="linenumber">49</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">110</context>
+          <context context-type="linenumber">113</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.tech.sunat" datatype="html">
         <source>Facturación electrónica SUNAT</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">46</context>
+          <context context-type="linenumber">49</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">110</context>
+          <context context-type="linenumber">113</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.software.case" datatype="html">
         <source>Más de 15 años sosteniendo su sistema central de ventas, comisiones y cobranza.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">51</context>
+          <context context-type="linenumber">54</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.software.cta" datatype="html">
         <source>¿Tu operación necesita un sistema propio?</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">53</context>
+          <context context-type="linenumber">56</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.apps.title" datatype="html">
         <source>Apps y experiencias web</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">58</context>
+          <context context-type="linenumber">61</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.apps.lead" datatype="html">
         <source>Sitios, portales y aplicaciones que tus clientes entienden a la primera: rápidos, claros y pensados para vender o atender mejor.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">59</context>
+          <context context-type="linenumber">62</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.apps.meta" datatype="html">
         <source>Diseño y desarrollo de sitios web, portales de clientes, tiendas online y aplicaciones web rápidas y fáciles de usar.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">60</context>
+          <context context-type="linenumber">63</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.apps.problem" datatype="html">
         <source>Un sitio lento, difícil de actualizar o que no se ve bien en el móvil espanta a los clientes antes de que lleguen a escribirte. La primera impresión digital ya es la primera impresión.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">64</context>
+          <context context-type="linenumber">67</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.apps.row1.title" datatype="html">
         <source>Sitios web corporativos</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">66</context>
+          <context context-type="linenumber">69</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.apps.row1.text" datatype="html">
         <source>Tu marca bien presentada, en varios idiomas y fácil de actualizar por tu equipo.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">66</context>
+          <context context-type="linenumber">69</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.apps.row2.title" datatype="html">
         <source>Portales de clientes</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">67</context>
+          <context context-type="linenumber">70</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.apps.row2.text" datatype="html">
         <source>Zonas privadas para que tus clientes consulten, compren, paguen o abran solicitudes sin llamarte.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">67</context>
+          <context context-type="linenumber">70</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.apps.row3.title" datatype="html">
         <source>Tiendas y reservas online</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">68</context>
+          <context context-type="linenumber">71</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.apps.row3.text" datatype="html">
         <source>Catálogo, pagos con PayPal o tarjeta y reservas conectadas a tu operación.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">68</context>
+          <context context-type="linenumber">71</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.apps.row4.title" datatype="html">
         <source>Aplicaciones web a medida</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">69</context>
+          <context context-type="linenumber">72</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.apps.row4.text" datatype="html">
         <source>Herramientas internas o para clientes que funcionan en cualquier dispositivo, sin instalar nada.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">69</context>
+          <context context-type="linenumber">72</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.apps.d1" datatype="html">
         <source>Diseño a medida, no una plantilla genérica</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">72</context>
+          <context context-type="linenumber">75</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.apps.d2" datatype="html">
         <source>Versión móvil revisada pantalla por pantalla</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">73</context>
+          <context context-type="linenumber">76</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.apps.d3" datatype="html">
         <source>Textos e imágenes optimizados para buscadores</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">74</context>
+          <context context-type="linenumber">77</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.apps.d4" datatype="html">
         <source>Panel para actualizar contenidos sin programar</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">75</context>
+          <context context-type="linenumber">78</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.apps.d5" datatype="html">
         <source>Hosting, dominio y certificado SSL incluidos si los necesitas</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">76</context>
+          <context context-type="linenumber">79</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.tech.multilang" datatype="html">
         <source>Multi-idioma (ES · EN · IT)</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">78</context>
+          <context context-type="linenumber">81</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.apps.case" datatype="html">
         <source>Plataforma multiidioma con inscripciones, pagos y resultados de surf en vivo para un circuito internacional.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">83</context>
+          <context context-type="linenumber">86</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.apps.cta" datatype="html">
         <source>¿Tu web está a la altura de tu empresa?</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">85</context>
+          <context context-type="linenumber">88</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.integration.title" datatype="html">
         <source>Integración y automatización</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">90</context>
+          <context context-type="linenumber">93</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.integration.lead" datatype="html">
         <source>Conectamos tus sistemas para que los datos viajen solos: ERP, facturación electrónica, inventario y servicios externos hablando entre sí.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">91</context>
+          <context context-type="linenumber">94</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.integration.meta" datatype="html">
         <source>Integración con SAP, facturación electrónica SUNAT, inventarios y APIs. Automatizamos procesos para eliminar la doble digitación.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">92</context>
+          <context context-type="linenumber">95</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.integration.problem" datatype="html">
         <source>Cuando los sistemas no se hablan, alguien copia datos de uno a otro a mano. Eso cuesta horas, genera errores y hace que nadie sepa cuál es el número correcto.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">96</context>
+          <context context-type="linenumber">99</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.integration.row1.title" datatype="html">
         <source>Integración con SAP</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">98</context>
+          <context context-type="linenumber">101</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.integration.row1.text" datatype="html">
         <source>Consulta de stock en tiempo real, reservas en almacén y sincronización de repuestos y garantías.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">98</context>
+          <context context-type="linenumber">101</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.integration.row2.title" datatype="html">
         <source>Facturación electrónica</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">99</context>
+          <context context-type="linenumber">102</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.integration.row2.text" datatype="html">
         <source>Emisión y validación de comprobantes con SUNAT directamente desde tu sistema.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">99</context>
+          <context context-type="linenumber">102</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.integration.row3.title" datatype="html">
         <source>Pagos y suscripciones</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">100</context>
+          <context context-type="linenumber">103</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.integration.row3.text" datatype="html">
         <source>Cobros únicos y recurrentes con PayPal, conciliados automáticamente con tu facturación.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">100</context>
+          <context context-type="linenumber">103</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.integration.row4.title" datatype="html">
         <source>Automatización de tareas</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">101</context>
+          <context context-type="linenumber">104</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.integration.row4.text" datatype="html">
         <source>Procesos programados, alertas y reportes que se generan y envían solos.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">101</context>
+          <context context-type="linenumber">104</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.integration.d1" datatype="html">
         <source>Mapa de los sistemas y del flujo de datos</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">104</context>
+          <context context-type="linenumber">107</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.integration.d2" datatype="html">
         <source>Conectores probados con datos reales</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">105</context>
+          <context context-type="linenumber">108</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.integration.d3" datatype="html">
         <source>Registro de cada sincronización y alertas si algo falla</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">106</context>
+          <context context-type="linenumber">109</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.integration.d4" datatype="html">
         <source>Reintentos automáticos ante caídas de servicios externos</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">107</context>
+          <context context-type="linenumber">110</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.integration.d5" datatype="html">
         <source>Documentación técnica para tu equipo</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">108</context>
+          <context context-type="linenumber">111</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.integration.case" datatype="html">
         <source>Talleres Kawasaki y una red de más de 300 talleres Bajaj sincronizados con SAP en tiempo real.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">115</context>
+          <context context-type="linenumber">118</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.integration.cta" datatype="html">
         <source>¿Cuántas horas pierde tu equipo copiando datos?</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">117</context>
+          <context context-type="linenumber">120</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.hosting.title" datatype="html">
         <source>Hosting, dominios y soporte</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">122</context>
+          <context context-type="linenumber">125</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.hosting.lead" datatype="html">
         <source>La operación técnica que mantiene tus sistemas disponibles: servidores, dominios, certificados, copias de seguridad y un equipo que responde.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">123</context>
+          <context context-type="linenumber">126</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.hosting.meta" datatype="html">
         <source>Hosting administrado, registro y renovación de dominios, certificados SSL, backups y soporte técnico con portal de tickets.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">124</context>
+          <context context-type="linenumber">127</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.hosting.problem" datatype="html">
         <source>Un dominio que vence sin aviso, un certificado caducado o un servidor caído un viernes por la noche. Lo técnico solo se nota cuando falla, y entonces cuesta caro.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">128</context>
+          <context context-type="linenumber">131</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.hosting.row1.title" datatype="html">
         <source>Hosting administrado</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">130</context>
+          <context context-type="linenumber">133</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.hosting.row1.text" datatype="html">
         <source>Servidores configurados, actualizados y vigilados para tus sitios y sistemas.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">130</context>
+          <context context-type="linenumber">133</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.hosting.row2.title" datatype="html">
         <source>Dominios y certificados SSL</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">131</context>
+          <context context-type="linenumber">134</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.hosting.row2.text" datatype="html">
         <source>Registro y renovación con avisos a 30, 7 y 1 día antes del vencimiento.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">131</context>
+          <context context-type="linenumber">134</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.hosting.row3.title" datatype="html">
         <source>Copias de seguridad</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">132</context>
+          <context context-type="linenumber">135</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.hosting.row3.text" datatype="html">
         <source>Backups programados y restauración probada, no solo prometida.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">132</context>
+          <context context-type="linenumber">135</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.hosting.row4.title" datatype="html">
         <source>Soporte con tickets</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">133</context>
+          <context context-type="linenumber">136</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.hosting.row4.text" datatype="html">
         <source>Reportas desde el portal de asistencia y sigues cada caso hasta que queda resuelto.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">133</context>
+          <context context-type="linenumber">136</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.hosting.d1" datatype="html">
         <source>Un solo proveedor para todo lo técnico</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">136</context>
+          <context context-type="linenumber">139</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.hosting.d2" datatype="html">
         <source>Renovaciones y pagos online desde el portal</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">137</context>
+          <context context-type="linenumber">140</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.hosting.d3" datatype="html">
         <source>Historial de tickets y respuestas en un lugar</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">138</context>
+          <context context-type="linenumber">141</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.hosting.d4" datatype="html">
         <source>Avisos antes de cada vencimiento</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">139</context>
+          <context context-type="linenumber">142</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.hosting.d5" datatype="html">
         <source>Facturación en soles, dólares o euros</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">140</context>
+          <context context-type="linenumber">143</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.tech.portal" datatype="html">
         <source>Portal de asistencia Rtres</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">142</context>
+          <context context-type="linenumber">145</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.hosting.cta" datatype="html">
         <source>¿Sabes cuándo vence tu dominio?</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">144</context>
+          <context context-type="linenumber">147</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.process.1.title" datatype="html">
         <source>Entender</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">150</context>
+          <context context-type="linenumber">153</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.process.1.text" datatype="html">
         <source>Conversamos con quienes usan el proceso todos los días.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">150</context>
+          <context context-type="linenumber">153</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.process.2.title" datatype="html">
         <source>Diseñar</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">151</context>
+          <context context-type="linenumber">154</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.process.2.text" datatype="html">
         <source>Definimos alcance, prioridades y un prototipo que puedas probar.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">151</context>
+          <context context-type="linenumber">154</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.process.3.title" datatype="html">
         <source>Construir</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">152</context>
+          <context context-type="linenumber">155</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.process.3.text" datatype="html">
         <source>Entregas por etapas, en producción desde las primeras semanas.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">152</context>
+          <context context-type="linenumber">155</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.process.4.title" datatype="html">
         <source>Acompañar</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">153</context>
+          <context context-type="linenumber">156</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.process.4.text" datatype="html">
         <source>Soporte, mejoras y tickets desde el portal de asistencia.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-content.ts</context>
-          <context context-type="linenumber">153</context>
+          <context context-type="linenumber">156</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.software.aud1" datatype="html">
@@ -2465,291 +2642,305 @@
           <context context-type="linenumber">20</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="service.software.faq6.q" datatype="html">
+        <source>¿Atienden a empresas en Lima?</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/service/service-extras.ts</context>
+          <context context-type="linenumber">21</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="service.software.faq6.a" datatype="html">
+        <source>Sí. Nuestra sede está en Lima y desde 2007 desarrollamos y sostenemos sistemas para empresas peruanas como Euroamerican Assistance y Grupo Crosland. El análisis, las capacitaciones y el soporte se coordinan con tu equipo en horario de Lima, de lunes a viernes de 9:00 a 18:00, y las solicitudes se siguen desde nuestro portal de clientes.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/service/service-extras.ts</context>
+          <context context-type="linenumber">21</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="service.software.faq5.q" datatype="html">
         <source>¿El código y los datos son de mi empresa?</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-extras.ts</context>
-          <context context-type="linenumber">21</context>
+          <context context-type="linenumber">22</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.software.faq5.a" datatype="html">
         <source>Sí. El sistema se construye para tu empresa y tus datos son tuyos. Las condiciones de propiedad, alojamiento y soporte quedan escritas en la propuesta antes de empezar.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-extras.ts</context>
-          <context context-type="linenumber">21</context>
+          <context context-type="linenumber">22</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.apps.aud1" datatype="html">
         <source>Empresas que necesitan una web profesional que explique bien lo que hacen y convierta visitas en contactos, en uno o varios idiomas.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-extras.ts</context>
-          <context context-type="linenumber">26</context>
+          <context context-type="linenumber">27</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.apps.aud2" datatype="html">
         <source>Negocios que quieren vender en línea con una tienda propia, con su catálogo, pagos y pedidos.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-extras.ts</context>
-          <context context-type="linenumber">27</context>
+          <context context-type="linenumber">28</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.apps.aud3" datatype="html">
         <source>Empresas que atienden a sus clientes con procesos repetitivos (pedidos, renovaciones, consultas) y quieren un portal de autoservicio.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-extras.ts</context>
-          <context context-type="linenumber">28</context>
+          <context context-type="linenumber">29</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.apps.faq1.q" datatype="html">
         <source>¿Cuánto cuesta una página web?</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-extras.ts</context>
-          <context context-type="linenumber">31</context>
+          <context context-type="linenumber">32</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.apps.faq1.a" datatype="html">
         <source>Tenemos planes de sitio web desde US$ 400 y tiendas online desde US$ 600, ambos en pago único, más el hosting y el dominio. Los portales y aplicaciones a medida se cotizan según su alcance.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-extras.ts</context>
-          <context context-type="linenumber">31</context>
+          <context context-type="linenumber">32</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.apps.faq2.q" datatype="html">
         <source>¿Puedo actualizar el contenido yo mismo?</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-extras.ts</context>
-          <context context-type="linenumber">32</context>
+          <context context-type="linenumber">33</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.apps.faq2.a" datatype="html">
         <source>Sí. Según el proyecto usamos un gestor de contenidos (como WordPress) o un panel propio, para que cambies textos, imágenes y productos sin depender de nosotros. Si prefieres, también lo hacemos por ti desde el portal de soporte.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-extras.ts</context>
-          <context context-type="linenumber">32</context>
+          <context context-type="linenumber">33</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.apps.faq3.q" datatype="html">
         <source>¿La web aparecerá en Google?</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-extras.ts</context>
-          <context context-type="linenumber">33</context>
+          <context context-type="linenumber">34</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.apps.faq3.a" datatype="html">
         <source>La construimos para eso: páginas rápidas, una por servicio, con títulos y descripciones pensados para búsquedas reales, versiones por idioma bien enlazadas y datos estructurados. Posicionar también requiere contenido y tiempo, y te explicamos qué esperar.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-extras.ts</context>
-          <context context-type="linenumber">33</context>
+          <context context-type="linenumber">34</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.apps.faq4.q" datatype="html">
         <source>¿Funcionará bien en celulares?</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-extras.ts</context>
-          <context context-type="linenumber">34</context>
+          <context context-type="linenumber">35</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.apps.faq4.a" datatype="html">
         <source>Sí. Diseñamos primero para el celular, donde llega la mayoría de visitas, y probamos cada página en distintos tamaños de pantalla antes de publicarla.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-extras.ts</context>
-          <context context-type="linenumber">34</context>
+          <context context-type="linenumber">35</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.apps.faq5.q" datatype="html">
         <source>¿Hacen sitios en varios idiomas?</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-extras.ts</context>
-          <context context-type="linenumber">35</context>
+          <context context-type="linenumber">36</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.apps.faq5.a" datatype="html">
         <source>Sí. Trabajamos con clientes en Perú, España e Italia, y construimos sitios en español, inglés e italiano, cada idioma con sus propias direcciones para que Google muestre la versión correcta a cada visitante.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-extras.ts</context>
-          <context context-type="linenumber">35</context>
+          <context context-type="linenumber">36</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.integration.aud1" datatype="html">
         <source>Empresas que usan SAP y necesitan que sus sistemas operativos (talleres, ventas, almacenes) consulten y actualicen la información sin digitarla dos veces.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-extras.ts</context>
-          <context context-type="linenumber">40</context>
+          <context context-type="linenumber">41</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.integration.aud2" datatype="html">
         <source>Negocios en Perú que deben emitir comprobantes electrónicos ante SUNAT desde su propio sistema de ventas o gestión.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-extras.ts</context>
-          <context context-type="linenumber">41</context>
+          <context context-type="linenumber">42</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.integration.aud3" datatype="html">
         <source>Equipos que pierden horas en tareas repetitivas: validar RUC, DNI o cuentas bancarias, consolidar reportes o mover datos entre sistemas.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-extras.ts</context>
-          <context context-type="linenumber">42</context>
+          <context context-type="linenumber">43</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.integration.faq1.q" datatype="html">
         <source>¿Con qué versiones de SAP trabajan?</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-extras.ts</context>
-          <context context-type="linenumber">45</context>
+          <context context-type="linenumber">46</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.integration.faq1.a" datatype="html">
         <source>Nos adaptamos a la que ya tiene tu empresa. Antes de proponer, revisamos con tu equipo cómo se expone la información (servicios, interfaces o archivos) y diseñamos la integración sobre eso, sin reingenierías costosas.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-extras.ts</context>
-          <context context-type="linenumber">45</context>
+          <context context-type="linenumber">46</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.integration.faq2.q" datatype="html">
         <source>¿Qué se puede integrar con SAP?</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-extras.ts</context>
-          <context context-type="linenumber">46</context>
+          <context context-type="linenumber">47</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.integration.faq2.a" datatype="html">
         <source>Por ejemplo: consulta de stock en tiempo real y reserva en almacén, sincronización de repuestos, validación y seguimiento de garantías, y el envío de pedidos o facturas. Lo hemos hecho para el taller Kawasaki y la red de más de 300 talleres Bajaj de Grupo Crosland.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-extras.ts</context>
-          <context context-type="linenumber">46</context>
+          <context context-type="linenumber">47</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.integration.faq3.q" datatype="html">
         <source>¿Pueden conectar mi sistema con la facturación electrónica de SUNAT?</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-extras.ts</context>
-          <context context-type="linenumber">47</context>
+          <context context-type="linenumber">48</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.integration.faq3.a" datatype="html">
         <source>Sí. Hemos desarrollado interfaces para emitir y validar facturas electrónicas desde el sistema de gestión del cliente, de modo que el comprobante se genera al cerrar la venta, sin volver a digitarlo.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-extras.ts</context>
-          <context context-type="linenumber">47</context>
+          <context context-type="linenumber">48</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.integration.faq4.q" datatype="html">
         <source>¿Qué son sus APIs de validación?</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-extras.ts</context>
-          <context context-type="linenumber">48</context>
+          <context context-type="linenumber">49</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.integration.faq4.a" datatype="html">
         <source>Son servicios que tu sistema puede consultar para validar datos de RUC y DNI, y de cuentas bancarias, al registrar un cliente o un pago. Se contratan como suscripción mensual desde nuestro portal de clientes; si te interesan, escríbenos y te enviamos los detalles.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-extras.ts</context>
-          <context context-type="linenumber">48</context>
+          <context context-type="linenumber">49</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.integration.faq5.q" datatype="html">
         <source>¿Qué pasa si SAP o SUNAT cambian algo?</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-extras.ts</context>
-          <context context-type="linenumber">49</context>
+          <context context-type="linenumber">50</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.integration.faq5.a" datatype="html">
         <source>Las integraciones necesitan mantenimiento. Monitoreamos las que construimos y, cuando cambia una norma o una versión, las ajustamos dentro del soporte, que se gestiona desde el portal de clientes.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-extras.ts</context>
-          <context context-type="linenumber">49</context>
+          <context context-type="linenumber">50</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.hosting.aud1" datatype="html">
         <source>Empresas que no tienen un equipo de TI propio y quieren que su web, su correo y sus sistemas estén siempre en línea, sin preocuparse por la parte técnica.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-extras.ts</context>
-          <context context-type="linenumber">54</context>
+          <context context-type="linenumber">55</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.hosting.aud2" datatype="html">
         <source>Negocios con varios dominios, certificados y renovaciones que hoy se gestionan en distintos lugares y a veces vencen sin aviso.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-extras.ts</context>
-          <context context-type="linenumber">55</context>
+          <context context-type="linenumber">56</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.hosting.aud3" datatype="html">
         <source>Clientes que ya tienen un sistema o una web y necesitan soporte continuo con tiempos y prioridades claros.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-extras.ts</context>
-          <context context-type="linenumber">56</context>
+          <context context-type="linenumber">57</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.hosting.faq1.q" datatype="html">
         <source>¿Cuánto cuesta el hosting?</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-extras.ts</context>
-          <context context-type="linenumber">59</context>
+          <context context-type="linenumber">60</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.hosting.faq1.a" datatype="html">
         <source>Los planes de hosting cloud empiezan en US$ 110 al año, y hay planes para WordPress y para empresas con más tráfico. Los dominios .com desde US$ 25 al año y los .pe desde US$ 40. Puedes ver y contratar los planes desde nuestro portal de clientes.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-extras.ts</context>
-          <context context-type="linenumber">59</context>
+          <context context-type="linenumber">60</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.hosting.faq2.q" datatype="html">
         <source>¿Me avisan antes de que venza mi dominio o mi hosting?</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-extras.ts</context>
-          <context context-type="linenumber">60</context>
+          <context context-type="linenumber">61</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.hosting.faq2.a" datatype="html">
         <source>Sí. El portal te envía recordatorios por correo 30, 7 y 1 día antes de cada vencimiento, y puedes renovar en línea con PayPal o por transferencia bancaria.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-extras.ts</context>
-          <context context-type="linenumber">60</context>
+          <context context-type="linenumber">61</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.hosting.faq3.q" datatype="html">
         <source>¿Cómo pido soporte?</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-extras.ts</context>
-          <context context-type="linenumber">61</context>
+          <context context-type="linenumber">62</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.hosting.faq3.a" datatype="html">
         <source>Desde el portal de clientes registras un ticket (un error, una mejora o un requerimiento) y ves su estado hasta que se resuelve. Te avisamos por correo cada vez que hay una respuesta o un cambio.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-extras.ts</context>
-          <context context-type="linenumber">61</context>
+          <context context-type="linenumber">62</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.hosting.faq4.q" datatype="html">
         <source>¿Incluye copias de seguridad?</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-extras.ts</context>
-          <context context-type="linenumber">62</context>
+          <context context-type="linenumber">63</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.hosting.faq4.a" datatype="html">
         <source>Ofrecemos backups programados de bases de datos y sitios como servicio, para que puedas recuperar tu información si algo falla. Te recomendamos el plan según la importancia de tus datos.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-extras.ts</context>
-          <context context-type="linenumber">62</context>
+          <context context-type="linenumber">63</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.hosting.faq5.q" datatype="html">
         <source>¿Puedo pagar en soles o por transferencia?</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-extras.ts</context>
-          <context context-type="linenumber">63</context>
+          <context context-type="linenumber">64</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.hosting.faq5.a" datatype="html">
         <source>Sí. Además de PayPal, aceptamos transferencia bancaria a nuestras cuentas en soles, dólares o euros: reportas el pago con el número de operación o la constancia y lo confirmamos.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-extras.ts</context>
-          <context context-type="linenumber">63</context>
+          <context context-type="linenumber">64</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.label" datatype="html">
@@ -2821,69 +3012,6 @@
           <context context-type="sourcefile">projects/site/src/app/pages/service/service-page.component.ts</context>
           <context context-type="linenumber">78,80</context>
         </context-group>
-      </trans-unit>
-      <trans-unit id="home.nav.blog" datatype="html">
-        <source>Blog</source>
-      </trans-unit>
-      <trans-unit id="blog.label" datatype="html">
-        <source>BLOG</source>
-      </trans-unit>
-      <trans-unit id="blog.title" datatype="html">
-        <source>Ideas para<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br&gt;"/>construir mejor.</source>
-      </trans-unit>
-      <trans-unit id="blog.lead" datatype="html">
-        <source>Lo que aprendemos desarrollando software, integrando sistemas y manteniendo sitios en producción, contado sin rodeos.</source>
-      </trans-unit>
-      <trans-unit id="blog.loading" datatype="html">
-        <source>Cargando artículos…</source>
-      </trans-unit>
-      <trans-unit id="blog.error" datatype="html">
-        <source>No pudimos cargar los artículos. Vuelve a intentarlo en unos minutos.</source>
-      </trans-unit>
-      <trans-unit id="blog.empty" datatype="html">
-        <source>Muy pronto publicaremos aquí nuestros primeros artículos.</source>
-      </trans-unit>
-      <trans-unit id="blog.latest" datatype="html">
-        <source>Lo último</source>
-      </trans-unit>
-      <trans-unit id="blog.read" datatype="html">
-        <source>Leer artículo</source>
-      </trans-unit>
-      <trans-unit id="blog.filter" datatype="html">
-        <source>Filtrar por tema</source>
-      </trans-unit>
-      <trans-unit id="blog.all" datatype="html">
-        <source>Todos</source>
-      </trans-unit>
-      <trans-unit id="blog.articles" datatype="html">
-        <source>Artículos</source>
-      </trans-unit>
-      <trans-unit id="blog.more" datatype="html">
-        <source>Ver más artículos</source>
-      </trans-unit>
-      <trans-unit id="blog.cta" datatype="html">
-        <source>¿Tienes un proyecto en mente?</source>
-      </trans-unit>
-      <trans-unit id="blog.metaTitle" datatype="html">
-        <source>Blog — Rtres Web Solutions</source>
-      </trans-unit>
-      <trans-unit id="blog.meta" datatype="html">
-        <source>Artículos de Rtres sobre software a medida, integración de sistemas, automatización y hosting para empresas.</source>
-      </trans-unit>
-      <trans-unit id="blog.readingSuffix" datatype="html">
-        <source>de lectura</source>
-      </trans-unit>
-      <trans-unit id="blog.next" datatype="html">
-        <source>Sigue leyendo</source>
-      </trans-unit>
-      <trans-unit id="blog.nextLabel" datatype="html">
-        <source>SIGUE LEYENDO</source>
-      </trans-unit>
-      <trans-unit id="blog.postError" datatype="html">
-        <source>No pudimos cargar este artículo. Vuelve a intentarlo en unos minutos.</source>
-      </trans-unit>
-      <trans-unit id="blog.postLoading" datatype="html">
-        <source>Cargando artículo…</source>
       </trans-unit>
     </body>
   </file>

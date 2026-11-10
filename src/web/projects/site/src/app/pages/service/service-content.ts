@@ -7,6 +7,8 @@ export interface ServiceContent {
   title: string;
   lead: string;
   metaDescription: string;
+  /** Título de la pestaña y de Google si debe diferir del H1 (p. ej. con la ciudad). */
+  metaTitle?: string;
   /** Imagen del hero y qué parte mostrar (background-position). */
   image: string;
   imagePosition: string;
@@ -25,7 +27,8 @@ export const SERVICES: ServiceContent[] = [
     index: '01',
     title: $localize`:@@service.software.title:Software a medida`,
     lead: $localize`:@@service.software.lead:Sistemas hechos para cómo trabaja tu empresa: ventas, comisiones, operaciones e indicadores en una sola plataforma que crece contigo.`,
-    metaDescription: $localize`:@@service.software.meta:Desarrollo de software a medida para empresas: sistemas de ventas, comisiones, gestión de talleres y business intelligence. Desde 2007.`,
+    metaTitle: $localize`:@@service.software.metaTitle:Desarrollo de software a medida en Lima, Perú`,
+    metaDescription: $localize`:@@service.software.meta:Empresa de desarrollo de software a medida en Lima, Perú: sistemas de ventas, comisiones, gestión de talleres, integración con SAP y SUNAT, y business intelligence. Desde 2007.`,
     image: 'assets/hero-dashboard.webp',
     imagePosition: '72% 45%',
     problemLabel: $localize`:@@service.problem.label:EL PROBLEMA`,

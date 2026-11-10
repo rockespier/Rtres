@@ -31,7 +31,8 @@ import { CookieConsentService } from '../cookie-consent/cookie-consent.service';
       <div>
         <b i18n="@@home.footer.contact">Contacto</b>
         <a href="mailto:info&#64;rtres.net">info&#64;rtres.net</a>
-        <a href="tel:+393281915399">+39 328 191 5399</a>
+        <a href="tel:+51942670094">+51 942 670 094 (PE)</a>
+        <a href="tel:+393281915399">+39 328 191 5399 (IT)</a>
         <a href="https://wa.me/393281915399" target="_blank" rel="noopener">WhatsApp ↗</a>
       </div>
       <div class="bottom">

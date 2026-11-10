@@ -13,7 +13,7 @@ Decide una sola versión de cada dato y úsala igual en todos lados, carácter p
 | Dato | Valor propuesto | Notas |
 |---|---|---|
 | Nombre | **Rtres Web Solutions** | Sin variantes ("R3", "RTRES", "R3 Web Solutions"). En LinkedIn o en la SUNAT puede figurar la razón social, pero el nombre comercial es este. |
-| Teléfono Perú | **+51 997 893 258** | Aparece en tu carta de presentación. **Confírmame que es el número comercial** y lo agrego a la web (pie, contacto y datos estructurados). |
+| Teléfono Perú | **+51 942 670 094** | Número comercial; ya está en la web (pie, contacto y datos estructurados). |
 | Teléfono Italia | +39 328 191 5399 | Secundario, para clientes de Europa. |
 | Email | info@rtres.net | |
 | Web | https://rtres.net/es/ | |
@@ -34,7 +34,7 @@ Decide una sola versión de cada dato y úsala igual en todos lados, carácter p
    - **Sí**, si recibes clientes en una oficina → ingresa la dirección exacta.
    - **No**, si trabajas en remoto o vas a donde el cliente → es un perfil de **"área de servicio"**: la dirección no se muestra en público.
 5. **Zonas de servicio:** agrega **Lima**, **Perú** y, si quieres, otras ciudades donde tengas clientes.
-6. **Teléfono:** `+51 997 893 258`. **Sitio web:** `https://rtres.net/es/`.
+6. **Teléfono:** `+51 942 670 094`. **Sitio web:** `https://rtres.net/es/`.
 
 ### 1.2 Verificar el perfil
 Google te pedirá verificar que el negocio es tuyo. Según tu caso, te ofrecerá alguna de estas opciones:
