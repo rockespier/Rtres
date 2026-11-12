@@ -31,7 +31,7 @@ interface SuccessCase { sector: string; name: string; scope: string; shot: CaseC
         }
       </div>
       <footer>
-        <small class="rule" i18n="@@home.cases.rule1">TECNOLOGÍA<br>QUE TRABAJA<br>CON VOS.</small>
+        <small class="rule" i18n="@@home.cases.rule1">TECNOLOGÍA<br>QUE TRABAJA<br>CONTIGO.</small>
         <b><ng-container i18n="@@home.cases.footer.title">Mismos principios, distintos desafíos.</ng-container><em i18n="@@home.cases.footer.text">Sistemas sólidos, equipos que evolucionan y operaciones que no se detienen.</em></b>
         <small class="rule" i18n="@@home.cases.rule2">IDEAS<br>SISTEMAS<br>RESULTADOS</small>
       </footer>
