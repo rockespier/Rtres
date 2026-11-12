@@ -34,13 +34,28 @@ public class GoogleLoginTests
         AssertRefused(await Google(db, new FirebaseIdentity(seed.User.Email, true)));
     }
 
-    [Theory]
-    [InlineData(UserRole.Admin)]
-    [InlineData(UserRole.SuperAdmin)]
-    public async Task Admin_roles_stay_password_only(UserRole role)
+    [Fact]
+    public async Task Client_main_contact_signs_in()
     {
         using var db = TestData.Db(out var seed);
-        seed.User.Role = role; db.SaveChanges();
+        seed.User.Role = UserRole.Admin; db.SaveChanges();
+        var ok = Assert.IsType<OkObjectResult>(await Google(db, new FirebaseIdentity(seed.User.Email, true)));
+        Assert.Equal("Admin", Prop<string>(Prop<object>(ok.Value!, "user"), "role"));
+    }
+
+    [Fact]
+    public async Task SuperAdmin_stays_password_only()
+    {
+        using var db = TestData.Db(out var seed);
+        seed.User.Role = UserRole.SuperAdmin; seed.User.ClientId = null; db.SaveChanges();
+        AssertRefused(await Google(db, new FirebaseIdentity(seed.User.Email, true)));
+    }
+
+    [Fact]
+    public async Task User_without_client_is_refused()
+    {
+        using var db = TestData.Db(out var seed);
+        seed.User.Role = UserRole.Admin; seed.User.ClientId = null; db.SaveChanges();
         AssertRefused(await Google(db, new FirebaseIdentity(seed.User.Email, true)));
     }
 
