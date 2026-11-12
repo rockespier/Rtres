@@ -1,0 +1,3 @@
+
+Ç½"<a class="case-card" href="caso-{c["slug"]}.html"><div class="capture"><span>Captura del proyecto</span><small>Pendiente de incorporar</small></div><p class="case-sector">{e(c["sector"])}</p><h3>{e(c["name"])}</h3><p>{e(c["title"])}</p><span class="text-link">Ver caso <span aria-hidden="true">â†—</span></span></a>"strc( (("
+	) )(Ä*5C:\repo\rtres-net\Rtres\mockups\propuesta\generate.py

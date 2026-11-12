@@ -1,0 +1,185 @@
+{
+  "$schema": "http://json.schemastore.org/sarif-1.0.0",
+  "version": "1.0.0",
+  "runs": [
+    {
+      "tool": {
+        "name": "Compilatore Microsoft (R) Visual C#",
+        "version": "5.9.0.0",
+        "fileVersion": "5.9.0-1.26523.112 (5a2162bea6845eabc1fc721624a43568c65db3b1)",
+        "semanticVersion": "5.9.0",
+        "language": "it-IT"
+      },
+      "results": [
+        {
+          "ruleId": "CS0618",
+          "level": "warning",
+          "message": "'OpenApiSchema.Example' è obsoleto: 'Use Examples instead.'",
+          "suppressionStates": [
+            "suppressedInSource"
+          ],
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Api.Tests/obj/Debug/net10.0/Microsoft.AspNetCore.OpenApi.SourceGenerators/Microsoft.AspNetCore.OpenApi.SourceGenerators.XmlCommentGenerator/OpenApiXmlCommentSupport.generated.cs",
+                "region": {
+                  "startLine": 519,
+                  "startColumn": 21,
+                  "endLine": 519,
+                  "endColumn": 35
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 2
+          }
+        },
+        {
+          "ruleId": "CS0618",
+          "level": "warning",
+          "message": "'OpenApiSchema.Example' è obsoleto: 'Use Examples instead.'",
+          "suppressionStates": [
+            "suppressedInSource"
+          ],
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Api.Tests/obj/Debug/net10.0/Microsoft.AspNetCore.OpenApi.SourceGenerators/Microsoft.AspNetCore.OpenApi.SourceGenerators.XmlCommentGenerator/OpenApiXmlCommentSupport.generated.cs",
+                "region": {
+                  "startLine": 545,
+                  "startColumn": 29,
+                  "endLine": 545,
+                  "endColumn": 43
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 2
+          }
+        },
+        {
+          "ruleId": "xUnit2032",
+          "level": "note",
+          "message": "The naming of Assert.IsAssignableFrom can be confusing. An overload of Assert.IsType is available with an exact match flag which can be set to false to perform the same operation.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Api.Tests/CategoriesTests.cs",
+                "region": {
+                  "startLine": 44,
+                  "startColumn": 39,
+                  "endLine": 44,
+                  "endColumn": 102
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "xUnit1031",
+          "level": "warning",
+          "message": "Test methods should not use blocking task operations, as they can cause deadlocks. Use an async test method and await instead.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Api.Tests/ImportTemplateTests.cs",
+                "region": {
+                  "startLine": 22,
+                  "startColumn": 60,
+                  "endLine": 22,
+                  "endColumn": 66
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "xUnit2032",
+          "level": "note",
+          "message": "The naming of Assert.IsAssignableFrom can be confusing. An overload of Assert.IsType is available with an exact match flag which can be set to false to perform the same operation.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Api.Tests/LearningVideosTests.cs",
+                "region": {
+                  "startLine": 33,
+                  "startColumn": 18,
+                  "endLine": 33,
+                  "endColumn": 164
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "xUnit2032",
+          "level": "note",
+          "message": "The naming of Assert.IsAssignableFrom can be confusing. An overload of Assert.IsType is available with an exact match flag which can be set to false to perform the same operation.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Api.Tests/LearningVideosTests.cs",
+                "region": {
+                  "startLine": 39,
+                  "startColumn": 14,
+                  "endLine": 39,
+                  "endColumn": 160
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        }
+      ],
+      "rules": {
+        "CS0618": {
+          "id": "CS0618",
+          "shortDescription": "Il tipo o il membro è obsoleto",
+          "defaultLevel": "warning",
+          "helpUri": "https://msdn.microsoft.com/query/roslyn.query?appId=roslyn&k=k(CS0618)",
+          "properties": {
+            "category": "Compiler",
+            "isEnabledByDefault": true,
+            "tags": [
+              "Compiler",
+              "Telemetry"
+            ]
+          }
+        },
+        "xUnit1031": {
+          "id": "xUnit1031",
+          "shortDescription": "Do not use blocking task operations in test method",
+          "defaultLevel": "warning",
+          "helpUri": "https://xunit.net/xunit.analyzers/rules/xUnit1031",
+          "properties": {
+            "category": "Usage",
+            "isEnabledByDefault": true
+          }
+        },
+        "xUnit2032": {
+          "id": "xUnit2032",
+          "shortDescription": "Type assertions based on 'assignable from' are confusingly named",
+          "defaultLevel": "note",
+          "helpUri": "https://xunit.net/xunit.analyzers/rules/xUnit2032",
+          "properties": {
+            "category": "Assertions",
+            "isEnabledByDefault": true
+          }
+        }
+      }
+    }
+  ]
+}

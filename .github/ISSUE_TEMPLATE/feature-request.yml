@@ -1,0 +1,118 @@
+name: ✨ Nueva funcionalidad
+description: Solicitar una nueva característica o mejora
+title: "[FEATURE] "
+labels:
+  - enhancement
+  - needs-analysis
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Descripción
+      description: Describe cual es la nueva funcionalida.
+      placeholder: Describe la nueva funcionalidad...
+    validations:
+      required: true
+
+  - type: textarea
+    id: objective
+    attributes:
+      label: Objetivo
+      description: Explica qué se quiere conseguir.
+      placeholder: Como usuario necesito...
+    validations:
+      required: true
+
+  - type: textarea
+    id: business-value
+    attributes:
+      label: Valor de negocio
+      description: Explica por qué esta funcionalidad es necesaria.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed-solution
+    attributes:
+      label: Solución propuesta
+      description: Describe el comportamiento esperado.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: affected-area
+    attributes:
+      label: Área afectada
+      multiple: true
+      options:
+        - Backend .NET
+        - Frontend 
+        - Base de datos
+        - API o contratos
+        - Autenticación / Microsoft Entra ID
+        - Infraestructura / CI-CD
+        - Documentación
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Criterios de aceptación
+      placeholder: |
+        - [ ] El usuario puede...
+        - [ ] El sistema valida...
+        - [ ] Se muestran los mensajes correspondientes
+        - [ ] Se agregaron pruebas automatizadas
+    validations:
+      required: true
+
+  - type: textarea
+    id: technical-considerations
+    attributes:
+      label: Consideraciones técnicas
+      description: APIs, seguridad, base de datos, rendimiento o compatibilidad.
+
+  - type: textarea
+    id: out-of-scope
+    attributes:
+      label: Fuera de alcance
+      description: Indica explícitamente qué no debe incluirse.
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Prioridad 
+      options:
+        - Baja
+        - Media
+        - Alta
+        - Crítica
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidencias o contexto
+      description: Incluye logs, capturas, mensajes de error o respuestas HTTP.
+      placeholder: Arrastra capturas aquí o pega los mensajes de error.
+    validations:
+      required: true
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencias identificadas
+      description: Indica otros issues, servicios o decisiones relacionadas.
+      placeholder: Escribe "Ninguna" cuando no existan dependencias.
+    validations:
+      required: true      
+  - type: textarea
+    id: agent-instructions
+    attributes:
+      label: Instrucciones para el agente
+      description: Restricciones específicas que Codex o Claude deben respetar.
+      placeholder: |
+        - No modificar contratos públicos
+        - No agregar nuevas dependencias
+        - Respetar AGENTS.md
+        - No hacer commit ni push automáticamente          

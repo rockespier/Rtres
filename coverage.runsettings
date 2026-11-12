@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Configuration>
+  <CodeCoverage>
+    <!-- Filtros de ensamblados (.dll) -->
+    <ModulePaths>
+      <Exclude>
+        <!-- Excluye cualquier proyecto/ensamblado que termine en "Tests.dll" -->
+        <ModulePath>.*Tests\.dll$</ModulePath>
+        <!-- Puedes excluir librerías de terceros o xunit si aparecen -->
+        <ModulePath>.*xunit.*</ModulePath>
+      </Exclude>
+    </ModulePaths>
+
+    <!-- Filtros de código fuente (carpetas y archivos .cs) -->
+    <Sources>
+      <Exclude>
+        <!-- Excluye la carpeta Migrations -->
+        <Source>.*\\Migrations\\.*</Source>
+        <!-- Excluye archivos específicos si lo necesitas, ej: Program.cs -->
+        <Source>.*Program\.cs$</Source>
+      </Exclude>
+    </Sources>
+  </CodeCoverage>
+</Configuration>

@@ -1,0 +1,252 @@
+˙
+2Rtres.Infrastructure.Notifications.SmtpEmailSenderobjectRtres.Domain.IEmailSenderª
+BSmtpEmailSender(Microsoft.Extensions.Configuration.IConfiguration)uRtres.Infrastructure.Notifications.SmtpEmailSender.SmtpEmailSender(Microsoft.Extensions.Configuration.IConfiguration)«
+HSendAsync(Rtres.Domain.EmailMessage, System.Threading.CancellationToken){Rtres.Infrastructure.Notifications.SmtpEmailSender.SendAsync(Rtres.Domain.EmailMessage, System.Threading.CancellationToken)2Rtres.Domain.IEmailSender¯
+'Rtres.Infrastructure.ExchangeRateClientobject Rtres.Domain.IExchangeRateClientà
+.ExchangeRateClient(System.Net.Http.HttpClient)VRtres.Infrastructure.ExchangeRateClient.ExchangeRateClient(System.Net.Http.HttpClient)ä
+/GetUsdAsync(System.Threading.CancellationToken)WRtres.Infrastructure.ExchangeRateClient.GetUsdAsync(System.Threading.CancellationToken)ä
+/GetEurAsync(System.Threading.CancellationToken)WRtres.Infrastructure.ExchangeRateClient.GetEurAsync(System.Threading.CancellationToken)ﬁ
+5Rtres.Infrastructure.Notifications.LoggingEmailSenderobjectRtres.Domain.IEmailSenderô
+oLoggingEmailSender(Microsoft.Extensions.Logging.ILogger<Rtres.Infrastructure.Notifications.LoggingEmailSender>)•Rtres.Infrastructure.Notifications.LoggingEmailSender.LoggingEmailSender(Microsoft.Extensions.Logging.ILogger<Rtres.Infrastructure.Notifications.LoggingEmailSender>) 
+HSendAsync(Rtres.Domain.EmailMessage, System.Threading.CancellationToken)~Rtres.Infrastructure.Notifications.LoggingEmailSender.SendAsync(Rtres.Domain.EmailMessage, System.Threading.CancellationToken)2Rtres.Domain.IEmailSender”
++Rtres.Infrastructure.WordPressContentClientobject$Rtres.Domain.IWordPressContentClient˘
+dWordPressContentClient(System.Net.Http.HttpClient, Microsoft.Extensions.Caching.Memory.IMemoryCache)êRtres.Infrastructure.WordPressContentClient.WordPressContentClient(System.Net.Http.HttpClient, Microsoft.Extensions.Caching.Memory.IMemoryCache)∞
+@GetPageAsync(string, string, System.Threading.CancellationToken)lRtres.Infrastructure.WordPressContentClient.GetPageAsync(string, string, System.Threading.CancellationToken)®
+<GetProjectsAsync(string, System.Threading.CancellationToken)hRtres.Infrastructure.WordPressContentClient.GetProjectsAsync(string, System.Threading.CancellationToken)¶
+;GetReviewsAsync(string, System.Threading.CancellationToken)gRtres.Infrastructure.WordPressContentClient.GetReviewsAsync(string, System.Threading.CancellationToken)™
+=GetBlogPostsAsync(string, System.Threading.CancellationToken)iRtres.Infrastructure.WordPressContentClient.GetBlogPostsAsync(string, System.Threading.CancellationToken)Æ
+?FetchBlogPostsAsync(string, System.Threading.CancellationToken)kRtres.Infrastructure.WordPressContentClient.FetchBlogPostsAsync(string, System.Threading.CancellationToken)†
+8GetHeroPhotoUrlAsync(System.Threading.CancellationToken)dRtres.Infrastructure.WordPressContentClient.GetHeroPhotoUrlAsync(System.Threading.CancellationToken)§
+:FetchHeroPhotoUrlAsync(System.Threading.CancellationToken)fRtres.Infrastructure.WordPressContentClient.FetchHeroPhotoUrlAsync(System.Threading.CancellationToken) 
+MGetPostsByCategorySlugAsync(string, System.Threading.CancellationToken, bool)yRtres.Infrastructure.WordPressContentClient.GetPostsByCategorySlugAsync(string, System.Threading.CancellationToken, bool)˚
+!Rtres.Infrastructure.PayPalClientobjectRtres.Domain.IPayPalClient‹
+[PayPalClient(System.Net.Http.HttpClient, Microsoft.Extensions.Configuration.IConfiguration)}Rtres.Infrastructure.PayPalClient.PayPalClient(System.Net.Http.HttpClient, Microsoft.Extensions.Configuration.IConfiguration)‡
+]CreateOrderAsync(decimal, string, string, string, string, System.Threading.CancellationToken)Rtres.Infrastructure.PayPalClient.CreateOrderAsync(decimal, string, string, string, string, System.Threading.CancellationToken)‹
+[CreateSubscriptionAsync(string, string, string, string, System.Threading.CancellationToken)}Rtres.Infrastructure.PayPalClient.CreateSubscriptionAsync(string, string, string, string, System.Threading.CancellationToken)†
+=CaptureOrderAsync(string, System.Threading.CancellationToken)_Rtres.Infrastructure.PayPalClient.CaptureOrderAsync(string, System.Threading.CancellationToken)‹
+[CreatePlanAsync(string, decimal, string, int, decimal?, System.Threading.CancellationToken)}Rtres.Infrastructure.PayPalClient.CreatePlanAsync(string, decimal, string, int, decimal?, System.Threading.CancellationToken)¶
+@GetSubscriptionAsync(string, System.Threading.CancellationToken)bRtres.Infrastructure.PayPalClient.GetSubscriptionAsync(string, System.Threading.CancellationToken)º
+KCancelSubscriptionAsync(string, string, System.Threading.CancellationToken)mRtres.Infrastructure.PayPalClient.CancelSubscriptionAsync(string, string, System.Threading.CancellationToken)£
+~VerifyWebhookAsync(string, System.Collections.Generic.IReadOnlyDictionary<string, string>, System.Threading.CancellationToken)†Rtres.Infrastructure.PayPalClient.VerifyWebhookAsync(string, System.Collections.Generic.IReadOnlyDictionary<string, string>, System.Threading.CancellationToken)§
+?CreateAsync(string, string, System.Threading.CancellationToken)aRtres.Infrastructure.PayPalClient.CreateAsync(string, string, System.Threading.CancellationToken)»
+QSendAsync(System.Net.Http.HttpRequestMessage, System.Threading.CancellationToken)sRtres.Infrastructure.PayPalClient.SendAsync(System.Net.Http.HttpRequestMessage, System.Threading.CancellationToken)é
+4AccessTokenAsync(System.Threading.CancellationToken)VRtres.Infrastructure.PayPalClient.AccessTokenAsync(System.Threading.CancellationToken)§
+=Rtres.Infrastructure.Persistence.Migrations.AddClientIsActive2Microsoft.EntityFrameworkCore.Migrations.Migrationobjectº
+=Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder){Rtres.Infrastructure.Persistence.Migrations.AddClientIsActive.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)¿
+?Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)}Rtres.Infrastructure.Persistence.Migrations.AddClientIsActive.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)∫
+<BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)zRtres.Infrastructure.Persistence.Migrations.AddClientIsActive.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)h
+AddClientIsActive()QRtres.Infrastructure.Persistence.Migrations.AddClientIsActive.AddClientIsActive()§
+=Rtres.Infrastructure.Persistence.Migrations.ProductPayPalPlan2Microsoft.EntityFrameworkCore.Migrations.Migrationobjectº
+=Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder){Rtres.Infrastructure.Persistence.Migrations.ProductPayPalPlan.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)¿
+?Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)}Rtres.Infrastructure.Persistence.Migrations.ProductPayPalPlan.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)∫
+<BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)zRtres.Infrastructure.Persistence.Migrations.ProductPayPalPlan.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)h
+ProductPayPalPlan()QRtres.Infrastructure.Persistence.Migrations.ProductPayPalPlan.ProductPayPalPlan()à
+9Rtres.Infrastructure.Persistence.Migrations.InitialCreate2Microsoft.EntityFrameworkCore.Migrations.Migrationobject∏
+=Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)wRtres.Infrastructure.Persistence.Migrations.InitialCreate.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)º
+?Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)yRtres.Infrastructure.Persistence.Migrations.InitialCreate.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)∂
+<BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)vRtres.Infrastructure.Persistence.Migrations.InitialCreate.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)\
+InitialCreate()IRtres.Infrastructure.Persistence.Migrations.InitialCreate.InitialCreate()ù
+<Rtres.Infrastructure.Persistence.Migrations.GitHubTicketSync2Microsoft.EntityFrameworkCore.Migrations.Migrationobjectª
+=Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)zRtres.Infrastructure.Persistence.Migrations.GitHubTicketSync.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)ø
+?Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)|Rtres.Infrastructure.Persistence.Migrations.GitHubTicketSync.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)π
+<BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)yRtres.Infrastructure.Persistence.Migrations.GitHubTicketSync.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)e
+GitHubTicketSync()ORtres.Infrastructure.Persistence.Migrations.GitHubTicketSync.GitHubTicketSync()¡
+ARtres.Infrastructure.Persistence.Migrations.ClientProductDiscount2Microsoft.EntityFrameworkCore.Migrations.Migrationobject¿
+=Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)Rtres.Infrastructure.Persistence.Migrations.ClientProductDiscount.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)≈
+?Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)ÅRtres.Infrastructure.Persistence.Migrations.ClientProductDiscount.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)æ
+<BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)~Rtres.Infrastructure.Persistence.Migrations.ClientProductDiscount.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)t
+ClientProductDiscount()YRtres.Infrastructure.Persistence.Migrations.ClientProductDiscount.ClientProductDiscount()∫
+@Rtres.Infrastructure.Persistence.Migrations.TaxDocumentNumbering2Microsoft.EntityFrameworkCore.Migrations.Migrationobjectø
+=Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)~Rtres.Infrastructure.Persistence.Migrations.TaxDocumentNumbering.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)ƒ
+?Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)ÄRtres.Infrastructure.Persistence.Migrations.TaxDocumentNumbering.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)Ω
+<BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)}Rtres.Infrastructure.Persistence.Migrations.TaxDocumentNumbering.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)q
+TaxDocumentNumbering()WRtres.Infrastructure.Persistence.Migrations.TaxDocumentNumbering.TaxDocumentNumbering()ù
+<Rtres.Infrastructure.Persistence.Migrations.AddPayPalOrderId2Microsoft.EntityFrameworkCore.Migrations.Migrationobjectª
+=Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)zRtres.Infrastructure.Persistence.Migrations.AddPayPalOrderId.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)ø
+?Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)|Rtres.Infrastructure.Persistence.Migrations.AddPayPalOrderId.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)π
+<BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)yRtres.Infrastructure.Persistence.Migrations.AddPayPalOrderId.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)e
+AddPayPalOrderId()ORtres.Infrastructure.Persistence.Migrations.AddPayPalOrderId.AddPayPalOrderId()…
+BRtres.Infrastructure.Persistence.Migrations.NotificationLogDetails2Microsoft.EntityFrameworkCore.Migrations.Migrationobject¬
+=Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)ÄRtres.Infrastructure.Persistence.Migrations.NotificationLogDetails.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)∆
+?Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)ÇRtres.Infrastructure.Persistence.Migrations.NotificationLogDetails.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)ø
+<BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)Rtres.Infrastructure.Persistence.Migrations.NotificationLogDetails.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)w
+NotificationLogDetails()[Rtres.Infrastructure.Persistence.Migrations.NotificationLogDetails.NotificationLogDetails()ï
+'Rtres.Infrastructure.GitHubIssuesClientobject Rtres.Domain.IGitHubIssuesClientÔ
+aGitHubIssuesClient(Microsoft.Extensions.Configuration.IConfiguration, System.Net.Http.HttpClient)âRtres.Infrastructure.GitHubIssuesClient.GitHubIssuesClient(Microsoft.Extensions.Configuration.IConfiguration, System.Net.Http.HttpClient)∆
+åGetIssueStatesAsync(Rtres.Domain.ProjectRepository, System.Collections.Generic.IReadOnlyCollection<int>, System.Threading.CancellationToken)¥Rtres.Infrastructure.GitHubIssuesClient.GetIssueStatesAsync(Rtres.Domain.ProjectRepository, System.Collections.Generic.IReadOnlyCollection<int>, System.Threading.CancellationToken)æ
+»CreateIssueAsync(Rtres.Domain.Project, Rtres.Domain.ProjectRepository, Rtres.Domain.Ticket, System.Collections.Generic.IReadOnlyList<Rtres.Domain.TicketAttachment>, System.Threading.CancellationToken)Rtres.Infrastructure.GitHubIssuesClient.CreateIssueAsync(Rtres.Domain.Project, Rtres.Domain.ProjectRepository, Rtres.Domain.Ticket, System.Collections.Generic.IReadOnlyList<Rtres.Domain.TicketAttachment>, System.Threading.CancellationToken)Û
+cCreateCommentAsync(Rtres.Domain.ProjectRepository, int, string, System.Threading.CancellationToken)ãRtres.Infrastructure.GitHubIssuesClient.CreateCommentAsync(Rtres.Domain.ProjectRepository, int, string, System.Threading.CancellationToken)É
+kUploadFileAsync(Rtres.Domain.ProjectRepository, string, byte[], string, System.Threading.CancellationToken)ìRtres.Infrastructure.GitHubIssuesClient.UploadFileAsync(Rtres.Domain.ProjectRepository, string, byte[], string, System.Threading.CancellationToken)H
+Client(string)6Rtres.Infrastructure.GitHubIssuesClient.Client(string)Å
+8Rtres.Infrastructure.Persistence.Migrations.PrepaidYears2Microsoft.EntityFrameworkCore.Migrations.Migrationobject∑
+=Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)vRtres.Infrastructure.Persistence.Migrations.PrepaidYears.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)ª
+?Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)xRtres.Infrastructure.Persistence.Migrations.PrepaidYears.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)µ
+<BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)uRtres.Infrastructure.Persistence.Migrations.PrepaidYears.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)Y
+PrepaidYears()GRtres.Infrastructure.Persistence.Migrations.PrepaidYears.PrepaidYears()´
+>Rtres.Infrastructure.Persistence.Migrations.FinanceIncomeModel2Microsoft.EntityFrameworkCore.Migrations.MigrationobjectΩ
+=Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)|Rtres.Infrastructure.Persistence.Migrations.FinanceIncomeModel.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)¡
+?Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)~Rtres.Infrastructure.Persistence.Migrations.FinanceIncomeModel.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)ª
+<BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder){Rtres.Infrastructure.Persistence.Migrations.FinanceIncomeModel.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)k
+FinanceIncomeModel()SRtres.Infrastructure.Persistence.Migrations.FinanceIncomeModel.FinanceIncomeModel()ñ
+;Rtres.Infrastructure.Persistence.Migrations.Fase7Accounting2Microsoft.EntityFrameworkCore.Migrations.Migrationobject∫
+=Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)yRtres.Infrastructure.Persistence.Migrations.Fase7Accounting.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)æ
+?Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder){Rtres.Infrastructure.Persistence.Migrations.Fase7Accounting.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)∏
+<BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)xRtres.Infrastructure.Persistence.Migrations.Fase7Accounting.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)b
+Fase7Accounting()MRtres.Infrastructure.Persistence.Migrations.Fase7Accounting.Fase7Accounting()≤
+?Rtres.Infrastructure.Persistence.Migrations.ProjectRepositories2Microsoft.EntityFrameworkCore.Migrations.Migrationobjectæ
+=Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)}Rtres.Infrastructure.Persistence.Migrations.ProjectRepositories.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)¬
+?Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)Rtres.Infrastructure.Persistence.Migrations.ProjectRepositories.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)º
+<BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)|Rtres.Infrastructure.Persistence.Migrations.ProjectRepositories.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)n
+ProjectRepositories()URtres.Infrastructure.Persistence.Migrations.ProjectRepositories.ProjectRepositories()Ó
+GRtres.Infrastructure.Persistence.Migrations.UniquePaymentTransactionKey2Microsoft.EntityFrameworkCore.Migrations.Migrationobject«
+=Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)ÖRtres.Infrastructure.Persistence.Migrations.UniquePaymentTransactionKey.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)À
+?Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)áRtres.Infrastructure.Persistence.Migrations.UniquePaymentTransactionKey.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)≈
+<BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)ÑRtres.Infrastructure.Persistence.Migrations.UniquePaymentTransactionKey.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)Ü
+UniquePaymentTransactionKey()eRtres.Infrastructure.Persistence.Migrations.UniquePaymentTransactionKey.UniquePaymentTransactionKey()—
+CRtres.Infrastructure.Persistence.Migrations.TicketAttachmentContent2Microsoft.EntityFrameworkCore.Migrations.Migrationobject√
+=Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)ÅRtres.Infrastructure.Persistence.Migrations.TicketAttachmentContent.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)«
+?Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)ÉRtres.Infrastructure.Persistence.Migrations.TicketAttachmentContent.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)¡
+<BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)ÄRtres.Infrastructure.Persistence.Migrations.TicketAttachmentContent.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)z
+TicketAttachmentContent()]Rtres.Infrastructure.Persistence.Migrations.TicketAttachmentContent.TicketAttachmentContent()ä
+KRtres.Infrastructure.Persistence.Migrations.CatalogTagsTicketsNotifications2Microsoft.EntityFrameworkCore.Migrations.MigrationobjectÀ
+=Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)âRtres.Infrastructure.Persistence.Migrations.CatalogTagsTicketsNotifications.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)œ
+?Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)ãRtres.Infrastructure.Persistence.Migrations.CatalogTagsTicketsNotifications.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)…
+<BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)àRtres.Infrastructure.Persistence.Migrations.CatalogTagsTicketsNotifications.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)í
+!CatalogTagsTicketsNotifications()mRtres.Infrastructure.Persistence.Migrations.CatalogTagsTicketsNotifications.CatalogTagsTicketsNotifications()‡
+ERtres.Infrastructure.Persistence.Migrations.TicketGithubProjectStatus2Microsoft.EntityFrameworkCore.Migrations.Migrationobject≈
+=Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)ÉRtres.Infrastructure.Persistence.Migrations.TicketGithubProjectStatus.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)…
+?Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)ÖRtres.Infrastructure.Persistence.Migrations.TicketGithubProjectStatus.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)√
+<BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)ÇRtres.Infrastructure.Persistence.Migrations.TicketGithubProjectStatus.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)Ä
+TicketGithubProjectStatus()aRtres.Infrastructure.Persistence.Migrations.TicketGithubProjectStatus.TicketGithubProjectStatus()§
+=Rtres.Infrastructure.Persistence.Migrations.ManagedCategories2Microsoft.EntityFrameworkCore.Migrations.Migrationobjectº
+=Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder){Rtres.Infrastructure.Persistence.Migrations.ManagedCategories.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)¿
+?Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)}Rtres.Infrastructure.Persistence.Migrations.ManagedCategories.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)∫
+<BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)zRtres.Infrastructure.Persistence.Migrations.ManagedCategories.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)h
+ManagedCategories()QRtres.Infrastructure.Persistence.Migrations.ManagedCategories.ManagedCategories()Ï
+5Rtres.Infrastructure.Persistence.Migrations.Purchases2Microsoft.EntityFrameworkCore.Migrations.Migrationobject¥
+=Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)sRtres.Infrastructure.Persistence.Migrations.Purchases.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)∏
+?Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)uRtres.Infrastructure.Persistence.Migrations.Purchases.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)≤
+<BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)rRtres.Infrastructure.Persistence.Migrations.Purchases.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)P
+Purchases()ARtres.Infrastructure.Persistence.Migrations.Purchases.Purchases()ÿ
+DRtres.Infrastructure.Persistence.Migrations.TaxDocumentNumberPerType2Microsoft.EntityFrameworkCore.Migrations.Migrationobjectƒ
+=Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)ÇRtres.Infrastructure.Persistence.Migrations.TaxDocumentNumberPerType.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)»
+?Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)ÑRtres.Infrastructure.Persistence.Migrations.TaxDocumentNumberPerType.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)¬
+<BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)ÅRtres.Infrastructure.Persistence.Migrations.TaxDocumentNumberPerType.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)}
+TaxDocumentNumberPerType()_Rtres.Infrastructure.Persistence.Migrations.TaxDocumentNumberPerType.TaxDocumentNumberPerType()∫
+@Rtres.Infrastructure.Persistence.Migrations.ExpenseRecurrenceEnd2Microsoft.EntityFrameworkCore.Migrations.Migrationobjectø
+=Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)~Rtres.Infrastructure.Persistence.Migrations.ExpenseRecurrenceEnd.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)ƒ
+?Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)ÄRtres.Infrastructure.Persistence.Migrations.ExpenseRecurrenceEnd.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)Ω
+<BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)}Rtres.Infrastructure.Persistence.Migrations.ExpenseRecurrenceEnd.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)q
+ExpenseRecurrenceEnd()WRtres.Infrastructure.Persistence.Migrations.ExpenseRecurrenceEnd.ExpenseRecurrenceEnd()è
+:Rtres.Infrastructure.Persistence.Migrations.LearningVideos2Microsoft.EntityFrameworkCore.Migrations.Migrationobjectπ
+=Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)xRtres.Infrastructure.Persistence.Migrations.LearningVideos.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)Ω
+?Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)zRtres.Infrastructure.Persistence.Migrations.LearningVideos.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)∑
+<BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)wRtres.Infrastructure.Persistence.Migrations.LearningVideos.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)_
+LearningVideos()KRtres.Infrastructure.Persistence.Migrations.LearningVideos.LearningVideos()Å
+8Rtres.Infrastructure.Persistence.Migrations.ContactLeads2Microsoft.EntityFrameworkCore.Migrations.Migrationobject∑
+=Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)vRtres.Infrastructure.Persistence.Migrations.ContactLeads.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)ª
+?Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)xRtres.Infrastructure.Persistence.Migrations.ContactLeads.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)µ
+<BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)uRtres.Infrastructure.Persistence.Migrations.ContactLeads.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)Y
+ContactLeads()GRtres.Infrastructure.Persistence.Migrations.ContactLeads.ContactLeads()˙
+7Rtres.Infrastructure.Persistence.Migrations.TaxCalendar2Microsoft.EntityFrameworkCore.Migrations.Migrationobject∂
+=Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)uRtres.Infrastructure.Persistence.Migrations.TaxCalendar.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)∫
+?Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)wRtres.Infrastructure.Persistence.Migrations.TaxCalendar.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)¥
+<BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)tRtres.Infrastructure.Persistence.Migrations.TaxCalendar.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)V
+TaxCalendar()ERtres.Infrastructure.Persistence.Migrations.TaxCalendar.TaxCalendar()ù
+<Rtres.Infrastructure.Persistence.Migrations.TaxDocumentLines2Microsoft.EntityFrameworkCore.Migrations.Migrationobjectª
+=Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)zRtres.Infrastructure.Persistence.Migrations.TaxDocumentLines.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)ø
+?Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)|Rtres.Infrastructure.Persistence.Migrations.TaxDocumentLines.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)π
+<BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)yRtres.Infrastructure.Persistence.Migrations.TaxDocumentLines.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)e
+TaxDocumentLines()ORtres.Infrastructure.Persistence.Migrations.TaxDocumentLines.TaxDocumentLines()à
+9Rtres.Infrastructure.Persistence.Migrations.PaymentMethod2Microsoft.EntityFrameworkCore.Migrations.Migrationobject∏
+=Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)wRtres.Infrastructure.Persistence.Migrations.PaymentMethod.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)º
+?Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)yRtres.Infrastructure.Persistence.Migrations.PaymentMethod.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)∂
+<BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)vRtres.Infrastructure.Persistence.Migrations.PaymentMethod.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)\
+PaymentMethod()IRtres.Infrastructure.Persistence.Migrations.PaymentMethod.PaymentMethod()—
+GRtres.Infrastructure.Persistence.Migrations.RtresDbContextModelSnapshot:Microsoft.EntityFrameworkCore.Infrastructure.ModelSnapshotobject∏
+6BuildModel(Microsoft.EntityFrameworkCore.ModelBuilder)~Rtres.Infrastructure.Persistence.Migrations.RtresDbContextModelSnapshot.BuildModel(Microsoft.EntityFrameworkCore.ModelBuilder)Ü
+RtresDbContextModelSnapshot()eRtres.Infrastructure.Persistence.Migrations.RtresDbContextModelSnapshot.RtresDbContextModelSnapshot()´
+>Rtres.Infrastructure.Persistence.Migrations.AddUserAccountName2Microsoft.EntityFrameworkCore.Migrations.MigrationobjectΩ
+=Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)|Rtres.Infrastructure.Persistence.Migrations.AddUserAccountName.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)¡
+?Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)~Rtres.Infrastructure.Persistence.Migrations.AddUserAccountName.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)ª
+<BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder){Rtres.Infrastructure.Persistence.Migrations.AddUserAccountName.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)k
+AddUserAccountName()SRtres.Infrastructure.Persistence.Migrations.AddUserAccountName.AddUserAccountName()…
+TRtres.Infrastructure.Persistence.Migrations.AddProductCatalogAndClientProductBilling2Microsoft.EntityFrameworkCore.Migrations.Migrationobject‘
+=Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)íRtres.Infrastructure.Persistence.Migrations.AddProductCatalogAndClientProductBilling.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)ÿ
+?Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)îRtres.Infrastructure.Persistence.Migrations.AddProductCatalogAndClientProductBilling.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)“
+<BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)ëRtres.Infrastructure.Persistence.Migrations.AddProductCatalogAndClientProductBilling.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)≠
+*AddProductCatalogAndClientProductBilling()Rtres.Infrastructure.Persistence.Migrations.AddProductCatalogAndClientProductBilling.AddProductCatalogAndClientProductBilling()ù
+<Rtres.Infrastructure.Persistence.Migrations.PaymentReversals2Microsoft.EntityFrameworkCore.Migrations.Migrationobjectª
+=Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)zRtres.Infrastructure.Persistence.Migrations.PaymentReversals.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)ø
+?Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)|Rtres.Infrastructure.Persistence.Migrations.PaymentReversals.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)π
+<BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)yRtres.Infrastructure.Persistence.Migrations.PaymentReversals.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)e
+PaymentReversals()ORtres.Infrastructure.Persistence.Migrations.PaymentReversals.PaymentReversals()´
+>Rtres.Infrastructure.Persistence.Migrations.AnnualRentaAnd16622Microsoft.EntityFrameworkCore.Migrations.MigrationobjectΩ
+=Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)|Rtres.Infrastructure.Persistence.Migrations.AnnualRentaAnd1662.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)¡
+?Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)~Rtres.Infrastructure.Persistence.Migrations.AnnualRentaAnd1662.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)ª
+<BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder){Rtres.Infrastructure.Persistence.Migrations.AnnualRentaAnd1662.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)k
+AnnualRentaAnd1662()SRtres.Infrastructure.Persistence.Migrations.AnnualRentaAnd1662.AnnualRentaAnd1662()à
+9Rtres.Infrastructure.Persistence.Migrations.BankTransfers2Microsoft.EntityFrameworkCore.Migrations.Migrationobject∏
+=Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)wRtres.Infrastructure.Persistence.Migrations.BankTransfers.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)º
+?Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)yRtres.Infrastructure.Persistence.Migrations.BankTransfers.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)∂
+<BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)vRtres.Infrastructure.Persistence.Migrations.BankTransfers.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)\
+BankTransfers()IRtres.Infrastructure.Persistence.Migrations.BankTransfers.BankTransfers()ë+
+/Rtres.Infrastructure.Persistence.RtresDbContext'Microsoft.EntityFrameworkCore.DbContextobjectì
+oRtresDbContext(Microsoft.EntityFrameworkCore.DbContextOptions<Rtres.Infrastructure.Persistence.RtresDbContext>)üRtres.Infrastructure.Persistence.RtresDbContext.RtresDbContext(Microsoft.EntityFrameworkCore.DbContextOptions<Rtres.Infrastructure.Persistence.RtresDbContext>)™
+;OnModelCreating(Microsoft.EntityFrameworkCore.ModelBuilder)kRtres.Infrastructure.Persistence.RtresDbContext.OnModelCreating(Microsoft.EntityFrameworkCore.ModelBuilder)J
+Clients.get;Rtres.Infrastructure.Persistence.RtresDbContext.Clients.getJ
+Clients.set;Rtres.Infrastructure.Persistence.RtresDbContext.Clients.setT
+UserAccounts.get@Rtres.Infrastructure.Persistence.RtresDbContext.UserAccounts.getT
+UserAccounts.set@Rtres.Infrastructure.Persistence.RtresDbContext.UserAccounts.setL
+Projects.get<Rtres.Infrastructure.Persistence.RtresDbContext.Projects.getL
+Projects.set<Rtres.Infrastructure.Persistence.RtresDbContext.Projects.setb
+ProjectRepositories.getGRtres.Infrastructure.Persistence.RtresDbContext.ProjectRepositories.getb
+ProjectRepositories.setGRtres.Infrastructure.Persistence.RtresDbContext.ProjectRepositories.setb
+PortalNotifications.getGRtres.Infrastructure.Persistence.RtresDbContext.PortalNotifications.getb
+PortalNotifications.setGRtres.Infrastructure.Persistence.RtresDbContext.PortalNotifications.setL
+Products.get<Rtres.Infrastructure.Persistence.RtresDbContext.Products.getL
+Products.set<Rtres.Infrastructure.Persistence.RtresDbContext.Products.setX
+ClientProducts.getBRtres.Infrastructure.Persistence.RtresDbContext.ClientProducts.getX
+ClientProducts.setBRtres.Infrastructure.Persistence.RtresDbContext.ClientProducts.setJ
+Tickets.get;Rtres.Infrastructure.Persistence.RtresDbContext.Tickets.getJ
+Tickets.set;Rtres.Infrastructure.Persistence.RtresDbContext.Tickets.set^
+TicketAttachments.getERtres.Infrastructure.Persistence.RtresDbContext.TicketAttachments.get^
+TicketAttachments.setERtres.Infrastructure.Persistence.RtresDbContext.TicketAttachments.setX
+TicketComments.getBRtres.Infrastructure.Persistence.RtresDbContext.TicketComments.getX
+TicketComments.setBRtres.Infrastructure.Persistence.RtresDbContext.TicketComments.setb
+PaymentTransactions.getGRtres.Infrastructure.Persistence.RtresDbContext.PaymentTransactions.getb
+PaymentTransactions.setGRtres.Infrastructure.Persistence.RtresDbContext.PaymentTransactions.set\
+NotificationLogs.getDRtres.Infrastructure.Persistence.RtresDbContext.NotificationLogs.get\
+NotificationLogs.setDRtres.Infrastructure.Persistence.RtresDbContext.NotificationLogs.setV
+ExchangeRates.getARtres.Infrastructure.Persistence.RtresDbContext.ExchangeRates.getV
+ExchangeRates.setARtres.Infrastructure.Persistence.RtresDbContext.ExchangeRates.setT
+TaxDocuments.get@Rtres.Infrastructure.Persistence.RtresDbContext.TaxDocuments.getT
+TaxDocuments.set@Rtres.Infrastructure.Persistence.RtresDbContext.TaxDocuments.set\
+TaxDocumentLines.getDRtres.Infrastructure.Persistence.RtresDbContext.TaxDocumentLines.get\
+TaxDocumentLines.setDRtres.Infrastructure.Persistence.RtresDbContext.TaxDocumentLines.set\
+PaymentReversals.getDRtres.Infrastructure.Persistence.RtresDbContext.PaymentReversals.get\
+PaymentReversals.setDRtres.Infrastructure.Persistence.RtresDbContext.PaymentReversals.setN
+Purchases.get=Rtres.Infrastructure.Persistence.RtresDbContext.Purchases.getN
+Purchases.set=Rtres.Infrastructure.Persistence.RtresDbContext.Purchases.setX
+LearningVideos.getBRtres.Infrastructure.Persistence.RtresDbContext.LearningVideos.getX
+LearningVideos.setBRtres.Infrastructure.Persistence.RtresDbContext.LearningVideos.set^
+ExpenseCategories.getERtres.Infrastructure.Persistence.RtresDbContext.ExpenseCategories.get^
+ExpenseCategories.setERtres.Infrastructure.Persistence.RtresDbContext.ExpenseCategories.set^
+ProductCategories.getERtres.Infrastructure.Persistence.RtresDbContext.ProductCategories.get^
+ProductCategories.setERtres.Infrastructure.Persistence.RtresDbContext.ProductCategories.setL
+Expenses.get<Rtres.Infrastructure.Persistence.RtresDbContext.Expenses.getL
+Expenses.set<Rtres.Infrastructure.Persistence.RtresDbContext.Expenses.setR
+TaxSettings.get?Rtres.Infrastructure.Persistence.RtresDbContext.TaxSettings.getR
+TaxSettings.set?Rtres.Infrastructure.Persistence.RtresDbContext.TaxSettings.setR
+TaxDueDates.get?Rtres.Infrastructure.Persistence.RtresDbContext.TaxDueDates.getR
+TaxDueDates.set?Rtres.Infrastructure.Persistence.RtresDbContext.TaxDueDates.set^
+AnnualTaxSettings.getERtres.Infrastructure.Persistence.RtresDbContext.AnnualTaxSettings.get^
+AnnualTaxSettings.setERtres.Infrastructure.Persistence.RtresDbContext.AnnualTaxSettings.setT
+ContactLeads.get@Rtres.Infrastructure.Persistence.RtresDbContext.ContactLeads.getT
+ContactLeads.set@Rtres.Infrastructure.Persistence.RtresDbContext.ContactLeads.setT
+BankAccounts.get@Rtres.Infrastructure.Persistence.RtresDbContext.BankAccounts.getT
+BankAccounts.set@Rtres.Infrastructure.Persistence.RtresDbContext.BankAccounts.setZ
+PaymentSettings.getCRtres.Infrastructure.Persistence.RtresDbContext.PaymentSettings.getZ
+PaymentSettings.setCRtres.Infrastructure.Persistence.RtresDbContext.PaymentSettings.setZ
+TransferReports.getCRtres.Infrastructure.Persistence.RtresDbContext.TransferReports.getZ
+TransferReports.setCRtres.Infrastructure.Persistence.RtresDbContext.TransferReports.set

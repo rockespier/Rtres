@@ -1,0 +1,691 @@
+
+1.0PythonFrontend*py2.B�
+
+imports1
+
+extends2
+
+returns3
+
+	has param4
+
+
+calls5
+
+module6
+
+
+class7
+
+method8
+
+function9
+
+output/pdf/crear_ficha.py11
+
+crear_ficha13
+
+reportlab.pdfgen.canvas14
+
+reportlab.lib.pagesizes16
+
+reportlab.pdfbase.ttfonts18
+"
+reportlab.pdfbase.pdfmetrics20
+
+reportlab.lib.colors22
+
+reportlab.lib.utils24
+
+crear_ficha.text26
+
+crear_ficha.para28
+
+crear_ficha.lines30
+
+crear_ficha.head32
+/
+)reportlab.pdfbase.pdfmetrics.registerFont34
+&
+ reportlab.pdfbase.ttfonts.TTFont36
+$
+reportlab.pdfgen.canvas.Canvas38
+>
+8reportlab.pdfgen.textobject._PDFColorSetter.setFillColor40
+#
+reportlab.lib.colors.HexColor42
+,
+&reportlab.pdfgen.canvas.Canvas.setFont44
+/
+)reportlab.pdfgen.canvas.Canvas.drawString46
+%
+reportlab.lib.utils.simpleSplit48
+@
+:reportlab.pdfgen.textobject._PDFColorSetter.setStrokeColor50
+
+range52
+)
+#reportlab.pdfgen.canvas.Canvas.line54
+	
+str56
+
+	enumerate58
+-
+'reportlab.pdfgen.canvas.Canvas.showPage60
+)
+#reportlab.pdfgen.canvas.Canvas.save62
+
+ARG_064
+
+Arial65
+
+ARG_166
+ 
+C:/Windows/Fonts/arial.ttf67
+
+	ArialBold68
+"
+C:/Windows/Fonts/arialbd.ttf69
+*
+$output/pdf/ficha-diagnostico-web.pdf70
+
+ARG_371
+	
+49072
+
+5273
+
+#b6c3c874
+
+ARG_275
+	
+54376
+'
+!GUÍA PARA EMPRENDEDORES EN PERÚ77
+
+978
+
+ARG_579
+
+#147a7280
+,
+&¿Tu negocio necesita una página web?81
+
+2082
+9
+3Ficha orientativa · No es una herramienta validada83
+
+1084
+
+#52646c85
+
+2886
+1
++Diagnóstico orientativo | Página ￿ de 287
+
+#66787e88
+
+189
+
+1  Conoce tu situación90
+
+1391
+P
+JNegocio: ___________________________________    Fecha: ___________________92
+
+￿. ￿93
+
+294
+*
+$2  ¿Qué está frenando al negocio?95
+
+
+[   ]  ￿96
+ 
+3  Elige un siguiente paso97
+�
+�Página informativa: considera esta opción si la oferta y la atención están claras, pero necesitas explicar servicios, resolver dudas o facilitar el contacto.98
+�
+�Ordena primero la venta: prioriza definir oferta, precios o cotización, disponibilidad y responsables si hoy no puedes atender una consulta de forma consistente.99
+�
+�Ambas tareas pueden avanzar juntas: una página mínima puede recoger consultas mientras organizas la atención. No publiques condiciones que aún no puedes cumplir.100
+"
+4  Situaciones ilustrativas101
+
+
+9.5102
+(
+!5  Mi decisión y próximos pasos103
+a
+Z[   ] Página informativa    [   ] Ordenar ventas    [   ] Ambas    [   ] Revisar después104
+-
+&Primera acción / responsable / fecha:105
+6
+/¿Qué observaré para saber si el paso ayudó?106J
+
+10
+
+1011 j�
+!
+12
+12136 *
+10 (
+
+15
+15146
+
+17
+17166
+
+19
+19186
+
+21
+21206
+
+23
+23226
+
+25
+25246
+
+27
+27269 212
+
+29
+29289 212
+
+31
+31309 212
+
+33
+33329 212
+
+35
+35349
+
+37
+37367
+
+39
+39387
+
+41
+41408
+
+43
+43429
+
+45
+45448
+
+47
+47468
+
+49
+49489
+
+51
+51508
+
+53
+53527
+
+55
+55548
+
+57
+57567
+
+59
+59587
+
+61
+61608
+
+63
+63628r�
+
+12151*
+10 ($
+
+12171*
+10 ('
+
+12191*
+10 (-
+
+12211*
+10 ()
+
+12231*
+10 (*
+
+12251*
+10 (,
+
+12355*
+10 (G
+3
+12375*
+10 (F2
+
+
+64
+65
+
+
+66
+67
+
+12355*
+10	 	(M
+3
+12375*
+10	 	(L2
+
+
+64
+68
+
+
+66
+69
+'
+12395*
+10 (2
+
+
+64
+70
+
+27415*
+10 ($
+
+27435*
+10 (#
+
+27455*
+10& (V
+
+27475*
+10X (k
+3
+29495*
+10 (02
+
+
+66
+65
+
+
+71
+72
+'
+29275*
+102 (F2
+
+
+64
+73
+
+31515*
+10 (*
+'
+31435*
+10 ()2
+
+
+64
+74
+
+31535*
+10 (
+3
+31555*
+10 (*2
+
+
+64
+73
+
+
+75
+76
+K
+33275*
+10 (F20
+
+
+64
+73
+
+
+75
+77
+
+
+71
+78
+
+
+79
+80
+?
+33275*
+10 (A2$
+
+
+64
+73
+
+
+75
+81
+
+
+71
+82
+K
+33275*
+10 (Z20
+
+
+64
+73
+
+
+75
+83
+
+
+71
+84
+
+
+79
+85
+
+33515*
+10 (*
+'
+33435*
+10 ()2
+
+
+64
+80
+3
+33555*
+10, (F2
+
+
+64
+73
+
+
+75
+76
+W
+33275*
+10 (U2<
+
+
+64
+73
+
+
+66
+86
+
+
+75
+87
+
+
+71
+78
+
+
+79
+88
+
+33575*
+104 (:
+'
+12335*
+10 (2
+
+
+64
+89
+?
+12275*
+10 (,2$
+
+
+64
+73
+
+
+75
+90
+
+
+71
+91
+?
+12275*
+10 ([2$
+
+
+64
+73
+
+
+75
+92
+
+
+71
+84
+'
+12595*
+10$ $(2
+
+
+66
+89
+?
+12275*
+10% %(%2$
+
+
+64
+73
+
+
+75
+93
+
+
+71
+84
+
+12575*
+10% %(
+'
+12315*
+10%0 %(:2
+
+
+66
+94
+?
+12275*
+10& &(72$
+
+
+64
+73
+
+
+75
+95
+
+
+71
+91
+?
+12275*
+10+ +(2$
+
+
+64
+73
+
+
+75
+96
+
+
+71
+84
+
+12615*
+10, ,(
+'
+12335*
+10, ,(2
+
+
+64
+94
+?
+12275*
+10- -(02$
+
+
+64
+73
+
+
+75
+97
+
+
+71
+91
+(
+12295*
+10. .(�2
+
+
+64
+98
+(
+12295*
+10/ /(�2
+
+
+64
+99
+)
+12295*
+100 0(�2
+
+64
+100
+@
+12275*
+101 1(12%
+
+
+64
+73
+
+75
+101
+
+
+71
+91
+(
+12295*
+106 6(2
+
+75
+102
+@
+12275*
+107 7(52%
+
+
+64
+73
+
+75
+103
+
+
+71
+91
+@
+12275*
+108 8(i2%
+
+
+64
+73
+
+75
+104
+
+
+71
+84
+@
+12275*
+109 9(;2%
+
+
+64
+73
+
+75
+105
+
+
+71
+84
+'
+12315*
+109F 9(P2
+
+
+66
+94
+@
+12275*
+10: :(A2%
+
+
+64
+73
+
+75
+106
+
+
+71
+84
+'
+12315*
+10:L :(V2
+
+
+66
+94
+
+12635*
+10; ;(	

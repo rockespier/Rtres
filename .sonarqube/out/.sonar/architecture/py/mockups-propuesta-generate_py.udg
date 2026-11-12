@@ -1,0 +1,1097 @@
+
+1.0PythonFrontend*py2.B–É
+
+imports1
+
+extends2
+
+returns3
+
+	has param4
+
+
+calls5
+
+module6
+
+
+class7
+
+method8
+
+function9
+#
+mockups/propuesta/generate.py11
+
+generate13
+
+pathlib14
+
+
+html16
+
+
+json18
+
+generate.link20
+
+generate.cta22
+
+generate.shell24
+
+generate.band26
+
+generate.case_card28
+
+generate.logos30
+
+generate.service_rows32
+
+generate.metrics34
+
+generate.write36
+
+pathlib.Path38
+
+
+dict40
+
+html.escape42
+
+str.join44
+
+
+next46
+
+print48
+	
+len50
+
+
+list52
+
+ARG_slug54
+
+
+diseno-web55
+
+ARG_name56
+
+Dise√±o web57
+
+	ARG_title58
+(
+"Una web a la altura de tu empresa.59
+
+ARG_summary60
+u
+oDise√±amos sitios web para pymes y equipos de marketing que necesitan presentar su negocio y recibir consultas.61
+
+ARG_audience62
+`
+ZEmpresas que necesitan una primera web o renovar un sitio que ya no representa su negocio.63
+
+ARG_definition64
+î
+çEl dise√±o web corporativo organiza tus servicios, explica tu propuesta de valor y facilita el contacto. En Rtres planteamos la estructura, el dise√±o adaptable y los contenidos de cada p√°gina para que tus clientes puedan entender qu√© ofreces y dar el siguiente paso.65
+
+ARG_case66
+
+building-connections67
+
+software-a-medida68
+
+Software a medida69
+*
+$Software que entiende tu operaci√≥n.70
+Å
+{Desarrollamos sistemas de gesti√≥n para empresas que necesitan conectar ventas, procesos y equipos en una misma plataforma.71
+x
+rEmpresas con procesos que una herramienta est√°ndar no resuelve y equipos que necesitan centralizar su operaci√≥n.72
+∫
+≥El software a medida se desarrolla alrededor de los procesos de tu empresa. Rtres construye plataformas para administrar ventas, talleres, cotizaciones, comisiones y cobranza, con integraciones cuando el proyecto las requiere. El alcance se define despu√©s de revisar usuarios, flujos y sistemas existentes.73
+
+crosland74
+
+integracion-sap75
+
+Integraci√≥n SAP76
+$
+Conecta SAP con tu operaci√≥n.77
+w
+qIntegramos sistemas web con SAP para consultar inventarios y conectar procesos de talleres, repuestos y gesti√≥n.78
+]
+WEmpresas que utilizan SAP y necesitan conectar sus aplicaciones de gesti√≥n con su ERP.79
+∆
+øUna integraci√≥n SAP conecta el ERP con otras aplicaciones de negocio. En los proyectos documentados de Grupo Crosland, Rtres desarroll√≥ consultas de stock, reservas y sincronizaci√≥n de repuestos para sistemas de talleres. Cada nueva integraci√≥n requiere validar versi√≥n, interfaces disponibles y reglas operativas.80
+
+tienda-online81
+
+Tiendas online82
+&
+ Tu cat√°logo, listo para vender.83
+x
+rCreamos tiendas online para negocios que quieren gestionar productos, pedidos y pagos desde una plataforma propia.84
+^
+XNegocios con un cat√°logo definido que quieren abrir o mejorar su canal de venta online.85
+±
+™Una tienda online permite presentar productos y gestionar pedidos por internet. Rtres desarrolla el cat√°logo, la experiencia de compra y la integraci√≥n de pagos seg√∫n los requisitos del negocio. Antes de construirla acordamos c√≥mo administrar productos, entregas, moneda y condiciones de venta.86
+
+api-validacion-dni-ruc87
+
+APIs de validaci√≥n88
+$
+Valida datos desde tu sistema.89
+b
+\Integra validaciones de DNI, RUC y cuentas bancarias en los procesos de tu empresa en Per√∫.90
+q
+kEquipos de producto y desarrollo que necesitan incorporar validaciones a sus flujos de registro o gesti√≥n.91
+§
+ùLas APIs de validaci√≥n permiten consultar datos desde una aplicaci√≥n existente. El cat√°logo de Rtres contempla validaci√≥n de DNI, RUC y cuentas bancarias. Disponibilidad, campos de respuesta, l√≠mites y condiciones de uso se revisan por servicio antes de contratar la integraci√≥n.92
+#
+facturacion-electronica-sunat93
+
+Integraci√≥n SUNAT94
+&
+ Conecta gesti√≥n y facturaci√≥n.95
+x
+rDesarrollamos interfaces de facturaci√≥n electr√≥nica para conectar los procesos de tu empresa con SUNAT en Per√∫.96
+t
+nEmpresas peruanas que necesitan integrar la emisi√≥n y validaci√≥n de comprobantes con su sistema de gesti√≥n.97
+µ
+ÆLa integraci√≥n de facturaci√≥n electr√≥nica conecta la gesti√≥n comercial con el flujo de emisi√≥n y validaci√≥n de comprobantes. Rtres cuenta con un caso documentado para Building Connections. El proyecto comienza revisando tu sistema actual, el proveedor de emisi√≥n y los requisitos de la interfaz.98
+
+hosting99
+
+Hosting empresarial100
+
+Un lugar para tu web.101
+_
+XPlanes de hosting Cloud y WordPress para alojar los sitios y aplicaciones de tu empresa.102
+o
+hEmpresas que necesitan alojamiento para su web, tienda o aplicaci√≥n y un interlocutor para su gesti√≥n.103
+ó
+èEl hosting aloja los archivos y datos necesarios para que una web o aplicaci√≥n est√© disponible. El cat√°logo de Rtres incluye planes Cloud, WordPress y zona EUR. La elecci√≥n depende del tr√°fico, recursos, tecnolog√≠a, ubicaci√≥n del p√∫blico y necesidades de soporte.104
+
+mantenimiento-web105
+
+Mantenimiento y soporte106
+#
+Tu web necesita continuidad.107
+|
+uAcompa√±amos sitios y sistemas con soporte, actualizaciones y seguimiento de solicitudes desde el portal de clientes.108
+]
+VEmpresas que ya tienen una web o un sistema y necesitan atenci√≥n t√©cnica recurrente.109
+†
+òEl mantenimiento ayuda a gestionar incidencias y cambios despu√©s del lanzamiento. Rtres ofrece soporte mensual y un portal para registrar solicitudes y seguir su atenci√≥n. La cobertura, horas, respaldos y tiempos de respuesta se acuerdan de forma espec√≠fica para cada servicio.110
+
+euroamerican111
+
+dominios-y-ssl112
+
+Dominios y SSL113
+
+La identidad de tu web.114
+f
+_Gestionamos dominios y certificados SSL para empresas que quieren ordenar su presencia digital.115
+h
+aEmpresas que necesitan registrar o renovar dominios y administrar los certificados de sus sitios.116
+á
+ˇEl dominio identifica tu sitio y el certificado SSL permite cifrar su conexi√≥n. Rtres contempla dominios .pe, .com y .it, adem√°s de certificados est√°ndar y wildcard. Disponibilidad, titularidad, renovaci√≥n y requisitos se confirman antes de contratar.117
+!
+staff-augmentation-net-sap118
+
+Equipo .NET / SAP119
+"
+Ampl√≠a tu equipo t√©cnico.120
+z
+sProponemos perfiles .NET y experiencia en integraci√≥n SAP para ampliar las capacidades de tu equipo de desarrollo.121
+q
+jResponsables de TI y equipos de desarrollo que necesitan capacidad adicional para proyectos empresariales.122
+°
+ôStaff augmentation incorpora capacidad de desarrollo a un equipo existente. La propuesta comercial de Rtres contempla perfiles .NET y experiencia en integraci√≥n SAP. Disponibilidad, responsabilidades, dedicaci√≥n y condiciones se acuerdan seg√∫n la necesidad concreta del cliente.123
+
+Grupo Crosland124
+
+
+ARG_sector125
+%
+Automotriz y servicio t√©cnico126
+/
+(Talleres y repuestos conectados con SAP.127
+
+ARG_challenge128
+j
+cDigitalizar la gesti√≥n de talleres y conectar la venta de repuestos con el inventario corporativo.129
+
+ARG_solution130
+º
+¥Sistemas DMS para Kawasaki y Bajaj: √≥rdenes de trabajo, presupuestos, consultas de stock y reservas en SAP. Para Bajaj, m√≥dulos de reparaciones, garant√≠as y reclamos a f√°brica.131
+
+ARG_outcome132
+¶
+ûLa soluci√≥n re√∫ne procesos de taller y acceso al inventario corporativo. El documento describe mejoras operativas; su magnitud est√° pendiente de medici√≥n.133
+
+Euroamerican Assistance134
+
+Asistencia internacional135
+.
+'Una operaci√≥n centralizada desde 2008.136
+a
+ZSostener la gesti√≥n comercial y financiera de una operaci√≥n internacional de asistencia.137
+é
+ÜEcosistema central con gesti√≥n de productos y ventas, c√°lculo de comisiones e incentivos, reportes ejecutivos y m√≥dulo de cobranza.138
+µ
+≠El documento registra una relaci√≥n tecnol√≥gica desde 2008 y continuidad en la evoluci√≥n del sistema. No aporta cifras de ahorro, disponibilidad ni volumen de operaciones.139
+
+alliance140
+
+Alliance141
+
+Asistencia multinacional142
+0
+)Ventas para una operaci√≥n internacional.143
+p
+iCentralizar la administraci√≥n de ventas de una empresa con operaci√≥n distribuida en varios continentes.144
+à
+ÄSistema central de ventas mantenido desde 2008, con administraci√≥n de productos para distintos mercados y reportes de ingresos.145
+ì
+ãUna plataforma com√∫n para gestionar productos y ventas. La fuente describe apoyo a la expansi√≥n internacional sin cuantificar su impacto.146
+
+Building Connections147
+
+Marketing y publicidad148
+-
+&De la presencia web a la facturaci√≥n.149
+i
+bUnificar la presencia digital de la agencia y conectar sus procesos de cotizaci√≥n y facturaci√≥n.150
+ç
+ÖWeb corporativa, plataforma de control de cotizaciones e interfaz con SUNAT para la emisi√≥n y validaci√≥n de facturas electr√≥nicas.151
+õ
+ìEl proyecto conecta presencia digital y gesti√≥n comercial. Los tiempos ahorrados y el volumen de comprobantes est√°n pendientes de documentaci√≥n.152
+
+ARG_cls153
+
+btn nav-cta154
+
+ARG_0155
+
+
+index.html156
+
+ARG_1157
+4
+-Dise√±o web y software a medida para empresas158
+
+ARG_2159
+â
+ÅRtres desarrolla webs, software a medida e integraciones SAP para empresas. Solicita presupuesto y conoce proyectos documentados.160
+
+ARG_3161
+Ω
+µ<section class="wrap hero"><div class="hero-copy"><p class="eyebrow">Web y software para empresas</p><h1>Tu negocio.<br><span>Su siguiente nivel.</span></h1><p class="lead">Dise√±o web, software a medida e integraciones para pymes y equipos de TI con planes de crecimiento.</p><div class="actions">Ôøø<a class="text-link" href="casos-de-exito.html">Explorar proyectos ‚Üó</a></div></div><figure class="hero-art"><img src="assets/concepto-conexiones.png" width="1536" height="1024" alt="Ilustraci√≥n conceptual de m√≥dulos conectados en metal y vidrio verde"><figcaption>Imagen conceptual de marca, generada con IA.</figcaption></figure></section>Ôøø<section class="wrap section"><h2>La soluci√≥n empieza<br>por lo que necesitas.</h2><p class="intro">Una presencia web clara. Una operaci√≥n conectada. Un equipo que acompa√±a tu crecimiento.</p>Ôøø<a class="text-link all-link" href="servicios.html">Explorar todos los servicios ‚Üó</a></section><section class="wrap section"><div class="section-heading"><h2>El trabajo habla.</h2><p class="intro">Proyectos de gesti√≥n, integraci√≥n y web basados en nuestra documentaci√≥n comercial.</p></div><div class="case-grid">ÔøøÔøø</div><a class="text-link all-link" href="casos-de-exito.html">Ver todos los casos ‚Üó</a></section><section class="wrap section audience"><h2>Para empresas<br>con algo que resolver.</h2><div class="audience-grid"><article><h3>Pymes y marketing</h3><p>Presentar tus servicios, renovar tu web o abrir una tienda online.</p><a href="diseno-web.html">Explorar dise√±o web ‚Üó</a></article><article><h3>Operaciones y direcci√≥n</h3><p>Centralizar gesti√≥n, conectar aplicaciones y ordenar procesos.</p><a href="software-a-medida.html">Explorar software ‚Üó</a></article><article><h3>Equipos de TI</h3><p>Integrar SAP o ampliar capacidad de desarrollo .NET.</p><a href="integracion-sap.html">Explorar integraciones ‚Üó</a></article></div></section><section class="wrap section reviews" id="opiniones"><div><p class="eyebrow">Opiniones de clientes</p><h2>La confianza<br>tiene una fuente.</h2><p class="intro">Consulta las opiniones de Rtres Web Solutions en Google.</p><a class="text-link" href="https://www.google.com/search?sca_esv=3cc28e5c82341c61&rlz=1C5CHFA_enIT1033__1034&sxsrf=APpeQnsKj4F-wrrCnZAnYc1qXAceGr24mg:1790884858579&q=Rtres+Web+Solutions+-+Dise%C3%B1o+de+Sitios+Web&si=APenkKm7iecQ4G6P-TsbSMFKIQtv3EFIqRAFw-i8uEbk55Z-_2oCnFhf5u6N9VL-64kUmOMXFkTY2WwHLDjpDbblBaXXg1sAPeJW9zCA5UvM983e3rFUfg8%3D&uds=AJ5uw1_p2fu4EkZbzvA9FH-tMwgO130jdj1VUZ92CS2OrqRtJOs1Jk5v-bX9xUhhoPkhfFejqRFU2R1iuLcCHllO9VZR8o-NwymYN85Xq3rXp_ac3Wjg0W_6Sb5fDcq01yPkIlvEEb5VplGzkz_MRupyN_feVOSxlQ&sa=X&ved=2ahUKEwiT0tD-zZmXAxU1xgIHHcdKMhAQ3PALegQIGBAE&biw=1440&bih=723&dpr=2#sv=CAESzQEKuQEStgEKd0FKaVQ0dEw3VVVPY1ViMXJ6QTNNWnpVaElLN2ZiakFRX0piQVBDalpRNjBIc1VsZjAwY29DTzdrWDc0UExJSWJYTXhnWE43VkVHRjl0cElJUHVhS0JZTDQ3RkhRV1lSUUlrY3QzRXM2TXVoX3lRcG96dEQ0RlJvEhdFYnktYXRfTkE0YU0tZDhQak1pVDBBZxoiQURzcjlmUkJUdEpkd0lkMTNLWDB2YnlZM1haMW83X25aZxIEODA1MRoBMyoAMAA4AUAAGAAgiuPh2AtKAhAB:~:text=verifican%20las%20opiniones-,Google,-5/5" target="_blank" rel="noopener">Ver ficha en Google ‚Üó</a></div><div class="review-placeholder"><span class="google-label">Google Business Profile</span><div class="rating" aria-label="5 de 5 estrellas"><strong>5.0</strong><span aria-hidden="true">‚òÖ‚òÖ‚òÖ‚òÖ‚òÖ</span></div><h3>6 rese√±as. Todas de 5 estrellas.</h3><p>Valoraci√≥n y cantidad facilitadas por Rtres. Los textos, autores y fechas de las seis rese√±as se incorporar√°n desde la ficha.</p><small>Datos facilitados por la empresa; pendientes de comprobaci√≥n directa en Google.</small></div></section>Ôøø162
+
+servicios.html163
+.
+'Servicios web, software e integraciones164
+r
+kExplora los servicios de Rtres: dise√±o web, tiendas online, software, SAP, SUNAT, APIs, hosting y soporte.165
+ª
+≥<section class="wrap page-intro"><p class="eyebrow">Servicios de Rtres</p><h1>Un servicio para<br>cada necesidad.</h1><p class="lead">Cada especialidad tiene su propia p√°gina, alcance y forma de empezar.</p></section><section class="wrap directory">Ôøø<h2>Infraestructura y continuidad</h2>Ôøø</section>Ôøø166
+
+ARG_4167
+
+services168
+
+Ôøø para empresas169
+
+casos-de-exito.html170
+"
+Casos de √©xito y proyectos171
+Ä
+yConoce los proyectos documentados de Rtres para Grupo Crosland, Euroamerican Assistance, Alliance y Building Connections.172
+™
+¢<section class="wrap page-intro"><p class="eyebrow">Proyectos de Rtres</p><h1>Retos reales.<br>Soluciones concretas.</h1><p class="lead">Conoce el problema, lo que construimos y los servicios detr√°s de cada proyecto.</p></section><section class="wrap case-grid case-index">Ôøø</section>Ôøø173
+
+cases174
+!
+Quiero un proyecto similar175
+*
+#¬øTu empresa tiene un reto similar?176
+
+caso-Ôøø.html177
+
+Ôøø | Caso de proyecto178
+
+contacto.html179
+
+Pedir presupuesto180
+m
+fContacta con Rtres por correo, WhatsApp o prepara una solicitud de presupuesto para tu web o software.181
+Ë
+‡<section class="wrap contact-layout"><div><p class="eyebrow">Contacto</p><h1>Hagamos espacio<br>a tu proyecto.</h1><p class="lead">Cu√©ntanos qu√© necesita tu empresa. Empecemos por una conversaci√≥n clara.</p><div class="contact-channels" id="canales"><h2>Elige c√≥mo conversar.</h2><a class="channel" href="mailto:info@rtres.net"><span>Por correo</span><strong>info@rtres.net ‚Üó</strong></a><a class="channel" href="https://wa.me/393281915399" data-whatsapp target="_blank" rel="noopener"><span>Por WhatsApp</span><strong>+39 328 191 5399 ‚Üó</strong></a><small>Atendemos proyectos para Per√∫, Espa√±a, Estados Unidos e Italia.</small></div></div><form id="contact-form"><h2>Pedir presupuesto</h2><p>Un poco de contexto nos ayuda a orientarte.</p><div class="form-row"><label>Nombre <input name="nombre" autocomplete="name" required maxlength="100"></label><label>Empresa <input name="empresa" autocomplete="organization" maxlength="150"></label></div><label>Correo de contacto <input name="correo" type="email" autocomplete="email" required maxlength="200"></label><div class="form-row"><label>Mercado <select name="mercado"><option>Per√∫</option><option>Espa√±a</option><option>Estados Unidos</option><option>Italia</option><option>Otro</option></select></label><label>Servicio <select name="servicio"><option value="">Quiero orientaci√≥n</option>Ôøø</select></label></div><label>¬øQu√© necesitas resolver? <textarea name="mensaje" rows="5" required maxlength="3000" placeholder="Cu√©ntanos sobre tu proyecto, tu web actual o el proceso que quieres mejorar."></textarea></label><div class="form-note">Mockup: este formulario prepara una vista previa del mensaje. No env√≠a ni guarda datos.</div><button class="btn" type="submit">Revisar solicitud <span aria-hidden="true">‚Üó</span></button><div id="form-status" role="status" aria-live="polite" hidden></div></form></section><dialog id="lead-preview"><div class="dialog-header"><h2>Tu solicitud</h2><button type="button" id="close-preview" aria-label="Cerrar vista previa">Cerrar</button></div><p>Revisa el mensaje antes de abrir tu aplicaci√≥n de correo.</p><pre id="message-preview"></pre><a class="btn" id="email-draft">Abrir borrador de correo ‚Üó</a><p class="form-note">La solicitud solo se enviar√° si la env√≠as desde tu aplicaci√≥n de correo. El formulario de producci√≥n requerir√° conexi√≥n al API y aviso de privacidad.</p></dialog>182
+
+contact183
+
+	Generated184
+
+static mockup pages185J
+
+10
+
+1011 j’
+!
+12
+12136 *
+10 (
+
+15
+15146
+
+17
+17166
+
+19
+19186
+
+21
+21209 212
+
+23
+23229 212
+
+25
+25249 212
+
+27
+27269 212
+
+29
+29289 212
+
+31
+31309 212
+
+33
+33329 212
+
+35
+35349 212
+
+37
+37369 212
+
+39
+39387
+
+41
+41407
+
+43
+43429
+
+45
+45448
+
+47
+47469
+
+49
+49489
+
+51
+51509
+
+53
+53527r« 
+
+12151*
+10 (
+
+12171*
+10 (
+
+12191*
+10 (
+
+12395*
+10 (
+p
+12415*
+10 (Â	2T
+
+
+54
+55
+
+
+56
+57
+
+
+58
+59
+
+
+60
+61
+
+
+62
+63
+
+
+64
+65
+
+
+66
+67
+p
+12415*
+10	 	(≤
+2T
+
+
+54
+68
+
+
+56
+69
+
+
+58
+70
+
+
+60
+71
+
+
+62
+72
+
+
+64
+73
+
+
+66
+74
+p
+12415*
+10
+ 
+(¥
+2T
+
+
+54
+75
+
+
+56
+76
+
+
+58
+77
+
+
+60
+78
+
+
+62
+79
+
+
+64
+80
+
+
+66
+74
+d
+12415*
+10 (‚	2H
+
+
+54
+81
+
+
+56
+82
+
+
+58
+83
+
+
+60
+84
+
+
+62
+85
+
+
+64
+86
+d
+12415*
+10 (˚	2H
+
+
+54
+87
+
+
+56
+88
+
+
+58
+89
+
+
+60
+90
+
+
+62
+91
+
+
+64
+92
+p
+12415*
+10 (è
+2T
+
+
+54
+93
+
+
+56
+94
+
+
+58
+95
+
+
+60
+96
+
+
+62
+97
+
+
+64
+98
+
+
+66
+67
+i
+12415*
+10 (ö	2M
+
+
+54
+99
+
+56
+100
+
+58
+101
+
+60
+102
+
+62
+103
+
+64
+104
+w
+12415*
+10 (à	2[
+
+54
+105
+
+56
+106
+
+58
+107
+
+60
+108
+
+62
+109
+
+64
+110
+
+66
+111
+j
+12415*
+10 (÷2N
+
+54
+112
+
+56
+113
+
+58
+114
+
+60
+115
+
+62
+116
+
+64
+117
+v
+12415*
+10 (ﬂ	2Z
+
+54
+118
+
+56
+119
+
+58
+120
+
+60
+121
+
+62
+122
+
+64
+123
+
+
+66
+74
+z
+12415*
+10 (Ü2^
+
+
+54
+74
+
+56
+124
+
+125
+126
+
+58
+127
+
+128
+129
+
+130
+131
+
+132
+133
+{
+12415*
+10 (Á2_
+
+54
+111
+
+56
+134
+
+125
+135
+
+58
+136
+
+128
+137
+
+130
+138
+
+132
+139
+{
+12415*
+10 (¿2_
+
+54
+140
+
+56
+141
+
+125
+142
+
+58
+143
+
+128
+144
+
+130
+145
+
+132
+146
+z
+12415*
+10 (€2^
+
+
+54
+67
+
+56
+147
+
+125
+148
+
+58
+149
+
+128
+150
+
+130
+151
+
+132
+152
+
+23435*
+10#: #(D
+
+23435*
+10#H #(O
+
+25435*
+10%ì %(õ
+
+25435*
+10%› %(Î
++
+25235*
+10%†
+ %(∂
+2
+
+153
+154
+
+27235*
+10'ö '(¶
+
+29435*
+10)∑ )(≈
+
+29435*
+10)œ )(€
+
+29435*
+10)Â )(Ú
+
+31455*
+10+k +(î
+
+31435*
+10+∂ +(¬
+
+31435*
+10+Ã +(ÿ
+
+33455*
+10-& -(≤
+
+33215*
+10-: -(I
+
+33435*
+10-Q -(]
+
+33435*
+10-g -(v
+
+35455*
+10/§ /(¬
+
+37255*
+100J 0(n
+
+12235*
+102∂ 2(ª
+
+12315*
+102ò 2(ü
+
+12335*
+102Á 2(Å
+
+12295*
+102√	 2(÷	
+
+12295*
+102◊	 2(Í	
+
+12275*
+102ˆ 2(¸
+T
+12375*
+103 3(Õ28
+
+155
+156
+
+157
+158
+
+159
+160
+
+161
+162
+b
+12375*
+104 4(¨2F
+
+155
+163
+
+157
+164
+
+159
+165
+
+161
+166
+
+167
+168
+
+12335*
+104¨ 4(∆
+
+12335*
+104 4(ä
+
+12275*
+104ô 4(ü
+
+12475*
+106
+ 6(?
+
+12435*
+107u 7(Å
+
+12435*
+107À 7(◊
+
+12435*
+107· 7(Ó
+
+12435*
+107Ö 7(î
+
+12235*
+107ö 7(®
+
+12455*
+107Ä 7(Ø
+
+12435*
+107è 7(ì
+
+12435*
+107† 7(¨
+
+12435*
+107◊ 7(È
+
+12435*
+107ä 7(ö
+
+12435*
+108i 8({
+
+12435*
+108Ö 8(õ
+
+12455*
+109L 9(•
+
+12435*
+109i 9(m
+
+12435*
+109| 9(Ä
+
+12275*
+109π 9(»
+7
+12375*
+10: :(P2
+
+157
+169
+
+167
+168
+
+12215*
+10: :(
+b
+12375*
+10; ;(ã2F
+
+155
+170
+
+157
+171
+
+159
+172
+
+161
+173
+
+167
+174
+
+12455*
+10;  ;(Ó
+
+12295*
+10;“ ;(ﬁ
+
+12275*
+10;¸ ;(Ç
+
+12435*
+10= =(ã
+
+12435*
+10=Õ =(€
+
+12435*
+10=Â =(Ú
+
+12435*
+10=â =(ï
++
+12235*
+10=õ =(Õ2
+
+157
+175
+
+12435*
+10=è =(õ
+
+12435*
+10=Æ =(ø
+
+12435*
+10= =(Ä
+
+12435*
+10=æ =(Õ
+
+12355*
+10=” =(›
+
+12335*
+10=∂ =(Á
++
+12275*
+10=ı =(±2
+
+157
+176
+E
+12375*
+10> >(^2*
+
+155
+177
+
+157
+178
+
+167
+174
+
+12455*
+10?»
+ ?(ô
+
+12435*
+10?Ô
+ ?(˚
+
+b
+12375*
+10@ @(£2F
+
+155
+179
+
+157
+180
+
+159
+181
+
+161
+182
+
+167
+183
+7
+12495*
+10A A(H2
+
+155
+184
+
+159
+185
+
+12515*
+10A A(1
+
+12535*
+10A A(0

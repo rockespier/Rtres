@@ -2,6 +2,10 @@
 <AnalysisInput>
   <Settings>
     <Setting>
+      <Key>sonar.cs.vscoveragexml.reportsPaths</Key>
+      <Value>coverage.xml</Value>
+    </Setting>
+    <Setting>
       <Key>sonar.cs.analyzeGeneratedCode</Key>
       <Value>false</Value>
     </Setting>

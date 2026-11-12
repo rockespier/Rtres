@@ -1,0 +1,6 @@
+organization=rockespier
+projectKey=rockespier_Rtres
+serverUrl=https://sonarcloud.io
+dashboardUrl=https://sonarcloud.io/dashboard?id=rockespier_Rtres
+ceTaskId=AaHPZkL2MUecF4yl1GJK
+ceTaskUrl=https://sonarcloud.io/api/ce/task?id=AaHPZkL2MUecF4yl1GJK

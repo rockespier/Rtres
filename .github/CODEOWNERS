@@ -1,0 +1,13 @@
+# Propietario por defecto
+* @rockespier
+
+# Backend
+/src/api/ @rockespier
+
+# Frontend
+/src/web/ @rockespier
+
+# GitHub Actions y configuración crítica
+/.github/ @rockespier
+
+

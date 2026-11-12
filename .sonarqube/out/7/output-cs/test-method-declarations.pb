@@ -1,0 +1,182 @@
+¾
+FC:\repo\rtres-net\Rtres\src\api\Rtres.Api.Tests\TransferReportTests.csRtres.Api.Testsg
+#Rtres.Api.Tests.TransferReportTests@Reported_transfer_is_reviewed_and_approval_activates_the_productd
+#Rtres.Api.Tests.TransferReportTests=Rejection_notifies_the_reason_and_the_client_can_report_againW
+#Rtres.Api.Tests.TransferReportTests0Report_needs_operation_number_or_a_valid_receiptT
+#Rtres.Api.Tests.TransferReportTests-Only_products_due_for_payment_can_be_reportedV
+#Rtres.Api.Tests.TransferReportTests/Payment_methods_can_be_toggled_but_not_both_off_
+#Rtres.Api.Tests.TransferReportTests8Client_without_projects_gets_one_named_after_the_productB
+#Rtres.Api.Tests.TransferReportTestsBank_accounts_are_validatedh
+#Rtres.Api.Tests.TransferReportTestsATransfer_info_lists_active_accounts_with_amount_in_their_currencyõ
+CC:\repo\rtres-net\Rtres\src\api\Rtres.Api.Tests\TaxDocumentTests.csRtres.Api.Testsm
+ Rtres.Api.Tests.TaxDocumentTestsIPaid_product_of_a_peruvian_client_gets_numbered_documents_by_product_typeW
+ Rtres.Api.Tests.TaxDocumentTests3Foreign_client_payment_does_not_generate_a_documentb
+ Rtres.Api.Tests.TaxDocumentTests>Correlative_starts_at_the_configured_number_and_cannot_go_backm
+ Rtres.Api.Tests.TaxDocumentTestsIFactura_and_recibo_can_share_the_sol_series_with_independent_correlativesb
+ Rtres.Api.Tests.TaxDocumentTests>Manual_document_is_rejected_for_clients_that_do_not_require_it[
+ Rtres.Api.Tests.TaxDocumentTests7One_document_can_include_several_products_of_the_clientZ
+ Rtres.Api.Tests.TaxDocumentTests6Products_with_different_document_types_cannot_be_mixede
+ Rtres.Api.Tests.TaxDocumentTestsAList_shows_amounts_in_soles_with_the_exchange_rate_of_the_paymentˆ	
+DC:\repo\rtres-net\Rtres\src\api\Rtres.Api.Tests\NotificationTests.csRtres.Api.TestsK
+#Rtres.Api.Tests.EmailTemplatesTests$Every_type_renders_in_every_languageP
+#Rtres.Api.Tests.EmailTemplatesTests)Renders_localized_values_and_encodes_htmlC
+$Rtres.Api.Tests.NotificationJobTestsSends_logs_and_deduplicatesh
+$Rtres.Api.Tests.NotificationJobTests@Bell_inbox_keeps_one_entry_per_notice_and_counts_unread_per_userl
+$Rtres.Api.Tests.NotificationJobTestsDSuperAdmin_opens_any_ticket_from_the_inbox_but_a_client_only_its_ownP
+$Rtres.Api.Tests.NotificationJobTests(Failure_is_logged_and_rethrown_for_retryD
+$Rtres.Api.Tests.NotificationJobTestsInactive_clients_are_skippedT
+$Rtres.Api.Tests.NotificationJobTests,Notification_survives_hangfire_serializationD
+'Rtres.Api.Tests.RenewalReminderJobTestsPicks_the_right_thresholdF
+'Rtres.Api.Tests.RenewalReminderJobTestsEach_threshold_is_sent_onceT
+'Rtres.Api.Tests.RenewalReminderJobTests)Marks_products_past_their_date_as_expiredJ
+'Rtres.Api.Tests.RenewalReminderJobTestsStatus_follows_the_renewal_dateU
+'Rtres.Api.Tests.RenewalReminderJobTests*Status_is_unchanged_without_a_renewal_dateþ
+KC:\repo\rtres-net\Rtres\src\api\Rtres.Api.Tests\TaxDocumentReversalTests.csRtres.Api.Testsy
+(Rtres.Api.Tests.TaxDocumentReversalTestsMReversal_removes_document_and_payment_restores_the_period_and_leaves_a_record|
+(Rtres.Api.Tests.TaxDocumentReversalTestsPA_reversed_transfer_can_be_registered_again_but_a_paypal_charge_is_not_recreatedo
+(Rtres.Api.Tests.TaxDocumentReversalTestsCCorrelative_is_released_only_when_not_issued_and_last_of_the_serieso
+(Rtres.Api.Tests.TaxDocumentReversalTestsCInternal_codes_do_not_repeat_after_deleting_a_payment_in_the_middle†
+(Rtres.Api.Tests.TaxDocumentReversalTestsZFirst_payment_of_a_client_contracted_product_goes_back_to_pending_with_its_discount_unusedo
+(Rtres.Api.Tests.TaxDocumentReversalTestsCApproved_transfer_report_is_rejected_so_the_client_can_report_againI
+(Rtres.Api.Tests.TaxDocumentReversalTestsUnknown_document_returns_null¿
+CC:\repo\rtres-net\Rtres\src\api\Rtres.Api.Tests\SalesReportTests.csRtres.Api.Testsg
+ Rtres.Api.Tests.SalesReportTestsCIgv_comes_only_from_invoices_and_is_already_inside_what_was_charged™
+AC:\repo\rtres-net\Rtres\src\api\Rtres.Api.Tests\PurchasesTests.csRtres.Api.Testsg
+Rtres.Api.Tests.PurchasesTestsEPurchase_is_validated_and_its_linked_expense_excludes_recoverable_igvZ
+Rtres.Api.Tests.PurchasesTests8Igv_cascade_carries_the_credit_balance_to_the_next_month
+DC:\repo\rtres-net\Rtres\src\api\Rtres.Api.Tests\PrepaidYearsTests.csRtres.Api.Testsq
+!Rtres.Api.Tests.PrepaidYearsTestsLThree_years_paid_at_once_extend_three_years_with_one_payment_and_one_invoice`
+!Rtres.Api.Tests.PrepaidYearsTests;Pending_discount_only_lowers_the_first_of_the_prepaid_years_
+!Rtres.Api.Tests.PrepaidYearsTests:Only_annual_products_accept_several_years_and_at_most_fiveŽ
+EC:\repo\rtres-net\Rtres\src\api\Rtres.Api.Tests\PayPalPaymentTests.csRtres.Api.Testsa
+"Rtres.Api.Tests.PayPalPaymentTests;Captured_prepaid_order_extends_the_years_it_was_created_forS
+"Rtres.Api.Tests.PayPalPaymentTests-Approved_order_is_captured_and_activated_onced
+"Rtres.Api.Tests.PayPalPaymentTests>Approval_alone_does_not_activate_when_capture_is_not_completedk
+"Rtres.Api.Tests.PayPalPaymentTestsEReturn_page_capture_is_idempotent_and_one_time_products_get_no_expiryE
+"Rtres.Api.Tests.PayPalPaymentTestsDenied_payment_notifies_failureO
+"Rtres.Api.Tests.PayPalPaymentTests)Annual_period_extends_from_the_right_dateX
+"Rtres.Api.Tests.PayPalPaymentTests2Monthly_sets_next_charge_and_one_time_sets_nothingD
+"Rtres.Api.Tests.PayPalPaymentTestsParses_paypal_capture_responsek
+"Rtres.Api.Tests.PayPalPaymentTestsEReconciliation_records_the_first_charge_that_arrives_after_activationr
+"Rtres.Api.Tests.PayPalPaymentTestsLReconciliation_cancels_subscriptions_cancelled_in_paypal_and_survives_errorsR
+"Rtres.Api.Tests.PayPalPaymentTests,Renewal_can_be_paid_within_30_days_of_expiryI
+"Rtres.Api.Tests.PayPalPaymentTests#One_time_products_are_never_renewedm
+"Rtres.Api.Tests.PayPalPaymentTestsGBilling_shows_own_payments_to_clients_and_all_or_selected_to_superadminh
+"Rtres.Api.Tests.PayPalPaymentTestsBCheckout_returns_to_the_calling_portal_and_reuses_the_monthly_planx
+"Rtres.Api.Tests.PayPalPaymentTestsRBimonthly_quarterly_and_semiannual_cycles_are_subscriptions_every_2_3_and_6_monthsR
+"Rtres.Api.Tests.PayPalPaymentTests,Paypal_charges_add_igv_for_peruvian_invoicesw
+"Rtres.Api.Tests.PayPalPaymentTestsQActive_subscription_is_confirmed_without_webhook_and_its_sales_are_not_duplicatedQ
+"Rtres.Api.Tests.PayPalPaymentTests+Parses_paypal_subscription_and_transactionsñ
+CC:\repo\rtres-net\Rtres\src\api\Rtres.Api.Tests\TaxCalendarTests.csRtres.Api.Testsa
+ Rtres.Api.Tests.TaxCalendarTests=Seeded_2026_schedule_falls_on_business_days_after_each_periodJ
+ Rtres.Api.Tests.TaxCalendarTests&Due_date_follows_last_digit_of_the_rucD
+ Rtres.Api.Tests.TaxCalendarTests Without_ruc_there_is_no_due_date\
+ Rtres.Api.Tests.TaxCalendarTests8Reminder_is_sent_once_per_threshold_and_not_after_filingX
+ Rtres.Api.Tests.TaxCalendarTests4Failed_email_is_retried_without_duplicating_the_bell<
+ Rtres.Api.Tests.TaxCalendarTestsNo_reminders_without_rucT
+ Rtres.Api.Tests.TaxCalendarTests0Calendar_shows_next_due_date_and_overdue_periodsX
+ Rtres.Api.Tests.TaxCalendarTests4Upsert_rejects_weekends_and_dates_outside_the_windowÒ
+EC:\repo\rtres-net\Rtres\src\api\Rtres.Api.Tests\LoginSecurityTests.csRtres.Api.TestsO
+"Rtres.Api.Tests.LoginSecurityTests)Api_does_not_start_without_a_real_jwt_keyT
+"Rtres.Api.Tests.LoginSecurityTests.Account_is_locked_after_repeated_failed_loginsQ
+"Rtres.Api.Tests.LoginSecurityTests+Successful_login_resets_the_failed_attemptsý
+FC:\repo\rtres-net\Rtres\src\api\Rtres.Api.Tests\LearningVideosTests.csRtres.Api.Tests?
+#Rtres.Api.Tests.LearningVideosTestsYoutube_links_are_parseda
+#Rtres.Api.Tests.LearningVideosTests:Site_gets_only_published_videos_of_its_language_or_for_all¢
+FC:\repo\rtres-net\Rtres\src\api\Rtres.Api.Tests\ImportTemplateTests.csRtres.Api.Tests\
+#Rtres.Api.Tests.ImportTemplateTests5Templates_explain_accepted_values_and_offer_dropdownsi
+#Rtres.Api.Tests.ImportTemplateTestsBProduct_import_uses_the_documented_values_and_reports_each_problem”
+BC:\repo\rtres-net\Rtres\src\api\Rtres.Api.Tests\CategoriesTests.csRtres.Api.Testsh
+Rtres.Api.Tests.CategoriesTestsEExpense_categories_are_managed_but_system_and_used_ones_are_protectedS
+Rtres.Api.Tests.CategoriesTests0Renaming_a_product_category_updates_its_products˜
+EC:\repo\rtres-net\Rtres\src\api\Rtres.Api.Tests\FinanceReportTests.csRtres.Api.Tests_
+"Rtres.Api.Tests.FinanceReportTests9Manual_tax_document_registers_its_payment_and_counts_once]
+"Rtres.Api.Tests.FinanceReportTests7Remittance_without_product_counts_in_the_client_rankingP
+"Rtres.Api.Tests.FinanceReportTests*Yearly_report_equals_the_sum_of_its_monthsh
+"Rtres.Api.Tests.FinanceReportTestsBNet_profit_always_subtracts_the_renta_advance_on_sales_without_igvB
+"Rtres.Api.Tests.FinanceReportTestsExport_returns_an_excel_fileÇ
+EC:\repo\rtres-net\Rtres\src\api\Rtres.Api.Tests\ExpenseImportTests.csRtres.Api.TestsZ
+"Rtres.Api.Tests.ExpenseImportTests4Template_rows_are_imported_and_invalid_ones_reportedA
+"Rtres.Api.Tests.ExpenseImportTestsUnreadable_file_is_rejectedj
+"Rtres.Api.Tests.ExpenseImportTestsDEnding_a_recurring_expense_removes_later_payments_of_the_series_onlyb
+"Rtres.Api.Tests.ExpenseImportTests<Recurring_expenses_schedule_the_next_payments_within_30_daysš
+JC:\repo\rtres-net\Rtres\src\api\Rtres.Api.Tests\ClientProductAdminTests.csRtres.Api.Testsa
+'Rtres.Api.Tests.ClientProductAdminTests6Unpaid_product_can_be_deleted_and_then_its_project_tooo
+'Rtres.Api.Tests.ClientProductAdminTestsDProduct_with_payments_is_not_deleted_but_can_move_to_another_projectg
+'Rtres.Api.Tests.ClientProductAdminTests<Active_paypal_subscription_must_be_cancelled_before_deleting…
+?C:\repo\rtres-net\Rtres\src\api\Rtres.Api.Tests\ContactTests.csRtres.Api.TestsZ
+Rtres.Api.Tests.ContactTests:Valid_contact_is_saved_and_staff_is_notified_in_backgroundL
+Rtres.Api.Tests.ContactTests,Honeypot_is_accepted_silently_without_saving;
+Rtres.Api.Tests.ContactTestsInvalid_contact_is_rejectedJ
+Rtres.Api.Tests.ContactTests*Lead_email_lists_who_and_what_for_the_teamÐ
+HC:\repo\rtres-net\Rtres\src\api\Rtres.Api.Tests\ClientOnboardingTests.csRtres.Api.TestsV
+%Rtres.Api.Tests.ClientOnboardingTests-New_client_gets_an_admin_user_that_can_log_inX
+%Rtres.Api.Tests.ClientOnboardingTests/Client_email_already_used_by_a_user_is_rejectedh
+%Rtres.Api.Tests.ClientOnboardingTests?Generate_access_creates_the_missing_user_or_resets_the_passwordX
+%Rtres.Api.Tests.ClientOnboardingTests/Import_creates_users_and_returns_their_accessesk
+%Rtres.Api.Tests.ClientOnboardingTestsBProjects_are_created_with_a_unique_slug_and_can_have_several_repos^
+%Rtres.Api.Tests.ClientOnboardingTests5Projects_are_deleted_only_without_products_or_tickets`
+%Rtres.Api.Tests.ClientOnboardingTests7New_client_receives_the_access_by_email_in_its_languageo
+%Rtres.Api.Tests.ClientOnboardingTestsFIf_the_email_fails_the_access_is_still_created_and_flagged_as_not_sents
+%Rtres.Api.Tests.ClientOnboardingTestsJTeam_invitation_is_emailed_to_the_invited_person_not_to_the_client_contacth
+%Rtres.Api.Tests.ClientOnboardingTests?Admin_sets_the_dates_of_a_manual_product_and_its_status_followsã
+BC:\repo\rtres-net\Rtres\src\api\Rtres.Api.Tests\GitHubSyncTests.csRtres.Api.TestsN
+!Rtres.Api.Tests.GitHubLabelsTests)ResolveStatus_maps_issue_state_and_labels=
+!Rtres.Api.Tests.GitHubLabelsTestsStatus_labels_round_trip\
++Rtres.Api.Tests.GitHubWebhookSignatureTests-Accepts_valid_and_rejects_tampered_signaturesP
+'Rtres.Api.Tests.GitHubIssuesClientTests%Token_per_owner_falls_back_to_default`
+'Rtres.Api.Tests.GitHubIssuesClientTests5Body_skips_empty_sections_and_impact_only_for_changesP
+'Rtres.Api.Tests.GitHubIssuesClientTests%Type_labels_follow_github_conventionsM
+'Rtres.Api.Tests.GitHubIssuesClientTests"Portal_comment_body_carries_markerO
+'Rtres.Api.Tests.GitHubIssueSyncJobTests$Creates_issue_once_and_stores_numberZ
+'Rtres.Api.Tests.GitHubIssueSyncJobTests/Portal_comments_are_published_once_issue_existsF
+'Rtres.Api.Tests.GitHubIssueSyncJobTestsSkips_projects_without_repo`
+%Rtres.Api.Tests.MultiRepoProjectTests7Ticket_goes_to_the_chosen_repo_and_its_webhook_finds_itH
+(Rtres.Api.Tests.GitHubProjectStatusTestsColumns_map_to_ticket_statusZ
+(Rtres.Api.Tests.GitHubProjectStatusTests.Closed_issue_ignores_a_work_in_progress_columng
+(Rtres.Api.Tests.GitHubProjectStatusTests;GraphQL_response_is_parsed_and_partial_errors_are_toleratedW
+(Rtres.Api.Tests.GitHubProjectStatusTests+Job_applies_the_column_only_when_it_changes\
+(Rtres.Api.Tests.GitHubProjectStatusTests0Webhook_ignores_events_that_do_not_change_statusj
+%Rtres.Api.Tests.TicketAttachmentTestsAAttachments_are_uploaded_to_the_repo_once_and_linked_in_the_issuep
+%Rtres.Api.Tests.TicketAttachmentTestsGAttachments_are_committed_to_their_own_branch_not_the_protected_defaultk
+&Rtres.Api.Tests.TicketFromProductTestsATicket_can_come_from_a_product_only_if_the_product_allows_ticketsX
++Rtres.Api.Tests.GitHubWebhookProcessorTests)Status_change_updates_ticket_and_notifiesO
++Rtres.Api.Tests.GitHubWebhookProcessorTests Issue_from_other_repo_is_ignoredc
++Rtres.Api.Tests.GitHubWebhookProcessorTests4Comments_are_created_edited_deleted_and_bots_ignoredT
+,Rtres.Api.Tests.GitHubWebhookControllerTests$Verifies_signature_before_processingh
++Rtres.Api.Tests.TicketCommentsEndpointTests9Portal_comment_is_saved_with_author_and_queued_for_githubk
+(Rtres.Api.Tests.AdminTicketEndpointTests?Updates_portal_ticket_notifies_client_and_rejects_github_ticket{
+(Rtres.Api.Tests.AdminTicketEndpointTestsOAdmin_comment_on_github_ticket_is_queued_and_client_cannot_use_admin_controllerR
+(Rtres.Api.Tests.AdminTicketEndpointTests&New_ticket_without_repo_notifies_rtresT
+)Rtres.Api.Tests.SqlServerTranslationTests'Comment_queries_translate_to_sql_server÷
+<C:\repo\rtres-net\Rtres\src\api\Rtres.Api.Tests\BlogTests.csRtres.Api.TestsD
+Rtres.Api.Tests.BlogTests'WordPress_post_is_mapped_to_a_blog_postG
+Rtres.Api.Tests.BlogTests*Password_protected_posts_are_not_publishedT
+Rtres.Api.Tests.BlogTests7Client_reads_every_page_of_the_category_of_the_language>
+Rtres.Api.Tests.BlogTests!Missing_category_is_an_empty_blogY
+Rtres.Api.Tests.BlogTests<WordPress_failure_is_an_error_when_there_is_no_previous_copyJ
+Rtres.Api.Tests.BlogTests-WordPress_failure_keeps_serving_the_last_copyN
+Rtres.Api.Tests.BlogTests1Post_brings_related_posts_of_the_same_topic_firstB
+Rtres.Api.Tests.BlogTests%Unknown_post_or_language_is_not_foundF
+Rtres.Api.Tests.BlogTests)WordPress_down_is_reported_as_unavailableÂ
+DC:\repo\rtres-net\Rtres\src\api\Rtres.Api.Tests\BankTransferTests.csRtres.Api.Testsj
+!Rtres.Api.Tests.BankTransferTestsETransfer_payment_confirmed_by_rtres_activates_the_product_like_paypalm
+!Rtres.Api.Tests.BankTransferTestsHCatalog_prices_are_without_igv_and_it_is_added_only_to_peruvian_invoicesv
+!Rtres.Api.Tests.BankTransferTestsQRegistered_transfer_defaults_to_the_total_with_igv_and_the_invoice_splits_it_backU
+!Rtres.Api.Tests.BankTransferTests0Transfer_payment_is_rejected_for_paypal_productsT
+!Rtres.Api.Tests.BankTransferTests/Client_can_request_a_product_paying_by_transferi
+!Rtres.Api.Tests.BankTransferTestsDTransfer_request_notice_is_always_in_spanish_and_links_to_the_clientØ
+@C:\repo\rtres-net\Rtres\src\api\Rtres.Api.Tests\DiscountTests.csRtres.Api.Testsx
+Rtres.Api.Tests.DiscountTestsWDiscount_on_an_active_product_covers_the_current_period_and_renewal_is_at_catalog_price`
+Rtres.Api.Tests.DiscountTests?Discount_on_a_pending_product_is_used_by_the_first_payment_onlyV
+Rtres.Api.Tests.DiscountTests5Discount_can_be_given_when_assigning_and_is_validated\
+Rtres.Api.Tests.DiscountTests;Surcharge_on_an_active_product_goes_to_the_next_charge_only
+Rtres.Api.Tests.DiscountTests`Surcharge_only_raises_the_first_of_the_prepaid_years_and_comes_back_when_the_payment_is_reversedm
+Rtres.Api.Tests.DiscountTestsLSurcharge_is_rejected_on_a_running_PayPal_subscription_but_a_discount_is_notÇ
+AC:\repo\rtres-net\Rtres\src\api\Rtres.Api.Tests\AnnualTaxTests.csRtres.Api.TestsL
+Rtres.Api.Tests.AnnualTaxTests*Mype_scale_matches_the_accountant_examplese
+Rtres.Api.Tests.AnnualTaxTestsCAnnual_renta_uses_mype_income_deductible_expenses_and_real_advancesK
+Rtres.Api.Tests.AnnualTaxTests)Annual_renta_requires_the_uit_of_the_yearN
+Rtres.Api.Tests.AnnualTaxTests,Monthly_renta_advance_excludes_fees_receiptsT
+Rtres.Api.Tests.AnnualTaxTests2Paid_form_1662_igv_is_tax_credit_only_when_enabledI
+Rtres.Api.Tests.AnnualTaxTests'Recurring_expenses_keep_their_tax_flags

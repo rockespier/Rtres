@@ -1,0 +1,12 @@
+f
+[C:\repo\rtres-net\Rtres\src\api\Rtres.Domain\obj\Debug\net10.0\Rtres.Domain.AssemblyInfo.csutf-8y
+nC:\repo\rtres-net\Rtres\src\api\Rtres.Domain\obj\Debug\net10.0\.NETCoreApp,Version=v10.0.AssemblyAttributes.csutf-8h
+]C:\repo\rtres-net\Rtres\src\api\Rtres.Domain\obj\Debug\net10.0\Rtres.Domain.GlobalUsings.g.csutf-8F
+=C:\repo\rtres-net\Rtres\src\api\Rtres.Domain\Notifications.csutf-8B
+9C:\repo\rtres-net\Rtres\src\api\Rtres.Domain\IncomeTax.csutf-8C
+:C:\repo\rtres-net\Rtres\src\api\Rtres.Domain\GitHubSync.csutf-8A
+8C:\repo\rtres-net\Rtres\src\api\Rtres.Domain\Entities.csutf-8B
+9C:\repo\rtres-net\Rtres\src\api\Rtres.Domain\Contracts.csutf-8E
+<C:\repo\rtres-net\Rtres\src\api\Rtres.Domain\ContactLeads.csutf-8M
+DC:\repo\rtres-net\Rtres\src\api\Rtres.Domain\ClientProductPricing.csutf-8F
+=C:\repo\rtres-net\Rtres\src\api\Rtres.Domain\BankTransfers.csutf-8

@@ -1,0 +1,4601 @@
+{
+  "$schema": "http://json.schemastore.org/sarif-1.0.0",
+  "version": "1.0.0",
+  "runs": [
+    {
+      "tool": {
+        "name": "Compilatore Microsoft (R) Visual C#",
+        "version": "5.9.0.0",
+        "fileVersion": "5.9.0-1.26523.112 (5a2162bea6845eabc1fc721624a43568c65db3b1)",
+        "semanticVersion": "5.9.0",
+        "language": "it-IT"
+      },
+      "results": [
+        {
+          "ruleId": "CS8604",
+          "level": "warning",
+          "message": "Possibile argomento di riferimento Null per il parametro 'address' in 'MailboxAddress.MailboxAddress(string? name, string address)'.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailSenders.cs",
+                "region": {
+                  "startLine": 17,
+                  "startColumn": 85,
+                  "endLine": 17,
+                  "endColumn": 113
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8604",
+          "level": "warning",
+          "message": "Possibile argomento di riferimento Null per il parametro 'host' in 'Task SmtpClient.ConnectAsync(string host, int port = 0, SecureSocketOptions options = SecureSocketOptions.Auto, CancellationToken cancellationToken = default(CancellationToken))'.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailSenders.cs",
+                "region": {
+                  "startLine": 24,
+                  "startColumn": 35,
+                  "endLine": 24,
+                  "endColumn": 47
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8604",
+          "level": "warning",
+          "message": "Possibile argomento di riferimento Null per il parametro 'userName' in 'Task MailService.AuthenticateAsync(string userName, string password, CancellationToken cancellationToken = default(CancellationToken))'.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailSenders.cs",
+                "region": {
+                  "startLine": 25,
+                  "startColumn": 81,
+                  "endLine": 25,
+                  "endColumn": 93
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8604",
+          "level": "warning",
+          "message": "Possibile argomento di riferimento Null per il parametro 'password' in 'Task MailService.AuthenticateAsync(string userName, string password, CancellationToken cancellationToken = default(CancellationToken))'.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailSenders.cs",
+                "region": {
+                  "startLine": 25,
+                  "startColumn": 95,
+                  "endLine": 25,
+                  "endColumn": 111
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "S1135",
+          "level": "warning",
+          "message": "Complete the task associated to this 'TODO' comment.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/IntegrationClients.cs",
+                "region": {
+                  "startLine": 383,
+                  "startColumn": 89,
+                  "endLine": 383,
+                  "endColumn": 93
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "S1192",
+          "level": "warning",
+          "message": "Define a constant instead of using this literal 'status' 4 times.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/IntegrationClients.cs",
+                "region": {
+                  "startLine": 234,
+                  "startColumn": 42,
+                  "endLine": 234,
+                  "endColumn": 50
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/IntegrationClients.cs",
+                "region": {
+                  "startLine": 246,
+                  "startColumn": 70,
+                  "endLine": 246,
+                  "endColumn": 78
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/IntegrationClients.cs",
+                "region": {
+                  "startLine": 295,
+                  "startColumn": 39,
+                  "endLine": 295,
+                  "endColumn": 47
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/IntegrationClients.cs",
+                "region": {
+                  "startLine": 300,
+                  "startColumn": 97,
+                  "endLine": 300,
+                  "endColumn": 105
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "0": null,
+              "1": null,
+              "2": null
+            }
+          }
+        },
+        {
+          "ruleId": "S1192",
+          "level": "warning",
+          "message": "Define a constant instead of using this literal 'rendered' 8 times.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/IntegrationClients.cs",
+                "region": {
+                  "startLine": 29,
+                  "startColumn": 90,
+                  "endLine": 29,
+                  "endColumn": 100
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/IntegrationClients.cs",
+                "region": {
+                  "startLine": 30,
+                  "startColumn": 57,
+                  "endLine": 30,
+                  "endColumn": 67
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/IntegrationClients.cs",
+                "region": {
+                  "startLine": 102,
+                  "startColumn": 40,
+                  "endLine": 102,
+                  "endColumn": 50
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/IntegrationClients.cs",
+                "region": {
+                  "startLine": 104,
+                  "startColumn": 95,
+                  "endLine": 104,
+                  "endColumn": 105
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/IntegrationClients.cs",
+                "region": {
+                  "startLine": 107,
+                  "startColumn": 73,
+                  "endLine": 107,
+                  "endColumn": 83
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/IntegrationClients.cs",
+                "region": {
+                  "startLine": 174,
+                  "startColumn": 63,
+                  "endLine": 174,
+                  "endColumn": 73
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/IntegrationClients.cs",
+                "region": {
+                  "startLine": 176,
+                  "startColumn": 69,
+                  "endLine": 176,
+                  "endColumn": 79
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/IntegrationClients.cs",
+                "region": {
+                  "startLine": 177,
+                  "startColumn": 69,
+                  "endLine": 177,
+                  "endColumn": 79
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "0": null,
+              "1": null,
+              "2": null,
+              "3": null,
+              "4": null,
+              "5": null,
+              "6": null
+            }
+          }
+        },
+        {
+          "ruleId": "S1192",
+          "level": "warning",
+          "message": "Define a constant instead of using this literal 'status.subject' 4 times.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 42,
+                  "startColumn": 33,
+                  "endLine": 42,
+                  "endColumn": 49
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 165,
+                  "startColumn": 14,
+                  "endLine": 165,
+                  "endColumn": 30
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 220,
+                  "startColumn": 14,
+                  "endLine": 220,
+                  "endColumn": 30
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 253,
+                  "startColumn": 14,
+                  "endLine": 253,
+                  "endColumn": 30
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "0": null,
+              "1": null,
+              "2": null
+            }
+          }
+        },
+        {
+          "ruleId": "S1192",
+          "level": "warning",
+          "message": "Define a constant instead of using this literal 'status.body' 4 times.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 43,
+                  "startColumn": 41,
+                  "endLine": 43,
+                  "endColumn": 54
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 166,
+                  "startColumn": 14,
+                  "endLine": 166,
+                  "endColumn": 27
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 221,
+                  "startColumn": 14,
+                  "endLine": 221,
+                  "endColumn": 27
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 254,
+                  "startColumn": 14,
+                  "endLine": 254,
+                  "endColumn": 27
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "0": null,
+              "1": null,
+              "2": null
+            }
+          }
+        },
+        {
+          "ruleId": "S1192",
+          "level": "warning",
+          "message": "Define a constant instead of using this literal 'cta.ticket' 5 times.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 44,
+                  "startColumn": 19,
+                  "endLine": 44,
+                  "endColumn": 31
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 70,
+                  "startColumn": 19,
+                  "endLine": 70,
+                  "endColumn": 31
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 179,
+                  "startColumn": 14,
+                  "endLine": 179,
+                  "endColumn": 26
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 234,
+                  "startColumn": 14,
+                  "endLine": 234,
+                  "endColumn": 26
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 267,
+                  "startColumn": 14,
+                  "endLine": 267,
+                  "endColumn": 26
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "0": null,
+              "1": null,
+              "2": null,
+              "3": null
+            }
+          }
+        },
+        {
+          "ruleId": "S1192",
+          "level": "warning",
+          "message": "Define a constant instead of using this literal 'reply.subject' 4 times.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 46,
+                  "startColumn": 33,
+                  "endLine": 46,
+                  "endColumn": 48
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 167,
+                  "startColumn": 14,
+                  "endLine": 167,
+                  "endColumn": 29
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 222,
+                  "startColumn": 14,
+                  "endLine": 222,
+                  "endColumn": 29
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 255,
+                  "startColumn": 14,
+                  "endLine": 255,
+                  "endColumn": 29
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "0": null,
+              "1": null,
+              "2": null
+            }
+          }
+        },
+        {
+          "ruleId": "S1192",
+          "level": "warning",
+          "message": "Define a constant instead of using this literal 'reply.body' 4 times.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 47,
+                  "startColumn": 41,
+                  "endLine": 47,
+                  "endColumn": 53
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 168,
+                  "startColumn": 14,
+                  "endLine": 168,
+                  "endColumn": 26
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 223,
+                  "startColumn": 14,
+                  "endLine": 223,
+                  "endColumn": 26
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 256,
+                  "startColumn": 14,
+                  "endLine": 256,
+                  "endColumn": 26
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "0": null,
+              "1": null,
+              "2": null
+            }
+          }
+        },
+        {
+          "ruleId": "S1192",
+          "level": "warning",
+          "message": "Define a constant instead of using this literal 'cta.reply' 4 times.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 48,
+                  "startColumn": 19,
+                  "endLine": 48,
+                  "endColumn": 30
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 180,
+                  "startColumn": 14,
+                  "endLine": 180,
+                  "endColumn": 25
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 235,
+                  "startColumn": 14,
+                  "endLine": 235,
+                  "endColumn": 25
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 268,
+                  "startColumn": 14,
+                  "endLine": 268,
+                  "endColumn": 25
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "0": null,
+              "1": null,
+              "2": null
+            }
+          }
+        },
+        {
+          "ruleId": "S1192",
+          "level": "warning",
+          "message": "Define a constant instead of using this literal 'paid.subject' 4 times.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 50,
+                  "startColumn": 33,
+                  "endLine": 50,
+                  "endColumn": 47
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 169,
+                  "startColumn": 14,
+                  "endLine": 169,
+                  "endColumn": 28
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 224,
+                  "startColumn": 14,
+                  "endLine": 224,
+                  "endColumn": 28
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 257,
+                  "startColumn": 14,
+                  "endLine": 257,
+                  "endColumn": 28
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "0": null,
+              "1": null,
+              "2": null
+            }
+          }
+        },
+        {
+          "ruleId": "S1192",
+          "level": "warning",
+          "message": "Define a constant instead of using this literal 'product' 13 times.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 50,
+                  "startColumn": 52,
+                  "endLine": 50,
+                  "endColumn": 61
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 51,
+                  "startColumn": 98,
+                  "endLine": 51,
+                  "endColumn": 107
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 58,
+                  "startColumn": 54,
+                  "endLine": 58,
+                  "endColumn": 63
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 59,
+                  "startColumn": 59,
+                  "endLine": 59,
+                  "endColumn": 68
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 62,
+                  "startColumn": 70,
+                  "endLine": 62,
+                  "endColumn": 79
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 64,
+                  "startColumn": 81,
+                  "endLine": 64,
+                  "endColumn": 90
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 65,
+                  "startColumn": 81,
+                  "endLine": 65,
+                  "endColumn": 90
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 75,
+                  "startColumn": 81,
+                  "endLine": 75,
+                  "endColumn": 90
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 76,
+                  "startColumn": 81,
+                  "endLine": 76,
+                  "endColumn": 90
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 83,
+                  "startColumn": 56,
+                  "endLine": 83,
+                  "endColumn": 65
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 84,
+                  "startColumn": 102,
+                  "endLine": 84,
+                  "endColumn": 111
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 104,
+                  "startColumn": 66,
+                  "endLine": 104,
+                  "endColumn": 75
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 104,
+                  "startColumn": 84,
+                  "endLine": 104,
+                  "endColumn": 93
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "0": null,
+              "1": null,
+              "10": null,
+              "11": null,
+              "2": null,
+              "3": null,
+              "4": null,
+              "5": null,
+              "6": null,
+              "7": null,
+              "8": null,
+              "9": null
+            }
+          }
+        },
+        {
+          "ruleId": "S1192",
+          "level": "warning",
+          "message": "Define a constant instead of using this literal 'paid.body' 4 times.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 51,
+                  "startColumn": 41,
+                  "endLine": 51,
+                  "endColumn": 52
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 170,
+                  "startColumn": 14,
+                  "endLine": 170,
+                  "endColumn": 25
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 225,
+                  "startColumn": 14,
+                  "endLine": 225,
+                  "endColumn": 25
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 258,
+                  "startColumn": 14,
+                  "endLine": 258,
+                  "endColumn": 25
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "0": null,
+              "1": null,
+              "2": null
+            }
+          }
+        },
+        {
+          "ruleId": "S1192",
+          "level": "warning",
+          "message": "Define a constant instead of using this literal 'amount' 9 times.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 51,
+                  "startColumn": 69,
+                  "endLine": 51,
+                  "endColumn": 77
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 63,
+                  "startColumn": 45,
+                  "endLine": 63,
+                  "endColumn": 53
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 65,
+                  "startColumn": 158,
+                  "endLine": 65,
+                  "endColumn": 166
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 73,
+                  "startColumn": 82,
+                  "endLine": 73,
+                  "endColumn": 90
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 75,
+                  "startColumn": 107,
+                  "endLine": 75,
+                  "endColumn": 115
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 76,
+                  "startColumn": 107,
+                  "endLine": 76,
+                  "endColumn": 115
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 84,
+                  "startColumn": 73,
+                  "endLine": 84,
+                  "endColumn": 81
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 110,
+                  "startColumn": 42,
+                  "endLine": 110,
+                  "endColumn": 50
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 110,
+                  "startColumn": 118,
+                  "endLine": 110,
+                  "endColumn": 126
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "0": null,
+              "1": null,
+              "2": null,
+              "3": null,
+              "4": null,
+              "5": null,
+              "6": null,
+              "7": null
+            }
+          }
+        },
+        {
+          "ruleId": "S1192",
+          "level": "warning",
+          "message": "Define a constant instead of using this literal 'currency' 7 times.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 51,
+                  "startColumn": 82,
+                  "endLine": 51,
+                  "endColumn": 92
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 65,
+                  "startColumn": 171,
+                  "endLine": 65,
+                  "endColumn": 181
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 73,
+                  "startColumn": 95,
+                  "endLine": 73,
+                  "endColumn": 105
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 75,
+                  "startColumn": 120,
+                  "endLine": 75,
+                  "endColumn": 130
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 76,
+                  "startColumn": 120,
+                  "endLine": 76,
+                  "endColumn": 130
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 84,
+                  "startColumn": 86,
+                  "endLine": 84,
+                  "endColumn": 96
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 110,
+                  "startColumn": 131,
+                  "endLine": 110,
+                  "endColumn": 141
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "0": null,
+              "1": null,
+              "2": null,
+              "3": null,
+              "4": null,
+              "5": null
+            }
+          }
+        },
+        {
+          "ruleId": "S1192",
+          "level": "warning",
+          "message": "Define a constant instead of using this literal 'cta.billing' 4 times.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 52,
+                  "startColumn": 19,
+                  "endLine": 52,
+                  "endColumn": 32
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 181,
+                  "startColumn": 14,
+                  "endLine": 181,
+                  "endColumn": 27
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 236,
+                  "startColumn": 14,
+                  "endLine": 236,
+                  "endColumn": 27
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 269,
+                  "startColumn": 14,
+                  "endLine": 269,
+                  "endColumn": 27
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "0": null,
+              "1": null,
+              "2": null
+            }
+          }
+        },
+        {
+          "ruleId": "S1192",
+          "level": "warning",
+          "message": "Define a constant instead of using this literal 'access.subject' 4 times.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 54,
+                  "startColumn": 33,
+                  "endLine": 54,
+                  "endColumn": 49
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 173,
+                  "startColumn": 14,
+                  "endLine": 173,
+                  "endColumn": 30
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 228,
+                  "startColumn": 14,
+                  "endLine": 228,
+                  "endColumn": 30
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 261,
+                  "startColumn": 14,
+                  "endLine": 261,
+                  "endColumn": 30
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "0": null,
+              "1": null,
+              "2": null
+            }
+          }
+        },
+        {
+          "ruleId": "S1192",
+          "level": "warning",
+          "message": "Define a constant instead of using this literal 'company' 14 times.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 54,
+                  "startColumn": 54,
+                  "endLine": 54,
+                  "endColumn": 63
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 55,
+                  "startColumn": 70,
+                  "endLine": 55,
+                  "endColumn": 79
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 62,
+                  "startColumn": 56,
+                  "endLine": 62,
+                  "endColumn": 65
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 64,
+                  "startColumn": 67,
+                  "endLine": 64,
+                  "endColumn": 76
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 65,
+                  "startColumn": 67,
+                  "endLine": 65,
+                  "endColumn": 76
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 68,
+                  "startColumn": 73,
+                  "endLine": 68,
+                  "endColumn": 82
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 69,
+                  "startColumn": 67,
+                  "endLine": 69,
+                  "endColumn": 76
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 73,
+                  "startColumn": 56,
+                  "endLine": 73,
+                  "endColumn": 65
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 75,
+                  "startColumn": 67,
+                  "endLine": 75,
+                  "endColumn": 76
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 76,
+                  "startColumn": 67,
+                  "endLine": 76,
+                  "endColumn": 76
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 79,
+                  "startColumn": 89,
+                  "endLine": 79,
+                  "endColumn": 98
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 79,
+                  "startColumn": 118,
+                  "endLine": 79,
+                  "endColumn": 127
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 80,
+                  "startColumn": 163,
+                  "endLine": 80,
+                  "endColumn": 172
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 80,
+                  "startColumn": 185,
+                  "endLine": 80,
+                  "endColumn": 194
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "0": null,
+              "1": null,
+              "10": null,
+              "11": null,
+              "12": null,
+              "2": null,
+              "3": null,
+              "4": null,
+              "5": null,
+              "6": null,
+              "7": null,
+              "8": null,
+              "9": null
+            }
+          }
+        },
+        {
+          "ruleId": "S1192",
+          "level": "warning",
+          "message": "Define a constant instead of using this literal 'access.body' 4 times.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 55,
+                  "startColumn": 41,
+                  "endLine": 55,
+                  "endColumn": 54
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 174,
+                  "startColumn": 14,
+                  "endLine": 174,
+                  "endColumn": 27
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 229,
+                  "startColumn": 14,
+                  "endLine": 229,
+                  "endColumn": 27
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 262,
+                  "startColumn": 14,
+                  "endLine": 262,
+                  "endColumn": 27
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "0": null,
+              "1": null,
+              "2": null
+            }
+          }
+        },
+        {
+          "ruleId": "S1192",
+          "level": "warning",
+          "message": "Define a constant instead of using this literal 'access.credentials' 4 times.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 55,
+                  "startColumn": 99,
+                  "endLine": 55,
+                  "endColumn": 119
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 175,
+                  "startColumn": 14,
+                  "endLine": 175,
+                  "endColumn": 34
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 230,
+                  "startColumn": 14,
+                  "endLine": 230,
+                  "endColumn": 34
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 263,
+                  "startColumn": 14,
+                  "endLine": 263,
+                  "endColumn": 34
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "0": null,
+              "1": null,
+              "2": null
+            }
+          }
+        },
+        {
+          "ruleId": "S1192",
+          "level": "warning",
+          "message": "Define a constant instead of using this literal 'access.change' 4 times.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 55,
+                  "startColumn": 152,
+                  "endLine": 55,
+                  "endColumn": 167
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 176,
+                  "startColumn": 14,
+                  "endLine": 176,
+                  "endColumn": 29
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 231,
+                  "startColumn": 14,
+                  "endLine": 231,
+                  "endColumn": 29
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 264,
+                  "startColumn": 14,
+                  "endLine": 264,
+                  "endColumn": 29
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "0": null,
+              "1": null,
+              "2": null
+            }
+          }
+        },
+        {
+          "ruleId": "S1192",
+          "level": "warning",
+          "message": "Define a constant instead of using this literal 'cta.login' 4 times.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 56,
+                  "startColumn": 19,
+                  "endLine": 56,
+                  "endColumn": 30
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 177,
+                  "startColumn": 14,
+                  "endLine": 177,
+                  "endColumn": 25
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 232,
+                  "startColumn": 14,
+                  "endLine": 232,
+                  "endColumn": 25
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 265,
+                  "startColumn": 14,
+                  "endLine": 265,
+                  "endColumn": 25
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "0": null,
+              "1": null,
+              "2": null
+            }
+          }
+        },
+        {
+          "ruleId": "S1192",
+          "level": "warning",
+          "message": "Define a constant instead of using this literal 'failed.subject' 4 times.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 58,
+                  "startColumn": 33,
+                  "endLine": 58,
+                  "endColumn": 49
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 171,
+                  "startColumn": 14,
+                  "endLine": 171,
+                  "endColumn": 30
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 226,
+                  "startColumn": 14,
+                  "endLine": 226,
+                  "endColumn": 30
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 259,
+                  "startColumn": 14,
+                  "endLine": 259,
+                  "endColumn": 30
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "0": null,
+              "1": null,
+              "2": null
+            }
+          }
+        },
+        {
+          "ruleId": "S1192",
+          "level": "warning",
+          "message": "Define a constant instead of using this literal 'failed.body' 4 times.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 59,
+                  "startColumn": 41,
+                  "endLine": 59,
+                  "endColumn": 54
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 172,
+                  "startColumn": 14,
+                  "endLine": 172,
+                  "endColumn": 27
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 227,
+                  "startColumn": 14,
+                  "endLine": 227,
+                  "endColumn": 27
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 260,
+                  "startColumn": 14,
+                  "endLine": 260,
+                  "endColumn": 27
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "0": null,
+              "1": null,
+              "2": null
+            }
+          }
+        },
+        {
+          "ruleId": "S1192",
+          "level": "warning",
+          "message": "Define a constant instead of using this literal 'cta.dashboard' 5 times.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 60,
+                  "startColumn": 19,
+                  "endLine": 60,
+                  "endColumn": 34
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 112,
+                  "startColumn": 93,
+                  "endLine": 112,
+                  "endColumn": 108
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 178,
+                  "startColumn": 14,
+                  "endLine": 178,
+                  "endColumn": 29
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 233,
+                  "startColumn": 14,
+                  "endLine": 233,
+                  "endColumn": 29
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 266,
+                  "startColumn": 14,
+                  "endLine": 266,
+                  "endColumn": 29
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "0": null,
+              "1": null,
+              "2": null,
+              "3": null
+            }
+          }
+        },
+        {
+          "ruleId": "S1192",
+          "level": "warning",
+          "message": "Define a constant instead of using this literal 'rejected.subject' 4 times.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 83,
+                  "startColumn": 33,
+                  "endLine": 83,
+                  "endColumn": 51
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 201,
+                  "startColumn": 14,
+                  "endLine": 201,
+                  "endColumn": 32
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 238,
+                  "startColumn": 14,
+                  "endLine": 238,
+                  "endColumn": 32
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 271,
+                  "startColumn": 14,
+                  "endLine": 271,
+                  "endColumn": 32
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "0": null,
+              "1": null,
+              "2": null
+            }
+          }
+        },
+        {
+          "ruleId": "S1192",
+          "level": "warning",
+          "message": "Define a constant instead of using this literal 'rejected.body' 4 times.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 84,
+                  "startColumn": 41,
+                  "endLine": 84,
+                  "endColumn": 56
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 202,
+                  "startColumn": 14,
+                  "endLine": 202,
+                  "endColumn": 29
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 239,
+                  "startColumn": 14,
+                  "endLine": 239,
+                  "endColumn": 29
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 272,
+                  "startColumn": 14,
+                  "endLine": 272,
+                  "endColumn": 29
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "0": null,
+              "1": null,
+              "2": null
+            }
+          }
+        },
+        {
+          "ruleId": "S1192",
+          "level": "warning",
+          "message": "Define a constant instead of using this literal 'rejected.reason' 4 times.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 84,
+                  "startColumn": 131,
+                  "endLine": 84,
+                  "endColumn": 148
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 203,
+                  "startColumn": 14,
+                  "endLine": 203,
+                  "endColumn": 31
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 240,
+                  "startColumn": 14,
+                  "endLine": 240,
+                  "endColumn": 31
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 273,
+                  "startColumn": 14,
+                  "endLine": 273,
+                  "endColumn": 31
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "0": null,
+              "1": null,
+              "2": null
+            }
+          }
+        },
+        {
+          "ruleId": "S1192",
+          "level": "warning",
+          "message": "Define a constant instead of using this literal 'rejected.next' 4 times.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 84,
+                  "startColumn": 167,
+                  "endLine": 84,
+                  "endColumn": 182
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 204,
+                  "startColumn": 14,
+                  "endLine": 204,
+                  "endColumn": 29
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 241,
+                  "startColumn": 14,
+                  "endLine": 241,
+                  "endColumn": 29
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 274,
+                  "startColumn": 14,
+                  "endLine": 274,
+                  "endColumn": 29
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "0": null,
+              "1": null,
+              "2": null
+            }
+          }
+        },
+        {
+          "ruleId": "S1192",
+          "level": "warning",
+          "message": "Define a constant instead of using this literal 'cta.services' 4 times.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 85,
+                  "startColumn": 19,
+                  "endLine": 85,
+                  "endColumn": 33
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 205,
+                  "startColumn": 14,
+                  "endLine": 205,
+                  "endColumn": 28
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 242,
+                  "startColumn": 14,
+                  "endLine": 242,
+                  "endColumn": 28
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 275,
+                  "startColumn": 14,
+                  "endLine": 275,
+                  "endColumn": 28
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "0": null,
+              "1": null,
+              "2": null
+            }
+          }
+        },
+        {
+          "ruleId": "S1192",
+          "level": "warning",
+          "message": "Define a constant instead of using this literal 'footer' 4 times.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 88,
+                  "startColumn": 240,
+                  "endLine": 88,
+                  "endColumn": 248
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 182,
+                  "startColumn": 14,
+                  "endLine": 182,
+                  "endColumn": 22
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 237,
+                  "startColumn": 14,
+                  "endLine": 237,
+                  "endColumn": 22
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 270,
+                  "startColumn": 14,
+                  "endLine": 270,
+                  "endColumn": 22
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "0": null,
+              "1": null,
+              "2": null
+            }
+          }
+        },
+        {
+          "ruleId": "S1192",
+          "level": "warning",
+          "message": "Define a constant instead of using this literal 'renewal.tomorrow' 5 times.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 98,
+                  "startColumn": 67,
+                  "endLine": 98,
+                  "endColumn": 85
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 108,
+                  "startColumn": 34,
+                  "endLine": 108,
+                  "endColumn": 52
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 161,
+                  "startColumn": 14,
+                  "endLine": 161,
+                  "endColumn": 32
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 216,
+                  "startColumn": 14,
+                  "endLine": 216,
+                  "endColumn": 32
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 249,
+                  "startColumn": 14,
+                  "endLine": 249,
+                  "endColumn": 32
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "0": null,
+              "1": null,
+              "2": null,
+              "3": null
+            }
+          }
+        },
+        {
+          "ruleId": "S1192",
+          "level": "warning",
+          "message": "Define a constant instead of using this literal 'renewal.inDays' 5 times.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 98,
+                  "startColumn": 105,
+                  "endLine": 98,
+                  "endColumn": 121
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 108,
+                  "startColumn": 72,
+                  "endLine": 108,
+                  "endColumn": 88
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 160,
+                  "startColumn": 14,
+                  "endLine": 160,
+                  "endColumn": 30
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 215,
+                  "startColumn": 14,
+                  "endLine": 215,
+                  "endColumn": 30
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 248,
+                  "startColumn": 14,
+                  "endLine": 248,
+                  "endColumn": 30
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "0": null,
+              "1": null,
+              "2": null,
+              "3": null
+            }
+          }
+        },
+        {
+          "ruleId": "S1192",
+          "level": "warning",
+          "message": "Define a constant instead of using this literal 'renewal.body' 4 times.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 109,
+                  "startColumn": 61,
+                  "endLine": 109,
+                  "endColumn": 75
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 159,
+                  "startColumn": 14,
+                  "endLine": 159,
+                  "endColumn": 28
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 214,
+                  "startColumn": 14,
+                  "endLine": 214,
+                  "endColumn": 28
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 247,
+                  "startColumn": 14,
+                  "endLine": 247,
+                  "endColumn": 28
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "0": null,
+              "1": null,
+              "2": null
+            }
+          }
+        },
+        {
+          "ruleId": "S1192",
+          "level": "warning",
+          "message": "Define a constant instead of using this literal 'renewal.amount' 4 times.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 110,
+                  "startColumn": 85,
+                  "endLine": 110,
+                  "endColumn": 101
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 162,
+                  "startColumn": 14,
+                  "endLine": 162,
+                  "endColumn": 30
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 217,
+                  "startColumn": 14,
+                  "endLine": 217,
+                  "endColumn": 30
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 250,
+                  "startColumn": 14,
+                  "endLine": 250,
+                  "endColumn": 30
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "0": null,
+              "1": null,
+              "2": null
+            }
+          }
+        },
+        {
+          "ruleId": "S1192",
+          "level": "warning",
+          "message": "Define a constant instead of using this literal 'renewal.auto' 4 times.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 111,
+                  "startColumn": 53,
+                  "endLine": 111,
+                  "endColumn": 67
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 163,
+                  "startColumn": 14,
+                  "endLine": 163,
+                  "endColumn": 28
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 218,
+                  "startColumn": 14,
+                  "endLine": 218,
+                  "endColumn": 28
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 251,
+                  "startColumn": 14,
+                  "endLine": 251,
+                  "endColumn": 28
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "0": null,
+              "1": null,
+              "2": null
+            }
+          }
+        },
+        {
+          "ruleId": "S1192",
+          "level": "warning",
+          "message": "Define a constant instead of using this literal 'renewal.manual' 4 times.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 111,
+                  "startColumn": 73,
+                  "endLine": 111,
+                  "endColumn": 89
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 164,
+                  "startColumn": 14,
+                  "endLine": 164,
+                  "endColumn": 30
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 219,
+                  "startColumn": 14,
+                  "endLine": 219,
+                  "endColumn": 30
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 252,
+                  "startColumn": 14,
+                  "endLine": 252,
+                  "endColumn": 30
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "0": null,
+              "1": null,
+              "2": null
+            }
+          }
+        },
+        {
+          "ruleId": "S1192",
+          "level": "warning",
+          "message": "Define a constant instead of using this literal 'renewal.subject' 4 times.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 112,
+                  "startColumn": 33,
+                  "endLine": 112,
+                  "endColumn": 50
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 158,
+                  "startColumn": 14,
+                  "endLine": 158,
+                  "endColumn": 31
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 213,
+                  "startColumn": 14,
+                  "endLine": 213,
+                  "endColumn": 31
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 246,
+                  "startColumn": 14,
+                  "endLine": 246,
+                  "endColumn": 31
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "0": null,
+              "1": null,
+              "2": null
+            }
+          }
+        },
+        {
+          "ruleId": "S1192",
+          "level": "warning",
+          "message": "Define a constant instead of using this literal 'Abierto' 4 times.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 149,
+                  "startColumn": 27,
+                  "endLine": 149,
+                  "endColumn": 36
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 149,
+                  "startColumn": 40,
+                  "endLine": 149,
+                  "endColumn": 49
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 150,
+                  "startColumn": 27,
+                  "endLine": 150,
+                  "endColumn": 36
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 151,
+                  "startColumn": 27,
+                  "endLine": 151,
+                  "endColumn": 36
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "0": null,
+              "1": null,
+              "2": null
+            }
+          }
+        },
+        {
+          "ruleId": "S1192",
+          "level": "warning",
+          "message": "Define a constant instead of using this literal 'Resuelto' 4 times.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 149,
+                  "startColumn": 84,
+                  "endLine": 149,
+                  "endColumn": 94
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 149,
+                  "startColumn": 98,
+                  "endLine": 149,
+                  "endColumn": 108
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 150,
+                  "startColumn": 81,
+                  "endLine": 150,
+                  "endColumn": 91
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 151,
+                  "startColumn": 80,
+                  "endLine": 151,
+                  "endColumn": 90
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "0": null,
+              "1": null,
+              "2": null
+            }
+          }
+        },
+        {
+          "ruleId": "S1192",
+          "level": "warning",
+          "message": "Define a constant instead of using this literal 'Publicado' 4 times.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 149,
+                  "startColumn": 111,
+                  "endLine": 149,
+                  "endColumn": 122
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 149,
+                  "startColumn": 126,
+                  "endLine": 149,
+                  "endColumn": 137
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 150,
+                  "startColumn": 108,
+                  "endLine": 150,
+                  "endColumn": 119
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 151,
+                  "startColumn": 106,
+                  "endLine": 151,
+                  "endColumn": 117
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "0": null,
+              "1": null,
+              "2": null
+            }
+          }
+        },
+        {
+          "ruleId": "S1192",
+          "level": "warning",
+          "message": "Define a constant instead of using this literal 'Cerrado' 4 times.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 149,
+                  "startColumn": 140,
+                  "endLine": 149,
+                  "endColumn": 149
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 149,
+                  "startColumn": 153,
+                  "endLine": 149,
+                  "endColumn": 162
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 150,
+                  "startColumn": 136,
+                  "endLine": 150,
+                  "endColumn": 145
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 151,
+                  "startColumn": 136,
+                  "endLine": 151,
+                  "endColumn": 145
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "0": null,
+              "1": null,
+              "2": null
+            }
+          }
+        },
+        {
+          "ruleId": "S1075",
+          "level": "warning",
+          "message": "Refactor your code not to use hardcoded absolute paths or URIs.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/IntegrationClients.cs",
+                "region": {
+                  "startLine": 505,
+                  "startColumn": 52,
+                  "endLine": 505,
+                  "endColumn": 99
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "S1075",
+          "level": "warning",
+          "message": "Refactor your code not to use hardcoded absolute paths or URIs.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/ServiceCollectionExtensions.cs",
+                "region": {
+                  "startLine": 18,
+                  "startColumn": 80,
+                  "endLine": 18,
+                  "endColumn": 104
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "S1075",
+          "level": "warning",
+          "message": "Refactor your code not to use hardcoded absolute paths or URIs.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/ServiceCollectionExtensions.cs",
+                "region": {
+                  "startLine": 21,
+                  "startColumn": 135,
+                  "endLine": 21,
+                  "endColumn": 170
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "S1075",
+          "level": "warning",
+          "message": "Refactor your code not to use hardcoded absolute paths or URIs.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/IntegrationClients.cs",
+                "region": {
+                  "startLine": 363,
+                  "startColumn": 73,
+                  "endLine": 363,
+                  "endColumn": 105
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1873",
+          "level": "note",
+          "message": "La valutazione di questo argomento può essere dispendiosa e non necessaria se la registrazione è disabilitata",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailSenders.cs",
+                "region": {
+                  "startLine": 36,
+                  "startColumn": 9,
+                  "endLine": 36,
+                  "endColumn": 133
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "S3776",
+          "level": "warning",
+          "message": "Refactor this method to reduce its Cognitive Complexity from 17 to the 15 allowed.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/IntegrationClients.cs",
+                "region": {
+                  "startLine": 284,
+                  "startColumn": 42,
+                  "endLine": 284,
+                  "endColumn": 59
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/IntegrationClients.cs",
+                "region": {
+                  "startLine": 289,
+                  "startColumn": 174,
+                  "endLine": 289,
+                  "endColumn": 175
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/IntegrationClients.cs",
+                "region": {
+                  "startLine": 288,
+                  "startColumn": 79,
+                  "endLine": 288,
+                  "endColumn": 81
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/IntegrationClients.cs",
+                "region": {
+                  "startLine": 292,
+                  "startColumn": 9,
+                  "endLine": 292,
+                  "endColumn": 11
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/IntegrationClients.cs",
+                "region": {
+                  "startLine": 292,
+                  "startColumn": 83,
+                  "endLine": 292,
+                  "endColumn": 85
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/IntegrationClients.cs",
+                "region": {
+                  "startLine": 293,
+                  "startColumn": 13,
+                  "endLine": 293,
+                  "endColumn": 20
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/IntegrationClients.cs",
+                "region": {
+                  "startLine": 295,
+                  "startColumn": 17,
+                  "endLine": 295,
+                  "endColumn": 19
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/IntegrationClients.cs",
+                "region": {
+                  "startLine": 295,
+                  "startColumn": 65,
+                  "endLine": 295,
+                  "endColumn": 67
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/IntegrationClients.cs",
+                "region": {
+                  "startLine": 296,
+                  "startColumn": 17,
+                  "endLine": 296,
+                  "endColumn": 19
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/IntegrationClients.cs",
+                "region": {
+                  "startLine": 296,
+                  "startColumn": 84,
+                  "endLine": 296,
+                  "endColumn": 86
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/IntegrationClients.cs",
+                "region": {
+                  "startLine": 297,
+                  "startColumn": 17,
+                  "endLine": 297,
+                  "endColumn": 19
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "0": "+1",
+              "1": "+1",
+              "2": "+1",
+              "3": "+1",
+              "4": "+2 (incl 1 for nesting)",
+              "5": "+3 (incl 2 for nesting)",
+              "6": "+1",
+              "7": "+3 (incl 2 for nesting)",
+              "8": "+1",
+              "9": "+3 (incl 2 for nesting)"
+            }
+          }
+        },
+        {
+          "ruleId": "SYSLIB1045",
+          "level": "note",
+          "message": "Usare 'GeneratedRegexAttribute' per generare l'implementazione dell'espressione regolare in fase di compilazione.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/IntegrationClients.cs",
+                "region": {
+                  "startLine": 103,
+                  "startColumn": 43,
+                  "endLine": 103,
+                  "endColumn": 78
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "SYSLIB1045",
+          "level": "note",
+          "message": "Usare 'GeneratedRegexAttribute' per generare l'implementazione dell'espressione regolare in fase di compilazione.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/IntegrationClients.cs",
+                "region": {
+                  "startLine": 108,
+                  "startColumn": 13,
+                  "endLine": 108,
+                  "endColumn": 54
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "S4581",
+          "level": "warning",
+          "message": "Use 'Guid.NewGuid()' or 'Guid.Empty' or add arguments to this GUID instantiation.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Persistence/Migrations/20260925112045_AddUserAccountName.cs",
+                "region": {
+                  "startLine": 42,
+                  "startColumn": 31,
+                  "endLine": 42,
+                  "endColumn": 79
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "S3776",
+          "level": "warning",
+          "message": "Refactor this method to reduce its Cognitive Complexity from 23 to the 15 allowed.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 29,
+                  "startColumn": 62,
+                  "endLine": 29,
+                  "endColumn": 68
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 32,
+                  "startColumn": 214,
+                  "endLine": 32,
+                  "endColumn": 215
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 32,
+                  "startColumn": 76,
+                  "endLine": 32,
+                  "endColumn": 78
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 32,
+                  "startColumn": 252,
+                  "endLine": 32,
+                  "endColumn": 253
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 36,
+                  "startColumn": 67,
+                  "endLine": 36,
+                  "endColumn": 68
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 38,
+                  "startColumn": 66,
+                  "endLine": 38,
+                  "endColumn": 72
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 64,
+                  "startColumn": 21,
+                  "endLine": 64,
+                  "endColumn": 22
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 75,
+                  "startColumn": 21,
+                  "endLine": 75,
+                  "endColumn": 22
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 79,
+                  "startColumn": 101,
+                  "endLine": 79,
+                  "endColumn": 102
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 80,
+                  "startColumn": 115,
+                  "endLine": 80,
+                  "endColumn": 116
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 80,
+                  "startColumn": 175,
+                  "endLine": 80,
+                  "endColumn": 176
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 80,
+                  "startColumn": 268,
+                  "endLine": 80,
+                  "endColumn": 269
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 80,
+                  "startColumn": 359,
+                  "endLine": 80,
+                  "endColumn": 360
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 88,
+                  "startColumn": 216,
+                  "endLine": 88,
+                  "endColumn": 217
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 88,
+                  "startColumn": 78,
+                  "endLine": 88,
+                  "endColumn": 80
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "0": "+1",
+              "1": "+1",
+              "10": "+2 (incl 1 for nesting)",
+              "11": "+2 (incl 1 for nesting)",
+              "12": "+1",
+              "13": "+1",
+              "2": "+2 (incl 1 for nesting)",
+              "3": "+2 (incl 1 for nesting)",
+              "4": "+1",
+              "5": "+2 (incl 1 for nesting)",
+              "6": "+2 (incl 1 for nesting)",
+              "7": "+2 (incl 1 for nesting)",
+              "8": "+2 (incl 1 for nesting)",
+              "9": "+2 (incl 1 for nesting)"
+            }
+          }
+        },
+        {
+          "ruleId": "SYSLIB1045",
+          "level": "note",
+          "message": "Usare 'GeneratedRegexAttribute' per generare l'implementazione dell'espressione regolare in fase di compilazione.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/IntegrationClients.cs",
+                "region": {
+                  "startLine": 192,
+                  "startColumn": 53,
+                  "endLine": 192,
+                  "endColumn": 85
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "S3358",
+          "level": "warning",
+          "message": "Extract this nested ternary operation into an independent statement.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 98,
+                  "startColumn": 53,
+                  "endLine": 98,
+                  "endColumn": 129
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "S3358",
+          "level": "warning",
+          "message": "Extract this nested ternary operation into an independent statement.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 32,
+                  "startColumn": 223,
+                  "endLine": 32,
+                  "endColumn": 270
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "S3358",
+          "level": "warning",
+          "message": "Extract this nested ternary operation into an independent statement.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Notifications/EmailTemplates.cs",
+                "region": {
+                  "startLine": 120,
+                  "startColumn": 19,
+                  "endLine": 120,
+                  "endColumn": 73
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "S8747",
+          "level": "warning",
+          "message": "Convert the existing data to fit the new type before narrowing column \"PayPalOrderIdOrSubscriptionId\"; otherwise this migration may truncate values or fail.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Persistence/Migrations/20260928082520_UniquePaymentTransactionKey.cs",
+                "region": {
+                  "startLine": 13,
+                  "startColumn": 30,
+                  "endLine": 13,
+                  "endColumn": 49
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1861",
+          "level": "note",
+          "message": "Preferisci i campi 'static readonly' rispetto agli argomenti di matrice costanti se il metodo chiamato viene chiamato ripetutamente e non modifica la matrice passata",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Persistence/Migrations/20260927110418_Fase7Accounting.cs",
+                "region": {
+                  "startLine": 110,
+                  "startColumn": 26,
+                  "endLine": 110,
+                  "endColumn": 58
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "paramName": "columns"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1861",
+          "level": "note",
+          "message": "Preferisci i campi 'static readonly' rispetto agli argomenti di matrice costanti se il metodo chiamato viene chiamato ripetutamente e non modifica la matrice passata",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Persistence/Migrations/20260927110418_Fase7Accounting.cs",
+                "region": {
+                  "startLine": 116,
+                  "startColumn": 26,
+                  "endLine": 116,
+                  "endColumn": 54
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "paramName": "columns"
+            }
+          }
+        },
+        {
+          "ruleId": "S4581",
+          "level": "warning",
+          "message": "Use 'Guid.NewGuid()' or 'Guid.Empty' or add arguments to this GUID instantiation.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Persistence/Migrations/20260929125715_FinanceIncomeModel.cs",
+                "region": {
+                  "startLine": 35,
+                  "startColumn": 31,
+                  "endLine": 35,
+                  "endColumn": 79
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "S4581",
+          "level": "warning",
+          "message": "Use 'Guid.NewGuid()' or 'Guid.Empty' or add arguments to this GUID instantiation.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Persistence/Migrations/20260929125715_FinanceIncomeModel.cs",
+                "region": {
+                  "startLine": 89,
+                  "startColumn": 31,
+                  "endLine": 89,
+                  "endColumn": 79
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1861",
+          "level": "note",
+          "message": "Preferisci i campi 'static readonly' rispetto agli argomenti di matrice costanti se il metodo chiamato viene chiamato ripetutamente e non modifica la matrice passata",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Persistence/Migrations/20260929125715_FinanceIncomeModel.cs",
+                "region": {
+                  "startLine": 62,
+                  "startColumn": 26,
+                  "endLine": 62,
+                  "endColumn": 59
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "paramName": "columns"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1861",
+          "level": "note",
+          "message": "Preferisci i campi 'static readonly' rispetto agli argomenti di matrice costanti se il metodo chiamato viene chiamato ripetutamente e non modifica la matrice passata",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Persistence/Migrations/20261003223934_TaxDocumentNumberPerType.cs",
+                "region": {
+                  "startLine": 20,
+                  "startColumn": 26,
+                  "endLine": 20,
+                  "endColumn": 62
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "paramName": "columns"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1861",
+          "level": "note",
+          "message": "Preferisci i campi 'static readonly' rispetto agli argomenti di matrice costanti se il metodo chiamato viene chiamato ripetutamente e non modifica la matrice passata",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Persistence/Migrations/20260930124719_ProjectRepositories.cs",
+                "region": {
+                  "startLine": 45,
+                  "startColumn": 26,
+                  "endLine": 45,
+                  "endColumn": 51
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "paramName": "columns"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1825",
+          "level": "note",
+          "message": "Evitare allocazioni di matrice di lunghezza zero non necessarie.  In alternativa, usare Array.Empty<byte>().",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Persistence/Migrations/20261006130116_TicketAttachmentContent.cs",
+                "region": {
+                  "startLine": 28,
+                  "startColumn": 31,
+                  "endLine": 28,
+                  "endColumn": 42
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "S8747",
+          "level": "warning",
+          "message": "Convert the existing data to fit the new type before narrowing column \"FileName\"; otherwise this migration may truncate values or fail.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Persistence/Migrations/20261006130116_TicketAttachmentContent.cs",
+                "region": {
+                  "startLine": 14,
+                  "startColumn": 30,
+                  "endLine": 14,
+                  "endColumn": 49
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1861",
+          "level": "note",
+          "message": "Preferisci i campi 'static readonly' rispetto agli argomenti di matrice costanti se il metodo chiamato viene chiamato ripetutamente e non modifica la matrice passata",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Persistence/Migrations/20261003223934_TaxDocumentNumberPerType.cs",
+                "region": {
+                  "startLine": 34,
+                  "startColumn": 26,
+                  "endLine": 34,
+                  "endColumn": 54
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "paramName": "columns"
+            }
+          }
+        },
+        {
+          "ruleId": "S2681",
+          "level": "warning",
+          "message": "This line will not be executed in a loop; only the first line of this 1-line block will be. The rest will execute only once.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Persistence/RtresDbContext.cs",
+                "region": {
+                  "startLine": 17,
+                  "startColumn": 992,
+                  "endLine": 17,
+                  "endColumn": 2314
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Persistence/RtresDbContext.cs",
+                "region": {
+                  "startLine": 17,
+                  "startColumn": 934,
+                  "endLine": 17,
+                  "endColumn": 991
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "0": null
+            }
+          }
+        },
+        {
+          "ruleId": "CA1861",
+          "level": "note",
+          "message": "Preferisci i campi 'static readonly' rispetto agli argomenti di matrice costanti se il metodo chiamato viene chiamato ripetutamente e non modifica la matrice passata",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Persistence/Migrations/20261001102346_CatalogTagsTicketsNotifications.cs",
+                "region": {
+                  "startLine": 70,
+                  "startColumn": 26,
+                  "endLine": 70,
+                  "endColumn": 59
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "paramName": "columns"
+            }
+          }
+        },
+        {
+          "ruleId": "S927",
+          "level": "warning",
+          "message": "Rename parameter 'b' to 'modelBuilder' to match the base class declaration.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Persistence/RtresDbContext.cs",
+                "region": {
+                  "startLine": 12,
+                  "startColumn": 58,
+                  "endLine": 12,
+                  "endColumn": 59
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1861",
+          "level": "note",
+          "message": "Preferisci i campi 'static readonly' rispetto agli argomenti di matrice costanti se il metodo chiamato viene chiamato ripetutamente e non modifica la matrice passata",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Persistence/Migrations/20261006171000_ManagedCategories.cs",
+                "region": {
+                  "startLine": 46,
+                  "startColumn": 26,
+                  "endLine": 46,
+                  "endColumn": 84
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "paramName": "columns"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1861",
+          "level": "note",
+          "message": "Preferisci i campi 'static readonly' rispetto agli argomenti di matrice costanti se il metodo chiamato viene chiamato ripetutamente e non modifica la matrice passata",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Persistence/Migrations/20261007092026_Purchases.cs",
+                "region": {
+                  "startLine": 53,
+                  "startColumn": 26,
+                  "endLine": 53,
+                  "endColumn": 87
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "paramName": "columns"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1861",
+          "level": "note",
+          "message": "Preferisci i campi 'static readonly' rispetto agli argomenti di matrice costanti se il metodo chiamato viene chiamato ripetutamente e non modifica la matrice passata",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Persistence/Migrations/20261012092423_AnnualRentaAnd1662.cs",
+                "region": {
+                  "startLine": 108,
+                  "startColumn": 26,
+                  "endLine": 108,
+                  "endColumn": 95
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "paramName": "columns"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1861",
+          "level": "note",
+          "message": "Preferisci i campi 'static readonly' rispetto agli argomenti di matrice costanti se il metodo chiamato viene chiamato ripetutamente e non modifica la matrice passata",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Persistence/Migrations/20261012092423_AnnualRentaAnd1662.cs",
+                "region": {
+                  "startLine": 171,
+                  "startColumn": 26,
+                  "endLine": 171,
+                  "endColumn": 58
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "paramName": "columns"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1861",
+          "level": "note",
+          "message": "Preferisci i campi 'static readonly' rispetto agli argomenti di matrice costanti se il metodo chiamato viene chiamato ripetutamente e non modifica la matrice passata",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Persistence/Migrations/20261012092423_AnnualRentaAnd1662.cs",
+                "region": {
+                  "startLine": 178,
+                  "startColumn": 26,
+                  "endLine": 178,
+                  "endColumn": 58
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "paramName": "columns"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1861",
+          "level": "note",
+          "message": "Preferisci i campi 'static readonly' rispetto agli argomenti di matrice costanti se il metodo chiamato viene chiamato ripetutamente e non modifica la matrice passata",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Persistence/Migrations/20261012092423_AnnualRentaAnd1662.cs",
+                "region": {
+                  "startLine": 185,
+                  "startColumn": 26,
+                  "endLine": 185,
+                  "endColumn": 58
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "paramName": "columns"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1861",
+          "level": "note",
+          "message": "Preferisci i campi 'static readonly' rispetto agli argomenti di matrice costanti se il metodo chiamato viene chiamato ripetutamente e non modifica la matrice passata",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Persistence/Migrations/20261012092423_AnnualRentaAnd1662.cs",
+                "region": {
+                  "startLine": 192,
+                  "startColumn": 26,
+                  "endLine": 192,
+                  "endColumn": 58
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "paramName": "columns"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1861",
+          "level": "note",
+          "message": "Preferisci i campi 'static readonly' rispetto agli argomenti di matrice costanti se il metodo chiamato viene chiamato ripetutamente e non modifica la matrice passata",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Persistence/Migrations/20261012092423_AnnualRentaAnd1662.cs",
+                "region": {
+                  "startLine": 199,
+                  "startColumn": 26,
+                  "endLine": 199,
+                  "endColumn": 58
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "paramName": "columns"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1861",
+          "level": "note",
+          "message": "Preferisci i campi 'static readonly' rispetto agli argomenti di matrice costanti se il metodo chiamato viene chiamato ripetutamente e non modifica la matrice passata",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Persistence/Migrations/20261012092423_AnnualRentaAnd1662.cs",
+                "region": {
+                  "startLine": 206,
+                  "startColumn": 26,
+                  "endLine": 206,
+                  "endColumn": 58
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "paramName": "columns"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1861",
+          "level": "note",
+          "message": "Preferisci i campi 'static readonly' rispetto agli argomenti di matrice costanti se il metodo chiamato viene chiamato ripetutamente e non modifica la matrice passata",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Persistence/Migrations/20261012092423_AnnualRentaAnd1662.cs",
+                "region": {
+                  "startLine": 213,
+                  "startColumn": 26,
+                  "endLine": 213,
+                  "endColumn": 58
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "paramName": "columns"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1861",
+          "level": "note",
+          "message": "Preferisci i campi 'static readonly' rispetto agli argomenti di matrice costanti se il metodo chiamato viene chiamato ripetutamente e non modifica la matrice passata",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Persistence/Migrations/20261012092423_AnnualRentaAnd1662.cs",
+                "region": {
+                  "startLine": 220,
+                  "startColumn": 26,
+                  "endLine": 220,
+                  "endColumn": 58
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "paramName": "columns"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1861",
+          "level": "note",
+          "message": "Preferisci i campi 'static readonly' rispetto agli argomenti di matrice costanti se il metodo chiamato viene chiamato ripetutamente e non modifica la matrice passata",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Persistence/Migrations/20261012092423_AnnualRentaAnd1662.cs",
+                "region": {
+                  "startLine": 227,
+                  "startColumn": 26,
+                  "endLine": 227,
+                  "endColumn": 58
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "paramName": "columns"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1861",
+          "level": "note",
+          "message": "Preferisci i campi 'static readonly' rispetto agli argomenti di matrice costanti se il metodo chiamato viene chiamato ripetutamente e non modifica la matrice passata",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Persistence/Migrations/20261012092423_AnnualRentaAnd1662.cs",
+                "region": {
+                  "startLine": 234,
+                  "startColumn": 26,
+                  "endLine": 234,
+                  "endColumn": 58
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "paramName": "columns"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1861",
+          "level": "note",
+          "message": "Preferisci i campi 'static readonly' rispetto agli argomenti di matrice costanti se il metodo chiamato viene chiamato ripetutamente e non modifica la matrice passata",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Persistence/Migrations/20261012092423_AnnualRentaAnd1662.cs",
+                "region": {
+                  "startLine": 241,
+                  "startColumn": 26,
+                  "endLine": 241,
+                  "endColumn": 58
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "paramName": "columns"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1861",
+          "level": "note",
+          "message": "Preferisci i campi 'static readonly' rispetto agli argomenti di matrice costanti se il metodo chiamato viene chiamato ripetutamente e non modifica la matrice passata",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Persistence/Migrations/20261012092423_AnnualRentaAnd1662.cs",
+                "region": {
+                  "startLine": 248,
+                  "startColumn": 26,
+                  "endLine": 248,
+                  "endColumn": 58
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "paramName": "columns"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1861",
+          "level": "note",
+          "message": "Preferisci i campi 'static readonly' rispetto agli argomenti di matrice costanti se il metodo chiamato viene chiamato ripetutamente e non modifica la matrice passata",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Persistence/Migrations/20261008090756_BankTransfers.cs",
+                "region": {
+                  "startLine": 84,
+                  "startColumn": 26,
+                  "endLine": 84,
+                  "endColumn": 57
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "paramName": "columns"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1861",
+          "level": "note",
+          "message": "Preferisci i campi 'static readonly' rispetto agli argomenti di matrice costanti se il metodo chiamato viene chiamato ripetutamente e non modifica la matrice passata",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/Persistence/Migrations/20261007132914_TaxCalendar.cs",
+                "region": {
+                  "startLine": 52,
+                  "startColumn": 26,
+                  "endLine": 52,
+                  "endColumn": 153
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "paramName": "columns"
+            }
+          }
+        },
+        {
+          "ruleId": "S6444",
+          "level": "warning",
+          "message": "Pass a timeout to limit the execution time.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/IntegrationClients.cs",
+                "region": {
+                  "startLine": 192,
+                  "startColumn": 53,
+                  "endLine": 192,
+                  "endColumn": 85
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "S6444",
+          "level": "warning",
+          "message": "Pass a timeout to limit the execution time.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/IntegrationClients.cs",
+                "region": {
+                  "startLine": 108,
+                  "startColumn": 13,
+                  "endLine": 108,
+                  "endColumn": 54
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "S6444",
+          "level": "warning",
+          "message": "Pass a timeout to limit the execution time.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/repo/rtres-net/Rtres/src/api/Rtres.Infrastructure/IntegrationClients.cs",
+                "region": {
+                  "startLine": 103,
+                  "startColumn": 43,
+                  "endLine": 103,
+                  "endColumn": 78
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        }
+      ],
+      "rules": {
+        "CA1825": {
+          "id": "CA1825",
+          "shortDescription": "Evitare allocazioni di matrice di lunghezza zero",
+          "defaultLevel": "note",
+          "helpUri": "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1825",
+          "properties": {
+            "category": "Performance",
+            "isEnabledByDefault": true,
+            "tags": [
+              "Telemetry",
+              "EnabledRuleInAggressiveMode"
+            ]
+          }
+        },
+        "CA1861": {
+          "id": "CA1861",
+          "shortDescription": "Evitare matrici costanti come argomenti",
+          "fullDescription": "Le matrici costanti passate come argomenti non vengono riutilizzate quando vengono chiamate ripetutamente, il che implica la creazione di una nuova matrice ogni volta. Prova a estrarli in campi 'static readonly' per migliorare le prestazioni, se la matrice passata non viene modificata all'interno del metodo chiamato.",
+          "defaultLevel": "note",
+          "helpUri": "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1861",
+          "properties": {
+            "category": "Performance",
+            "isEnabledByDefault": true,
+            "tags": [
+              "Telemetry",
+              "EnabledRuleInAggressiveMode"
+            ]
+          }
+        },
+        "CA1873": {
+          "id": "CA1873",
+          "shortDescription": "Evita la registrazione potenzialmente costosa",
+          "fullDescription": "In molte situazioni, la registrazione è disabilitata o impostata su un livello di log che comporta una valutazione non necessaria per questo argomento.",
+          "defaultLevel": "note",
+          "helpUri": "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1873",
+          "properties": {
+            "category": "Performance",
+            "isEnabledByDefault": true,
+            "tags": [
+              "Telemetry",
+              "EnabledRuleInAggressiveMode"
+            ]
+          }
+        },
+        "CS8604": {
+          "id": "CS8604",
+          "shortDescription": "Possibile argomento di riferimento Null.",
+          "defaultLevel": "warning",
+          "helpUri": "https://msdn.microsoft.com/query/roslyn.query?appId=roslyn&k=k(CS8604)",
+          "properties": {
+            "category": "Compiler",
+            "isEnabledByDefault": true,
+            "tags": [
+              "Compiler",
+              "Telemetry"
+            ]
+          }
+        },
+        "S1075": {
+          "id": "S1075",
+          "shortDescription": "URIs should not be hardcoded",
+          "fullDescription": "Hard-coding a URI makes it difficult to test a program for a variety of reasons:",
+          "defaultLevel": "warning",
+          "properties": {
+            "category": "Minor Code Smell",
+            "isEnabledByDefault": true,
+            "tags": [
+              "C#",
+              "MainSourceScope",
+              "SonarWay"
+            ]
+          }
+        },
+        "S1135": {
+          "id": "S1135",
+          "shortDescription": "Track uses of \"TODO\" tags",
+          "fullDescription": "Developers often use TODO tags to mark areas in the code where additional work or improvements are needed but are not implemented immediately. However, these TODO tags sometimes get overlooked or forgotten, leading to incomplete or unfinished code. This rule aims to identify and address unattended TODO tags to ensure a clean and maintainable codebase. This description explores why this is a problem and how it can be fixed to improve the overall code quality.",
+          "defaultLevel": "warning",
+          "properties": {
+            "category": "Info Code Smell",
+            "isEnabledByDefault": true,
+            "tags": [
+              "C#",
+              "MainSourceScope",
+              "TestSourceScope",
+              "SonarWay"
+            ]
+          }
+        },
+        "S1192": {
+          "id": "S1192",
+          "shortDescription": "String literals should not be duplicated",
+          "fullDescription": "Duplicated string literals make the process of refactoring complex and error-prone, as any change would need to be propagated on all occurrences.",
+          "defaultLevel": "warning",
+          "properties": {
+            "category": "Minor Code Smell",
+            "isEnabledByDefault": false,
+            "tags": [
+              "C#",
+              "MainSourceScope",
+              "SonarWay"
+            ]
+          }
+        },
+        "S2681": {
+          "id": "S2681",
+          "shortDescription": "Multiline blocks should be enclosed in curly braces",
+          "fullDescription": "Having inconsistent indentation and omitting curly braces from a control structure, such as an if statement or for loop, is misleading and can induce bugs.",
+          "defaultLevel": "warning",
+          "properties": {
+            "category": "Major Code Smell",
+            "isEnabledByDefault": true,
+            "tags": [
+              "C#",
+              "MainSourceScope",
+              "TestSourceScope",
+              "SonarWay"
+            ]
+          }
+        },
+        "S3358": {
+          "id": "S3358",
+          "shortDescription": "Ternary operators should not be nested",
+          "fullDescription": "Nested ternary operators are hard to read because the mapping between each condition and its result is not immediately obvious, and the order in which the conditions are evaluated is easy to misjudge. Each extra level of nesting increases the effort required to understand which branch produces which value.",
+          "defaultLevel": "warning",
+          "properties": {
+            "category": "Major Code Smell",
+            "isEnabledByDefault": true,
+            "tags": [
+              "C#",
+              "MainSourceScope",
+              "TestSourceScope",
+              "SonarWay"
+            ]
+          }
+        },
+        "S3776": {
+          "id": "S3776",
+          "shortDescription": "Cognitive Complexity of methods should not be too high",
+          "fullDescription": "This rule raises an issue when the code cognitive complexity of a function is above a certain threshold.",
+          "defaultLevel": "warning",
+          "properties": {
+            "category": "Critical Code Smell",
+            "isEnabledByDefault": false,
+            "tags": [
+              "C#",
+              "MainSourceScope",
+              "TestSourceScope",
+              "SonarWay"
+            ]
+          }
+        },
+        "S4581": {
+          "id": "S4581",
+          "shortDescription": "\"new Guid()\" should not be used",
+          "fullDescription": "When the syntax new Guid() (i.e. parameterless instantiation) is used, it must be that one of three things is wanted:",
+          "defaultLevel": "warning",
+          "properties": {
+            "category": "Major Code Smell",
+            "isEnabledByDefault": true,
+            "tags": [
+              "C#",
+              "MainSourceScope",
+              "TestSourceScope",
+              "SonarWay"
+            ]
+          }
+        },
+        "S6444": {
+          "id": "S6444",
+          "shortDescription": "Regular expressions should be executed with a timeout",
+          "fullDescription": "Regular expressions without a timeout can be exploited to cause a Denial-of-Service attack.",
+          "defaultLevel": "warning",
+          "properties": {
+            "category": "Minor Vulnerability",
+            "isEnabledByDefault": true,
+            "tags": [
+              "C#",
+              "MainSourceScope",
+              "SonarWay",
+              "CompilationEnd"
+            ]
+          }
+        },
+        "S8747": {
+          "id": "S8747",
+          "shortDescription": "Migrations should not narrow column types without converting existing data",
+          "fullDescription": "This rule raises an issue when a database migration alters an existing column to a type that can hold a narrower range of values.",
+          "defaultLevel": "warning",
+          "properties": {
+            "category": "Major Bug",
+            "isEnabledByDefault": true,
+            "tags": [
+              "C#",
+              "MainSourceScope",
+              "SonarWay"
+            ]
+          }
+        },
+        "S927": {
+          "id": "S927",
+          "shortDescription": "Parameter names should match base declaration and other partial definitions",
+          "fullDescription": "Parameters are part of the method signature and its identity.",
+          "defaultLevel": "warning",
+          "properties": {
+            "category": "Critical Code Smell",
+            "isEnabledByDefault": true,
+            "tags": [
+              "C#",
+              "MainSourceScope",
+              "TestSourceScope",
+              "SonarWay"
+            ]
+          }
+        },
+        "SYSLIB1045": {
+          "id": "SYSLIB1045",
+          "shortDescription": "Converti in 'GeneratedRegexAttribute'.",
+          "defaultLevel": "note",
+          "helpUri": "https://learn.microsoft.com/dotnet/fundamentals/syslib-diagnostics/syslib1045",
+          "properties": {
+            "category": "Performance",
+            "isEnabledByDefault": true
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,135 @@
+name: 🐛 Reporte de error
+description: Reportar un comportamiento incorrecto o una regresión
+title: "[BUG] "
+labels:
+  - "type:bug"
+  - "status:triage"
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Gracias por reportar este problema.
+
+        Completa la información solicitada para facilitar su análisis y reproducción.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Descripción
+      description: Explica claramente el problema encontrado.
+      placeholder: Describe qué está ocurriendo.
+    validations:
+      required: true
+
+  - type: textarea
+    id: current-behavior
+    attributes:
+      label: Comportamiento actual
+      description: Indica qué sucede actualmente.
+      placeholder: Actualmente, cuando realizo...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Comportamiento esperado
+      description: Indica qué debería suceder.
+      placeholder: Se esperaba que...
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Pasos para reproducir
+      description: Describe los pasos exactos para reproducir el error.
+      placeholder: |
+        1. Acceder a...
+        2. Seleccionar...
+        3. Ejecutar...
+        4. Observar el error...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: affected-area
+    attributes:
+      label: Área afectada
+      description: Selecciona las áreas relacionadas con el problema.
+      multiple: true
+      options:
+        - Backend .NET
+        - Frontend 
+        - Base de datos
+        - API o contratos
+        - Autenticación / Microsoft Entra ID
+        - Infraestructura / CI-CD
+        - Documentación
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Prioridad
+      options:
+        - Crítica
+        - Alta
+        - Media
+        - Baja
+    validations:
+      required: true
+
+  - type: input
+    id: environment
+    attributes:
+      label: Entorno
+      description: Indica dónde ocurre el problema.
+      placeholder: Desarrollo, pruebas, preproducción o producción
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidencias o contexto
+      description: Incluye logs, capturas, mensajes de error o respuestas HTTP.
+      placeholder: Arrastra capturas aquí o pega los mensajes de error.
+    validations:
+      required: true
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencias identificadas
+      description: Indica otros issues, servicios o decisiones relacionadas.
+      placeholder: Escribe "Ninguna" cuando no existan dependencias.
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Criterios de aceptación
+      description: Define cómo se comprobará que el problema está resuelto.
+      placeholder: |
+        - [ ] El error ya no se reproduce
+        - [ ] Se agregaron o actualizaron las pruebas
+        - [ ] El build finaliza correctamente
+        - [ ] No se detectaron regresiones
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: verification
+    attributes:
+      label: Verificación previa
+      options:
+        - label: He comprobado que no existe otro issue duplicado.
+          required: true
+        - label: He incluido información suficiente para reproducir el problema.
+          required: true
+        - label: No he incluido contraseñas, tokens ni información sensible.
+          required: true

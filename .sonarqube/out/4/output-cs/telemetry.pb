@@ -1,0 +1,1 @@
+MR@C:\repo\rtres-net\Rtres\src\api\Rtres.Domain\Rtres.Domain.csprojòCSharp14
