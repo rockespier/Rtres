@@ -2,6 +2,7 @@ import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
+import type { FirebaseApp } from 'firebase/app';
 import { environment } from '../../environments/environment';
 
 export interface LoginResponse {
@@ -23,8 +24,11 @@ export class AuthService {
 
   /** true cuando se cerró la sesión por vencimiento (el login muestra el aviso). */
   sessionExpired = signal(false);
+  /** Login con Google disponible solo si el entorno trae la configuración de Firebase completa. */
+  readonly googleEnabled = !!(environment.firebase.apiKey && environment.firebase.authDomain && environment.firebase.projectId);
   private router = inject(Router);
   private expiryTimer: ReturnType<typeof setTimeout> | undefined;
+  private firebaseApp: FirebaseApp | undefined;
 
   constructor(private http: HttpClient) {
     this.scheduleExpiry();
@@ -60,6 +64,27 @@ export class AuthService {
     const response = await firstValueFrom(
       this.http.post<LoginResponse>(`${environment.apiBaseUrl}/auth/login`, { email, password })
     );
+    this.startSession(response);
+  }
+
+  /** Abre el popup de Google, canjea el ID token de Firebase por el JWT de la API y cierra la sesión de Firebase. */
+  async loginWithGoogle(): Promise<void> {
+    // Firebase se carga bajo demanda: no pesa en el bundle de quien entra con contraseña.
+    const { initializeApp } = await import('firebase/app');
+    const { getAuth, GoogleAuthProvider, signInWithPopup, signOut } = await import('firebase/auth');
+    this.firebaseApp ??= initializeApp(environment.firebase);
+    const firebaseAuth = getAuth(this.firebaseApp);
+    const credential = await signInWithPopup(firebaseAuth, new GoogleAuthProvider());
+    const idToken = await credential.user.getIdToken();
+    // La única sesión del portal es el JWT de la API: la de Firebase no se conserva.
+    await signOut(firebaseAuth);
+    const response = await firstValueFrom(
+      this.http.post<LoginResponse>(`${environment.apiBaseUrl}/auth/google`, { idToken })
+    );
+    this.startSession(response);
+  }
+
+  private startSession(response: LoginResponse): void {
     this.token.set(response.token);
     this.user.set(response.user);
     this.sessionExpired.set(false);
