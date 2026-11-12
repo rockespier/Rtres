@@ -101,6 +101,11 @@ public sealed class Client { public Guid Id { get; set; } = Guid.NewGuid(); publ
     public bool RequiresTaxDocument { get; set; } public DateTime CreatedAt { get; set; } = DateTime.UtcNow; }
 public sealed class UserAccount { public Guid Id { get; set; } = Guid.NewGuid(); public Guid? ClientId { get; set; } public string Email { get; set; } = string.Empty; public string PasswordHash { get; set; } = string.Empty; public string Name { get; set; } = string.Empty; public UserRole Role { get; set; } = UserRole.Cliente; public bool IsActive { get; set; } = true; /// <summary>Última vez que abrió la campana: lo posterior cuenta como no leído.</summary>
     public DateTime? NotificationsSeenAt { get; set; } }
+/// <summary>
+/// Enlace de acceso de un solo uso que se envía por email (login sin contraseña). Solo se guarda el hash SHA-256 del token;
+/// <see cref="UsedAt"/> es token de concurrencia: si dos peticiones canjean el mismo enlace a la vez, solo una gana.
+/// </summary>
+public sealed class LoginLink { public Guid Id { get; set; } = Guid.NewGuid(); public Guid UserAccountId { get; set; } public string TokenHash { get; set; } = string.Empty; public DateTime CreatedAt { get; set; } = DateTime.UtcNow; public DateTime ExpiresAt { get; set; } public DateTime? UsedAt { get; set; } }
 /// <summary>Un proyecto puede tener varios repositorios de GitHub (ej. web y API); sin repositorios sus tickets no se sincronizan.</summary>
 public sealed class Project { public Guid Id { get; set; } = Guid.NewGuid(); public Guid ClientId { get; set; } public string Name { get; set; } = string.Empty; public string Slug { get; set; } = string.Empty; public List<ProjectRepository> Repositories { get; set; } = []; }
 /// <summary>Repositorio de GitHub de un proyecto. <see cref="Label"/> es el nombre que ve el cliente al elegir dónde va su ticket; el principal (<see cref="IsDefault"/>) recibe los tickets que no indican repositorio.</summary>

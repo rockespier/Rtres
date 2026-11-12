@@ -24,6 +24,7 @@ builder.Services.AddScoped<ExchangeRateSyncJob>();
 builder.Services.AddScoped<INotificationSender, QueuedNotificationSender>();
 builder.Services.AddScoped<NotificationJob>();
 builder.Services.AddScoped<AccessEmailService>();
+builder.Services.AddSingleton<ILoginLinkMailer, BackgroundLoginLinkMailer>();
 builder.Services.AddScoped<PayPalCheckoutService>();
 builder.Services.AddScoped<PayPalPaymentService>();
 builder.Services.AddScoped<TaxDocumentService>();

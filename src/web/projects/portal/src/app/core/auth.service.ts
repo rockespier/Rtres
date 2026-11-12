@@ -69,6 +69,22 @@ export class AuthService {
     this.startSession(response);
   }
 
+  /** Pide un enlace de acceso por email. La API responde igual exista o no el correo. */
+  async requestLoginLink(email: string): Promise<string> {
+    const response = await firstValueFrom(
+      this.http.post<{ message: string }>(`${environment.apiBaseUrl}/auth/login-link`, { email })
+    );
+    return response.message;
+  }
+
+  /** Canjea el token del enlace (un solo uso) por la sesión del portal. */
+  async loginWithLink(token: string): Promise<void> {
+    const response = await firstValueFrom(
+      this.http.post<LoginResponse>(`${environment.apiBaseUrl}/auth/login-link/verify`, { token })
+    );
+    this.startSession(response);
+  }
+
   /**
    * Descarga Firebase antes del clic: si el popup se abre tras esperar el chunk,
    * Safari y Firefox estricto pierden el gesto del usuario y lo bloquean.

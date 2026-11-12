@@ -540,6 +540,40 @@ namespace Rtres.Infrastructure.Persistence.Migrations
                     b.ToTable("LearningVideos");
                 });
 
+            modelBuilder.Entity("Rtres.Domain.LoginLink", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("TokenHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<DateTime?>("UsedAt")
+                        .IsConcurrencyToken()
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("UserAccountId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TokenHash")
+                        .IsUnique();
+
+                    b.HasIndex("UserAccountId");
+
+                    b.ToTable("LoginLinks");
+                });
+
             modelBuilder.Entity("Rtres.Domain.NotificationLog", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1647,6 +1681,15 @@ namespace Rtres.Infrastructure.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("Rtres.Domain.LoginLink", b =>
+                {
+                    b.HasOne("Rtres.Domain.UserAccount", null)
+                        .WithMany()
+                        .HasForeignKey("UserAccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Rtres.Domain.ProjectRepository", b =>

@@ -19,6 +19,7 @@ namespace Rtres.Infrastructure.Notifications;
 /// <item><c>TransferReported</c>: reportId, company, product, amount, currency, operation? — aviso interno para Rtres, siempre en español</item>
 /// <item><c>TransferRejected</c>: product, amount, currency, reason</item>
 /// <item><c>ContactLead</c>: leadId, name, email, phone?, company?, service?, message, locale, page? — aviso interno para Rtres, siempre en español</item>
+/// <item><c>LoginLink</c>: name, token, minutes (se envía en el momento, nunca por la cola de Hangfire)</item>
 /// <item><c>TaxDueReminder</c>: period (yyyy-MM), dueDate (yyyy-MM-dd), days — aviso interno para Rtres, siempre en español</item>
 /// </list>
 /// </summary>
@@ -54,6 +55,10 @@ public static class EmailTemplates
                 string.Format(t["access.subject"], V("company")),
                 new[] { string.Format(t["access.body"], V("name"), V("company")), string.Format(t["access.credentials"], V("email"), V("password")), t["access.change"] },
                 t["cta.login"], $"{portal}/login"),
+            NotificationType.LoginLink => (
+                t["login-link.subject"],
+                new[] { string.Format(t["login-link.body"], V("name"), V("minutes")), t["login-link.ignore"] },
+                t["cta.login"], $"{portal}/login/enlace?t={Uri.EscapeDataString(V("token"))}"),
             NotificationType.PaymentFailed => (
                 string.Format(t["failed.subject"], V("product")),
                 new[] { string.Format(t["failed.body"], V("product")) },
@@ -175,6 +180,9 @@ public static class EmailTemplates
             ["access.credentials"] = "Usuario: {0}\nContraseña temporal: {1}",
             ["access.change"] = "Por seguridad, cámbiala en Perfil después de tu primer ingreso. Si no esperabas este correo, avísanos respondiendo a este mensaje.",
             ["cta.login"] = "Entrar al portal",
+            ["login-link.subject"] = "Tu enlace para entrar al portal de Rtres",
+            ["login-link.body"] = "Hola {0}: pulsa el botón para entrar al portal de clientes de Rtres Web Solutions. El enlace vale {1} minutos y solo se puede usar una vez.",
+            ["login-link.ignore"] = "Si no lo pediste, ignora este correo: sin el enlace nadie puede entrar a tu cuenta.",
             ["cta.dashboard"] = "Ver mis productos",
             ["cta.ticket"] = "Ver ticket",
             ["cta.reply"] = "Ver y responder",
@@ -230,6 +238,9 @@ public static class EmailTemplates
             ["access.credentials"] = "User: {0}\nTemporary password: {1}",
             ["access.change"] = "For security, change it in Profile after your first sign-in. If you weren't expecting this email, let us know by replying to it.",
             ["cta.login"] = "Sign in to the portal",
+            ["login-link.subject"] = "Your link to sign in to the Rtres portal",
+            ["login-link.body"] = "Hi {0}: click the button to sign in to the Rtres Web Solutions client portal. The link is valid for {1} minutes and can only be used once.",
+            ["login-link.ignore"] = "If you didn't request it, ignore this email: no one can access your account without the link.",
             ["cta.dashboard"] = "View my products",
             ["cta.ticket"] = "View ticket",
             ["cta.reply"] = "View and reply",
@@ -263,6 +274,9 @@ public static class EmailTemplates
             ["access.credentials"] = "Utente: {0}\nPassword temporanea: {1}",
             ["access.change"] = "Per sicurezza, cambiala in Profilo dopo il primo accesso. Se non ti aspettavi questa email, faccelo sapere rispondendo a questo messaggio.",
             ["cta.login"] = "Accedi al portale",
+            ["login-link.subject"] = "Il tuo link per accedere al portale di Rtres",
+            ["login-link.body"] = "Ciao {0}: premi il pulsante per accedere al portale clienti di Rtres Web Solutions. Il link è valido per {1} minuti e si può usare una sola volta.",
+            ["login-link.ignore"] = "Se non l'hai richiesto, ignora questa email: senza il link nessuno può accedere al tuo account.",
             ["cta.dashboard"] = "Vedi i miei prodotti",
             ["cta.ticket"] = "Vedi ticket",
             ["cta.reply"] = "Vedi e rispondi",
