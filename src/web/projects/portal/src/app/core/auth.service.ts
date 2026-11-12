@@ -2,13 +2,14 @@ import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
-import type { FirebaseApp } from 'firebase/app';
 import { environment } from '../../environments/environment';
 
 export interface LoginResponse {
   token: string;
   user: { name: string | null; initials: string | null; clientName: string | null; role: 'Cliente' | 'Admin' | 'SuperAdmin' };
 }
+
+type FirebaseModules = { auth: typeof import('firebase/auth'); firebaseAuth: import('firebase/auth').Auth };
 
 const TOKEN_KEY = 'rtres_portal_token';
 const USER_KEY = 'rtres_portal_user';
@@ -28,7 +29,8 @@ export class AuthService {
   readonly googleEnabled = !!(environment.firebase.apiKey && environment.firebase.authDomain && environment.firebase.projectId);
   private router = inject(Router);
   private expiryTimer: ReturnType<typeof setTimeout> | undefined;
-  private firebaseApp: FirebaseApp | undefined;
+  private firebase: Promise<FirebaseModules> | undefined;
+  private firebaseReady: FirebaseModules | undefined;
 
   constructor(private http: HttpClient) {
     this.scheduleExpiry();
@@ -67,17 +69,26 @@ export class AuthService {
     this.startSession(response);
   }
 
+  /**
+   * Descarga Firebase antes del clic: si el popup se abre tras esperar el chunk,
+   * Safari y Firefox estricto pierden el gesto del usuario y lo bloquean.
+   */
+  preloadFirebase(): Promise<FirebaseModules> {
+    // Firebase se carga bajo demanda: no pesa en el bundle de quien entra con contraseña.
+    this.firebase ??= Promise.all([import('firebase/app'), import('firebase/auth')]).then(([app, auth]) =>
+      this.firebaseReady = { auth, firebaseAuth: auth.getAuth(app.initializeApp(environment.firebase)) })
+      // Si falla la descarga, el siguiente clic vuelve a intentarlo.
+      .catch(err => { this.firebase = undefined; throw err; });
+    return this.firebase;
+  }
+
   /** Abre el popup de Google, canjea el ID token de Firebase por el JWT de la API y cierra la sesión de Firebase. */
   async loginWithGoogle(): Promise<void> {
-    // Firebase se carga bajo demanda: no pesa en el bundle de quien entra con contraseña.
-    const { initializeApp } = await import('firebase/app');
-    const { getAuth, GoogleAuthProvider, signInWithPopup, signOut } = await import('firebase/auth');
-    this.firebaseApp ??= initializeApp(environment.firebase);
-    const firebaseAuth = getAuth(this.firebaseApp);
-    const credential = await signInWithPopup(firebaseAuth, new GoogleAuthProvider());
+    const { auth, firebaseAuth } = this.firebaseReady ?? await this.preloadFirebase();
+    const credential = await auth.signInWithPopup(firebaseAuth, new auth.GoogleAuthProvider());
     const idToken = await credential.user.getIdToken();
     // La única sesión del portal es el JWT de la API: la de Firebase no se conserva.
-    await signOut(firebaseAuth);
+    await auth.signOut(firebaseAuth);
     const response = await firstValueFrom(
       this.http.post<LoginResponse>(`${environment.apiBaseUrl}/auth/google`, { idToken })
     );
