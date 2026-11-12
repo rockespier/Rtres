@@ -331,7 +331,7 @@
         </context-group>
       </trans-unit>
       <trans-unit id="home.cases.rule1" datatype="html">
-        <source>TECNOLOGÍA<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br&gt;"/>QUE TRABAJA<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br&gt;"/>CON VOS.</source>
+        <source>TECNOLOGÍA<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br&gt;"/>QUE TRABAJA<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br&gt;"/>CONTIGO.</source>
         <target>TECNOLOGIA<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br&gt;"/>CHE LAVORA<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br&gt;"/>CON TE.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/components/home/success-cases.component.ts</context>
