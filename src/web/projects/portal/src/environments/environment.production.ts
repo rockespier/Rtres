@@ -1,1 +1,1 @@
-export const environment = { apiBaseUrl: 'https://api.rtres.net/api', firebase: { apiKey: '', authDomain: '', projectId: '' } };
+export const environment = { apiBaseUrl: 'https://api.rtres.net/api', firebase: { apiKey: 'AIzaSyA0QAsFuakguweTCGlGT1tBGrhMh9ntCpI', authDomain: 'portal-rtres.firebaseapp.com', projectId: 'portal-rtres' } };
