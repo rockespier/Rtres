@@ -14,10 +14,8 @@ en SQL Server antes de iniciar la API nueva.
 #Requires -Version 7.0
 [CmdletBinding()]
 param(
-    [Parameter(Mandatory = $true)]
+    # Obligatorios salvo con -PackageOnly (solo genera los artefactos).
     [string]$ApiDestination,
-
-    [Parameter(Mandatory = $true)]
     [string]$PortalDestination,
 
     # localhost (por defecto) despliega en esta maquina sin PowerShell Remoting.
@@ -33,6 +31,10 @@ param(
 
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
+
+if (-not $PackageOnly -and (-not $ApiDestination -or -not $PortalDestination)) {
+    throw 'Indica -ApiDestination y -PortalDestination, o usa -PackageOnly para solo generar los artefactos.'
+}
 
 function Invoke-Checked {
     param([scriptblock]$Command, [string]$Description)
@@ -132,12 +134,13 @@ if ($PackageOnly) {
 $install = {
     param($staging, $apiDestination, $portalDestination, $apiAppPool, $portalAppPool)
     $ErrorActionPreference = 'Stop'
-    $pools = @($apiAppPool, $portalAppPool) | Where-Object { $_ }
-    if ($pools) { Import-Module WebAdministration }
-
-    foreach ($pool in $pools) {
-        if ((Get-WebAppPoolState -Name $pool).Value -eq 'Started') { Stop-WebAppPool -Name $pool }
-    }
+    # Detener/arrancar los app pools exige una consola elevada (WebAdministration); desactivado por ahora.
+    # $pools = @($apiAppPool, $portalAppPool) | Where-Object { $_ }
+    # if ($pools) { Import-Module WebAdministration }
+    #
+    # foreach ($pool in $pools) {
+    #     if ((Get-WebAppPoolState -Name $pool).Value -eq 'Started') { Stop-WebAppPool -Name $pool }
+    # }
     try {
         foreach ($deployment in @(
             @{ Source = (Join-Path $staging 'api'); Destination = $apiDestination },
@@ -149,9 +152,9 @@ $install = {
         }
     }
     finally {
-        foreach ($pool in $pools) {
-            Start-WebAppPool -Name $pool
-        }
+        # foreach ($pool in $pools) {
+        #     Start-WebAppPool -Name $pool
+        # }
     }
 }
 
