@@ -44,19 +44,14 @@ public class GoogleLoginTests
     }
 
     [Fact]
-    public async Task SuperAdmin_stays_password_only()
+    public async Task SuperAdmin_without_client_signs_in()
     {
         using var db = TestData.Db(out var seed);
         seed.User.Role = UserRole.SuperAdmin; seed.User.ClientId = null; db.SaveChanges();
-        AssertRefused(await Google(db, new FirebaseIdentity(seed.User.Email, true)));
-    }
-
-    [Fact]
-    public async Task User_without_client_is_refused()
-    {
-        using var db = TestData.Db(out var seed);
-        seed.User.Role = UserRole.Admin; seed.User.ClientId = null; db.SaveChanges();
-        AssertRefused(await Google(db, new FirebaseIdentity(seed.User.Email, true)));
+        var ok = Assert.IsType<OkObjectResult>(await Google(db, new FirebaseIdentity(seed.User.Email, true)));
+        var user = Prop<object>(ok.Value!, "user");
+        Assert.Equal("SuperAdmin", Prop<string>(user, "role"));
+        Assert.Null(user.GetType().GetProperty("clientName")!.GetValue(user));
     }
 
     [Fact]
