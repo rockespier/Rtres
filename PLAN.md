@@ -258,6 +258,7 @@ Todos bajo `/api`, JWT Bearer salvo `/auth/login`. Devuelven DTOs (no las entida
 | Método | Ruta | Uso | Body/Query | Respuesta |
 |---|---|---|---|---|
 | POST | `/auth/login` | `LoginComponent` | `{ email, password }` | `{ token, user: { name, initials, clientName } }` |
+| POST | `/auth/google` | `LoginComponent` (botón "Continuar con Google") | `{ idToken }` (ID token de Firebase) | igual que `/auth/login`; ver nota de login con Google |
 | GET | `/dashboard/summary` | `DashboardComponent` stat cards | — | `{ activeProducts, expiringSoon, openTickets, nextPaymentAmount }` |
 | GET | `/client-products` | `DashboardComponent` grilla | — | `ClientProductDto[]` (con `product.type`, `status`, fechas, precio, proyecto) |
 | GET | `/tickets` | `TicketsListComponent` | `?status=&type=&page=` (filtros reales llegan en Fase 5, pero el endpoint ya pagina desde Fase 1) | `{ items: TicketDto[], page, totalPages }` |
@@ -265,6 +266,8 @@ Todos bajo `/api`, JWT Bearer salvo `/auth/login`. Devuelven DTOs (no las entida
 | POST | `/tickets` | `TicketFormComponent` submit | todos los campos del form + `projectId` + `type` | `TicketDto` (id, code) — dispara creación de issue en GitHub de forma asíncrona (Fase 5) |
 | POST | `/tickets/{id}/attachments` | `FileDropzoneComponent` | multipart/form-data | `TicketAttachmentDto` |
 | GET | `/projects` | poblar el `<select>` de Proyecto en `TicketFormComponent` (el mockup solo tiene 1 opción hardcodeada) | — | `ProjectDto[]` |
+
+**Login con Google (2026-11-12, issue #19).** `POST /api/auth/google` recibe el ID token que entrega Firebase Authentication (popup con Google) y lo verifica en la API contra los metadatos OpenID de `https://securetoken.google.com/<projectId>` (firma, emisor, audiencia = project id, vigencia), sin Firebase Admin SDK. Solo entran usuarios `Cliente` activos ya existentes, por correo verificado (sin distinguir mayúsculas); no crea ni vincula cuentas, y `Admin`/`SuperAdmin` siguen solo con contraseña. Token inválido, correo no verificado, correo desconocido, usuario inactivo o rol no permitido → `401` con un único mensaje ("No se pudo iniciar sesión con Google. Usa una cuenta habilitada en el portal."); cliente dado de baja → `403` como en `/auth/login`. Comparte el límite por IP de `login`. El portal cierra la sesión de Firebase apenas obtiene el token: la única sesión es el JWT de la API. Sin configuración el botón no aparece y el endpoint rechaza todo. Para activarlo: crear el proyecto en Firebase, habilitar el proveedor Google en Authentication, agregar `portal.rtres.net` (y `localhost` para desarrollo) en Authorized domains, completar `firebase` (`apiKey`, `authDomain`, `projectId`) en `environment.production.ts` del portal y definir `Firebase__ProjectId` en el servidor de la API.
 
 Fuera de Fase 1 (documentar pero no implementar todavía): `/paypal/*` (Fase 4), `/webhooks/github` (Fase 5), `/webhooks/paypal` (Fase 4), endpoints de contenido WP (Fase 2), `Facturación`/`Perfil` (stubs en el sidebar hoy sin página).
 
