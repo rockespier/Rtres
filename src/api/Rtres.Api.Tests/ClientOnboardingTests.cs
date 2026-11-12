@@ -195,7 +195,7 @@ public class ClientOnboardingTests
         new(NotificationJobTests.Job(db, email), new ConfigurationBuilder().Build(), NullLogger<AccessEmailService>.Instance);
 
     private static Task<ActionResult> Login(RtresDbContext db, string email, string password, IMemoryCache? cache = null) =>
-        new AuthController(db, TestJwt, cache ?? new MemoryCache(new MemoryCacheOptions())).Login(new LoginRequest(email, password), CancellationToken.None);
+        new AuthController(db, TestJwt, cache ?? new MemoryCache(new MemoryCacheOptions()), new FakeFirebase(null)).Login(new LoginRequest(email, password), CancellationToken.None);
 
     internal static readonly JwtSettings TestJwt = JwtSettings.FromConfiguration(
         new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?> { ["Jwt:Key"] = new string('k', 48) }).Build());

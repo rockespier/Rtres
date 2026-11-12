@@ -57,5 +57,5 @@ public class LoginSecurityTests
     }
 
     private static Task<ActionResult> Login(RtresDbContext db, IMemoryCache cache, string email, string password) =>
-        new AuthController(db, ClientOnboardingTests.TestJwt, cache).Login(new LoginRequest(email, password), CancellationToken.None);
+        new AuthController(db, ClientOnboardingTests.TestJwt, cache, new FakeFirebase(null)).Login(new LoginRequest(email, password), CancellationToken.None);
 }

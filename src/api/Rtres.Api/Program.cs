@@ -35,6 +35,8 @@ builder.Services.AddCors(options => options.AddDefaultPolicy(policy => policy
 // Falla al arrancar si Jwt:Key no está definida o es insegura: nunca se firma con una clave conocida.
 var jwt = JwtSettings.FromConfiguration(builder.Configuration);
 builder.Services.AddSingleton(jwt);
+// Login con Google: sin Firebase:ProjectId la API arranca igual y /api/auth/google rechaza todo.
+builder.Services.AddSingleton<IFirebaseTokenVerifier, FirebaseTokenVerifier>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options => options.TokenValidationParameters = new TokenValidationParameters
 {
     ValidateIssuer = true, ValidateAudience = true, ValidateLifetime = true, ValidateIssuerSigningKey = true,
