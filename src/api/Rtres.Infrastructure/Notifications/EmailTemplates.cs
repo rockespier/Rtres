@@ -21,6 +21,7 @@ namespace Rtres.Infrastructure.Notifications;
 /// <item><c>ContactLead</c>: leadId, name, email, phone?, company?, service?, message, locale, page? — aviso interno para Rtres, siempre en español</item>
 /// <item><c>LoginLink</c>: name, token, minutes (se envía en el momento, nunca por la cola de Hangfire)</item>
 /// <item><c>TaxDueReminder</c>: period (yyyy-MM), dueDate (yyyy-MM-dd), days — aviso interno para Rtres, siempre en español</item>
+/// <item><c>TicketCreatedForManager</c>: ticketId, code, title, project, creator, area? — va al jefe inmediato de quien registró el ticket</item>
 /// </list>
 /// </summary>
 public static class EmailTemplates
@@ -47,6 +48,10 @@ public static class EmailTemplates
                 string.Format(t["reply.subject"], V("code")),
                 new[] { string.Format(t["reply.body"], V("author"), V("code"), V("title")), Quote(V("body")) },
                 t["cta.reply"], $"{portal}/tickets/{V("ticketId")}"),
+            NotificationType.TicketCreatedForManager => (
+                string.Format(t["manager.subject"], V("creator"), V("code")),
+                new[] { string.Format(string.IsNullOrWhiteSpace(V("area")) ? t["manager.body"] : t["manager.body.area"], V("creator"), V("code"), V("title"), V("project"), V("area")) },
+                t["cta.ticket"], $"{portal}/tickets/{V("ticketId")}"),
             NotificationType.PaymentReceived => (
                 string.Format(t["paid.subject"], V("product")),
                 new[] { string.Format(t["paid.body"], Money(lang, V("amount"), V("currency")), V("product")) },
@@ -171,6 +176,9 @@ public static class EmailTemplates
             ["status.body"] = "Tu ticket {0} «{1}» cambió de estado a: {2}.",
             ["reply.subject"] = "Nueva respuesta en tu ticket {0}",
             ["reply.body"] = "{0} respondió en tu ticket {1} «{2}»:",
+            ["manager.subject"] = "{0} registró el ticket {1}",
+            ["manager.body"] = "{0} registró el ticket {1} «{2}» en el proyecto {3}. Te avisamos porque eres su jefe inmediato.",
+            ["manager.body.area"] = "{0} ({4}) registró el ticket {1} «{2}» en el proyecto {3}. Te avisamos porque eres su jefe inmediato.",
             ["paid.subject"] = "Pago recibido: {0}",
             ["paid.body"] = "Recibimos tu pago de {0} por {1}. ¡Gracias!",
             ["failed.subject"] = "No se pudo procesar el pago de {0}",
@@ -229,6 +237,9 @@ public static class EmailTemplates
             ["status.body"] = "Your ticket {0} \"{1}\" is now: {2}.",
             ["reply.subject"] = "New reply on your ticket {0}",
             ["reply.body"] = "{0} replied on your ticket {1} \"{2}\":",
+            ["manager.subject"] = "{0} opened ticket {1}",
+            ["manager.body"] = "{0} opened ticket {1} \"{2}\" in the {3} project. You are receiving this because you are their direct manager.",
+            ["manager.body.area"] = "{0} ({4}) opened ticket {1} \"{2}\" in the {3} project. You are receiving this because you are their direct manager.",
             ["paid.subject"] = "Payment received: {0}",
             ["paid.body"] = "We received your payment of {0} for {1}. Thank you!",
             ["failed.subject"] = "Payment for {0} could not be processed",
@@ -265,6 +276,9 @@ public static class EmailTemplates
             ["status.body"] = "Il tuo ticket {0} «{1}» è ora: {2}.",
             ["reply.subject"] = "Nuova risposta al tuo ticket {0}",
             ["reply.body"] = "{0} ha risposto al tuo ticket {1} «{2}»:",
+            ["manager.subject"] = "{0} ha aperto il ticket {1}",
+            ["manager.body"] = "{0} ha aperto il ticket {1} «{2}» nel progetto {3}. Ti avvisiamo perché sei il suo responsabile diretto.",
+            ["manager.body.area"] = "{0} ({4}) ha aperto il ticket {1} «{2}» nel progetto {3}. Ti avvisiamo perché sei il suo responsabile diretto.",
             ["paid.subject"] = "Pagamento ricevuto: {0}",
             ["paid.body"] = "Abbiamo ricevuto il tuo pagamento di {0} per {1}. Grazie!",
             ["failed.subject"] = "Impossibile elaborare il pagamento di {0}",

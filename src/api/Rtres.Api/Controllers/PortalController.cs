@@ -121,6 +121,7 @@ public sealed class PortalController(RtresDbContext db, IBackgroundJobClient job
         await db.SaveChangesAsync(ct);
         jobs.Enqueue<GitHubIssueSyncJob>(j => j.CreateIssueAsync(ticket.Id, CancellationToken.None));
         if (project.Repositories.Count == 0) await NotifyPortalTicketAsync(ticket, project, ct);
+        await NotifyManagerAsync(ticket, project, ct);
         return Created($"/api/tickets/{ticket.Id}", ticket);
     }
     /// <summary>
@@ -158,5 +159,18 @@ public sealed class PortalController(RtresDbContext db, IBackgroundJobClient job
         if (string.IsNullOrWhiteSpace(staffEmail)) { logger.LogWarning("Ticket {Code} sin aviso interno: falta Notifications:StaffEmail", ticket.Code); return; }
         var client = await db.Clients.SingleAsync(x => x.Id == ticket.ClientId, ct);
         await notifications.SendAsync(client, new Notification(NotificationType.TicketCreated, new() { ["ticketId"] = ticket.Id.ToString(), ["code"] = ticket.Code, ["title"] = ticket.Title, ["company"] = client.CompanyName, ["project"] = project.Name, ["body"] = ticket.Description }, $"ticket-created:{ticket.Id}", staffEmail), ct);
+    }
+
+    /// <summary>Avisa al jefe inmediato de quien registró el ticket, si tiene uno activo del mismo cliente y con email.</summary>
+    private async Task NotifyManagerAsync(Ticket ticket, Project project, CancellationToken ct)
+    {
+        var creator = await db.UserAccounts.AsNoTracking().SingleOrDefaultAsync(x => x.Id == ticket.CreatedByUserId && x.ClientId == ticket.ClientId, ct);
+        if (creator?.ManagerId is not Guid managerId) return;
+        var manager = await db.UserAccounts.AsNoTracking().SingleOrDefaultAsync(x => x.Id == managerId && x.ClientId == ticket.ClientId && x.IsActive, ct);
+        if (manager is null || string.IsNullOrWhiteSpace(manager.Email)) return;
+        var client = await db.Clients.SingleAsync(x => x.Id == ticket.ClientId, ct);
+        var data = new Dictionary<string, string> { ["ticketId"] = ticket.Id.ToString(), ["code"] = ticket.Code, ["title"] = ticket.Title, ["project"] = project.Name, ["creator"] = creator.Name };
+        if (!string.IsNullOrWhiteSpace(creator.Area)) data["area"] = creator.Area;
+        await notifications.SendAsync(client, new Notification(NotificationType.TicketCreatedForManager, data, $"ticket-manager:{ticket.Id}", manager.Email), ct);
     }
 }

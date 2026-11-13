@@ -99,7 +99,7 @@ export interface CreateTicketRequest {
 }
 /** Aviso de la campana: `data` trae los mismos valores que el email (code, title, product, amount…). */
 export interface PortalNotificationDto { id:string; clientId:string; company:string|null; type:string; forStaff:boolean; createdAt:string; unread:boolean; data:Record<string,string>; }
-export interface TeamUserDto { id:string; name:string; email:string; role:'Cliente'|'Admin'; isActive:boolean; }
+export interface TeamUserDto { id:string; name:string; email:string; role:'Cliente'|'Admin'; isActive:boolean; area:string|null; jobTitle:string|null; managerId:string|null; }
 export interface AdminClientDto { id:string; companyName:string; isActive:boolean; requiresTaxDocument:boolean; activeProducts:number; expiringProducts:number; expiredProducts:number; openTickets:number; }
 export interface PaymentTransactionDto { id:string; createdAt:string; product:string; clientName:string; amount:number; currency:string; status:string; internalCode:string|null; }
 export interface AdminClientDetailDto { id:string; companyName:string; contactName:string; email:string; phone:string|null; preferredLanguage:string; isActive:boolean; requiresTaxDocument:boolean; }
@@ -207,7 +207,7 @@ export class PortalApiService {
   changePassword(currentPassword:string,newPassword:string) { return this.http.post(`${this.base}/profile/change-password`, {currentPassword,newPassword}); }
   getTeam() { return this.http.get<TeamUserDto[]>(`${this.base}/team/users`); }
   inviteTeam(name:string,email:string) { return this.http.post<{id:string;temporaryPassword:string;emailSent:boolean}>(`${this.base}/team/users`,{name,email}); }
-  updateTeam(id:string, body:{role?:string;isActive?:boolean}) { return this.http.patch(`${this.base}/team/users/${id}`,body); }
+  updateTeam(id:string, body:{role?:string;isActive?:boolean;area?:string;jobTitle?:string;managerId?:string}) { return this.http.patch(`${this.base}/team/users/${id}`,body); }
   getAdminClients() { return this.http.get<AdminClientDto[]>(`${this.base}/admin/clients`); }
   getAdminTickets(params:{status?:string;clientId?:string;projectId?:string;page?:number}={}) { return this.http.get<AdminTicketsPage>(`${this.base}/admin/tickets${query(params)}`); }
   updateAdminTicket(id:string,status:TicketStatus) { return this.http.patch<{status:TicketStatus}>(`${this.base}/admin/tickets/${id}`,{status}); }

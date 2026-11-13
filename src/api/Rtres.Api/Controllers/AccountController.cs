@@ -48,11 +48,31 @@ public sealed class AccountController(RtresDbContext db, AccessEmailService acce
                          select new { id = transaction.Id, createdAt = transaction.CreatedAt, product = product ?? transaction.Notes ?? transaction.Method, clientName = client.CompanyName, amount = transaction.Amount, currency = transaction.Currency, status = transaction.Status, internalCode = transaction.InternalCode }).ToListAsync(ct));
     }
     [HttpGet("team/users"), Authorize(Roles = "Admin")]
-    public async Task<ActionResult> Team(CancellationToken ct) { if (!TryGetClientId(out var clientId)) return Forbid(); return Ok(await db.UserAccounts.Where(x => x.ClientId == clientId).OrderBy(x => x.Name).Select(x => new { id = x.Id, name = x.Name, email = x.Email, role = x.Role.ToString(), isActive = x.IsActive }).ToListAsync(ct)); }
+    public async Task<ActionResult> Team(CancellationToken ct) { if (!TryGetClientId(out var clientId)) return Forbid(); return Ok(await db.UserAccounts.Where(x => x.ClientId == clientId).OrderBy(x => x.Name).Select(x => new { id = x.Id, name = x.Name, email = x.Email, role = x.Role.ToString(), isActive = x.IsActive, area = x.Area, jobTitle = x.JobTitle, managerId = x.ManagerId }).ToListAsync(ct)); }
     [HttpPost("team/users"), Authorize(Roles = "Admin")]
     public async Task<ActionResult> Invite(InviteRequest request, CancellationToken ct) { if (!TryGetClientId(out var clientId)) return Forbid(); if (string.IsNullOrWhiteSpace(request.Name) || string.IsNullOrWhiteSpace(request.Email)) return BadRequest(new { message = "Nombre y email son obligatorios." }); if (await db.UserAccounts.AnyAsync(x => x.Email == request.Email, ct)) return Conflict(new { message = "El email ya está registrado." }); var temporaryPassword = TemporaryPassword(); var user = new UserAccount { ClientId = clientId, Name = request.Name.Trim(), Email = request.Email.Trim(), Role = UserRole.Cliente }; user.PasswordHash = Hasher.HashPassword(user, temporaryPassword); db.UserAccounts.Add(user); await db.SaveChangesAsync(ct); var client = await db.Clients.FindAsync([clientId], ct); var emailSent = client is not null && await accessEmail.SendAsync(client, user.Name, user.Email, temporaryPassword, Request, ct); return Created($"/api/team/users/{user.Id}", new { id = user.Id, temporaryPassword, emailSent }); }
     [HttpPatch("team/users/{id:guid}"), Authorize(Roles = "Admin")]
-    public async Task<ActionResult> UpdateTeam(Guid id, UpdateTeamRequest request, CancellationToken ct) { if (!TryGetClientId(out var clientId)) return Forbid(); var user = await db.UserAccounts.SingleOrDefaultAsync(x => x.Id == id && x.ClientId == clientId, ct); if (user is null) return NotFound(); if (id == UserId && ((request.Role is UserRole.Cliente) || request.IsActive is false)) return BadRequest(new { message = "No puedes bajar tu rol ni desactivarte." }); if (request.Role is UserRole role && role is not (UserRole.Cliente or UserRole.Admin)) return BadRequest(); if (request.Role is UserRole validRole) user.Role = validRole; if (request.IsActive is bool active) user.IsActive = active; await db.SaveChangesAsync(ct); return Ok(); }
+    public async Task<ActionResult> UpdateTeam(Guid id, UpdateTeamRequest request, CancellationToken ct) { if (!TryGetClientId(out var clientId)) return Forbid(); var user = await db.UserAccounts.SingleOrDefaultAsync(x => x.Id == id && x.ClientId == clientId, ct); if (user is null) return NotFound(); if (id == UserId && ((request.Role is UserRole.Cliente) || request.IsActive is false)) return BadRequest(new { message = "No puedes bajar tu rol ni desactivarte." }); if (request.Role is UserRole role && role is not (UserRole.Cliente or UserRole.Admin)) return BadRequest();
+        var area = request.Area?.Trim(); var jobTitle = request.JobTitle?.Trim();
+        if (area?.Length > 100 || jobTitle?.Length > 100) return BadRequest(new { message = "El área y el cargo no pueden pasar de 100 caracteres." });
+        if (request.ManagerId is Guid managerId && managerId != Guid.Empty && await ValidateManagerAsync(user, managerId, clientId, ct) is string managerError) return BadRequest(new { message = managerError });
+        if (request.Role is UserRole validRole) user.Role = validRole; if (request.IsActive is bool active) user.IsActive = active;
+        if (area is not null) user.Area = area.Length == 0 ? null : area; if (jobTitle is not null) user.JobTitle = jobTitle.Length == 0 ? null : jobTitle;
+        if (request.ManagerId is Guid newManager) user.ManagerId = newManager == Guid.Empty ? null : newManager;
+        await db.SaveChangesAsync(ct); return Ok(); }
+    /// <summary>El jefe inmediato debe ser otro usuario activo del mismo cliente y no puede cerrar un ciclo (subir por sus jefes no debe llegar al usuario editado).</summary>
+    private async Task<string?> ValidateManagerAsync(UserAccount user, Guid managerId, Guid clientId, CancellationToken ct)
+    {
+        if (managerId == user.Id) return "Un usuario no puede ser su propio jefe inmediato.";
+        var manager = await db.UserAccounts.AsNoTracking().SingleOrDefaultAsync(x => x.Id == managerId && x.ClientId == clientId, ct);
+        if (manager is null) return "El jefe inmediato debe ser un usuario de tu empresa.";
+        if (!manager.IsActive) return "El jefe inmediato debe ser un usuario activo.";
+        var managers = await db.UserAccounts.AsNoTracking().Where(x => x.ClientId == clientId).ToDictionaryAsync(x => x.Id, x => x.ManagerId, ct);
+        var visited = new HashSet<Guid>();
+        for (Guid? current = managerId; current is Guid id && visited.Add(id); current = managers.GetValueOrDefault(id))
+            if (id == user.Id) return "Ese jefe inmediato crearía un ciclo: ya depende de este usuario.";
+        return null;
+    }
 }
 
 [ApiController, Authorize(Roles = "SuperAdmin"), Route("api/admin")]
@@ -1041,7 +1061,8 @@ public sealed partial class AdminController(RtresDbContext db, PayPalCheckoutSer
 public sealed record ProfileRequest(string Name);
 public sealed record ChangePasswordRequest(string CurrentPassword, string NewPassword);
 public sealed record InviteRequest(string Name, string Email);
-public sealed record UpdateTeamRequest(UserRole? Role, bool? IsActive);
+/// <summary>null = sin cambios. Area/JobTitle vacíos y ManagerId = Guid.Empty limpian el valor.</summary>
+public sealed record UpdateTeamRequest(UserRole? Role, bool? IsActive, string? Area = null, string? JobTitle = null, Guid? ManagerId = null);
 public sealed record ClientRequest(string CompanyName, string ContactName, string Email, string? Phone, string PreferredLanguage, bool RequiresTaxDocument = false);
 public sealed record ClientPatchRequest(string? CompanyName, string? ContactName, string? Email, string? Phone, string? PreferredLanguage, bool? IsActive, bool? RequiresTaxDocument = null);
 public sealed record ProductRequest(ProductType Type, string Name, BillingCycle BillingCycle, decimal? BasePrice, string Currency, string? Description, bool IsActive, TaxDocumentType TaxDocumentType = TaxDocumentType.Factura, string? Category = null, string? Tags = null, bool AllowsTickets = false);

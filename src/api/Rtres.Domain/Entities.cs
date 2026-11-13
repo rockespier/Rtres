@@ -100,7 +100,13 @@ public sealed class ProductCategory { public Guid Id { get; set; } = Guid.NewGui
 public sealed class Client { public Guid Id { get; set; } = Guid.NewGuid(); public string CompanyName { get; set; } = string.Empty; public string ContactName { get; set; } = string.Empty; public string Email { get; set; } = string.Empty; public string? Phone { get; set; } public string PreferredLanguage { get; set; } = "es"; public bool IsActive { get; set; } = true; /// <summary>Solo clientes en Perú: se les emite Factura/Recibo por honorarios por cada pago.</summary>
     public bool RequiresTaxDocument { get; set; } public DateTime CreatedAt { get; set; } = DateTime.UtcNow; }
 public sealed class UserAccount { public Guid Id { get; set; } = Guid.NewGuid(); public Guid? ClientId { get; set; } public string Email { get; set; } = string.Empty; public string PasswordHash { get; set; } = string.Empty; public string Name { get; set; } = string.Empty; public UserRole Role { get; set; } = UserRole.Cliente; public bool IsActive { get; set; } = true; /// <summary>Última vez que abrió la campana: lo posterior cuenta como no leído.</summary>
-    public DateTime? NotificationsSeenAt { get; set; } }
+    public DateTime? NotificationsSeenAt { get; set; }
+    /// <summary>Área o departamento del usuario en la empresa del cliente (texto libre).</summary>
+    public string? Area { get; set; }
+    /// <summary>Cargo del usuario (texto libre).</summary>
+    public string? JobTitle { get; set; }
+    /// <summary>Jefe inmediato: otro usuario activo del mismo cliente. Recibe un aviso cuando este usuario registra un ticket.</summary>
+    public Guid? ManagerId { get; set; } }
 /// <summary>
 /// Enlace de acceso de un solo uso que se envía por email (login sin contraseña). Solo se guarda el hash SHA-256 del token;
 /// <see cref="UsedAt"/> es token de concurrencia: si dos peticiones canjean el mismo enlace a la vez, solo una gana.
