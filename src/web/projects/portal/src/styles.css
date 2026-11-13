@@ -181,6 +181,10 @@ select.field:disabled{cursor:not-allowed;}
 .p-table th.sort-desc::after{content:'▼'; opacity:1; color:var(--primary-strong);}
 /* Importes y cifras: a la derecha y con dígitos de ancho fijo para que las columnas cuadren. */
 .p-table th.num, .p-table td.num{text-align:right; white-space:nowrap; font-variant-numeric:tabular-nums;}
+/* Tablas con controles editables en las celdas (Equipo): menos padding y campos compactos con ancho mínimo. */
+.p-table.p-table-dense thead th, .p-table.p-table-dense tbody td{padding:10px 10px;}
+.p-table.p-table-dense tbody tr{cursor:default;}
+.field-sm{padding:7px 10px; font-size:13px; border-radius:8px;}
 .p-table tfoot td{padding:14px 16px; border-top:2px solid var(--ink); font-weight:700;}
 
 /* Línea de diseño de reportes: etiqueta pequeña + cifra grande, notas y control segmentado. */

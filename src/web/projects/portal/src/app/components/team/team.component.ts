@@ -23,18 +23,20 @@ const EMPTY_GUID = '00000000-0000-0000-0000-000000000000';
   <p *ngIf="error" class="text-sm text-red-600 mt-3">{{ error }}</p>
 
   <div class="card mt-6 overflow-x-auto">
-    <table class="p-table w-full" appSort #s="appSort">
-      <thead><tr><th sortKey="name">Nombre</th><th sortKey="email">Email</th><th sortKey="area">Área</th><th sortKey="jobTitle">Cargo</th><th [sortKey]="managerName">Jefe inmediato</th><th sortKey="role">Rol</th><th sortKey="isActive">Estado</th><th></th></tr></thead>
+    <table class="p-table p-table-dense w-full min-w-[1040px]" appSort #s="appSort">
+      <thead><tr><th sortKey="name">Usuario</th><th sortKey="area">Área</th><th sortKey="jobTitle">Cargo</th><th [sortKey]="managerName">Jefe inmediato</th><th sortKey="role">Rol</th><th sortKey="isActive">Estado</th><th></th></tr></thead>
       <tbody>
         <tr *ngFor="let x of users | sortBy:s.key():s.dir()">
-          <td>{{ x.name }}</td>
-          <td class="text-muted">{{ x.email }}</td>
-          <td><input class="field" maxlength="100" [(ngModel)]="x.area" (change)="update(x, { area: x.area ?? '' })" aria-label="Área"></td>
-          <td><input class="field" maxlength="100" [(ngModel)]="x.jobTitle" (change)="update(x, { jobTitle: x.jobTitle ?? '' })" aria-label="Cargo"></td>
-          <td><select class="field" [ngModel]="x.managerId ?? ''" (ngModelChange)="updateManager(x, $event)" aria-label="Jefe inmediato"><option value="">Sin jefe</option><option *ngIf="inactiveManager(x) as m" [value]="m.id">{{ m.name }} (inactivo)</option><option *ngFor="let m of managerOptions(x)" [value]="m.id">{{ m.name }}</option></select></td>
-          <td><select class="field" [(ngModel)]="x.role" (change)="updateRole(x)"><option value="Cliente">Cliente</option><option value="Admin">Admin</option></select></td>
-          <td><span class="pill" [class.pill-success]="x.isActive" [class.pill-neutral]="!x.isActive">{{ x.isActive ? 'Activo' : 'Inactivo' }}</span></td>
-          <td><button type="button" class="btn btn-ghost btn-sm" (click)="toggle(x)">{{ x.isActive ? 'Desactivar' : 'Activar' }}</button></td>
+          <td class="min-w-[220px]">
+            <div class="font-medium">{{ x.name }}</div>
+            <div class="text-muted text-xs break-all">{{ x.email }}</div>
+          </td>
+          <td class="min-w-[150px]"><input class="field field-sm" maxlength="100" [(ngModel)]="x.area" (change)="update(x, { area: x.area ?? '' })" aria-label="Área" [title]="x.area ?? ''"></td>
+          <td class="min-w-[170px]"><input class="field field-sm" maxlength="100" [(ngModel)]="x.jobTitle" (change)="update(x, { jobTitle: x.jobTitle ?? '' })" aria-label="Cargo" [title]="x.jobTitle ?? ''"></td>
+          <td class="min-w-[190px]"><select class="field field-sm" [ngModel]="x.managerId ?? ''" (ngModelChange)="updateManager(x, $event)" aria-label="Jefe inmediato"><option value="">Sin jefe</option><option *ngIf="inactiveManager(x) as m" [value]="m.id">{{ m.name }} (inactivo)</option><option *ngFor="let m of managerOptions(x)" [value]="m.id">{{ m.name }}</option></select></td>
+          <td class="min-w-[115px]"><select class="field field-sm" [(ngModel)]="x.role" (change)="updateRole(x)" aria-label="Rol"><option value="Cliente">Cliente</option><option value="Admin">Admin</option></select></td>
+          <td class="whitespace-nowrap"><span class="pill" [class.pill-success]="x.isActive" [class.pill-neutral]="!x.isActive">{{ x.isActive ? 'Activo' : 'Inactivo' }}</span></td>
+          <td class="whitespace-nowrap text-right"><button type="button" class="btn btn-ghost btn-sm" (click)="toggle(x)">{{ x.isActive ? 'Desactivar' : 'Activar' }}</button></td>
         </tr>
       </tbody>
     </table>
