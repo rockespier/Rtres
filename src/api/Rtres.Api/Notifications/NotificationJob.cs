@@ -50,6 +50,7 @@ public sealed class NotificationJob(RtresDbContext db, IEmailSender email, IConf
     private async Task AddToInboxAsync(Guid clientId, Notification notification, CancellationToken cancellationToken)
     {
         if (notification.Type == NotificationType.AccountAccess) return; // lleva la contraseña temporal: solo por email
+        if (notification.Type == NotificationType.TicketCreatedForManager) return; // la campana es de todo el cliente y este email es para una sola persona (el jefe)
         if (notification.DedupeKey is not null && await db.PortalNotifications.AnyAsync(x => x.DedupeKey == notification.DedupeKey, cancellationToken)) return;
         if (!await db.Clients.AnyAsync(x => x.Id == clientId, cancellationToken)) return;
         db.PortalNotifications.Add(new PortalNotification
