@@ -31,7 +31,7 @@ const EMPTY_GUID = '00000000-0000-0000-0000-000000000000';
           <td class="text-muted">{{ x.email }}</td>
           <td><input class="field" maxlength="100" [(ngModel)]="x.area" (change)="update(x, { area: x.area ?? '' })" aria-label="Área"></td>
           <td><input class="field" maxlength="100" [(ngModel)]="x.jobTitle" (change)="update(x, { jobTitle: x.jobTitle ?? '' })" aria-label="Cargo"></td>
-          <td><select class="field" [ngModel]="x.managerId ?? ''" (ngModelChange)="updateManager(x, $event)" aria-label="Jefe inmediato"><option value="">Sin jefe</option><option *ngFor="let m of managerOptions(x)" [value]="m.id">{{ m.name }}</option></select></td>
+          <td><select class="field" [ngModel]="x.managerId ?? ''" (ngModelChange)="updateManager(x, $event)" aria-label="Jefe inmediato"><option value="">Sin jefe</option><option *ngIf="inactiveManager(x) as m" [value]="m.id">{{ m.name }} (inactivo)</option><option *ngFor="let m of managerOptions(x)" [value]="m.id">{{ m.name }}</option></select></td>
           <td><select class="field" [(ngModel)]="x.role" (change)="updateRole(x)"><option value="Cliente">Cliente</option><option value="Admin">Admin</option></select></td>
           <td><span class="pill" [class.pill-success]="x.isActive" [class.pill-neutral]="!x.isActive">{{ x.isActive ? 'Activo' : 'Inactivo' }}</span></td>
           <td><button type="button" class="btn btn-ghost btn-sm" (click)="toggle(x)">{{ x.isActive ? 'Desactivar' : 'Activar' }}</button></td>
@@ -63,6 +63,11 @@ export class TeamComponent implements OnInit {
   /** Otros usuarios activos que pueden ser jefe de este: se excluye él mismo y quienes dependen de él (cerrarían un ciclo). */
   managerOptions(user: TeamUserDto): TeamUserDto[] {
     return this.users.filter(u => u.isActive && u.id !== user.id && !this.reportsTo(u, user.id));
+  }
+
+  /** Jefe actual que ya no está activo: se muestra aparte para que el select refleje lo guardado. */
+  inactiveManager(user: TeamUserDto): TeamUserDto | undefined {
+    return this.users.find(u => u.id === user.managerId && !u.isActive);
   }
 
   updateManager(user: TeamUserDto, managerId: string): void {
