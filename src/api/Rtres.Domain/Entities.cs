@@ -1,3 +1,4 @@
+using System.Globalization;
 namespace Rtres.Domain;
 
 public enum UserRole { Admin, Cliente, SuperAdmin }
@@ -87,7 +88,14 @@ public sealed class Purchase
 
     public static bool AllowsTaxCredit(PurchaseDocumentType type) => type is PurchaseDocumentType.Factura or PurchaseDocumentType.NotaCredito or PurchaseDocumentType.NotaDebito;
     /// <summary>Crédito fiscal en PEN con signo: la nota de crédito lo reduce.</summary>
-    public decimal TaxCreditPen => GivesTaxCredit ? (DocumentType == PurchaseDocumentType.NotaCredito ? -IgvPen : IgvPen) : 0m;
+    public decimal TaxCreditPen
+    {
+        get
+        {
+            if (!GivesTaxCredit) return 0m;
+            return DocumentType == PurchaseDocumentType.NotaCredito ? -IgvPen : IgvPen;
+        }
+    }
 }
 
 /// <summary>Video de YouTube que se muestra en la página Recursos del sitio. Se administra desde el portal.</summary>
@@ -256,8 +264,8 @@ public static class TaxDueDateSeed
     {
         // Ids fijos: HasData los necesita estables entre migraciones.
         Id = new Guid($"7d000000-0000-0000-0000-{year:D4}{i + 1:D8}"), Period = new DateOnly(year, i + 1, 1),
-        Digit0 = DateOnly.Parse(m.Item1), Digit1 = DateOnly.Parse(m.Item2), Digit2And3 = DateOnly.Parse(m.Item3), Digit4And5 = DateOnly.Parse(m.Item4),
-        Digit6And7 = DateOnly.Parse(m.Item5), Digit8And9 = DateOnly.Parse(m.Item6), GoodTaxpayer = DateOnly.Parse(m.Item7),
+        Digit0 = DateOnly.Parse(m.Item1, CultureInfo.InvariantCulture), Digit1 = DateOnly.Parse(m.Item2, CultureInfo.InvariantCulture), Digit2And3 = DateOnly.Parse(m.Item3, CultureInfo.InvariantCulture), Digit4And5 = DateOnly.Parse(m.Item4, CultureInfo.InvariantCulture),
+        Digit6And7 = DateOnly.Parse(m.Item5, CultureInfo.InvariantCulture), Digit8And9 = DateOnly.Parse(m.Item6, CultureInfo.InvariantCulture), GoodTaxpayer = DateOnly.Parse(m.Item7, CultureInfo.InvariantCulture),
     }).ToArray();
 }
 

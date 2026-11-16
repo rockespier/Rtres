@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Rtres.Domain;
@@ -50,7 +51,7 @@ public sealed partial class AdminController
         var filed = await db.TaxDueDates.Where(x => x.Period >= from && x.Period <= to).ToDictionaryAsync(x => x.Period.Month, ct);
         var today = DateOnly.FromDateTime(utcNow.AddHours(-5));
         // Meses que ya cuentan: todo el año si ya pasó; si es el año en curso, hasta el mes actual (incluido).
-        var lastMonth = year < today.Year ? 12 : year == today.Year ? today.Month : 0;
+        var lastMonth = year.CompareTo(today.Year) switch { < 0 => 12, 0 => today.Month, _ => 0 };
 
         var months = Enumerable.Range(1, 12).Select(m =>
         {
@@ -128,5 +129,5 @@ public sealed partial class AdminController
     }
 }
 
-public sealed record AnnualTaxSettingsRequest(decimal Uit, decimal ThresholdUits = 15m, decimal LowRate = 0.10m, decimal HighRate = 0.295m);
-public sealed record Form1662PaymentRequest(DateOnly PaidAt, string? Number);
+public sealed record AnnualTaxSettingsRequest([property: JsonRequired] decimal Uit, decimal ThresholdUits = 15m, decimal LowRate = 0.10m, decimal HighRate = 0.295m);
+public sealed record Form1662PaymentRequest([property: JsonRequired] DateOnly PaidAt, string? Number);

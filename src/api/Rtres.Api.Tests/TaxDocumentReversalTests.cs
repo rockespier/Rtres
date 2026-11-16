@@ -16,7 +16,7 @@ public class TaxDocumentReversalTests
         var item = AddProduct(db, seed);
         var renewsAt = DateTime.UtcNow.AddMonths(6);
         item.RenewsAt = renewsAt; item.Status = ClientProductStatus.Activo; item.IsManualBilling = true; db.SaveChanges();
-        await Payments(db).ApplyPaymentAsync(item, "TRF-1", 236m, "PEN", Ct, PaymentMethods.Transferencia, years: 2);
+        await Payments(db).ApplyPaymentAsync(item, "TRF-1", 236m, "PEN", Ct, new(PaymentMethods.Transferencia, Years: 2));
         Assert.Equal(renewsAt.AddYears(2), item.RenewsAt);
 
         var result = await Service(db).ReverseAsync(db.TaxDocuments.Single().Id, "Monto equivocado", false, null, Ct);
@@ -34,11 +34,11 @@ public class TaxDocumentReversalTests
         using var db = TestData.Db(out var seed);
         var item = AddProduct(db, seed);
         var payments = Payments(db);
-        await payments.ApplyPaymentAsync(item, "TRF-1", 118m, "PEN", Ct, PaymentMethods.Transferencia);
+        await payments.ApplyPaymentAsync(item, "TRF-1", 118m, "PEN", Ct, new(PaymentMethods.Transferencia));
         await payments.ApplyPaymentAsync(item, "SALE-1", 118m, "PEN", Ct);
         foreach (var document in db.TaxDocuments.ToList()) await Service(db).ReverseAsync(document.Id, "Error", false, null, Ct);
 
-        Assert.True(await payments.ApplyPaymentAsync(item, "TRF-1", 118m, "PEN", Ct, PaymentMethods.Transferencia));
+        Assert.True(await payments.ApplyPaymentAsync(item, "TRF-1", 118m, "PEN", Ct, new(PaymentMethods.Transferencia)));
         Assert.False(await payments.ApplyPaymentAsync(item, "SALE-1", 118m, "PEN", Ct));
     }
 
@@ -97,7 +97,7 @@ public class TaxDocumentReversalTests
     {
         using var db = TestData.Db(out var seed);
         var item = AddProduct(db, seed);
-        await Payments(db).ApplyPaymentAsync(item, "TRF-1", 118m, "PEN", Ct, PaymentMethods.Transferencia);
+        await Payments(db).ApplyPaymentAsync(item, "TRF-1", 118m, "PEN", Ct, new(PaymentMethods.Transferencia));
         var payment = db.PaymentTransactions.Single();
         var report = new TransferReport { ClientId = seed.Client.Id, ClientProductId = item.Id, Amount = 118m, Status = TransferReportStatus.Aprobado, PaymentTransactionId = payment.Id };
         db.TransferReports.Add(report); db.SaveChanges();

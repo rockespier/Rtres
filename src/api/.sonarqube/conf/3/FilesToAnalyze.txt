@@ -1,0 +1,8 @@
+﻿C:\repo\rtres-net\Rtres\src\api\Rtres.Domain\BankTransfers.cs
+C:\repo\rtres-net\Rtres\src\api\Rtres.Domain\ClientProductPricing.cs
+C:\repo\rtres-net\Rtres\src\api\Rtres.Domain\ContactLeads.cs
+C:\repo\rtres-net\Rtres\src\api\Rtres.Domain\Contracts.cs
+C:\repo\rtres-net\Rtres\src\api\Rtres.Domain\Entities.cs
+C:\repo\rtres-net\Rtres\src\api\Rtres.Domain\GitHubSync.cs
+C:\repo\rtres-net\Rtres\src\api\Rtres.Domain\IncomeTax.cs
+C:\repo\rtres-net\Rtres\src\api\Rtres.Domain\Notifications.cs

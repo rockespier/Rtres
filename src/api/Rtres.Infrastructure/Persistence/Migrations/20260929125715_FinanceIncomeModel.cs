@@ -32,7 +32,7 @@ namespace Rtres.Infrastructure.Persistence.Migrations
                 table: "PaymentTransactions",
                 type: "uniqueidentifier",
                 nullable: false,
-                defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
+                defaultValue: Guid.Empty);
 
             migrationBuilder.AddColumn<string>(
                 name: "Notes",
@@ -86,7 +86,7 @@ namespace Rtres.Infrastructure.Persistence.Migrations
                 table: "PaymentTransactions",
                 type: "uniqueidentifier",
                 nullable: false,
-                defaultValue: new Guid("00000000-0000-0000-0000-000000000000"),
+                defaultValue: Guid.Empty,
                 oldClrType: typeof(Guid),
                 oldType: "uniqueidentifier",
                 oldNullable: true);

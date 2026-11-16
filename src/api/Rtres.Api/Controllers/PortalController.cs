@@ -55,8 +55,23 @@ public sealed class PortalController(RtresDbContext db, IBackgroundJobClient job
         }
         return Ok(items);
     }
-    [HttpGet("projects")] public async Task<IActionResult> Projects(Guid? clientId, CancellationToken ct) { var error = ResolveClientId(clientId, out var id); if (error is not null) return error; var projects = await db.Projects.Include(x => x.Repositories).Where(x => x.ClientId == id).ToListAsync(ct); foreach (var p in projects) p.Repositories = [.. p.Repositories.OrderByDescending(r => r.IsDefault).ThenBy(r => r.Name)]; return Ok(projects); }
-    [HttpGet("tickets")] public async Task<IActionResult> Tickets(Guid? clientId, TicketStatus? status = null, TicketType? type = null, int page = 1, CancellationToken ct = default) { var error = ResolveClientId(clientId, out var id); if (error is not null) return error; page = Math.Max(page, 1); var q = db.Tickets.Where(x => x.ClientId == id && (status == null || x.Status == status) && (type == null || x.Type == type)).OrderByDescending(x => x.UpdatedAt); var n = await q.CountAsync(ct); return Ok(new { items = await q.Skip((page - 1) * 20).Take(20).ToListAsync(ct), page, totalPages = (int)Math.Ceiling(n / 20d) }); }
+    [HttpGet("projects")] public async Task<IActionResult> Projects(Guid? clientId, CancellationToken ct)
+    {
+        var error = ResolveClientId(clientId, out var id);
+        if (error is not null) return error;
+        var projects = await db.Projects.Include(x => x.Repositories).Where(x => x.ClientId == id).ToListAsync(ct);
+        foreach (var p in projects) p.Repositories = [.. p.Repositories.OrderByDescending(r => r.IsDefault).ThenBy(r => r.Name)];
+        return Ok(projects);
+    }
+    [HttpGet("tickets")] public async Task<IActionResult> Tickets(Guid? clientId, TicketStatus? status = null, TicketType? type = null, int page = 1, CancellationToken ct = default)
+    {
+        var error = ResolveClientId(clientId, out var id);
+        if (error is not null) return error;
+        page = Math.Max(page, 1);
+        var q = db.Tickets.Where(x => x.ClientId == id && (status == null || x.Status == status) && (type == null || x.Type == type)).OrderByDescending(x => x.UpdatedAt);
+        var n = await q.CountAsync(ct);
+        return Ok(new { items = await q.Skip((page - 1) * 20).Take(20).ToListAsync(ct), page, totalPages = (int)Math.Ceiling(n / 20d) });
+    }
     [HttpGet("tickets/{id:guid}")]
     public async Task<IActionResult> Ticket(Guid id, Guid? clientId, CancellationToken ct)
     {
@@ -66,7 +81,9 @@ public sealed class PortalController(RtresDbContext db, IBackgroundJobClient job
         var t = await db.Tickets.SingleOrDefaultAsync(x => x.Id == id && (anyClient || x.ClientId == client), ct); if (t is null) return NotFound();
         var project = await db.Projects.Include(x => x.Repositories).Where(x => x.Id == t.ProjectId).SingleAsync(ct);
         // El componente solo aporta si el proyecto tiene varios repos; con uno es siempre el mismo.
-        var component = project.Repositories.Count > 1 ? project.Repositories.RepositoryFor(t.RepositoryId) is { } r ? r.Label ?? r.Name : null : null;
+        // Con un solo repositorio no hace falta decir a cuál va el ticket.
+        var repository = project.Repositories.Count > 1 ? project.Repositories.RepositoryFor(t.RepositoryId) : null;
+        var component = repository is null ? null : repository.Label ?? repository.Name;
         var createdBy = await db.UserAccounts.Where(x => x.Id == t.CreatedByUserId).Select(x => x.Name == "" ? x.Email : x.Name).SingleOrDefaultAsync(ct);
         var attachments = await db.TicketAttachments.Where(x => x.TicketId == id).OrderBy(x => x.CreatedAt).Select(x => new TicketAttachmentDto(x.Id, x.FileName, x.ContentType, x.SizeBytes)).ToListAsync(ct);
         var comments = await ToCommentDtos(db, db.TicketComments.Where(x => x.TicketId == id).OrderBy(x => x.CreatedAt)).ToListAsync(ct);

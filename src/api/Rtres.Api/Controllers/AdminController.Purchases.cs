@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using ClosedXML.Excel;
 using Microsoft.AspNetCore.Mvc;
@@ -160,7 +161,7 @@ public sealed partial class AdminController
         var issueMonth = new DateOnly(r.IssueDate.Year, r.IssueDate.Month, 1);
         period = issueMonth;
         if (string.IsNullOrWhiteSpace(r.Period)) return null;
-        if (!DateOnly.TryParseExact(r.Period.Trim() + "-01", "yyyy-MM-dd", out period)) return "Periodo inválido: usa AAAA-MM.";
+        if (!DateOnly.TryParseExact(r.Period.Trim() + "-01", "yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out period)) return "Periodo inválido: usa AAAA-MM.";
         return period < issueMonth ? "La compra no puede anotarse en un periodo anterior a su emisión." : null;
     }
 
@@ -197,5 +198,5 @@ public sealed partial class AdminController
     private static partial Regex RucRegex();
 }
 
-public sealed record PurchaseRequest(DateOnly IssueDate, string? Period, PurchaseDocumentType DocumentType, string? Series, string Number, string SupplierTaxId, string SupplierName,
-    string Currency, decimal TaxBase, decimal Igv, decimal NonTaxable = 0, bool UsedForTaxedOperations = true, bool CreateExpense = false, Guid? ExpenseCategoryId = null, string? Notes = null);
+public sealed record PurchaseRequest([property: JsonRequired] DateOnly IssueDate, string? Period, [property: JsonRequired] PurchaseDocumentType DocumentType, string? Series, string Number, string SupplierTaxId, string SupplierName,
+    string Currency, [property: JsonRequired] decimal TaxBase, [property: JsonRequired] decimal Igv, decimal NonTaxable = 0, bool UsedForTaxedOperations = true, bool CreateExpense = false, Guid? ExpenseCategoryId = null, string? Notes = null);

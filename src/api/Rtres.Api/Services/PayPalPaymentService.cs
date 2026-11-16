@@ -59,14 +59,16 @@ public sealed class PayPalPaymentService(RtresDbContext db, IPayPalClient payPal
     /// Registra un cobro confirmado. <paramref name="transactionKey"/> identifica el cobro (id de la orden, o de la
     /// venta en suscripciones): el mismo cobro llega por varias vías (respuesta de la captura, webhook, reintentos) y
     /// solo el primero crea la transacción, extiende la vigencia y avisa al cliente. Devuelve si se aplicó.
-    /// <paramref name="years"/>: años pagados por adelantado (productos anuales); si no se indica y el cobro es la orden
+    /// <see cref="PaymentOptions.Years"/>: años pagados por adelantado (productos anuales); si no se indica y el cobro es la orden
     /// de PayPal pendiente, se usan los años con los que se creó esa orden.
     /// </summary>
-    public async Task<bool> ApplyPaymentAsync(ClientProduct item, string transactionKey, decimal amount, string? currency, CancellationToken ct, string method = PaymentMethods.PayPal, DateTime? paidAt = null, int? years = null)
+    public async Task<bool> ApplyPaymentAsync(ClientProduct item, string transactionKey, decimal amount, string? currency, CancellationToken ct, PaymentOptions? options = null)
     {
         if (await PaymentExistsAsync(transactionKey, ct)) return false;
+        var (method, paidAt, years) = options ?? new();
         var when = paidAt ?? DateTime.UtcNow;
-        var paidYears = item.BillingCycle == BillingCycle.Anual ? Math.Clamp(years ?? (transactionKey == item.PayPalOrderId ? item.PayPalOrderYears : null) ?? 1, 1, ClientProductPricing.MaxPrepaidYears) : 1;
+        var orderYears = transactionKey == item.PayPalOrderId ? item.PayPalOrderYears : null;
+        var paidYears = item.BillingCycle == BillingCycle.Anual ? Math.Clamp(years ?? orderYears ?? 1, 1, ClientProductPricing.MaxPrepaidYears) : 1;
         var transaction = new PaymentTransaction { ClientId = item.ClientId, ClientProductId = item.Id, PayPalOrderIdOrSubscriptionId = transactionKey, Amount = amount, Currency = currency ?? item.Product?.Currency ?? "USD", Status = "COMPLETED", Method = method, CreatedAt = when, Years = paidYears };
         transaction.InternalCode = await db.NextInternalCodeAsync(ct);
         transaction.AmountPen = amount * await db.RateToPenAsync(transaction.Currency, DateOnly.FromDateTime(transaction.CreatedAt), ct);
@@ -138,3 +140,9 @@ public sealed class PayPalPaymentService(RtresDbContext db, IPayPalClient payPal
         await db.PaymentTransactions.AnyAsync(x => x.PayPalOrderIdOrSubscriptionId == transactionKey, ct)
         || await db.PaymentReversals.AnyAsync(x => x.PaymentKey == transactionKey && x.Method == PaymentMethods.PayPal, ct);
 }
+
+/// <summary>
+/// Datos opcionales de un cobro: método (PayPal por defecto), fecha del pago (ahora si no se indica) y años pagados por
+/// adelantado (productos anuales).
+/// </summary>
+public sealed record PaymentOptions(string Method = PaymentMethods.PayPal, DateTime? PaidAt = null, int? Years = null);

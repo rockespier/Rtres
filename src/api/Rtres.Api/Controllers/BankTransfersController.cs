@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using System.Text.Json.Serialization;
 using System.Globalization;
 using System.Security.Claims;
 using System.Text.RegularExpressions;
@@ -231,7 +233,7 @@ public sealed partial class BankTransfersController(RtresDbContext db, BankTrans
         if (key.Length > 100) return BadRequest(new { message = "El N° de operación es demasiado largo." });
         // Quien paga por transferencia (aunque se haya contratado por PayPal) pasa a cobro manual: las próximas renovaciones van por transferencia.
         item.IsManualBilling = true;
-        if (!await payments.ApplyPaymentAsync(item, key, amount, report.Currency, ct, PaymentMethods.Transferencia, DateTime.SpecifyKind(paidAt.ToDateTime(TimeOnly.MinValue), DateTimeKind.Utc), report.Years))
+        if (!await payments.ApplyPaymentAsync(item, key, amount, report.Currency, ct, new(PaymentMethods.Transferencia, DateTime.SpecifyKind(paidAt.ToDateTime(TimeOnly.MinValue), DateTimeKind.Utc), report.Years)))
             return Conflict(new { message = "Esa transferencia (N° de operación) ya está registrada como pago." });
         item.Status = RenewalReminderJob.StatusFor(item.Status, item.RenewsAt, DateTime.UtcNow);
         (report.Status, report.Amount, report.OperationNumber, report.PaidAt, report.ReviewedAt, report.ReviewedByUserId) = (TransferReportStatus.Aprobado, amount, string.IsNullOrEmpty(operation) ? null : operation, paidAt, DateTime.UtcNow, UserId);
@@ -258,8 +260,8 @@ public sealed partial class BankTransfersController(RtresDbContext db, BankTrans
 }
 
 public sealed record PaymentSettingsRequest(bool? PayPal, bool? BankTransfer);
-public sealed record BankAccountRequest(string? BankName, string? Holder, string? Currency, BankAccountType Type, string? AccountNumber, string? Cci, bool IsActive = true);
-public sealed class TransferReportRequest { public Guid BankAccountId { get; set; } public decimal Amount { get; set; } public DateOnly PaidAt { get; set; } public string? OperationNumber { get; set; } public int Years { get; set; } = 1; }
+public sealed record BankAccountRequest(string? BankName, string? Holder, string? Currency, [property: JsonRequired] BankAccountType Type, string? AccountNumber, string? Cci, bool IsActive = true);
+public sealed class TransferReportRequest { [BindRequired] public Guid BankAccountId { get; set; } [BindRequired] public decimal Amount { get; set; } [BindRequired] public DateOnly PaidAt { get; set; } public string? OperationNumber { get; set; } public int Years { get; set; } = 1; }
 public sealed record ApproveTransferRequest(decimal? Amount, DateOnly? PaidAt, string? OperationNumber);
 public sealed record RejectTransferRequest(string? Reason);
 public sealed record TransferReportDto(Guid Id, Guid ClientId, string Company, Guid ClientProductId, string Product, string? DomainName, string ProductCurrency, decimal Amount, string Currency, DateOnly PaidAt, string? OperationNumber, int Years, string? Account, bool HasReceipt, string? ReceiptContentType, TransferReportStatus Status, string? RejectionReason, DateTime CreatedAt, DateTime? ReviewedAt);

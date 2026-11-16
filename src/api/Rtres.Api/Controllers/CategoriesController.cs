@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -94,5 +95,5 @@ public sealed class CategoriesController(RtresDbContext db) : ControllerBase
 }
 
 public sealed record CategoryDto(Guid Id, string Name, bool IsSystem, bool IsIncomeTax, int UsageCount, bool IsDeductible = true);
-public sealed record CategoryDeductibleRequest(bool IsDeductible);
+public sealed record CategoryDeductibleRequest([property: JsonRequired] bool IsDeductible);
 public sealed record CategoryRequest(string Name);

@@ -1,0 +1,7 @@
+{
+  "language": "C#",
+  "targetFramework": "net10.0",
+  "assemblyName": "Rtres.Api",
+  "projectType": "Product",
+  "projectPath": "C:\\repo\\rtres-net\\Rtres\\src\\api\\Rtres.Api\\Rtres.Api.csproj"
+}
