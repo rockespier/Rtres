@@ -79,5 +79,10 @@ Uso en el servidor (PowerShell 7 como administrador)
     -PortalDestination "x" `
     -ApiAppPool "x" -PortalAppPool "x" `
     -SkipNpmCi
-			
-	.\scripts\Deploy-Local.ps1 -PackageOnly 
+	
+	.\scripts\Deploy-Stage.ps1 `
+    -StageComputerName "x" `
+    -ApiDestination "x" `
+    -FrontendDestination "x" `
+    -PackageOnly `
+	-SkipNpmCi
