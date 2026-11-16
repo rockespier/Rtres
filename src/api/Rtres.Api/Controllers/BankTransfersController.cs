@@ -124,26 +124,38 @@ public sealed partial class BankTransfersController(RtresDbContext db, BankTrans
         var account = await db.BankAccounts.SingleOrDefaultAsync(x => x.Id == request.BankAccountId && x.IsActive, ct);
         if (account is null) return BadRequest(new { message = "Elige la cuenta a la que transferiste." });
         var operation = request.OperationNumber?.Trim();
-        if (string.IsNullOrEmpty(operation) && receipt is null) return BadRequest(new { message = "Indica el N° de operación o sube la constancia de la transferencia." });
-        if (operation is { Length: > 60 }) return BadRequest(new { message = "El N° de operación es demasiado largo." });
-        if (request.Amount <= 0) return BadRequest(new { message = "Indica el monto transferido." });
-        if (request.PaidAt > DateOnly.FromDateTime(DateTime.UtcNow.AddDays(1)) || request.PaidAt < DateOnly.FromDateTime(DateTime.UtcNow.AddDays(-90))) return BadRequest(new { message = "La fecha de la transferencia no es válida." });
+        if (ValidateReport(request, operation, receipt is not null) is string reportError) return BadRequest(new { message = reportError });
         if (item.ValidateYears(request.Years) is string yearsError) return BadRequest(new { message = yearsError });
         if (!string.IsNullOrEmpty(operation) && await db.TransferReports.AnyAsync(x => x.OperationNumber == operation && x.BankAccountId == account.Id && x.Status != TransferReportStatus.Rechazado, ct))
             return Conflict(new { message = "Ese N° de operación ya fue reportado." });
 
         var report = new TransferReport { ClientId = clientId, ClientProductId = item.Id, BankAccountId = account.Id, Amount = Math.Round(request.Amount, 2), Currency = account.Currency, PaidAt = request.PaidAt, OperationNumber = string.IsNullOrEmpty(operation) ? null : operation, Years = request.Years, ReportedByUserId = UserId };
-        if (receipt is not null)
-        {
-            if (receipt.Length == 0 || receipt.Length > MaxReceiptBytes) return BadRequest(new { message = "La constancia debe pesar como máximo 5 MB." });
-            var type = receipt.ContentType?.ToLowerInvariant() ?? "";
-            if (!ReceiptTypes.Contains(type)) return BadRequest(new { message = "La constancia debe ser una imagen (JPG, PNG, WEBP) o un PDF." });
-            using var stream = new MemoryStream(); await receipt.CopyToAsync(stream, ct);
-            (report.ReceiptFileName, report.ReceiptContentType, report.ReceiptContent) = (Path.GetFileName(receipt.FileName), type, stream.ToArray());
-        }
+        if (receipt is not null && await AttachReceiptAsync(report, receipt, ct) is string receiptError) return BadRequest(new { message = receiptError });
         db.TransferReports.Add(report); await db.SaveChangesAsync(ct);
         await NotifyStaffAsync(report, item, ct);
         return Created($"/api/transfer-reports/{report.Id}", new TransferReportSummary(report.Id, report.Status, report.CreatedAt, null));
+    }
+
+    /// <summary>Datos del reporte que no dependen de la base de datos; null si son válidos.</summary>
+    private static string? ValidateReport(TransferReportRequest request, string? operation, bool hasReceipt)
+    {
+        if (string.IsNullOrEmpty(operation) && !hasReceipt) return "Indica el N° de operación o sube la constancia de la transferencia.";
+        if (operation is { Length: > 60 }) return "El N° de operación es demasiado largo.";
+        if (request.Amount <= 0) return "Indica el monto transferido.";
+        var today = DateTime.UtcNow;
+        if (request.PaidAt > DateOnly.FromDateTime(today.AddDays(1)) || request.PaidAt < DateOnly.FromDateTime(today.AddDays(-90))) return "La fecha de la transferencia no es válida.";
+        return null;
+    }
+
+    /// <summary>Copia la constancia al reporte; null si se adjuntó, o el motivo por el que no se acepta.</summary>
+    private static async Task<string?> AttachReceiptAsync(TransferReport report, IFormFile receipt, CancellationToken ct)
+    {
+        if (receipt.Length == 0 || receipt.Length > MaxReceiptBytes) return "La constancia debe pesar como máximo 5 MB.";
+        var type = receipt.ContentType?.ToLowerInvariant() ?? "";
+        if (!ReceiptTypes.Contains(type)) return "La constancia debe ser una imagen (JPG, PNG, WEBP) o un PDF.";
+        using var stream = new MemoryStream(); await receipt.CopyToAsync(stream, ct);
+        (report.ReceiptFileName, report.ReceiptContentType, report.ReceiptContent) = (Path.GetFileName(receipt.FileName), type, stream.ToArray());
+        return null;
     }
 
     /// <summary>

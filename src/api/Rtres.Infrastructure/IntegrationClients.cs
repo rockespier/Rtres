@@ -290,14 +290,17 @@ public sealed class PayPalClient(HttpClient httpClient, IConfiguration configura
         var payments = new List<PayPalSubscriptionPayment>();
         using var transactions = JsonDocument.Parse(transactionsJson);
         if (transactions.RootElement.TryGetProperty("transactions", out var list) && list.ValueKind == JsonValueKind.Array)
-            foreach (var tx in list.EnumerateArray())
-            {
-                if (tx.TryGetProperty("status", out var status) && status.GetString() != "COMPLETED") continue;
-                if (!tx.TryGetProperty("amount_with_breakdown", out var breakdown) || !breakdown.TryGetProperty("gross_amount", out var gross)) continue;
-                if (!decimal.TryParse(gross.GetProperty("value").GetString(), System.Globalization.NumberStyles.Number, System.Globalization.CultureInfo.InvariantCulture, out var amount)) continue;
-                payments.Add(new PayPalSubscriptionPayment(tx.GetProperty("id").GetString()!, amount, gross.GetProperty("currency_code").GetString() ?? "USD"));
-            }
+            payments.AddRange(list.EnumerateArray().Select(ParseSubscriptionPayment).OfType<PayPalSubscriptionPayment>());
         return new PayPalSubscriptionInfo(root.GetProperty("id").GetString()!, root.GetProperty("status").GetString() ?? "", next, payments);
+    }
+
+    /// <summary>Cobro completado de la suscripción; null si no está completado o no trae un importe legible.</summary>
+    private static PayPalSubscriptionPayment? ParseSubscriptionPayment(JsonElement tx)
+    {
+        if (tx.TryGetProperty("status", out var status) && status.GetString() != "COMPLETED") return null;
+        if (!tx.TryGetProperty("amount_with_breakdown", out var breakdown) || !breakdown.TryGetProperty("gross_amount", out var gross)) return null;
+        if (!decimal.TryParse(gross.GetProperty("value").GetString(), System.Globalization.NumberStyles.Number, System.Globalization.CultureInfo.InvariantCulture, out var amount)) return null;
+        return new PayPalSubscriptionPayment(tx.GetProperty("id").GetString()!, amount, gross.GetProperty("currency_code").GetString() ?? "USD");
     }
 
     public async Task CancelSubscriptionAsync(string subscriptionId, string reason, CancellationToken cancellationToken = default)

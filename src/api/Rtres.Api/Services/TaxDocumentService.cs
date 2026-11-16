@@ -42,32 +42,47 @@ public sealed class TaxDocumentService(RtresDbContext db, ILogger<TaxDocumentSer
     /// </summary>
     public async Task<TaxDocument> IssueAsync(Guid clientId, TaxDocumentType type, DateOnly issueDate, string currency, decimal total, string? notes, Guid? paymentTransactionId, CancellationToken ct, IReadOnlyList<TaxDocumentLine>? lines = null)
     {
-        for (var attempt = 1; ; attempt++)
+        for (var attempt = 1; attempt <= MaxAttempts; attempt++)
         {
             var settings = await db.TaxSettings.FirstOrDefaultAsync(ct) ?? db.TaxSettings.Add(new TaxSettings()).Entity;
-            var isFactura = type == TaxDocumentType.Factura;
-            var series = isFactura ? settings.FacturaSeries : settings.ReciboSeries;
-            // El próximo correlativo configurado es el piso; si ya hay documentos más altos en la serie, se sigue desde ahí.
-            // Se filtra por tipo: factura y recibo pueden compartir serie (E001 en SUNAT SOL) con correlativos independientes.
-            var last = await db.TaxDocuments.Where(x => x.Type == type && x.Series == series).MaxAsync(x => (int?)x.Number, ct) ?? 0;
-            var number = Math.Max(isFactura ? settings.FacturaNextNumber : settings.ReciboNextNumber, last + 1);
-            var baseAmount = isFactura ? Math.Round(total / (1 + settings.IgvRate), 2) : total;
+            var (series, number) = await NextNumberAsync(settings, type, ct);
+            var baseAmount = type == TaxDocumentType.Factura ? Math.Round(total / (1 + settings.IgvRate), 2) : total;
             var document = new TaxDocument { ClientId = clientId, Type = type, Series = series, Number = number, IssueDate = issueDate, Currency = currency, BaseAmount = baseAmount, IgvAmount = total - baseAmount, TotalAmount = total, Notes = notes, PaymentTransactionId = paymentTransactionId };
             db.TaxDocuments.Add(document);
             var docLines = (lines ?? []).Select((x, i) => new TaxDocumentLine { TaxDocumentId = document.Id, ClientProductId = x.ClientProductId, Description = x.Description, Amount = x.Amount, Order = i }).ToList();
             db.TaxDocumentLines.AddRange(docLines);
-            if (isFactura) settings.FacturaNextNumber = number + 1; else settings.ReciboNextNumber = number + 1;
             try { await db.SaveChangesAsync(ct); return document; }
             catch (DbUpdateException)
             {
                 // Otro documento tomó el mismo correlativo en paralelo (índice único Tipo+Serie+Número): se recalcula.
-                // Se suelta el documento para que un SaveChanges posterior del mismo contexto no lo reintente.
-                db.Entry(document).State = EntityState.Detached;
-                foreach (var line in docLines) db.Entry(line).State = EntityState.Detached;
-                await db.Entry(settings).ReloadAsync(ct);
+                await DiscardAsync(document, docLines, settings, ct);
                 if (attempt >= MaxAttempts) throw;
             }
         }
+        throw new InvalidOperationException("No se pudo asignar el correlativo del comprobante.");
+    }
+
+    /// <summary>
+    /// Serie y correlativo del próximo documento, y deja la configuración apuntando al siguiente. El próximo correlativo
+    /// configurado es el piso; si ya hay documentos más altos en la serie, se sigue desde ahí. Se filtra por tipo: factura y
+    /// recibo pueden compartir serie (E001 en SUNAT SOL) con correlativos independientes.
+    /// </summary>
+    private async Task<(string Series, int Number)> NextNumberAsync(TaxSettings settings, TaxDocumentType type, CancellationToken ct)
+    {
+        var isFactura = type == TaxDocumentType.Factura;
+        var series = isFactura ? settings.FacturaSeries : settings.ReciboSeries;
+        var last = await db.TaxDocuments.Where(x => x.Type == type && x.Series == series).MaxAsync(x => (int?)x.Number, ct) ?? 0;
+        var number = Math.Max(isFactura ? settings.FacturaNextNumber : settings.ReciboNextNumber, last + 1);
+        if (isFactura) settings.FacturaNextNumber = number + 1; else settings.ReciboNextNumber = number + 1;
+        return (series, number);
+    }
+
+    /// <summary>Suelta el documento y sus líneas para que un SaveChanges posterior del mismo contexto no los reintente.</summary>
+    private async Task DiscardAsync(TaxDocument document, IEnumerable<TaxDocumentLine> lines, TaxSettings settings, CancellationToken ct)
+    {
+        db.Entry(document).State = EntityState.Detached;
+        foreach (var line in lines) db.Entry(line).State = EntityState.Detached;
+        await db.Entry(settings).ReloadAsync(ct);
     }
 
     /// <summary>

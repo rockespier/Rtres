@@ -600,76 +600,93 @@ function splitSummary(lines) {
   }
 }
 
+// Markdown renderer: each block parser takes (lines, i) and returns { html, next } (the index after the block).
+const isMdList = (l) => /^\s*([-*+]|\d+\.)\s+/.test(l)
+const isMdBlockStart = (l) => /^(#{1,6}\s|```|\s*>|\|)/.test(l) || isMdList(l)
+
+// Verdict line plus the rest of a KEY: value header block (intake.md, checks.md).
+function mdVerdict(lines) {
+  const first = (lines[0] || '').trim()
+  const t = tone(first)
+  if (!t) return { html: '', next: 0 }
+  let i = 1
+  const extra = []
+  while (i < lines.length && /^[A-Z-]+:\s/.test(lines[i])) extra.push(lines[i++])
+  const head = extra.length ? `<div class="head">${esc(extra.join('\n'))}</div>` : ''
+  return { html: `<div class="verdict ${t}">${esc(first)}</div>${head}`, next: i }
+}
+
+function mdFence(lines, i) {
+  const body = []
+  i++
+  while (i < lines.length && !lines[i].startsWith('```')) body.push(lines[i++])
+  return { html: `<pre><code>${esc(body.join('\n'))}</code></pre>`, next: i + 1 }
+}
+
+function mdQuote(lines, i) {
+  const body = []
+  while (i < lines.length && /^\s*>/.test(lines[i])) body.push(lines[i++].replace(/^\s*>\s?/, ''))
+  return { html: `<blockquote>${markdown(body.join('\n'))}</blockquote>`, next: i }
+}
+
+function mdTable(lines, i) {
+  const rows = []
+  while (i < lines.length && lines[i].startsWith('|')) rows.push(lines[i++])
+  const cells = (r) => r.replace(/^\||\|$/g, '').split('|').map((c) => inline(c.trim()))
+  const row = (r, n) => `<tr>${cells(r).map((c) => n ? `<td>${c}</td>` : `<th>${c}</th>`).join('')}</tr>`
+  const body = rows.filter((r) => !/^\|[\s:|-]+\|$/.test(r))
+  return { html: '<table>' + body.map(row).join('') + '</table>', next: i }
+}
+
+function mdListItem({ indent, text }) {
+  const task = text.match(/^\[([ xX])\]\s+(.*)$/)
+  const style = indent ? ` style="margin-left:${indent * 0.6}em"` : ''
+  if (!task) return `<li${style}>${inline(text)}</li>`
+  return `<li class="task ${task[1] === ' ' ? '' : 'done'}"${style}>${inline(task[2])}</li>`
+}
+
+function mdList(lines, i) {
+  const ordered = /^\s*\d+\./.test(lines[i])
+  const items = []
+  // An indented line after an item continues that item's text.
+  while (i < lines.length && (isMdList(lines[i]) || (/^\s{2,}\S/.test(lines[i]) && items.length))) {
+    const l = lines[i++]
+    if (isMdList(l)) items.push({ indent: l.match(/^\s*/)[0].length, text: l.replace(/^\s*([-*+]|\d+\.)\s+/, '') })
+    else items[items.length - 1].text += ' ' + l.trim()
+  }
+  const lis = items.map(mdListItem).join('')
+  return { html: ordered ? `<ol>${lis}</ol>` : `<ul>${lis}</ul>`, next: i }
+}
+
+function mdParagraph(lines, i) {
+  const para = []
+  while (i < lines.length && lines[i].trim() && !isMdBlockStart(lines[i])) para.push(lines[i++])
+  return { html: `<p>${inline(para.join(' '))}</p>`, next: i }
+}
+
+function mdBlock(lines, i) {
+  const line = lines[i]
+  if (line.startsWith('```')) return mdFence(lines, i)
+  const h = line.match(/^(#{1,6})\s+(.*)$/)
+  if (h) { const n = Math.min(h[1].length, 4); return { html: `<h${n}>${inline(h[2])}</h${n}>`, next: i + 1 } }
+  if (/^\s*>/.test(line)) return mdQuote(lines, i)
+  if (line.startsWith('|')) return mdTable(lines, i)
+  if (isMdList(line)) return mdList(lines, i)
+  return mdParagraph(lines, i)
+}
+
 function markdown(src) {
   const split = splitSummary(src.replace(/\r/g, '').split('\n'))
   const lines = split.lines
-  let i = 0
-  let html = ''
-  const first = (lines[0] || '').trim()
-  const t = tone(first)
-  if (t) {
-    html += `<div class="verdict ${t}">${esc(first)}</div>`
-    i = 1
-    // The rest of a KEY: value header block (intake.md, checks.md).
-    const extra = []
-    while (i < lines.length && /^[A-Z-]+:\s/.test(lines[i])) extra.push(lines[i++])
-    if (extra.length) html += `<div class="head">${esc(extra.join('\n'))}</div>`
-  }
+  const verdict = mdVerdict(lines)
+  let html = verdict.html
+  let i = verdict.next
   if (split.summary !== null) html += `<section class="summary"><h2>Summary</h2>${markdown(split.summary)}</section>`
-
-  const isList = (l) => /^\s*([-*+]|\d+\.)\s+/.test(l)
-  const isBlockStart = (l) => /^(#{1,6}\s|```|\s*>|\|)/.test(l) || isList(l)
-
   while (i < lines.length) {
-    const line = lines[i]
-    if (!line.trim()) { i++; continue }
-
-    if (line.startsWith('```')) {
-      const body = []
-      i++
-      while (i < lines.length && !lines[i].startsWith('```')) body.push(lines[i++])
-      i++
-      html += `<pre><code>${esc(body.join('\n'))}</code></pre>`
-      continue
-    }
-    const h = line.match(/^(#{1,6})\s+(.*)$/)
-    if (h) { const n = Math.min(h[1].length, 4); html += `<h${n}>${inline(h[2])}</h${n}>`; i++; continue }
-
-    if (/^\s*>/.test(line)) {
-      const body = []
-      while (i < lines.length && /^\s*>/.test(lines[i])) body.push(lines[i++].replace(/^\s*>\s?/, ''))
-      html += `<blockquote>${markdown(body.join('\n'))}</blockquote>`
-      continue
-    }
-    if (line.startsWith('|')) {
-      const rows = []
-      while (i < lines.length && lines[i].startsWith('|')) rows.push(lines[i++])
-      const cells = (r) => r.replace(/^\||\|$/g, '').split('|').map((c) => inline(c.trim()))
-      const body = rows.filter((r) => !/^\|[\s:|-]+\|$/.test(r))
-      html += '<table>' + body.map((r, n) => `<tr>${cells(r).map((c) => n ? `<td>${c}</td>` : `<th>${c}</th>`).join('')}</tr>`).join('') + '</table>'
-      continue
-    }
-    if (isList(line)) {
-      const ordered = /^\s*\d+\./.test(line)
-      const items = []
-      while (i < lines.length && (isList(lines[i]) || (/^\s{2,}\S/.test(lines[i]) && items.length))) {
-        const l = lines[i++]
-        if (isList(l)) items.push({ indent: l.match(/^\s*/)[0].length, text: l.replace(/^\s*([-*+]|\d+\.)\s+/, '') })
-        else items[items.length - 1].text += ' ' + l.trim()
-      }
-      const lis = items.map(({ indent, text }) => {
-        const task = text.match(/^\[([ xX])\]\s+(.*)$/)
-        const style = indent ? ` style="margin-left:${indent * 0.6}em"` : ''
-        return task
-          ? `<li class="task ${task[1] === ' ' ? '' : 'done'}"${style}>${inline(task[2])}</li>`
-          : `<li${style}>${inline(text)}</li>`
-      }).join('')
-      html += ordered ? `<ol>${lis}</ol>` : `<ul>${lis}</ul>`
-      continue
-    }
-    const para = []
-    while (i < lines.length && lines[i].trim() && !isBlockStart(lines[i])) para.push(lines[i++])
-    html += `<p>${inline(para.join(' '))}</p>`
+    if (!lines[i].trim()) { i++; continue }
+    const block = mdBlock(lines, i)
+    html += block.html
+    i = block.next
   }
   return html
 }

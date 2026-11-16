@@ -136,14 +136,8 @@ public sealed partial class AdminController(RtresDbContext db, PayPalCheckoutSer
         if (request.IgvRate is decimal igv && (igv < 0 || igv > 1) || request.RentaRate is decimal renta0 && (renta0 < 0 || renta0 > 1)) return BadRequest(new { message = "Las tasas deben estar entre 0 y 1 (ej. 0.18 para 18%)." });
         var settings = await TaxSettingsRow(ct);
         var facturaSeries = request.FacturaSeries?.Trim().ToUpperInvariant() ?? settings.FacturaSeries; var reciboSeries = request.ReciboSeries?.Trim().ToUpperInvariant() ?? settings.ReciboSeries;
-        // Facturas: F### si se emiten desde un sistema propio, E### si se emiten desde SUNAT SOL (la misma E001 que los recibos:
-        // cada tipo de comprobante lleva su propio correlativo aunque compartan serie).
-        if (!Regex.IsMatch(facturaSeries, "^[FE][A-Z0-9]{3}$") || !Regex.IsMatch(reciboSeries, "^E[A-Z0-9]{3}$")) return BadRequest(new { message = "La serie tiene 4 caracteres: la de facturas empieza con F o E (ej. F001, o E001 si la emites desde SUNAT SOL) y la de recibos por honorarios con E (ej. E001)." });
         var facturaNext = request.FacturaNextNumber ?? settings.FacturaNextNumber; var reciboNext = request.ReciboNextNumber ?? settings.ReciboNextNumber;
-        if (facturaNext < 1 || reciboNext < 1) return BadRequest(new { message = "El próximo correlativo debe ser mayor a 0." });
-        // Bajar el correlativo por debajo de lo ya emitido repetiría números: la serie solo puede avanzar.
-        if (await LastNumberAsync(TaxDocumentType.Factura, facturaSeries, ct) is int lastF && facturaNext <= lastF) return BadRequest(new { message = $"La serie {facturaSeries} de facturas ya llegó al {lastF}: el próximo correlativo debe ser mayor." });
-        if (await LastNumberAsync(TaxDocumentType.ReciboPorHonorarios, reciboSeries, ct) is int lastR && reciboNext <= lastR) return BadRequest(new { message = $"La serie {reciboSeries} de recibos ya llegó al {lastR}: el próximo correlativo debe ser mayor." });
+        if (await ValidateSeriesAsync(facturaSeries, facturaNext, reciboSeries, reciboNext, ct) is string seriesError) return BadRequest(new { message = seriesError });
         var ruc = request.Ruc is null ? settings.Ruc : request.Ruc.Trim() is { Length: > 0 } trimmed ? trimmed : null;
         if (ruc is not null && !Regex.IsMatch(ruc, "^(10|15|17|20)[0-9]{9}$")) return BadRequest(new { message = "El RUC tiene 11 dígitos y empieza con 10, 15, 17 o 20." });
         settings.Ruc = ruc;
@@ -155,6 +149,18 @@ public sealed partial class AdminController(RtresDbContext db, PayPalCheckoutSer
         settings.UpdatedAt = DateTime.UtcNow;
         await db.SaveChangesAsync(ct);
         return Ok(TaxSettingsDto(settings));
+    }
+
+    private async Task<string?> ValidateSeriesAsync(string facturaSeries, int facturaNext, string reciboSeries, int reciboNext, CancellationToken ct)
+    {
+        // Facturas: F### si se emiten desde un sistema propio, E### si se emiten desde SUNAT SOL (la misma E001 que los recibos:
+        // cada tipo de comprobante lleva su propio correlativo aunque compartan serie).
+        if (!Regex.IsMatch(facturaSeries, "^[FE][A-Z0-9]{3}$") || !Regex.IsMatch(reciboSeries, "^E[A-Z0-9]{3}$")) return "La serie tiene 4 caracteres: la de facturas empieza con F o E (ej. F001, o E001 si la emites desde SUNAT SOL) y la de recibos por honorarios con E (ej. E001).";
+        if (facturaNext < 1 || reciboNext < 1) return "El próximo correlativo debe ser mayor a 0.";
+        // Bajar el correlativo por debajo de lo ya emitido repetiría números: la serie solo puede avanzar.
+        if (await LastNumberAsync(TaxDocumentType.Factura, facturaSeries, ct) is int lastF && facturaNext <= lastF) return $"La serie {facturaSeries} de facturas ya llegó al {lastF}: el próximo correlativo debe ser mayor.";
+        if (await LastNumberAsync(TaxDocumentType.ReciboPorHonorarios, reciboSeries, ct) is int lastR && reciboNext <= lastR) return $"La serie {reciboSeries} de recibos ya llegó al {lastR}: el próximo correlativo debe ser mayor.";
+        return null;
     }
 
     private Task<int?> LastNumberAsync(TaxDocumentType type, string series, CancellationToken ct) => db.TaxDocuments.Where(x => x.Type == type && x.Series == series).MaxAsync(x => (int?)x.Number, ct);
@@ -194,10 +200,8 @@ public sealed partial class AdminController(RtresDbContext db, PayPalCheckoutSer
     [HttpPost("tax-documents")]
     public async Task<ActionResult> CreateTaxDocument(TaxDocumentRequest request, CancellationToken ct)
     {
-        IReadOnlyList<TaxDocumentItemRequest> items = request.Items is { Count: > 0 } list ? list : request.ClientProductId is Guid single ? [new TaxDocumentItemRequest(single, request.TotalAmount)] : [];
-        if (string.IsNullOrWhiteSpace(request.Currency) || items.Count == 0) return BadRequest(new { message = "Moneda y al menos un producto son obligatorios." });
-        if (items.Any(x => x.Amount <= 0)) return BadRequest(new { message = "Cada producto debe tener un importe mayor a 0." });
-        if (items.Select(x => x.ClientProductId).Distinct().Count() != items.Count) return BadRequest(new { message = "Un producto aparece más de una vez." });
+        var items = TaxDocumentItems(request);
+        if (ValidateTaxDocumentItems(request.Currency, items) is string itemsError) return BadRequest(new { message = itemsError });
         var ids = items.Select(x => x.ClientProductId).ToList();
         var products = await db.ClientProducts.Include(x => x.Product).Where(x => ids.Contains(x.Id)).ToListAsync(ct);
         if (products.Count != items.Count || products.Any(x => x.Product is null)) return NotFound(new { message = "Producto del cliente no encontrado." });
@@ -221,6 +225,21 @@ public sealed partial class AdminController(RtresDbContext db, PayPalCheckoutSer
         if (request.RetentionAmount > 0) { document.RetentionAmount = request.RetentionAmount; await db.SaveChangesAsync(ct); }
         var saved = await db.TaxDocumentLines.Where(x => x.TaxDocumentId == document.Id).OrderBy(x => x.Order).ToListAsync(ct);
         return Created($"/api/admin/tax-documents/{document.Id}", TaxDocumentDto(document, payment.Amount > 0 ? payment.AmountPen / payment.Amount : 1m, saved, payment.Method));
+    }
+
+    /// <summary>Las líneas del pedido; las llamadas antiguas mandan un solo producto en <c>ClientProductId</c> + <c>TotalAmount</c>.</summary>
+    private static IReadOnlyList<TaxDocumentItemRequest> TaxDocumentItems(TaxDocumentRequest request)
+    {
+        if (request.Items is { Count: > 0 } list) return list;
+        return request.ClientProductId is Guid single ? [new TaxDocumentItemRequest(single, request.TotalAmount)] : [];
+    }
+
+    private static string? ValidateTaxDocumentItems(string? currency, IReadOnlyList<TaxDocumentItemRequest> items)
+    {
+        if (string.IsNullOrWhiteSpace(currency) || items.Count == 0) return "Moneda y al menos un producto son obligatorios.";
+        if (items.Any(x => x.Amount <= 0)) return "Cada producto debe tener un importe mayor a 0.";
+        if (items.Select(x => x.ClientProductId).Distinct().Count() != items.Count) return "Un producto aparece más de una vez.";
+        return null;
     }
 
     /// <summary>Extorno de un comprobante registrado por error: lo elimina junto con su cobro. Ver <see cref="TaxDocumentService.ReverseAsync"/>.</summary>
@@ -322,14 +341,19 @@ public sealed partial class AdminController(RtresDbContext db, PayPalCheckoutSer
         if (currency is not ("PEN" or "USD" or "EUR")) return "Moneda inválida: usa PEN, USD o EUR.";
         if (ReadDate(row.Cell(6)) is not DateOnly date) return "Fecha inválida: usa 2026-09-28 o 28/09/2026.";
         if (ReadYesNo(Cell(row, 7), defaultValue: false) is not bool recurring) return "Recurring inválido: usa SI o NO.";
-        BillingCycle? cycle = null;
-        if (recurring)
-        {
-            if (!TryEnum<BillingCycle>(Cell(row, 8), out var parsed) || parsed is not (BillingCycle.Mensual or BillingCycle.Anual)) return "Un gasto recurrente necesita RecurrenceCycle: Mensual o Anual.";
-            cycle = parsed;
-        }
+        if (!TryRecurrenceCycle(Cell(row, 8), recurring, out var cycle)) return "Un gasto recurrente necesita RecurrenceCycle: Mensual o Anual.";
         expense = new Expense { Description = description, CategoryId = category.Id, Type = type, Amount = amount, Currency = currency, Date = date, Recurring = recurring, RecurrenceCycle = cycle };
         return null;
+    }
+
+    /// <summary>Ciclo de un gasto: null si no es recurrente; si lo es, tiene que ser Mensual o Anual.</summary>
+    private static bool TryRecurrenceCycle(string value, bool recurring, out BillingCycle? cycle)
+    {
+        cycle = null;
+        if (!recurring) return true;
+        if (!TryEnum<BillingCycle>(value, out var parsed) || parsed is not (BillingCycle.Mensual or BillingCycle.Anual)) return false;
+        cycle = parsed;
+        return true;
     }
 
     // Excel guarda números y fechas con tipo propio; si vienen como texto se aceptan los formatos habituales.
@@ -667,11 +691,25 @@ public sealed partial class AdminController(RtresDbContext db, PayPalCheckoutSer
         if (request.CompanyName is not null) client.CompanyName = request.CompanyName.Trim();
         if (request.ContactName is not null) client.ContactName = request.ContactName.Trim();
         if (request.Phone is not null) client.Phone = EmptyToNull(request.Phone);
-        if (request.PreferredLanguage is not null) { var lang = request.PreferredLanguage.Trim().ToLowerInvariant(); if (lang is not ("es" or "en" or "it")) return BadRequest(new { message = "Idioma inválido." }); client.PreferredLanguage = lang; }
-        if (request.Email is not null) { var email = request.Email.Trim(); if (string.IsNullOrWhiteSpace(email)) return BadRequest(new { message = "El email es obligatorio." }); if (await db.Clients.AnyAsync(x => x.Email == email && x.Id != id, ct)) return Conflict(new { message = "El email ya está registrado." }); client.Email = email; }
+        if (request.PreferredLanguage is not null)
+        {
+            var lang = request.PreferredLanguage.Trim().ToLowerInvariant();
+            if (lang is not ("es" or "en" or "it")) return BadRequest(new { message = "Idioma inválido." });
+            client.PreferredLanguage = lang;
+        }
+        if (request.Email is not null && await ChangeClientEmailAsync(client, request.Email.Trim(), ct) is { } emailError) return emailError;
         if (request.IsActive is bool active) client.IsActive = active;
         if (request.RequiresTaxDocument is bool requiresTax) client.RequiresTaxDocument = requiresTax;
         await db.SaveChangesAsync(ct); return Ok(ClientDto(client));
+    }
+
+    /// <summary>Cambia el email del cliente; devuelve el error si está vacío o ya lo usa otro cliente.</summary>
+    private async Task<ActionResult?> ChangeClientEmailAsync(Client client, string email, CancellationToken ct)
+    {
+        if (string.IsNullOrWhiteSpace(email)) return BadRequest(new { message = "El email es obligatorio." });
+        if (await db.Clients.AnyAsync(x => x.Email == email && x.Id != client.Id, ct)) return Conflict(new { message = "El email ya está registrado." });
+        client.Email = email;
+        return null;
     }
 
     [HttpGet("clients/import/template")]

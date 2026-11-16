@@ -120,25 +120,10 @@ public sealed partial class AdminController
     /// <summary>Valida y copia la compra; calcula el total, el periodo y los montos en PEN.</summary>
     private async Task<ActionResult?> ApplyPurchaseAsync(Purchase purchase, PurchaseRequest r, CancellationToken ct)
     {
-        var peruvian = r.DocumentType is not (PurchaseDocumentType.Extranjero or PurchaseDocumentType.Otro);
         var supplierTaxId = (r.SupplierTaxId ?? "").Trim();
-        if (peruvian && !RucRegex().IsMatch(supplierTaxId)) return BadRequest(new { message = "El RUC del proveedor debe tener 11 dígitos." });
-        if (supplierTaxId.Length == 0) return BadRequest(new { message = "Indica la identificación del proveedor." });
-        if (string.IsNullOrWhiteSpace(r.SupplierName)) return BadRequest(new { message = "Indica el nombre del proveedor." });
-        if (peruvian && string.IsNullOrWhiteSpace(r.Series)) return BadRequest(new { message = "Indica la serie del comprobante (ej. F001)." });
-        if (string.IsNullOrWhiteSpace(r.Number)) return BadRequest(new { message = "Indica el número del comprobante." });
         var currency = (r.Currency ?? "").Trim().ToUpperInvariant();
-        if (currency is not ("PEN" or "USD" or "EUR")) return BadRequest(new { message = "Moneda inválida: usa PEN, USD o EUR." });
-        if (r.TaxBase < 0 || r.Igv < 0 || r.NonTaxable < 0 || r.TaxBase + r.Igv + r.NonTaxable <= 0) return BadRequest(new { message = "Los importes no pueden ser negativos y el total debe ser mayor a 0." });
-        if (r.Igv > 0 && r.DocumentType is PurchaseDocumentType.Boleta or PurchaseDocumentType.ReciboPorHonorarios) return BadRequest(new { message = "Una boleta o un recibo por honorarios no discrimina IGV: registra el importe como base o inafecto." });
-
-        var issueMonth = new DateOnly(r.IssueDate.Year, r.IssueDate.Month, 1);
-        var period = issueMonth;
-        if (!string.IsNullOrWhiteSpace(r.Period))
-        {
-            if (!DateOnly.TryParseExact(r.Period.Trim() + "-01", "yyyy-MM-dd", out period)) return BadRequest(new { message = "Periodo inválido: usa AAAA-MM." });
-            if (period < issueMonth) return BadRequest(new { message = "La compra no puede anotarse en un periodo anterior a su emisión." });
-        }
+        if (ValidatePurchase(r, supplierTaxId, currency) is string error) return BadRequest(new { message = error });
+        if (ParsePurchasePeriod(r, out var period) is string periodError) return BadRequest(new { message = periodError });
 
         var series = (r.Series ?? "").Trim().ToUpperInvariant(); var number = r.Number.Trim().TrimStart('0'); if (number.Length == 0) number = "0";
         if (await db.Purchases.AnyAsync(x => x.Id != purchase.Id && x.SupplierTaxId == supplierTaxId && x.DocumentType == r.DocumentType && x.Series == series && x.Number == number, ct))
@@ -152,6 +137,31 @@ public sealed partial class AdminController
         purchase.GivesTaxCredit = r.UsedForTaxedOperations && r.Igv > 0 && Purchase.AllowsTaxCredit(r.DocumentType);
         purchase.Notes = EmptyToNull(r.Notes);
         return null;
+    }
+
+    /// <summary>Datos del comprobante que no dependen de la base de datos; null si son válidos.</summary>
+    private static string? ValidatePurchase(PurchaseRequest r, string supplierTaxId, string currency)
+    {
+        var peruvian = r.DocumentType is not (PurchaseDocumentType.Extranjero or PurchaseDocumentType.Otro);
+        if (peruvian && !RucRegex().IsMatch(supplierTaxId)) return "El RUC del proveedor debe tener 11 dígitos.";
+        if (supplierTaxId.Length == 0) return "Indica la identificación del proveedor.";
+        if (string.IsNullOrWhiteSpace(r.SupplierName)) return "Indica el nombre del proveedor.";
+        if (peruvian && string.IsNullOrWhiteSpace(r.Series)) return "Indica la serie del comprobante (ej. F001).";
+        if (string.IsNullOrWhiteSpace(r.Number)) return "Indica el número del comprobante.";
+        if (currency is not ("PEN" or "USD" or "EUR")) return "Moneda inválida: usa PEN, USD o EUR.";
+        if (r.TaxBase < 0 || r.Igv < 0 || r.NonTaxable < 0 || r.TaxBase + r.Igv + r.NonTaxable <= 0) return "Los importes no pueden ser negativos y el total debe ser mayor a 0.";
+        if (r.Igv > 0 && r.DocumentType is PurchaseDocumentType.Boleta or PurchaseDocumentType.ReciboPorHonorarios) return "Una boleta o un recibo por honorarios no discrimina IGV: registra el importe como base o inafecto.";
+        return null;
+    }
+
+    /// <summary>Mes de anotación: el de emisión si no se indica; nunca anterior a él.</summary>
+    private static string? ParsePurchasePeriod(PurchaseRequest r, out DateOnly period)
+    {
+        var issueMonth = new DateOnly(r.IssueDate.Year, r.IssueDate.Month, 1);
+        period = issueMonth;
+        if (string.IsNullOrWhiteSpace(r.Period)) return null;
+        if (!DateOnly.TryParseExact(r.Period.Trim() + "-01", "yyyy-MM-dd", out period)) return "Periodo inválido: usa AAAA-MM.";
+        return period < issueMonth ? "La compra no puede anotarse en un periodo anterior a su emisión." : null;
     }
 
     /// <summary>
