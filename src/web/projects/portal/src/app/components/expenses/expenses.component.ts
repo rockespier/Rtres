@@ -41,12 +41,31 @@ export class ExpensesComponent implements OnInit {
   mode: 'edit' | 'delete' | 'end' = 'edit'; busy = false; endsAt = ''; endPreview: { removed: number; kept: number; removedTotalPen: number } | null = null;
   private done() { this.busy = false; this.editing = null; this.mode = 'edit'; this.load(); }
   private fail(e: any, fallback: string) { this.busy = false; this.error = e?.error?.message ?? fallback; }
-  confirmDelete() { if (!this.editingId) return; this.busy = true; this.error = null; this.api.deleteExpense(this.editingId).subscribe({ next: () => this.done(), error: e => this.fail(e, 'No se pudo eliminar el gasto.') }); }
+  confirmDelete() {
+    if (!this.editingId) return;
+    this.busy = true;
+    this.error = null;
+    this.api.deleteExpense(this.editingId).subscribe({ next: () => this.done(), error: e => this.fail(e, 'No se pudo eliminar el gasto.') });
+  }
   /** Por defecto el último pago es el de este registro: se borra lo programado después. */
   startEnd() { this.mode = 'end'; this.endsAt = this.editing?.date ?? this.today; this.previewEnd(); }
-  previewEnd() { this.endPreview = null; if (!this.editingId || !this.endsAt) return; this.api.endExpenseRecurrence(this.editingId, this.endsAt, true).subscribe({ next: r => this.endPreview = r, error: e => this.fail(e, 'No se pudo calcular la baja.') }); }
-  confirmEnd() { if (!this.editingId) return; this.busy = true; this.error = null; this.api.endExpenseRecurrence(this.editingId, this.endsAt, false).subscribe({ next: () => this.done(), error: e => this.fail(e, 'No se pudo finalizar la recurrencia.') }); }
-  resume() { if (!this.editingId) return; this.busy = true; this.error = null; this.api.resumeExpenseRecurrence(this.editingId).subscribe({ next: () => this.done(), error: e => this.fail(e, 'No se pudo reactivar la recurrencia.') }); }
+  previewEnd() {
+    this.endPreview = null;
+    if (!this.editingId || !this.endsAt) return;
+    this.api.endExpenseRecurrence(this.editingId, this.endsAt, true).subscribe({ next: r => this.endPreview = r, error: e => this.fail(e, 'No se pudo calcular la baja.') });
+  }
+  confirmEnd() {
+    if (!this.editingId) return;
+    this.busy = true;
+    this.error = null;
+    this.api.endExpenseRecurrence(this.editingId, this.endsAt, false).subscribe({ next: () => this.done(), error: e => this.fail(e, 'No se pudo finalizar la recurrencia.') });
+  }
+  resume() {
+    if (!this.editingId) return;
+    this.busy = true;
+    this.error = null;
+    this.api.resumeExpenseRecurrence(this.editingId).subscribe({ next: () => this.done(), error: e => this.fail(e, 'No se pudo reactivar la recurrencia.') });
+  }
   save() {
     if (!this.editing) return;
     this.saving = true; this.error = null;

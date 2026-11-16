@@ -83,8 +83,8 @@ const SUGGESTED_CATEGORIES = ['Marca personal', 'Disciplina y hábitos', 'Negoci
   `,
 })
 export class LearningVideosComponent implements OnInit {
-  private api = inject(PortalApiService);
-  private ui = inject(PortalUiService);
+  private readonly api = inject(PortalApiService);
+  private readonly ui = inject(PortalUiService);
   readonly languages = LANGUAGES;
   readonly languageCodes = Object.keys(LANGUAGES);
 

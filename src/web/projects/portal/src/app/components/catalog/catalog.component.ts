@@ -8,6 +8,11 @@ import { PortalUiService } from '../../core/portal-ui.service';
 import { BILLING_CYCLE_LABELS, EnumLabelPipe, PRODUCT_TYPE_LABELS } from '../../core/enum-labels';
 
 const UNCATEGORIZED = 'Otros servicios';
+/** Orden alfabético de categorías, con "Otros servicios" siempre al final. */
+const byCategory = (a: string, b: string) => {
+  if (a === UNCATEGORIZED || b === UNCATEGORIZED) return Number(a === UNCATEGORIZED) - Number(b === UNCATEGORIZED);
+  return a.localeCompare(b, 'es');
+};
 /** Palabras que no ayudan a encontrar un producto ("necesito una web para mi negocio" → "web", "negocio"). */
 const STOPWORDS = new Set(['necesito', 'necesitamos', 'quiero', 'queremos', 'busco', 'buscamos', 'tengo', 'tenemos', 'hacer', 'crear', 'tener', 'poner', 'una', 'uno', 'unos', 'unas', 'un', 'el', 'la', 'los', 'las', 'lo', 'de', 'del', 'para', 'por', 'mi', 'mis', 'su', 'sus', 'que', 'me', 'nos', 'en', 'y', 'o', 'con', 'sin', 'al', 'a', 'es', 'algo', 'como', 'mas', 'muy', 'ayuda', 'ayudar', 'ayudame', 'quisiera', 'favor', 'hola']);
 
@@ -71,13 +76,13 @@ styles:[`
 .chip.active{background:var(--ink);color:var(--surface);border-color:var(--ink)}
 `]})
 export class CatalogComponent implements OnInit {
-  private api=inject(PortalApiService);private ui=inject(PortalUiService);
+  private readonly api=inject(PortalApiService);private readonly ui=inject(PortalUiService);
   products=signal<ProductDto[]>([]);projects=signal<ProjectDto[]>([]);selected=signal<ProductDto|null>(null);
   query=signal('');category=signal<string|null>(null);
   ngOnInit(){this.ui.breadcrumb.set({current:'Catálogo'});this.api.getCatalogProducts().subscribe(x=>this.products.set(x));this.api.getProjects().subscribe(x=>this.projects.set(x));}
 
-  categories=computed(()=>[...new Set(this.products().map(p=>p.category||UNCATEGORIZED))].sort((a,b)=>a===UNCATEGORIZED?1:b===UNCATEGORIZED?-1:a.localeCompare(b,'es')));
-  private inCategory=computed(()=>this.products().filter(p=>!this.category()||(p.category||UNCATEGORIZED)===this.category()));
+  categories=computed(()=>[...new Set(this.products().map(p=>p.category||UNCATEGORIZED))].sort(byCategory));
+  private readonly inCategory=computed(()=>this.products().filter(p=>!this.category()||(p.category||UNCATEGORIZED)===this.category()));
   private tokens=computed(()=>words(this.query()).filter(w=>!STOPWORDS.has(w)));
   searching=computed(()=>this.tokens().length>0);
   groups=computed(()=>this.categories().filter(c=>!this.category()||c===this.category()).map(category=>({category,products:this.inCategory().filter(p=>(p.category||UNCATEGORIZED)===category)})).filter(g=>g.products.length));

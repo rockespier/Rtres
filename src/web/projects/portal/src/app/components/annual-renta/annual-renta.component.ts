@@ -125,7 +125,7 @@ const MONTHS = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 
   `],
 })
 export class AnnualRentaComponent implements OnInit {
-  private api = inject(PortalApiService); private ui = inject(PortalUiService);
+  private readonly api = inject(PortalApiService); private readonly ui = inject(PortalUiService);
   readonly years = Array.from({ length: 4 }, (_, i) => new Date().getFullYear() - i);
   year = signal(new Date().getFullYear());
   data = signal<AnnualRentaDto | null>(null);

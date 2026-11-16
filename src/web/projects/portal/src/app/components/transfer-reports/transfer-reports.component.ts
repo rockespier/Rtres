@@ -105,8 +105,8 @@ const STATUS_PILL: Record<TransferReportStatus, string> = { Pendiente: 'pill-war
   `,
 })
 export class TransferReportsComponent implements OnInit, OnDestroy {
-  private api = inject(PortalApiService);
-  private ui = inject(PortalUiService);
+  private readonly api = inject(PortalApiService);
+  private readonly ui = inject(PortalUiService);
   readonly filters: { value: TransferReportStatus | null; label: string }[] = [
     { value: 'Pendiente', label: 'Por confirmar' }, { value: 'Aprobado', label: 'Confirmados' }, { value: 'Rechazado', label: 'Rechazados' }, { value: null, label: 'Todos' },
   ];
@@ -139,7 +139,11 @@ export class TransferReportsComponent implements OnInit, OnDestroy {
     if (r.hasReceipt) this.api.getTransferReceipt(r.id).subscribe({ next: blob => this.receiptUrl.set(URL.createObjectURL(blob)), error: () => this.error.set('No se pudo cargar la constancia.') });
   }
   close() { this.selected.set(null); this.revokeReceipt(); }
-  private revokeReceipt() { const url = this.receiptUrl(); if (url) URL.revokeObjectURL(url); this.receiptUrl.set(null); }
+  private revokeReceipt() {
+    const url = this.receiptUrl();
+    if (url) URL.revokeObjectURL(url);
+    this.receiptUrl.set(null);
+  }
 
   approve(r: TransferReportDto) {
     if (!this.amount || this.amount <= 0) { this.error.set('Indica el monto recibido.'); return; }

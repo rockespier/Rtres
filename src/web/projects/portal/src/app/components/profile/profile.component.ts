@@ -26,9 +26,9 @@ import { PortalUiService } from '../../core/portal-ui.service';
   <p *ngIf="message" class="text-sm text-muted mt-3">{{ message }}</p>`,
 })
 export class ProfileComponent implements OnInit {
-  private fb = inject(FormBuilder);
-  private api = inject(PortalApiService);
-  private ui = inject(PortalUiService);
+  private readonly fb = inject(FormBuilder);
+  private readonly api = inject(PortalApiService);
+  private readonly ui = inject(PortalUiService);
 
   message = '';
   profile = this.fb.nonNullable.group({ name: ['', Validators.required], email: [''] });

@@ -160,10 +160,10 @@ const STEPS: { status: TicketDto['status']; label: string }[] = [
   host: { '(document:keydown.escape)': 'preview.set(null)' },
 })
 export class TicketDetailComponent implements OnInit, OnDestroy {
-  private api = inject(PortalApiService);
-  private ui = inject(PortalUiService);
-  private auth = inject(AuthService);
-  private route = inject(ActivatedRoute);
+  private readonly api = inject(PortalApiService);
+  private readonly ui = inject(PortalUiService);
+  private readonly auth = inject(AuthService);
+  private readonly route = inject(ActivatedRoute);
 
   /** Abierto desde la bandeja del SuperAdmin (/admin/tickets/:id): no depende de tener un cliente seleccionado. */
   private readonly inbox = !!this.route.snapshot.data['inbox'];

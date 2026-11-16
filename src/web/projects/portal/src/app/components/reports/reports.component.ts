@@ -151,9 +151,17 @@ export class ReportsComponent implements OnInit {
   /** Puesto en el ranking por ingresos (el orden en que llega del API), aunque la tabla se ordene por otra columna. */
   readonly rankKey = (c: { clientId: string }) => (this.clients?.clientes.findIndex(x => x.clientId === c.clientId) ?? 0) + 1;
   ngOnInit() { this.ui.breadcrumb.set({ current: 'Reportes' }); this.load(); }
-  setMode(mode: 'month' | 'year') { if (this.mode === mode) return; this.mode = mode; this.load(); }
+  setMode(mode: 'month' | 'year') {
+    if (this.mode === mode) return;
+    this.mode = mode;
+    this.load();
+  }
   /** Mes seleccionado, o undefined para el año completo. */
-  private range(): [number | undefined, number] { if (this.mode === 'year') return [undefined, this.year]; const [year, month] = this.period.split('-').map(Number); return [month, year]; }
+  private range(): [number | undefined, number] {
+    if (this.mode === 'year') return [undefined, this.year];
+    const [year, month] = this.period.split('-').map(Number);
+    return [month, year];
+  }
   periodLabel() { const [month, year] = this.range(); return month ? `${MONTHS[month - 1]} ${year}` : `Año ${year}`; }
   load() {
     const [month, year] = this.range(); this.error = '';
@@ -171,7 +179,7 @@ export class ReportsComponent implements OnInit {
   sortedCategories() { return [...(this.expenses?.porCategoria ?? [])].sort((a, b) => b.monto - a.monto); }
   share(monto: number) { return this.expenses && this.expenses.total > 0 ? monto / this.expenses.total * 100 : 0; }
   monthLabel(mes: string) { return MONTHS[Number(mes.slice(5, 7)) - 1].slice(0, 3); }
-  openClient(id: string) { this.router.navigate(['/admin/clients', id]); }
+  openClient(id: string) { void this.router.navigate(['/admin/clients', id]); }
   export() {
     const [month, year] = this.range(); this.exporting = true;
     this.api.exportReport(month, year).subscribe({

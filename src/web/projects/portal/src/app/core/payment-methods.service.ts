@@ -7,7 +7,7 @@ import { PaymentMethodsDto, PortalApiService } from './portal-api.service';
  */
 @Injectable({ providedIn: 'root' })
 export class PaymentMethodsService {
-  private api = inject(PortalApiService);
+  private readonly api = inject(PortalApiService);
   readonly methods = signal<PaymentMethodsDto>({ payPal: true, bankTransfer: true });
   private loaded = false;
 

@@ -32,6 +32,6 @@ import { IconComponent } from '../icon/icon.component';
 })
 export class TopbarComponent {
   ui = inject(PortalUiService);
-  private auth = inject(AuthService);
+  private readonly auth = inject(AuthService);
   initials = computed(() => this.auth.user()?.initials || this.auth.user()?.name?.trim().split(/\s+/).map(w => w[0]).slice(0, 2).join('').toUpperCase() || '·');
 }

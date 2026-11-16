@@ -22,6 +22,18 @@ interface DueItem { id: string; name: string; detail: string; dateLabel: string;
 const DAY_MS = 86_400_000;
 
 /** Próxima fecha que pide algo al cliente: cobro (suscripción) o vencimiento (pago por periodo). */
+/** Color del vencimiento: vencido, en los próximos 30 días o con margen. */
+function renewalTone(days: number): string {
+  if (days < 0) return 'danger';
+  return days <= 30 ? 'warn' : 'success';
+}
+
+function renewalWhen(days: number): string {
+  if (days < 0) return `venció hace ${-days} d`;
+  if (days === 0) return 'hoy';
+  return days === 1 ? 'mañana' : `en ${days} días`;
+}
+
 function dueDate(p: ClientProductApiDto): Date | null {
   const iso = p.nextChargeAt ?? p.renewsAt;
   return iso ? new Date(iso) : null;
@@ -135,11 +147,11 @@ function dueDate(p: ClientProductApiDto): Date | null {
     </div>`,
 })
 export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
-  private api = inject(PortalApiService);
-  private ui = inject(PortalUiService);
-  private auth = inject(AuthService);
-  private router = inject(Router);
-  @ViewChild('actions') private actionsTpl!: TemplateRef<unknown>;
+  private readonly api = inject(PortalApiService);
+  private readonly ui = inject(PortalUiService);
+  private readonly auth = inject(AuthService);
+  private readonly router = inject(Router);
+  @ViewChild('actions') private readonly actionsTpl!: TemplateRef<unknown>;
 
   readonly ago = ago;
   question = '';
@@ -172,8 +184,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       .slice(0, 5)
       .map(({ p, date }) => {
         const days = Math.ceil((+date - now) / DAY_MS);
-        const tone = days < 0 ? 'danger' : days <= 30 ? 'warn' : 'success';
-        const when = days < 0 ? `venció hace ${-days} d` : days === 0 ? 'hoy' : days === 1 ? 'mañana' : `en ${days} días`;
+        const tone = renewalTone(days);
+        const when = renewalWhen(days);
         const dateLabel = date.toLocaleDateString('es-PE', { day: 'numeric', month: 'short', year: 'numeric' });
         return { id: p.id, name: p.domainName || p.product.name, detail: p.domainName ? p.product.name : p.project.name, dateLabel, tone, when };
       });
@@ -210,6 +222,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ask(): void {
     const title = this.question.trim();
-    if (title) this.router.navigate(['/tickets/new'], { queryParams: { title } });
+    if (title) void this.router.navigate(['/tickets/new'], { queryParams: { title } });
   }
 }

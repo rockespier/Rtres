@@ -70,8 +70,8 @@ const CURRENCY_NAMES: Record<string, string> = { PEN: 'Soles', USD: 'Dólares', 
   `,
 })
 export class PaymentSettingsComponent implements OnInit {
-  private api = inject(PortalApiService);
-  private payments = inject(PaymentMethodsService);
+  private readonly api = inject(PortalApiService);
+  private readonly payments = inject(PaymentMethodsService);
   methods = this.payments.methods;
   accounts = signal<BankAccountDto[]>([]);
   saving = signal(false); settingsError = signal(''); formError = signal('');

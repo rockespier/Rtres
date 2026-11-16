@@ -6,30 +6,57 @@ export class AdminClientDetailComponent implements OnInit {isSub=isSubscriptionC
   /** las suscripciones (Mensual, Bimestral, Trimestral, Semestral) usan el próximo cobro; Anual y Único, el vencimiento (el que dispara los avisos y el estado Vencido). */
   readonly dueKey=(p:AdminClientProductDto)=>this.dateOf(p)||null;
   dateOf(p:AdminClientProductDto){return ((isSubscriptionCycle(p.billingCycle)?p.nextChargeAt:p.renewsAt)??'').slice(0,10);}
-  setDate(p:AdminClientProductDto,value:string){const date=value||null;const body=isSubscriptionCycle(p.billingCycle)?{renewsAt:p.renewsAt?.slice(0,10)??null,nextChargeAt:date}:{renewsAt:date,nextChargeAt:p.nextChargeAt?.slice(0,10)??null};this.productError='';this.api.setClientProductDates(p.id,body).subscribe({next:()=>this.load(),error:e=>{this.productError=e?.error?.message??'No se pudo guardar la fecha.';this.load();}});}accesses:ClientAccessDto[]=[];projectError='';newProject={name:'',githubRepoOwner:'',githubRepoName:''};
+  setDate(p:AdminClientProductDto,value:string){const date=value===''?null:value;const body=isSubscriptionCycle(p.billingCycle)?{renewsAt:p.renewsAt?.slice(0,10)??null,nextChargeAt:date}:{renewsAt:date,nextChargeAt:p.nextChargeAt?.slice(0,10)??null};this.productError='';this.api.setClientProductDates(p.id,body).subscribe({next:()=>this.load(),error:e=>{this.productError=e?.error?.message??'No se pudo guardar la fecha.';this.load();}});}accesses:ClientAccessDto[]=[];projectError='';newProject={name:'',githubRepoOwner:'',githubRepoName:''};
   loadProjects(){this.api.getProjectsForClient(this.id).subscribe(x=>this.projects=x);}
   /** Crea el usuario del cliente o, si ya existe, le asigna una contraseña temporal nueva (el acceso anterior deja de servir). */
-  generateAccess(){if(!this.client)return;this.generatingAccess=true;this.accessError='';this.api.generateClientAccess(this.client.id).subscribe({next:a=>{this.generatingAccess=false;this.confirmingAccess=false;this.accesses=[a];},error:e=>{this.generatingAccess=false;this.accessError=e?.error?.message??'No se pudo generar el acceso.';}});}
+  generateAccess() {
+    if(!this.client)return;
+    this.generatingAccess=true;
+    this.accessError='';
+    this.api.generateClientAccess(this.client.id).subscribe({next:a=>{this.generatingAccess=false;this.confirmingAccess=false;this.accesses=[a];},error:e=>{this.generatingAccess=false;this.accessError=e?.error?.message??'No se pudo generar el acceso.';}});
+  }
   confirmingAccess=false;generatingAccess=false;accessError='';productError='';paymentLink='';copied=false;
   copyLink(){navigator.clipboard?.writeText(this.paymentLink).then(()=>this.copied=true,()=>this.copied=false);}
   expanded='';creatingProject=false;savingProject=false;
   openNewProject(){this.newProject={name:'',githubRepoOwner:'',githubRepoName:''};this.projectError='';this.creatingProject=true;}
-  addProject(){if(!this.newProject.name.trim())return;this.projectError='';this.savingProject=true;this.api.createProject(this.id,this.newProject).subscribe({next:()=>{this.savingProject=false;this.creatingProject=false;this.loadProjects();},error:e=>{this.savingProject=false;this.projectError=e?.error?.message??'No se pudo crear el proyecto.';}});}
+  addProject() {
+    if(!this.newProject.name.trim())return;
+    this.projectError='';
+    this.savingProject=true;
+    this.api.createProject(this.id,this.newProject).subscribe({next:()=>{this.savingProject=false;this.creatingProject=false;this.loadProjects();},error:e=>{this.savingProject=false;this.projectError=e?.error?.message??'No se pudo crear el proyecto.';}});
+  }
   productCount(projectId:string){return this.items.filter(x=>x.projectId===projectId).length;}
   countText(n:number,one:string,many:string){return n===1?'1 '+one:n+' '+many;}
   deleting:ProjectDto|null=null;deletingBusy=false;deleteError='';
   /** Mover el producto a otro proyecto del cliente (p. ej. para poder borrar el proyecto original). */
-  moveProduct(p:AdminClientProductDto,select:HTMLSelectElement){const projectId=select.value;select.value='';if(!projectId)return;this.productError='';this.api.updateAdminClientProduct(p.id,{projectId}).subscribe({next:()=>this.load(),error:e=>this.productError=e?.error?.message??'No se pudo mover el producto.'});}
+  moveProduct(p:AdminClientProductDto,select:HTMLSelectElement) {
+    const projectId=select.value;
+    select.value='';
+    if(!projectId)return;
+    this.productError='';
+    this.api.updateAdminClientProduct(p.id,{projectId}).subscribe({next:()=>this.load(),error:e=>this.productError=e?.error?.message??'No se pudo mover el producto.'});
+  }
   /** Quitar un producto asociado por error o nunca pagado; con pagos, el API lo rechaza y se muestra el motivo. */
   deletingProduct:AdminClientProductDto|null=null;deletingProductBusy=false;deleteProductError='';
   askDeleteProduct(p:AdminClientProductDto){this.deletingProduct=p;this.deleteProductError='';}
   deleteProduct(){const p=this.deletingProduct!;this.deletingProductBusy=true;this.deleteProductError='';this.api.deleteAdminClientProduct(p.id).subscribe({next:()=>{this.deletingProductBusy=false;this.deletingProduct=null;this.load();},error:e=>{this.deletingProductBusy=false;this.deleteProductError=e?.error?.message??'No se pudo eliminar el producto.';}});}
   askDelete(p:ProjectDto){this.deleting=p;this.deleteError='';}
   /** El API rechaza el borrado si hay productos o tickets; aquí se avisa antes con los productos que ya se conocen. */
-  deleteMessage(){const p=this.deleting!;const n=this.productCount(p.id);return n?`«${p.name}» tiene ${this.countText(n,'producto asociado','productos asociados')}: no se puede eliminar hasta moverlos o eliminarlos.`:`Se eliminará «${p.name}»${p.repositories.length?' y su vínculo con '+this.countText(p.repositories.length,'repositorio','repositorios')+' de GitHub (los repos en GitHub no se tocan)':''}. Si tiene tickets, no se podrá eliminar.`;}
-  deleteProject(){if(!this.deleting)return;this.deletingBusy=true;this.deleteError='';this.api.deleteProject(this.deleting.id).subscribe({next:()=>{this.deletingBusy=false;this.deleting=null;this.loadProjects();},error:e=>{this.deletingBusy=false;this.deleteError=e?.error?.message??'No se pudo eliminar el proyecto.';}});}
+  deleteMessage(){
+    const p=this.deleting!;
+    const n=this.productCount(p.id);
+    if(n)return `«${p.name}» tiene ${this.countText(n,'producto asociado','productos asociados')}: no se puede eliminar hasta moverlos o eliminarlos.`;
+    const repos=p.repositories.length?' y su vínculo con '+this.countText(p.repositories.length,'repositorio','repositorios')+' de GitHub (los repos en GitHub no se tocan)':'';
+    return `Se eliminará «${p.name}»${repos}. Si tiene tickets, no se podrá eliminar.`;
+  }
+  deleteProject() {
+    if(!this.deleting)return;
+    this.deletingBusy=true;
+    this.deleteError='';
+    this.api.deleteProject(this.deleting.id).subscribe({next:()=>{this.deletingBusy=false;this.deleting=null;this.loadProjects();},error:e=>{this.deletingBusy=false;this.deleteError=e?.error?.message??'No se pudo eliminar el proyecto.';}});
+  }
   repoDrafts:Record<string,{owner:string;name:string;label:string}>={};
-  repoDraft(projectId:string){return this.repoDrafts[projectId]??={owner:'',name:'',label:''};}
+  repoDraft(projectId:string){this.repoDrafts[projectId]??={owner:'',name:'',label:''};return this.repoDrafts[projectId];}
   private repoCall(call:Observable<unknown>,fallback:string){this.projectError='';call.subscribe({next:()=>this.loadProjects(),error:e=>{this.projectError=e?.error?.message??fallback;this.loadProjects();}});}
   addRepo(p:ProjectDto){const d=this.repoDraft(p.id);this.repoCall(this.api.addRepository(p.id,{owner:d.owner,name:d.name,label:d.label}).pipe(tap(()=>delete this.repoDrafts[p.id])),'No se pudo agregar el repositorio.');}
   saveRepo(r:ProjectRepositoryDto){this.repoCall(this.api.updateRepository(r.id,{owner:r.owner,name:r.name,label:r.label??''}),'No se pudo guardar el repositorio.');}
@@ -40,12 +67,33 @@ export class AdminClientDetailComponent implements OnInit {isSub=isSubscriptionC
    * Monto sugerido: el próximo cobro (con descuento solo si aún no se usó) más los años adicionales a precio de catálogo,
    * con IGV si es Factura a un cliente en Perú. Mismo cálculo que ClientProductPricing.ChargeTotal.
    */
-  suggestedAmount(p:AdminClientProductDto,years:number){if(p.nextChargePrice==null||p.listPrice==null)return null;return Math.round((p.nextChargePrice+(years-1)*p.listPrice)*(1+p.igvRate)*100)/100;}
-  setPaymentYears(years:number){if(!this.paying)return;this.payment.years=years;this.payment.amount=this.suggestedAmount(this.paying,years);}
+  suggestedAmount(p:AdminClientProductDto,years:number) {
+    if(p.nextChargePrice==null||p.listPrice==null)return null;
+    return Math.round((p.nextChargePrice+(years-1)*p.listPrice)*(1+p.igvRate)*100)/100;
+  }
+  setPaymentYears(years:number) {
+    if(!this.paying)return;
+    this.payment.years=years;
+    this.payment.amount=this.suggestedAmount(this.paying,years);
+  }
   openPayment(p:AdminClientProductDto){this.paying=p;this.payment={years:1,amount:p.nextChargeTotal,paidAt:new Date().toISOString().slice(0,10),reference:''};this.paymentError='';}
-  savePayment(){if(!this.paying)return;this.savingPayment=true;this.paymentError='';this.api.registerTransferPayment(this.paying.id,{amount:this.payment.amount,paidAt:this.payment.paidAt||null,reference:this.payment.reference.trim()||null,years:this.payment.years}).subscribe({next:()=>{this.savingPayment=false;this.paying=null;this.load();},error:e=>{this.savingPayment=false;this.paymentError=e?.error?.message??'No se pudo registrar el pago.';}});}
+  savePayment() {
+    if(!this.paying)return;
+    this.savingPayment=true;
+    this.paymentError='';
+    this.api.registerTransferPayment(this.paying.id,{amount:this.payment.amount,paidAt:this.payment.paidAt||null,reference:this.payment.reference.trim()||null,years:this.payment.years}).subscribe({next:()=>{this.savingPayment=false;this.paying=null;this.load();},error:e=>{this.savingPayment=false;this.paymentError=e?.error?.message??'No se pudo registrar el pago.';}});
+  }
   discounting:AdminClientProductDto|null=null;discountValue:number|null=null;discountError='';savingDiscount=false;
   openDiscount(p:AdminClientProductDto){this.discounting=p;this.discountValue=p.discount;this.discountError='';}
   /** Negativo = recargo. 0 quita el descuento o recargo (null en el PATCH significa "sin cambios"). */
-  saveDiscount(){if(!this.discounting)return;this.savingDiscount=true;this.discountError='';this.api.updateAdminClientProduct(this.discounting.id,{discount:this.discountValue??0}).subscribe({next:()=>{this.savingDiscount=false;this.discounting=null;this.load();},error:e=>{this.savingDiscount=false;this.discountError=e?.error?.message??'No se pudo guardar el precio.';}});}
-  toggleActive(){if(!this.client)return;this.api.updateAdminClient(this.client.id,{isActive:!this.client.isActive}).subscribe(()=>this.load());}}
+  saveDiscount() {
+    if(!this.discounting)return;
+    this.savingDiscount=true;
+    this.discountError='';
+    this.api.updateAdminClientProduct(this.discounting.id,{discount:this.discountValue??0}).subscribe({next:()=>{this.savingDiscount=false;this.discounting=null;this.load();},error:e=>{this.savingDiscount=false;this.discountError=e?.error?.message??'No se pudo guardar el precio.';}});
+  }
+  toggleActive() {
+    if(!this.client)return;
+    this.api.updateAdminClient(this.client.id,{isActive:!this.client.isActive}).subscribe(()=>this.load());
+    }
+  }

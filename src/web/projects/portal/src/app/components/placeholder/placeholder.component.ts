@@ -8,8 +8,8 @@ import { PortalUiService } from '../../core/portal-ui.service';
   template: '<h1 class="font-display text-2xl">Próximamente</h1><p class="text-muted mt-2">Esta sección estará disponible pronto.</p>',
 })
 export class PlaceholderComponent implements OnInit, OnDestroy {
-  private route = inject(ActivatedRoute);
-  private ui = inject(PortalUiService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly ui = inject(PortalUiService);
 
   ngOnInit(): void {
     this.ui.breadcrumb.set({ current: this.route.snapshot.data['breadcrumb'] ?? 'Próximamente' });

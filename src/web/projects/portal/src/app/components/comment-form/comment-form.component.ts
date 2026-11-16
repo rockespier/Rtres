@@ -17,7 +17,7 @@ import { PortalApiService, TicketCommentDto } from '../../core/portal-api.servic
   </form>`,
 })
 export class CommentFormComponent {
-  private api = inject(PortalApiService);
+  private readonly api = inject(PortalApiService);
   @Input({ required: true }) ticketId!: string;
   @Output() added = new EventEmitter<TicketCommentDto>();
 

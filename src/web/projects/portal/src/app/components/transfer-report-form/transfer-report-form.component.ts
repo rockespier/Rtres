@@ -45,7 +45,7 @@ const RECEIPT_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'a
   </form>`,
 })
 export class TransferReportFormComponent implements OnInit {
-  private api = inject(PortalApiService);
+  private readonly api = inject(PortalApiService);
   @Input({ required: true }) clientProductId!: string;
   @Input({ required: true }) info!: BankTransferInfo;
   @Input() years = 1;

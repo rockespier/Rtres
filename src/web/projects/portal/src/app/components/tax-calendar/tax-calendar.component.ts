@@ -133,7 +133,7 @@ interface Row extends TaxDueDateDto { label: string; status: 'Presentada' | 'Ven
   `],
 })
 export class TaxCalendarComponent implements OnInit {
-  private api = inject(PortalApiService); private ui = inject(PortalUiService);
+  private readonly api = inject(PortalApiService); private readonly ui = inject(PortalUiService);
   readonly columns = COLUMNS;
   data: TaxCalendarDto | null = null; rows: Row[] = []; summary: TaxSummaryReportDto | null = null;
   myColumn: DigitKey | null = null;
@@ -159,10 +159,17 @@ export class TaxCalendarComponent implements OnInit {
   private summaryPeriod: string | null = null;
 
   /** Fecha yyyy-MM-dd en español, sin pasar por UTC (sería el día anterior en Lima). */
-  fmt(date: string | null, options: Intl.DateTimeFormatOptions) { if (!date) return ''; const [y, m, d] = date.split('-').map(Number); return new Date(y, m - 1, d).toLocaleDateString('es-PE', options).replace(/\./g, ''); }
+  fmt(date: string | null, options: Intl.DateTimeFormatOptions) {
+    if (!date) return '';
+    const [y, m, d] = date.split('-').map(Number);
+    return new Date(y, m - 1, d).toLocaleDateString('es-PE', options).replace(/\./g, '');
+  }
   monthLabel(period: string) { const [y, m] = period.split('-').map(Number); return `${MONTHS[m - 1]} ${y}`; }
   daysLeft(r: TaxDueDateDto) { return r.dueDate && this.data ? dayDiff(this.data.today, r.dueDate) : 0; }
-  whenLabel(days: number) { return days <= 0 ? 'Vence hoy' : days === 1 ? 'Vence mañana' : `Faltan ${days} días`; }
+  whenLabel(days: number) {
+    if (days <= 0) return 'Vence hoy';
+    return days === 1 ? 'Vence mañana' : `Faltan ${days} días`;
+  }
   tone(status: Row['status']) { return { Presentada: 'pill-success', Vencida: 'pill-danger', Próxima: 'pill-warn', Pendiente: 'pill-neutral' }[status]; }
 
   editRuc() { this.editingRuc = true; this.rucError = null; }
@@ -183,13 +190,13 @@ export class TaxCalendarComponent implements OnInit {
       this.filing = r; return;
     }
     this.busy = true;
-    this.api.setTaxPeriodFiled(r.id, false).subscribe({ next: () => { this.busy = false; this.load(this.data?.year); }, error: () => this.busy = false });
+    this.api.unmarkTaxPeriodFiled(r.id).subscribe({ next: () => { this.busy = false; this.load(this.data?.year); }, error: () => this.busy = false });
   }
   filing: TaxDueDateDto | null = null; igvPaid: number | null = null; rentaPaid: number | null = null;
   confirmFiled() {
     const r = this.filing; if (!r) return;
     this.busy = true;
-    this.api.setTaxPeriodFiled(r.id, true, { igvPaid: this.igvPaid ?? null, rentaPaid: this.rentaPaid ?? null }).subscribe({ next: () => { this.busy = false; this.filing = null; this.load(this.data?.year); }, error: () => this.busy = false });
+    this.api.markTaxPeriodFiled(r.id, { igvPaid: this.igvPaid ?? null, rentaPaid: this.rentaPaid ?? null }).subscribe({ next: () => { this.busy = false; this.filing = null; this.load(this.data?.year); }, error: () => this.busy = false });
   }
   markOverdue() {
     this.busy = true;

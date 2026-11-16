@@ -49,9 +49,9 @@ const ROLE_LABELS: Record<string, string> = { Cliente: 'Cliente', Admin: 'Admini
   </aside>`,
 })
 export class SidebarComponent {
-  private auth = inject(AuthService);
-  private ui = inject(PortalUiService);
-  private router = inject(Router);
+  private readonly auth = inject(AuthService);
+  private readonly ui = inject(PortalUiService);
+  private readonly router = inject(Router);
 
   /** true dentro del menú móvil (muestra el botón de cerrar). */
   drawer = input(false);
@@ -71,6 +71,6 @@ export class SidebarComponent {
   logout(): void {
     this.navigate.emit();
     this.auth.logout();
-    this.router.navigateByUrl('/login');
+    void this.router.navigateByUrl('/login');
   }
 }

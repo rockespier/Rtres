@@ -27,11 +27,11 @@ import { ProjectDto, TicketDto } from '../../core/portal-api.service';
   </div>`,
 })
 export class TicketTableComponent {
-  private router = inject(Router);
+  private readonly router = inject(Router);
   @Input() tickets: TicketDto[] = [];
   @Input() projects: ProjectDto[] = [];
 
   projectName(id: string): string { return this.projects.find(p => p.id === id)?.slug ?? '—'; }
   readonly projectKey = (t: TicketDto) => this.projectName(t.projectId);
-  open(t: TicketDto): void { this.router.navigate(['/tickets', t.id]); }
+  open(t: TicketDto): void { void this.router.navigate(['/tickets', t.id]); }
 }
