@@ -275,7 +275,7 @@
   <aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="d-title">
     <div class="d-head">
       <div class="num" id="d-num"></div>
-      <h3 id="d-title"></h3>
+      <h3 id="d-title">Job</h3>
       <div class="links" id="d-links"></div>
       <button class="close" data-close aria-label="Close">×</button>
     </div>
@@ -603,7 +603,7 @@ function inline(s) {
   s = s
     .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
     .replace(/(^|[^*])\*([^*\s][^*]*)\*/g, '$1<em>$2</em>')
-    .replace(/\[([^\]]+)\]\(((?:https?:\/\/|\.{0,2}\/|#)[^)\s]*)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
+    .replace(/\[([^\]]+)\]\(([^)\s]*)\)/g, (all, text, url) => /^(https?:\/\/|\.{0,2}\/|#)/.test(url) ? `<a href="${url}" target="_blank" rel="noopener">${text}</a>` : all)
   return s.replace(/\uE000(\d+)\uE000/g, (_, i) => `<code>${codes[i]}</code>`)
 }
 

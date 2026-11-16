@@ -83,7 +83,7 @@ export class CatalogComponent implements OnInit {
 
   categories=computed(()=>[...new Set(this.products().map(p=>p.category||UNCATEGORIZED))].sort(byCategory));
   private readonly inCategory=computed(()=>this.products().filter(p=>!this.category()||(p.category||UNCATEGORIZED)===this.category()));
-  private tokens=computed(()=>words(this.query()).filter(w=>!STOPWORDS.has(w)));
+  private readonly tokens=computed(()=>words(this.query()).filter(w=>!STOPWORDS.has(w)));
   searching=computed(()=>this.tokens().length>0);
   groups=computed(()=>this.categories().filter(c=>!this.category()||c===this.category()).map(category=>({category,products:this.inCategory().filter(p=>(p.category||UNCATEGORIZED)===category)})).filter(g=>g.products.length));
 

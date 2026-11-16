@@ -56,7 +56,11 @@ export class FileDropzoneComponent {
     if (!pasted.length) return;
     e.preventDefault();
     // Las capturas pegadas llegan como "image.png": se les da un nombre único.
-    const name = (f: File, i: number) => f.name && f.name !== 'image.png' ? f.name : 'captura-' + Date.now() + (i ? '-' + i : '') + '.png';
+    const name = (f: File, i: number) => {
+      if (f.name && f.name !== 'image.png') return f.name;
+      const suffix = i ? '-' + i : '';
+      return 'captura-' + Date.now() + suffix + '.png';
+    };
     this.add(pasted.map((f, i) => new File([f], name(f, i), { type: f.type })));
   }
 
