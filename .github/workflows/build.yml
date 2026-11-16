@@ -43,5 +43,10 @@ jobs:
         shell: powershell
         run: |
           ${{ runner.temp }}\scanner\dotnet-sonarscanner begin /k:"rockespier_Rtres" /o:"rockespier" /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
-          dotnet build
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          
+          dotnet build src/api/Rtres.slnx --no-incremental
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          
           ${{ runner.temp }}\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
