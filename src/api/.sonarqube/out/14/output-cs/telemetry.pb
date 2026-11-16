@@ -1,1 +1,0 @@
-SRFC:\repo\rtres-net\Rtres\src\api\Rtres.Api.Tests\Rtres.Api.Tests.csprojòCSharp14

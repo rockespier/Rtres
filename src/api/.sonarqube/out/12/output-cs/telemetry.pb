@@ -1,1 +1,0 @@
-]RPC:\repo\rtres-net\Rtres\src\api\Rtres.Infrastructure\Rtres.Infrastructure.csprojòCSharp14

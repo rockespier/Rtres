@@ -1,1 +1,0 @@
-GR:C:\repo\rtres-net\Rtres\src\api\Rtres.Api\Rtres.Api.csprojòCSharp14
