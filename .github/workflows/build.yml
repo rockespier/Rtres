@@ -5,6 +5,11 @@ on:
       - main
   pull_request:
     types: [opened, synchronize, reopened]
+# Un análisis por rama a la vez: si se fusionan varios PRs seguidos, SonarCloud rechaza el análisis que empezó antes
+# pero terminó después ("The last analysis has failed"). Se cancela el anterior y queda el del último commit.
+concurrency:
+  group: sonar-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   build:
     name: Build and analyze
