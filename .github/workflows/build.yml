@@ -42,7 +42,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         shell: powershell
         run: |
-          ${{ runner.temp }}\scanner\dotnet-sonarscanner begin /k:"rockespier_Rtres" /o:"rockespier" /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+          ${{ runner.temp }}\scanner\dotnet-sonarscanner begin /k:"rockespier_Rtres" /o:"rockespier" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.exclusions="plantillaElementor/**,mockups/**,infrastructure/sql/**,coveragereport/**,coverage.xml,inspiracion/**,output/**,publish/**,.worktrees/**,**/node_modules/**,**/dist/**,**/.sonarqube/**"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           
           dotnet build src/api/Rtres.slnx --no-incremental
