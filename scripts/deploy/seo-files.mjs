@@ -6,13 +6,14 @@
 // La página 404 de cada idioma la elige site.htaccess.
 // Uso: node scripts/deploy/seo-files.mjs <ruta a dist/site/browser>
 import { copyFileSync, existsSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const SITE = 'https://rtres.net';
 const LOCALES = ['es', 'en', 'it'];
-const root = process.argv[2];
-if (!root || !existsSync(join(root, 'es', 'index.html'))) {
+// Solo se escribe dentro de una carpeta dist/site/browser: el script borra y crea archivos en ella.
+const root = process.argv[2] ? resolve(process.argv[2]) : '';
+if (!root.endsWith(join('dist', 'site', 'browser')) || !existsSync(join(root, 'es', 'index.html'))) {
   console.error('Uso: node seo-files.mjs <dist/site/browser> (no se encontró es/index.html)');
   process.exit(1);
 }

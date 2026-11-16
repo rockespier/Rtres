@@ -126,10 +126,8 @@ public sealed partial class BankTransfersController(RtresDbContext db, BankTrans
         var account = await db.BankAccounts.SingleOrDefaultAsync(x => x.Id == request.BankAccountId && x.IsActive, ct);
         if (account is null) return BadRequest(new { message = "Elige la cuenta a la que transferiste." });
         var operation = request.OperationNumber?.Trim();
-        if (ValidateReport(request, operation, receipt is not null) is string reportError) return BadRequest(new { message = reportError });
-        if (item.ValidateYears(request.Years) is string yearsError) return BadRequest(new { message = yearsError });
-        if (!string.IsNullOrEmpty(operation) && await db.TransferReports.AnyAsync(x => x.OperationNumber == operation && x.BankAccountId == account.Id && x.Status != TransferReportStatus.Rechazado, ct))
-            return Conflict(new { message = "Ese N° de operación ya fue reportado." });
+        if ((ValidateReport(request, operation, receipt is not null) ?? item.ValidateYears(request.Years)) is string reportError) return BadRequest(new { message = reportError });
+        if (await OperationReportedAsync(operation, account.Id, ct)) return Conflict(new { message = "Ese N° de operación ya fue reportado." });
 
         var report = new TransferReport { ClientId = clientId, ClientProductId = item.Id, BankAccountId = account.Id, Amount = Math.Round(request.Amount, 2), Currency = account.Currency, PaidAt = request.PaidAt, OperationNumber = string.IsNullOrEmpty(operation) ? null : operation, Years = request.Years, ReportedByUserId = UserId };
         if (receipt is not null && await AttachReceiptAsync(report, receipt, ct) is string receiptError) return BadRequest(new { message = receiptError });
@@ -137,6 +135,11 @@ public sealed partial class BankTransfersController(RtresDbContext db, BankTrans
         await NotifyStaffAsync(report, item, ct);
         return Created($"/api/transfer-reports/{report.Id}", new TransferReportSummary(report.Id, report.Status, report.CreatedAt, null));
     }
+
+    /// <summary>Mismo N° de operación ya reportado en esa cuenta (sin contar los rechazados).</summary>
+    private Task<bool> OperationReportedAsync(string? operation, Guid accountId, CancellationToken ct) =>
+        string.IsNullOrEmpty(operation) ? Task.FromResult(false)
+        : db.TransferReports.AnyAsync(x => x.OperationNumber == operation && x.BankAccountId == accountId && x.Status != TransferReportStatus.Rechazado, ct);
 
     /// <summary>Datos del reporte que no dependen de la base de datos; null si son válidos.</summary>
     private static string? ValidateReport(TransferReportRequest request, string? operation, bool hasReceipt)

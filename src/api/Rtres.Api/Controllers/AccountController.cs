@@ -92,19 +92,32 @@ public sealed class AccountController(RtresDbContext db, AccessEmailService acce
         if (!TryGetClientId(out var clientId)) return Forbid();
         var user = await db.UserAccounts.SingleOrDefaultAsync(x => x.Id == id && x.ClientId == clientId, ct);
         if (user is null) return NotFound();
-        if (id == UserId && ((request.Role is UserRole.Cliente) || request.IsActive is false)) return BadRequest(new { message = "No puedes bajar tu rol ni desactivarte." });
         if (request.Role is UserRole role && role is not (UserRole.Cliente or UserRole.Admin)) return BadRequest();
-        var area = request.Area?.Trim(); var jobTitle = request.JobTitle?.Trim();
-        if (area?.Length > 100 || jobTitle?.Length > 100) return BadRequest(new { message = "El área y el cargo no pueden pasar de 100 caracteres." });
-        if (request.ManagerId is Guid managerId && managerId != Guid.Empty && await ValidateManagerAsync(user, managerId, clientId, ct) is string managerError) return BadRequest(new { message = managerError });
-        if (request.Role is UserRole validRole) user.Role = validRole;
-        if (request.IsActive is bool active) user.IsActive = active;
-        if (area is not null) user.Area = area.Length == 0 ? null : area;
-        if (jobTitle is not null) user.JobTitle = jobTitle.Length == 0 ? null : jobTitle;
-        if (request.ManagerId is Guid newManager) user.ManagerId = newManager == Guid.Empty ? null : newManager;
+        if (await ValidateTeamUpdateAsync(user, request, clientId, ct) is string error) return BadRequest(new { message = error });
+        ApplyTeamUpdate(user, request);
         await db.SaveChangesAsync(ct);
         return Ok();
     }
+    private async Task<string?> ValidateTeamUpdateAsync(UserAccount user, UpdateTeamRequest request, Guid clientId, CancellationToken ct)
+    {
+        if (user.Id == UserId && (request.Role is UserRole.Cliente || request.IsActive is false)) return "No puedes bajar tu rol ni desactivarte.";
+        if (request.Area?.Trim().Length > 100 || request.JobTitle?.Trim().Length > 100) return "El área y el cargo no pueden pasar de 100 caracteres.";
+        if (request.ManagerId is Guid managerId && managerId != Guid.Empty) return await ValidateManagerAsync(user, managerId, clientId, ct);
+        return null;
+    }
+
+    private static string? TrimToNull(string value) => value.Trim() is { Length: > 0 } trimmed ? trimmed : null;
+
+    /// <summary>Solo cambia lo que viene en el request; texto vacío o <see cref="Guid.Empty"/> borran el valor.</summary>
+    private static void ApplyTeamUpdate(UserAccount user, UpdateTeamRequest request)
+    {
+        if (request.Role is UserRole role) user.Role = role;
+        if (request.IsActive is bool active) user.IsActive = active;
+        if (request.Area is not null) user.Area = TrimToNull(request.Area);
+        if (request.JobTitle is not null) user.JobTitle = TrimToNull(request.JobTitle);
+        if (request.ManagerId is Guid manager) user.ManagerId = manager == Guid.Empty ? null : manager;
+    }
+
     /// <summary>El jefe inmediato debe ser otro usuario activo del mismo cliente y no puede cerrar un ciclo (subir por sus jefes no debe llegar al usuario editado).</summary>
     private async Task<string?> ValidateManagerAsync(UserAccount user, Guid managerId, Guid clientId, CancellationToken ct)
     {

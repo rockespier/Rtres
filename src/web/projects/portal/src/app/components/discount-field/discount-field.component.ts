@@ -40,6 +40,9 @@ export class DiscountFieldComponent {
     if(this.mode==='discount')return n;
     return this.mode==='surcharge'?-n:this.listPrice-n;
   }
-  private display(){if(!this._discount)return null;return this.mode==='final'?this.round(this.listPrice-this._discount):this.amount;}
+  private display(){
+    if(!this._discount)return null;
+    return this.mode==='final'?this.round(this.listPrice-this._discount):this.amount;
+  }
   private round(n:number){return Math.round(n*100)/100;}
 }
