@@ -31,7 +31,8 @@ public static class EmailTemplates
     public static (string Subject, string Html, string Text) Render(Notification notification, string? language, string portalUrl)
     {
         // Los avisos internos van al equipo de Rtres: el idioma del cliente no aplica.
-        var lang = notification.Type is NotificationType.TransferRequested or NotificationType.TicketCreated or NotificationType.TaxDueReminder or NotificationType.TransferReported or NotificationType.ContactLead ? "es" : Languages.Contains(language) ? language! : "es";
+        var staff = IsStaffNotice(notification.Type);
+        var lang = !staff && Languages.Contains(language) ? language! : "es";
         var d = notification.Data;
         var t = Texts[lang];
         var portal = portalUrl.TrimEnd('/');
@@ -68,35 +69,52 @@ public static class EmailTemplates
                 string.Format(t["failed.subject"], V("product")),
                 new[] { string.Format(t["failed.body"], V("product")) },
                 t["cta.dashboard"], $"{portal}/dashboard"),
-            NotificationType.TransferRequested => (
-                string.Format(t["transfer.subject"], V("company"), V("product")),
-                string.IsNullOrWhiteSpace(V("amount"))
-                    ? new[] { string.Format(t["transfer.body"], V("company"), V("product"), V("project")), t["transfer.next"] }
-                    : new[] { string.Format(t["transfer.body"], V("company"), V("product"), V("project")), string.Format(t["transfer.amount"], Money(lang, V("amount"), V("currency"))), t["transfer.next"] },
-                t["cta.client"], $"{portal}/admin/clients/{V("clientId")}"),
+            NotificationType.TransferRequested => TransferRequested(t, lang, V, portal),
             NotificationType.TicketCreated => (
                 string.Format(t["ticket-created.subject"], V("code"), V("company")),
                 new[] { string.Format(t["ticket-created.body"], V("company"), V("project"), V("title")), Quote(V("body")) },
                 t["cta.ticket"], $"{portal}/admin/tickets?ticketId={V("ticketId")}"),
             NotificationType.TaxDueReminder => TaxDueReminder(t, V, portal),
-            NotificationType.TransferReported => (
-                string.Format(t["reported.subject"], V("company"), Money(lang, V("amount"), V("currency"))),
-                string.IsNullOrWhiteSpace(V("operation"))
-                    ? new[] { string.Format(t["reported.body"], V("company"), V("product"), Money(lang, V("amount"), V("currency"))), t["reported.next"] }
-                    : new[] { string.Format(t["reported.body"], V("company"), V("product"), Money(lang, V("amount"), V("currency"))), string.Format(t["reported.operation"], V("operation")), t["reported.next"] },
-                t["cta.review"], $"{portal}/admin/transfer-reports"),
-            NotificationType.ContactLead => (
-                string.Format(t["lead.subject"], V("name"), string.IsNullOrWhiteSpace(V("company")) ? V("email") : V("company")),
-                new[] { string.Format(t["lead.who"], V("name"), V("email"), string.IsNullOrWhiteSpace(V("phone")) ? "—" : V("phone"), string.IsNullOrWhiteSpace(V("company")) ? "—" : V("company")), string.Format(t["lead.what"], string.IsNullOrWhiteSpace(V("service")) ? "—" : V("service"), V("locale").ToUpperInvariant(), string.IsNullOrWhiteSpace(V("page")) ? "/" : V("page")), Quote(V("message")) },
-                t["cta.leads"], $"{portal}/admin/leads"),
+            NotificationType.TransferReported => TransferReported(t, lang, V, portal),
+            NotificationType.ContactLead => ContactLead(t, V, portal),
             NotificationType.TransferRejected => (
                 string.Format(t["rejected.subject"], V("product")),
                 new[] { string.Format(t["rejected.body"], Money(lang, V("amount"), V("currency")), V("product")), string.Format(t["rejected.reason"], V("reason")), t["rejected.next"] },
                 t["cta.services"], $"{portal}/services"),
             _ => throw new ArgumentOutOfRangeException(nameof(notification), notification.Type, null),
         };
-        var footer = notification.Type is NotificationType.TransferRequested or NotificationType.TicketCreated or NotificationType.TaxDueReminder or NotificationType.TransferReported or NotificationType.ContactLead ? t["footer.staff"] : t["footer"];
+        var footer = staff ? t["footer.staff"] : t["footer"];
         return (subject, Html(footer, paragraphs, cta, link), Text(footer, paragraphs, cta, link));
+    }
+
+    /// <summary>Avisos internos para el equipo de Rtres: siempre en español y con el pie del equipo.</summary>
+    private static bool IsStaffNotice(NotificationType type) =>
+        type is NotificationType.TransferRequested or NotificationType.TicketCreated or NotificationType.TaxDueReminder or NotificationType.TransferReported or NotificationType.ContactLead;
+
+    private static (string, string[], string, string) TransferRequested(Dictionary<string, string> t, string lang, Func<string, string> v, string portal)
+    {
+        var paragraphs = new List<string> { string.Format(t["transfer.body"], v("company"), v("product"), v("project")) };
+        if (!string.IsNullOrWhiteSpace(v("amount"))) paragraphs.Add(string.Format(t["transfer.amount"], Money(lang, v("amount"), v("currency"))));
+        paragraphs.Add(t["transfer.next"]);
+        return (string.Format(t["transfer.subject"], v("company"), v("product")), paragraphs.ToArray(), t["cta.client"], $"{portal}/admin/clients/{v("clientId")}");
+    }
+
+    private static (string, string[], string, string) TransferReported(Dictionary<string, string> t, string lang, Func<string, string> v, string portal)
+    {
+        var amount = Money(lang, v("amount"), v("currency"));
+        var paragraphs = new List<string> { string.Format(t["reported.body"], v("company"), v("product"), amount) };
+        if (!string.IsNullOrWhiteSpace(v("operation"))) paragraphs.Add(string.Format(t["reported.operation"], v("operation")));
+        paragraphs.Add(t["reported.next"]);
+        return (string.Format(t["reported.subject"], v("company"), amount), paragraphs.ToArray(), t["cta.review"], $"{portal}/admin/transfer-reports");
+    }
+
+    private static (string, string[], string, string) ContactLead(Dictionary<string, string> t, Func<string, string> v, string portal)
+    {
+        string Or(string key, string fallback) => string.IsNullOrWhiteSpace(v(key)) ? fallback : v(key);
+        return (
+            string.Format(t["lead.subject"], v("name"), Or("company", v("email"))),
+            new[] { string.Format(t["lead.who"], v("name"), v("email"), Or("phone", "—"), Or("company", "—")), string.Format(t["lead.what"], Or("service", "—"), v("locale").ToUpperInvariant(), Or("page", "/")), Quote(v("message")) },
+            t["cta.leads"], $"{portal}/admin/leads");
     }
 
     private static (string, string[], string, string) TaxDueReminder(Dictionary<string, string> t, Func<string, string> v, string portal)

@@ -74,37 +74,8 @@ export class SeoService {
     // La página base del blog la sirve el .htaccess bajo la URL de un post: su canonical lo pone el post al cargar.
     const shell = path.endsWith(`/${BLOG_SHELL_SLUG}`);
     const article = noindex ? null : this.article;
-    const alternates = 'link[rel="alternate"][hreflang]';
-    if (noindex || shell) head.querySelectorAll(`link[rel="canonical"], ${alternates}`).forEach(el => el.remove());
-    else {
-      this.link('canonical', canonical);
-      // Los posts no están vinculados entre idiomas: cada uno solo se declara a sí mismo.
-      if (article) head.querySelectorAll(alternates).forEach(el => el.remove());
-      else {
-        for (const l of SITE_LOCALES) this.link('alternate', this.alternate(l, path), l);
-        this.link('alternate', this.alternate('es', path), 'x-default');
-      }
-    }
-
-    // Una imagen por idioma (texto traducido): se generan con scripts/og/generate-og.mjs.
-    const image = article?.image ?? `${SITE_URL}/${this.locale}/assets/og-image-${this.locale}.jpg`;
-    this.meta('property', 'og:type', article ? 'article' : 'website');
-    this.meta('property', 'og:site_name', 'Rtres Web Solutions');
-    this.meta('property', 'og:title', title);
-    this.meta('property', 'og:description', description);
-    this.meta('property', 'og:url', canonical);
-    this.meta('property', 'og:image', image);
-    // La portada de un post viene de WordPress con otras medidas.
-    if (article?.image) head.querySelectorAll('meta[property="og:image:width"], meta[property="og:image:height"]').forEach(el => el.remove());
-    else {
-      this.meta('property', 'og:image:width', '1200');
-      this.meta('property', 'og:image:height', '630');
-    }
-    this.meta('property', 'og:locale', OG_LOCALES[this.locale] ?? 'es_PE');
-    this.meta('name', 'twitter:card', 'summary_large_image');
-    this.meta('name', 'twitter:title', title);
-    this.meta('name', 'twitter:description', description);
-    this.meta('name', 'twitter:image', image);
+    this.updateLinks(path, canonical, noindex || shell, article);
+    const image = this.updateSocial(title, description, canonical, article);
 
     // Organization + ProfessionalService: negocio local en Lima para Google/Gemini. Mismos datos (NAP) que la web,
     // Google Business Profile, LinkedIn y Clutch (GUIA-SEO-LOCAL.md).
@@ -157,6 +128,48 @@ export class SeoService {
       '@context': 'https://schema.org', '@type': 'BreadcrumbList',
       itemListElement: crumbs.map((crumb, i) => ({ '@type': 'ListItem', position: i + 1, ...crumb })),
     } : null);
+  }
+
+  /** Canonical y versiones en otros idiomas; con hidden (noindex o página base del blog) se quitan. */
+  private updateLinks(path: string, canonical: string, hidden: boolean, article: ArticleSeo | null) {
+    const head = this.document.head;
+    const alternates = 'link[rel="alternate"][hreflang]';
+    if (hidden) {
+      head.querySelectorAll(`link[rel="canonical"], ${alternates}`).forEach(el => el.remove());
+      return;
+    }
+    this.link('canonical', canonical);
+    // Los posts no están vinculados entre idiomas: cada uno solo se declara a sí mismo.
+    if (article) {
+      head.querySelectorAll(alternates).forEach(el => el.remove());
+      return;
+    }
+    for (const l of SITE_LOCALES) this.link('alternate', this.alternate(l, path), l);
+    this.link('alternate', this.alternate('es', path), 'x-default');
+  }
+
+  /** Open Graph y Twitter. Devuelve la imagen usada, que también va en el JSON-LD del post. */
+  private updateSocial(title: string, description: string, canonical: string, article: ArticleSeo | null): string {
+    // Una imagen por idioma (texto traducido): se generan con scripts/og/generate-og.mjs.
+    const image = article?.image ?? `${SITE_URL}/${this.locale}/assets/og-image-${this.locale}.jpg`;
+    this.meta('property', 'og:type', article ? 'article' : 'website');
+    this.meta('property', 'og:site_name', 'Rtres Web Solutions');
+    this.meta('property', 'og:title', title);
+    this.meta('property', 'og:description', description);
+    this.meta('property', 'og:url', canonical);
+    this.meta('property', 'og:image', image);
+    // La portada de un post viene de WordPress con otras medidas.
+    if (article?.image) this.document.head.querySelectorAll('meta[property="og:image:width"], meta[property="og:image:height"]').forEach(el => el.remove());
+    else {
+      this.meta('property', 'og:image:width', '1200');
+      this.meta('property', 'og:image:height', '630');
+    }
+    this.meta('property', 'og:locale', OG_LOCALES[this.locale] ?? 'es_PE');
+    this.meta('name', 'twitter:card', 'summary_large_image');
+    this.meta('name', 'twitter:title', title);
+    this.meta('name', 'twitter:description', description);
+    this.meta('name', 'twitter:image', image);
+    return image;
   }
 
   private link(rel: string, href: string, hreflang?: string) {

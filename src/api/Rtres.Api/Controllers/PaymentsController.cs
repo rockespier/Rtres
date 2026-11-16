@@ -43,10 +43,8 @@ public sealed class PaymentsController(RtresDbContext db, IPayPalClient payPal, 
         if (projectId is null) projectId = (await NewProjectAsync(clientId, product.Name, ct)).Id;
         else if (!await db.Projects.AnyAsync(x => x.Id == projectId && x.ClientId == clientId, ct)) return NotFound();
         if (request.BillingCycle != product.BillingCycle) return BadRequest(new { message = "El ciclo debe coincidir con el producto seleccionado." });
-        if (request.PaymentMethod is not (PaymentMethods.PayPal or PaymentMethods.Transferencia)) return BadRequest(new { message = "Método de pago inválido." });
+        if (await PaymentMethodErrorAsync(request.PaymentMethod, ct) is string methodError) return BadRequest(new { message = methodError });
         var transfer = request.PaymentMethod == PaymentMethods.Transferencia;
-        var settings = await transfers.SettingsAsync(ct);
-        if (transfer ? !settings.BankTransferEnabled : !settings.PayPalEnabled) return BadRequest(new { message = transfer ? "El pago por transferencia no está disponible por ahora." : "El pago con PayPal no está disponible por ahora." });
         var item = new ClientProduct { ClientId = clientId, ProjectId = projectId.Value, ProductId = product.Id, Product = product, BillingCycle = request.BillingCycle, Status = ClientProductStatus.Pendiente, Price = product.BasePrice, IsManualBilling = transfer };
         if (item.ValidateYears(request.Years) is string yearsError) return BadRequest(new { message = yearsError });
         db.ClientProducts.Add(item);
@@ -61,6 +59,15 @@ public sealed class PaymentsController(RtresDbContext db, IPayPalClient payPal, 
         try { var checkout = await checkoutService.StartAsync(item, product, Request, ct, igvRate, request.Years); await db.SaveChangesAsync(ct); return Ok(new { clientProductId = item.Id, approvalUrl = checkout.ApprovalUrl }); } catch (InvalidOperationException ex) { return BadRequest(new { message = ex.Message }); }
     }
 
+    /// <summary>Null si el método de pago existe y está habilitado; si no, el mensaje para el cliente.</summary>
+    private async Task<string?> PaymentMethodErrorAsync(string method, CancellationToken ct)
+    {
+        if (method is not (PaymentMethods.PayPal or PaymentMethods.Transferencia)) return "Método de pago inválido.";
+        var settings = await transfers.SettingsAsync(ct);
+        if (method == PaymentMethods.Transferencia) return settings.BankTransferEnabled ? null : "El pago por transferencia no está disponible por ahora.";
+        return settings.PayPalEnabled ? null : "El pago con PayPal no está disponible por ahora.";
+    }
+
     /// <summary>
     /// Proyecto creado al contratar sin elegir uno: se llama como el producto. El slug es único en todo el portal, así que
     /// lleva la empresa y, si ya existe, un número.
@@ -71,7 +78,8 @@ public sealed class PaymentsController(RtresDbContext db, IPayPalClient payPal, 
         var baseSlug = AdminController.Slugify($"{company} {productName}");
         if (baseSlug.Length == 0) baseSlug = "proyecto";
         var slug = baseSlug;
-        for (var n = 2; await db.Projects.AnyAsync(x => x.Slug == slug, ct); n++) slug = $"{baseSlug}-{n}";
+        var n = 2;
+        while (await db.Projects.AnyAsync(x => x.Slug == slug, ct)) slug = $"{baseSlug}-{n++}";
         var project = new Project { ClientId = clientId, Name = productName, Slug = slug };
         db.Projects.Add(project);
         return project;
@@ -154,8 +162,7 @@ public sealed class PaymentsController(RtresDbContext db, IPayPalClient payPal, 
         var resourceId = Find(resource, "id"); var orderId = Nested(resource, "supplementary_data", "related_ids", "order_id") ?? resourceId; var customId = Find(resource, "custom_id") ?? Find(resource, "custom") ?? Find(root, "custom_id") ?? PurchaseUnit(resource, "custom_id");
         // En los cobros de una suscripción, el recurso es la venta y la suscripción viene en billing_agreement_id.
         var subscriptionId = Find(resource, "billing_agreement_id") ?? resourceId;
-        ClientProduct? item = Guid.TryParse(customId, out var customGuid) ? await db.ClientProducts.Include(x => x.Product).SingleOrDefaultAsync(x => x.Id == customGuid, ct) : null;
-        item ??= !string.IsNullOrWhiteSpace(orderId) ? await db.ClientProducts.Include(x => x.Product).SingleOrDefaultAsync(x => x.PayPalSubscriptionId == subscriptionId || x.PayPalOrderId == orderId, ct) : null;
+        var item = await WebhookItemAsync(customId, orderId, subscriptionId, ct);
         if (item is null) return Ok();
         if (eventType is "BILLING.SUBSCRIPTION.ACTIVATED" or "BILLING.SUBSCRIPTION.CANCELLED") { item.Status = eventType.EndsWith("ACTIVATED") ? ClientProductStatus.Activo : ClientProductStatus.Cancelado; item.PayPalSubscriptionId ??= resourceId; }
         // Aprobar no es cobrar: con la orden aprobada se captura aquí (idempotente con la captura de la pantalla de retorno).
@@ -163,12 +170,25 @@ public sealed class PaymentsController(RtresDbContext db, IPayPalClient payPal, 
         // Cobro confirmado: el pago se aplica una sola vez por orden (o por venta, en suscripciones).
         if (eventType is "PAYMENT.CAPTURE.COMPLETED" or "PAYMENT.SALE.COMPLETED" && Amount(resource) is (decimal amount, var currency) && orderId is not null)
             await payments.ApplyPaymentAsync(item, orderId, amount, currency, ct);
-        Notification? failure = null;
-        if (eventType is "PAYMENT.CAPTURE.DENIED" or "PAYMENT.SALE.DENIED" or "BILLING.SUBSCRIPTION.PAYMENT.FAILED")
-            failure = new Notification(NotificationType.PaymentFailed, new() { ["product"] = item.Product?.Name ?? "" }, $"payment-failed:{Find(root, "id") ?? resourceId}");
         await db.SaveChangesAsync(ct);
-        if (failure is not null && await db.Clients.FindAsync([item.ClientId], ct) is Client client) await notifications.SendAsync(client, failure, ct);
+        if (eventType is "PAYMENT.CAPTURE.DENIED" or "PAYMENT.SALE.DENIED" or "BILLING.SUBSCRIPTION.PAYMENT.FAILED")
+            await NotifyPaymentFailedAsync(item, Find(root, "id") ?? resourceId, ct);
         return Ok();
+    }
+
+    /// <summary>Producto del evento: por el custom_id enviado al crear el cobro o, si no aparece, por la orden o la suscripción.</summary>
+    private async Task<ClientProduct?> WebhookItemAsync(string? customId, string? orderId, string? subscriptionId, CancellationToken ct)
+    {
+        var products = db.ClientProducts.Include(x => x.Product);
+        if (Guid.TryParse(customId, out var customGuid) && await products.SingleOrDefaultAsync(x => x.Id == customGuid, ct) is { } item) return item;
+        if (string.IsNullOrWhiteSpace(orderId)) return null;
+        return await products.SingleOrDefaultAsync(x => x.PayPalSubscriptionId == subscriptionId || x.PayPalOrderId == orderId, ct);
+    }
+
+    private async Task NotifyPaymentFailedAsync(ClientProduct item, string? eventId, CancellationToken ct)
+    {
+        if (await db.Clients.FindAsync([item.ClientId], ct) is not Client client) return;
+        await notifications.SendAsync(client, new Notification(NotificationType.PaymentFailed, new() { ["product"] = item.Product?.Name ?? "" }, $"payment-failed:{eventId}"), ct);
     }
 
     private static string? Find(JsonElement value, string property) => value.TryGetProperty(property, out var item) && item.ValueKind == JsonValueKind.String ? item.GetString() : null;

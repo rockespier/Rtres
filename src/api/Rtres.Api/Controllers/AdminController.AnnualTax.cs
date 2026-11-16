@@ -68,17 +68,7 @@ public sealed partial class AdminController
         var impuesto = MypeIncomeTax.Compute(renta, annual);
         var pagos = months.Sum(x => x.PagoACuentaPen);
 
-        // Proyección: promedio de los meses cerrados (sin el mes en curso) × 12, solo para el año en curso.
-        object? proyeccion = null;
-        if (year == today.Year && today.Month < 12 && today.Month > 1)
-        {
-            var closed = months.Take(today.Month - 1).ToList();
-            var ventasP = closed.Average(x => x.VentasPen) * 12; var gastosP = closed.Average(x => x.GastosPen) * 12;
-            var impuestoP = MypeIncomeTax.Compute(ventasP - gastosP, annual);
-            var pagosP = Math.Round(ventasP * settings.RentaRate, 2);
-            proyeccion = new { mesesBase = closed.Count, ventasPen = Math.Round(ventasP, 2), gastosDeduciblesPen = Math.Round(gastosP, 2), rentaNetaPen = Math.Round(ventasP - gastosP, 2), impuesto = impuestoP, pagosACuentaPen = pagosP, saldoPen = Math.Round(impuestoP.Total - pagosP, 2) };
-        }
-
+        var proyeccion = AnnualProjection(year, today, months, annual, settings.RentaRate);
         var natural = sales.Where(x => x.PersonaNatural).ToList();
         return Ok(new
         {
@@ -89,6 +79,17 @@ public sealed partial class AdminController
             personaNatural = new { ingresosPen = Math.Round(natural.Sum(x => x.BasePen), 2), retencionesPen = Math.Round(natural.Sum(x => x.RetentionPen), 2) },
             disclaimer = TaxDisclaimer,
         });
+    }
+
+    /// <summary>Proyección: promedio de los meses cerrados (sin el mes en curso) × 12, solo para el año en curso.</summary>
+    private static object? AnnualProjection(int year, DateOnly today, List<AnnualMonth> months, AnnualTaxSettings annual, decimal rentaRate)
+    {
+        if (year != today.Year || today.Month == 12 || today.Month == 1) return null;
+        var closed = months.Take(today.Month - 1).ToList();
+        var ventasP = closed.Average(x => x.VentasPen) * 12; var gastosP = closed.Average(x => x.GastosPen) * 12;
+        var impuestoP = MypeIncomeTax.Compute(ventasP - gastosP, annual);
+        var pagosP = Math.Round(ventasP * rentaRate, 2);
+        return new { mesesBase = closed.Count, ventasPen = Math.Round(ventasP, 2), gastosDeduciblesPen = Math.Round(gastosP, 2), rentaNetaPen = Math.Round(ventasP - gastosP, 2), impuesto = impuestoP, pagosACuentaPen = pagosP, saldoPen = Math.Round(impuestoP.Total - pagosP, 2) };
     }
 
     /// <summary>Deducible en la Renta: ni pago de Renta, ni categoría no deducible, ni gasto marcado como no deducible.</summary>

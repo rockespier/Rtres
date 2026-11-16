@@ -11,34 +11,53 @@ const TICKET_STATUS: Record<string, string> = { Abierto: 'Abierto', EnProgreso: 
 
 interface NotificationView { id: string; title: string; detail: string; link: string; createdAt: string; unread: boolean; tone: string; }
 
+type NotificationText = Pick<NotificationView, 'tone' | 'title' | 'detail' | 'link'>;
+
+/** "vence hoy", "vence mañana" o "vence en N días". */
+function dueIn(days: number): string {
+  if (days <= 0) return 'vence hoy';
+  return days === 1 ? 'vence mañana' : `vence en ${days} días`;
+}
+
+/** Título con el importe al final, si el aviso lo trae. */
+function withAmount(title: string, amount: string): string {
+  return amount ? `${title}: ${amount}` : title;
+}
+
+function renewalText(d: Record<string, string>, company: string, amount: string): NotificationText {
+  const detail = amount ? `Renovación: ${amount}` : d['product'] ?? '';
+  return { tone: 'warn', title: `${d['domain'] || d['product']} ${dueIn(Number(d['days']))}`, detail: company + detail, link: '/services' };
+}
+
+function taxDueText(d: Record<string, string>): NotificationText {
+  const days = Number(d['days']);
+  const [y, m] = (d['period'] ?? '').split('-').map(Number);
+  const period = m ? new Date(y, m - 1, 1).toLocaleDateString('es-PE', { month: 'long', year: 'numeric' }) : d['period'];
+  return { tone: days <= 1 ? 'danger' : 'warn', title: `Declaración SUNAT ${dueIn(days)}`, detail: `Periodo ${period}`, link: '/admin/tax-calendar' };
+}
+
 /** Texto, enlace y color de cada aviso, a partir de los mismos datos que usa el email. */
 function describe(n: PortalNotificationDto): NotificationView {
   const d = n.data;
   const amount = d['amount'] ? formatMoney(Number(d['amount']), d['currency'] || 'USD') : '';
-  const base = { id: n.id, createdAt: n.createdAt, unread: n.unread };
   const company = n.company ? `${n.company} · ` : '';
-  switch (n.type) {
-    case 'TicketStatusChanged': return { ...base, tone: 'info', title: `Ticket ${d['code']}: ${TICKET_STATUS[d['status']] ?? d['status']}`, detail: company + (d['title'] ?? ''), link: `/tickets/${d['ticketId']}` };
-    case 'TicketReply': return { ...base, tone: 'info', title: `Nueva respuesta en ${d['code']}`, detail: company + (d['title'] ?? ''), link: `/tickets/${d['ticketId']}` };
-    case 'RenewalReminder': {
-      const days = Number(d['days']);
-      const when = days <= 0 ? 'vence hoy' : days === 1 ? 'vence mañana' : `vence en ${days} días`;
-      return { ...base, tone: 'warn', title: `${d['domain'] || d['product']} ${when}`, detail: company + (amount ? `Renovación: ${amount}` : d['product'] ?? ''), link: '/services' };
-    }
-    case 'PaymentReceived': return { ...base, tone: 'success', title: `Pago recibido${amount ? ': ' + amount : ''}`, detail: company + (d['product'] ?? ''), link: '/billing' };
-    case 'PaymentFailed': return { ...base, tone: 'danger', title: 'No se pudo cobrar un pago', detail: company + (d['product'] ?? ''), link: '/services' };
-    case 'TicketCreated': return { ...base, tone: 'info', title: `Ticket nuevo ${d['code']}`, detail: `${d['company'] ?? ''} · ${d['title'] ?? ''}`, link: '/admin/tickets' };
-    case 'TransferRequested': return { ...base, tone: 'warn', title: `Pago por transferencia pendiente${amount ? ': ' + amount : ''}`, detail: `${d['company'] ?? ''} · ${d['product'] ?? ''}`, link: `/admin/clients/${d['clientId']}` };
-    case 'ContactLead': return { ...base, tone: 'info', title: `Nuevo contacto: ${d['name'] ?? ''}`, detail: [d['company'], d['service']].filter(Boolean).join(' · ') || (d['email'] ?? ''), link: '/admin/leads' };
-    case 'TransferReported': return { ...base, tone: 'warn', title: `Pago por confirmar${amount ? ': ' + amount : ''}`, detail: `${d['company'] ?? ''} · ${d['product'] ?? ''}`, link: '/admin/transfer-reports' };
-    case 'TransferRejected': return { ...base, tone: 'danger', title: 'No pudimos confirmar tu pago', detail: company + (d['product'] ?? ''), link: '/services' };
-    case 'TaxDueReminder': {
-      const days = Number(d['days']);
-      const [y, m] = (d['period'] ?? '').split('-').map(Number);
-      const period = m ? new Date(y, m - 1, 1).toLocaleDateString('es-PE', { month: 'long', year: 'numeric' }) : d['period'];
-      return { ...base, tone: days <= 1 ? 'danger' : 'warn', title: `Declaración SUNAT ${days <= 0 ? 'vence hoy' : days === 1 ? 'vence mañana' : `vence en ${days} días`}`, detail: `Periodo ${period}`, link: '/admin/tax-calendar' };
-    }
-    default: return { ...base, tone: 'neutral', title: n.type, detail: company, link: '/' };
+  return { id: n.id, createdAt: n.createdAt, unread: n.unread, ...notificationText(n.type, d, company, amount) };
+}
+
+function notificationText(type: string, d: Record<string, string>, company: string, amount: string): NotificationText {
+  switch (type) {
+    case 'TicketStatusChanged': return { tone: 'info', title: `Ticket ${d['code']}: ${TICKET_STATUS[d['status']] ?? d['status']}`, detail: company + (d['title'] ?? ''), link: `/tickets/${d['ticketId']}` };
+    case 'TicketReply': return { tone: 'info', title: `Nueva respuesta en ${d['code']}`, detail: company + (d['title'] ?? ''), link: `/tickets/${d['ticketId']}` };
+    case 'RenewalReminder': return renewalText(d, company, amount);
+    case 'PaymentReceived': return { tone: 'success', title: withAmount('Pago recibido', amount), detail: company + (d['product'] ?? ''), link: '/billing' };
+    case 'PaymentFailed': return { tone: 'danger', title: 'No se pudo cobrar un pago', detail: company + (d['product'] ?? ''), link: '/services' };
+    case 'TicketCreated': return { tone: 'info', title: `Ticket nuevo ${d['code']}`, detail: `${d['company'] ?? ''} · ${d['title'] ?? ''}`, link: '/admin/tickets' };
+    case 'TransferRequested': return { tone: 'warn', title: withAmount('Pago por transferencia pendiente', amount), detail: `${d['company'] ?? ''} · ${d['product'] ?? ''}`, link: `/admin/clients/${d['clientId']}` };
+    case 'ContactLead': return { tone: 'info', title: `Nuevo contacto: ${d['name'] ?? ''}`, detail: [d['company'], d['service']].filter(Boolean).join(' · ') || (d['email'] ?? ''), link: '/admin/leads' };
+    case 'TransferReported': return { tone: 'warn', title: withAmount('Pago por confirmar', amount), detail: `${d['company'] ?? ''} · ${d['product'] ?? ''}`, link: '/admin/transfer-reports' };
+    case 'TransferRejected': return { tone: 'danger', title: 'No pudimos confirmar tu pago', detail: company + (d['product'] ?? ''), link: '/services' };
+    case 'TaxDueReminder': return taxDueText(d);
+    default: return { tone: 'neutral', title: type, detail: company, link: '/' };
   }
 }
 

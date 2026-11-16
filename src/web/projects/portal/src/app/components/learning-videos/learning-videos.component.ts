@@ -96,7 +96,7 @@ export class LearningVideosComponent implements OnInit {
   error = signal('');
   listError = signal('');
   confirmingDelete = signal(false);
-  categories = computed(() => [...new Set([...SUGGESTED_CATEGORIES, ...this.videos().map(v => v.category)])].sort());
+  categories = computed(() => [...new Set([...SUGGESTED_CATEGORIES, ...this.videos().map(v => v.category)])].sort((a, b) => a.localeCompare(b, 'es')));
   /** Misma regla que el API (LearningVideosController.ParseYoutubeId), solo para la vista previa. */
   previewId = computed(() => {
     const v = this.url().trim();
