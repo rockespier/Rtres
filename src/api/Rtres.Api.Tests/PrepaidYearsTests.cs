@@ -38,7 +38,7 @@ public class PrepaidYearsTests
         Assert.Null(item.SetDiscount(20)); db.SaveChanges();
         Assert.Equal(340m, item.ChargeTotal(0m, 3)); // 100 + 120 + 120
 
-        await Payments(db).ApplyPaymentAsync(item, "TRF-1", 340m, "USD", CancellationToken.None, PaymentMethods.Transferencia, new DateTime(2026, 9, 1, 12, 0, 0, DateTimeKind.Utc), years: 3);
+        await Payments(db).ApplyPaymentAsync(item, "TRF-1", 340m, "USD", CancellationToken.None, new(PaymentMethods.Transferencia, new DateTime(2026, 9, 1, 12, 0, 0, DateTimeKind.Utc), Years: 3));
         Assert.Equal(new DateTime(2029, 9, 1, 12, 0, 0, DateTimeKind.Utc), item.RenewsAt);
         Assert.Equal(new DateTime(2027, 9, 1, 12, 0, 0, DateTimeKind.Utc), item.DiscountEndsAt); // el descuento cubre solo el primer año
         Assert.Equal(120m, item.CurrentPrice(new DateTime(2028, 1, 1, 0, 0, 0, DateTimeKind.Utc)));

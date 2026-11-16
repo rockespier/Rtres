@@ -23,3 +23,6 @@ Documentacion/informacion.md
 /factory/jobs/
 /.worktrees/
 !/factory/bin/
+
+# Salida local de SonarScanner
+.sonarqube/

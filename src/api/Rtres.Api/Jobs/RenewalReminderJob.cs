@@ -66,6 +66,7 @@ public sealed class RenewalReminderJob(RtresDbContext db, INotificationSender no
     {
         if (current is not (ClientProductStatus.Activo or ClientProductStatus.PorVencer or ClientProductStatus.Vencido) || renewsAt is not DateTime date) return current;
         var today = now.Date;
-        return date < today ? ClientProductStatus.Vencido : date < today.AddDays(ThresholdDays.Max() + 1) ? ClientProductStatus.PorVencer : ClientProductStatus.Activo;
+        if (date < today) return ClientProductStatus.Vencido;
+        return date < today.AddDays(ThresholdDays.Max() + 1) ? ClientProductStatus.PorVencer : ClientProductStatus.Activo;
     }
 }

@@ -22,7 +22,9 @@ public static class ClientProductPricing
 
     /// <summary>Lo que se cobrará en el próximo pago: con descuento solo si todavía no se usó; si no, precio de lista.</summary>
     public static decimal? NextChargePrice(this ClientProduct item, Product? product = null) =>
-        item.ListPrice(product) is decimal list ? list - (item.DiscountPendingUse() ? item.Discount!.Value : 0m) : null;
+        item.ListPrice(product) is decimal list ? list - PendingDiscount(item) : null;
+
+    private static decimal PendingDiscount(ClientProduct item) => item.DiscountPendingUse() ? item.Discount!.Value : 0m;
 
     /// <summary>
     /// IGV que se suma al cobro. Los precios del catálogo y los descuentos son sin IGV: solo se agrega cuando el producto
@@ -47,13 +49,19 @@ public static class ClientProductPricing
         item.NextChargePrice(product) is decimal first && item.ListPrice(product) is decimal list ? WithIgv(first + (years - 1) * list, igvRate) : null;
 
     /// <summary>Error si no se pueden pagar <paramref name="years"/> años de una vez (solo productos anuales, hasta <see cref="MaxPrepaidYears"/>).</summary>
-    public static string? ValidateYears(this ClientProduct item, int years) =>
-        years < 1 || years > MaxPrepaidYears ? $"Se pueden pagar de 1 a {MaxPrepaidYears} años."
-        : years > 1 && item.BillingCycle != BillingCycle.Anual ? "Solo los productos anuales se pueden pagar por varios años." : null;
+    public static string? ValidateYears(this ClientProduct item, int years)
+    {
+        if (years < 1 || years > MaxPrepaidYears) return $"Se pueden pagar de 1 a {MaxPrepaidYears} años.";
+        return years > 1 && item.BillingCycle != BillingCycle.Anual ? "Solo los productos anuales se pueden pagar por varios años." : null;
+    }
 
     /// <summary>Precio vigente del periodo actual (lo que muestra el portal).</summary>
     public static decimal? CurrentPrice(this ClientProduct item, DateTime now, Product? product = null) =>
-        item.ListPrice(product) is decimal list ? list - (item.HasAdjustment() && (item.DiscountEndsAt is null || now < item.DiscountEndsAt) ? item.Discount!.Value : 0m) : null;
+        item.ListPrice(product) is decimal list ? list - CurrentDiscount(item, now) : null;
+
+    /// <summary>Descuento del periodo en curso: sin fecha de fin (aún no usado) o con el fin todavía por llegar.</summary>
+    private static decimal CurrentDiscount(ClientProduct item, DateTime now) =>
+        item.HasAdjustment() && (item.DiscountEndsAt is null || now < item.DiscountEndsAt) ? item.Discount!.Value : 0m;
 
     /// <summary>
     /// Fija (o quita, con null/0) el descuento. Si el producto ya tiene un periodo pagado (no está Pendiente), el

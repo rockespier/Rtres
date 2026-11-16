@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using System.Globalization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -96,7 +97,7 @@ public sealed class TaxCalendarController(RtresDbContext db) : ControllerBase
         x.Digit0, x.Digit1, x.Digit2And3, x.Digit4And5, x.Digit6And7, x.Digit8And9, x.GoodTaxpayer, x.DueFor(settings.Ruc, settings.IsGoodTaxpayer), x.FiledAt, x.IgvPaid, x.RentaPaid);
 }
 
-public sealed record TaxDueDateRequest(DateOnly Digit0, DateOnly Digit1, DateOnly Digit2And3, DateOnly Digit4And5, DateOnly Digit6And7, DateOnly Digit8And9, DateOnly GoodTaxpayer);
+public sealed record TaxDueDateRequest([property: JsonRequired] DateOnly Digit0, [property: JsonRequired] DateOnly Digit1, [property: JsonRequired] DateOnly Digit2And3, [property: JsonRequired] DateOnly Digit4And5, [property: JsonRequired] DateOnly Digit6And7, [property: JsonRequired] DateOnly Digit8And9, [property: JsonRequired] DateOnly GoodTaxpayer);
 public sealed record TaxDueDateDto(Guid Id, string Period, DateOnly Digit0, DateOnly Digit1, DateOnly Digit2And3, DateOnly Digit4And5, DateOnly Digit6And7, DateOnly Digit8And9, DateOnly GoodTaxpayer, DateOnly? DueDate, DateTime? FiledAt, decimal? IgvPaid = null, decimal? RentaPaid = null);
 public sealed record TaxPeriodPaymentRequest(decimal? IgvPaid, decimal? RentaPaid);
 public sealed record TaxCalendarDto(string? Ruc, bool IsGoodTaxpayer, DateOnly Today, int Year, List<int> Years, List<TaxDueDateDto> Rows, TaxDueDateDto? Next, List<string> Overdue, bool MissingNextYear);

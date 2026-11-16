@@ -381,13 +381,11 @@ public class GitHubWebhookControllerTests
         var body = Encoding.UTF8.GetBytes(TestData.IssueEvent("closed", 7, state: "closed").GetRawText());
         var context = new DefaultHttpContext();
         context.Request.Body = new MemoryStream(body);
-        context.Request.Headers["X-GitHub-Event"] = "issues";
-        context.Request.Headers["X-Hub-Signature-256"] = TestData.Sign(signingSecret, body);
         var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?> { ["GitHub:WebhookSecret"] = "s3cret" }).Build();
         var controller = new GitHubWebhookController(new GitHubWebhookProcessor(db, new FakeNotifications(), NullLogger<GitHubWebhookProcessor>.Instance), config, NullLogger<GitHubWebhookController>.Instance)
             { ControllerContext = new ControllerContext { HttpContext = context } };
 
-        var result = await controller.Receive(CancellationToken.None);
+        var result = await controller.Receive("issues", TestData.Sign(signingSecret, body), CancellationToken.None);
 
         Assert.Equal(accepted ? typeof(OkResult) : typeof(UnauthorizedResult), result.GetType());
         Assert.Equal(accepted ? TicketStatus.Resuelto : TicketStatus.Abierto, (await db.Tickets.SingleAsync()).Status);

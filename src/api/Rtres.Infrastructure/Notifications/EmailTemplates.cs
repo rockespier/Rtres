@@ -123,7 +123,7 @@ public static class EmailTemplates
         var period = DateTime.TryParseExact(v("period"), "yyyy-MM", CultureInfo.InvariantCulture, DateTimeStyles.None, out var p) ? p.ToString("MMMM yyyy", es).ToLower(es) : v("period");
         var due = DateTime.TryParseExact(v("dueDate"), "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var d) ? d.ToString("dddd d 'de' MMMM", es) : v("dueDate");
         var days = int.TryParse(v("days"), out var n) ? n : 0;
-        var when = days <= 0 ? t["tax-due.today"] : days == 1 ? t["renewal.tomorrow"] : string.Format(t["renewal.inDays"], days);
+        var when = days switch { <= 0 => t["tax-due.today"], 1 => t["renewal.tomorrow"], _ => string.Format(t["renewal.inDays"], days) };
         return (string.Format(t["tax-due.subject"], period, when), new[] { string.Format(t["tax-due.body"], period, due, when), t["tax-due.next"] }, t["cta.tax-due"], $"{portal}/admin/tax-calendar");
     }
 
@@ -143,10 +143,12 @@ public static class EmailTemplates
     private static string StatusLabel(string lang, string status) =>
         StatusLabels[lang].TryGetValue(status, out var label) ? label : status;
 
-    private static string Money(string lang, string amount, string currency) =>
-        decimal.TryParse(amount, NumberStyles.Number, CultureInfo.InvariantCulture, out var value)
-            ? $"{(string.IsNullOrWhiteSpace(currency) ? "USD" : currency)} {value.ToString("N2", Culture(lang))}"
-            : $"{currency} {amount}".Trim();
+    private static string Money(string lang, string amount, string currency)
+    {
+        if (!decimal.TryParse(amount, NumberStyles.Number, CultureInfo.InvariantCulture, out var value)) return $"{currency} {amount}".Trim();
+        var code = string.IsNullOrWhiteSpace(currency) ? "USD" : currency;
+        return $"{code} {value.ToString("N2", Culture(lang))}";
+    }
 
     private static CultureInfo Culture(string lang) => CultureInfo.GetCultureInfo(lang switch { "en" => "en-US", "it" => "it-IT", _ => "es-PE" });
 

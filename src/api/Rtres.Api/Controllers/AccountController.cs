@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
@@ -25,9 +26,26 @@ public sealed class AccountController(RtresDbContext db, AccessEmailService acce
     [HttpGet("profile")]
     public async Task<ActionResult> Profile(CancellationToken ct) { var user = await db.UserAccounts.FindAsync([UserId], ct); return user is null ? NotFound() : Ok(new { name = user.Name, email = user.Email }); }
     [HttpPatch("profile")]
-    public async Task<ActionResult> UpdateProfile(ProfileRequest request, CancellationToken ct) { if (string.IsNullOrWhiteSpace(request.Name)) return BadRequest(new { message = "El nombre es obligatorio." }); var user = await db.UserAccounts.FindAsync([UserId], ct); if (user is null) return NotFound(); user.Name = request.Name.Trim(); await db.SaveChangesAsync(ct); return Ok(); }
+    public async Task<ActionResult> UpdateProfile(ProfileRequest request, CancellationToken ct)
+    {
+        if (string.IsNullOrWhiteSpace(request.Name)) return BadRequest(new { message = "El nombre es obligatorio." });
+        var user = await db.UserAccounts.FindAsync([UserId], ct);
+        if (user is null) return NotFound();
+        user.Name = request.Name.Trim();
+        await db.SaveChangesAsync(ct);
+        return Ok();
+    }
     [HttpPost("profile/change-password")]
-    public async Task<ActionResult> ChangePassword(ChangePasswordRequest request, CancellationToken ct) { var user = await db.UserAccounts.FindAsync([UserId], ct); if (user is null) return NotFound(); if (Hasher.VerifyHashedPassword(user, user.PasswordHash, request.CurrentPassword) == PasswordVerificationResult.Failed) return BadRequest(new { message = "La contraseña actual no coincide." }); if (string.IsNullOrWhiteSpace(request.NewPassword)) return BadRequest(new { message = "La nueva contraseña es obligatoria." }); user.PasswordHash = Hasher.HashPassword(user, request.NewPassword); await db.SaveChangesAsync(ct); return Ok(); }
+    public async Task<ActionResult> ChangePassword(ChangePasswordRequest request, CancellationToken ct)
+    {
+        var user = await db.UserAccounts.FindAsync([UserId], ct);
+        if (user is null) return NotFound();
+        if (Hasher.VerifyHashedPassword(user, user.PasswordHash, request.CurrentPassword) == PasswordVerificationResult.Failed) return BadRequest(new { message = "La contraseña actual no coincide." });
+        if (string.IsNullOrWhiteSpace(request.NewPassword)) return BadRequest(new { message = "La nueva contraseña es obligatoria." });
+        user.PasswordHash = Hasher.HashPassword(user, request.NewPassword);
+        await db.SaveChangesAsync(ct);
+        return Ok();
+    }
     /// <summary>Contraseña temporal aleatoria: solo se devuelve una vez (en la respuesta que crea/restablece el acceso).</summary>
     internal static string TemporaryPassword() => Convert.ToBase64String(RandomNumberGenerator.GetBytes(12)).Replace("+", "A").Replace("/", "B");
 
@@ -48,18 +66,45 @@ public sealed class AccountController(RtresDbContext db, AccessEmailService acce
                          select new { id = transaction.Id, createdAt = transaction.CreatedAt, product = product ?? transaction.Notes ?? transaction.Method, clientName = client.CompanyName, amount = transaction.Amount, currency = transaction.Currency, status = transaction.Status, internalCode = transaction.InternalCode }).ToListAsync(ct));
     }
     [HttpGet("team/users"), Authorize(Roles = "Admin")]
-    public async Task<ActionResult> Team(CancellationToken ct) { if (!TryGetClientId(out var clientId)) return Forbid(); return Ok(await db.UserAccounts.Where(x => x.ClientId == clientId).OrderBy(x => x.Name).Select(x => new { id = x.Id, name = x.Name, email = x.Email, role = x.Role.ToString(), isActive = x.IsActive, area = x.Area, jobTitle = x.JobTitle, managerId = x.ManagerId }).ToListAsync(ct)); }
+    public async Task<ActionResult> Team(CancellationToken ct)
+    {
+        if (!TryGetClientId(out var clientId)) return Forbid();
+        return Ok(await db.UserAccounts.Where(x => x.ClientId == clientId).OrderBy(x => x.Name).Select(x => new { id = x.Id, name = x.Name, email = x.Email, role = x.Role.ToString(), isActive = x.IsActive, area = x.Area, jobTitle = x.JobTitle, managerId = x.ManagerId }).ToListAsync(ct));
+    }
     [HttpPost("team/users"), Authorize(Roles = "Admin")]
-    public async Task<ActionResult> Invite(InviteRequest request, CancellationToken ct) { if (!TryGetClientId(out var clientId)) return Forbid(); if (string.IsNullOrWhiteSpace(request.Name) || string.IsNullOrWhiteSpace(request.Email)) return BadRequest(new { message = "Nombre y email son obligatorios." }); if (await db.UserAccounts.AnyAsync(x => x.Email == request.Email, ct)) return Conflict(new { message = "El email ya está registrado." }); var temporaryPassword = TemporaryPassword(); var user = new UserAccount { ClientId = clientId, Name = request.Name.Trim(), Email = request.Email.Trim(), Role = UserRole.Cliente }; user.PasswordHash = Hasher.HashPassword(user, temporaryPassword); db.UserAccounts.Add(user); await db.SaveChangesAsync(ct); var client = await db.Clients.FindAsync([clientId], ct); var emailSent = client is not null && await accessEmail.SendAsync(client, user.Name, user.Email, temporaryPassword, Request, ct); return Created($"/api/team/users/{user.Id}", new { id = user.Id, temporaryPassword, emailSent }); }
+    public async Task<ActionResult> Invite(InviteRequest request, CancellationToken ct)
+    {
+        if (!TryGetClientId(out var clientId)) return Forbid();
+        if (string.IsNullOrWhiteSpace(request.Name) || string.IsNullOrWhiteSpace(request.Email)) return BadRequest(new { message = "Nombre y email son obligatorios." });
+        if (await db.UserAccounts.AnyAsync(x => x.Email == request.Email, ct)) return Conflict(new { message = "El email ya está registrado." });
+        var temporaryPassword = TemporaryPassword();
+        var user = new UserAccount { ClientId = clientId, Name = request.Name.Trim(), Email = request.Email.Trim(), Role = UserRole.Cliente };
+        user.PasswordHash = Hasher.HashPassword(user, temporaryPassword);
+        db.UserAccounts.Add(user);
+        await db.SaveChangesAsync(ct);
+        var client = await db.Clients.FindAsync([clientId], ct);
+        var emailSent = client is not null && await accessEmail.SendAsync(client, user.Name, user.Email, temporaryPassword, Request, ct);
+        return Created($"/api/team/users/{user.Id}", new { id = user.Id, temporaryPassword, emailSent });
+    }
     [HttpPatch("team/users/{id:guid}"), Authorize(Roles = "Admin")]
-    public async Task<ActionResult> UpdateTeam(Guid id, UpdateTeamRequest request, CancellationToken ct) { if (!TryGetClientId(out var clientId)) return Forbid(); var user = await db.UserAccounts.SingleOrDefaultAsync(x => x.Id == id && x.ClientId == clientId, ct); if (user is null) return NotFound(); if (id == UserId && ((request.Role is UserRole.Cliente) || request.IsActive is false)) return BadRequest(new { message = "No puedes bajar tu rol ni desactivarte." }); if (request.Role is UserRole role && role is not (UserRole.Cliente or UserRole.Admin)) return BadRequest();
+    public async Task<ActionResult> UpdateTeam(Guid id, UpdateTeamRequest request, CancellationToken ct)
+    {
+        if (!TryGetClientId(out var clientId)) return Forbid();
+        var user = await db.UserAccounts.SingleOrDefaultAsync(x => x.Id == id && x.ClientId == clientId, ct);
+        if (user is null) return NotFound();
+        if (id == UserId && ((request.Role is UserRole.Cliente) || request.IsActive is false)) return BadRequest(new { message = "No puedes bajar tu rol ni desactivarte." });
+        if (request.Role is UserRole role && role is not (UserRole.Cliente or UserRole.Admin)) return BadRequest();
         var area = request.Area?.Trim(); var jobTitle = request.JobTitle?.Trim();
         if (area?.Length > 100 || jobTitle?.Length > 100) return BadRequest(new { message = "El área y el cargo no pueden pasar de 100 caracteres." });
         if (request.ManagerId is Guid managerId && managerId != Guid.Empty && await ValidateManagerAsync(user, managerId, clientId, ct) is string managerError) return BadRequest(new { message = managerError });
-        if (request.Role is UserRole validRole) user.Role = validRole; if (request.IsActive is bool active) user.IsActive = active;
-        if (area is not null) user.Area = area.Length == 0 ? null : area; if (jobTitle is not null) user.JobTitle = jobTitle.Length == 0 ? null : jobTitle;
+        if (request.Role is UserRole validRole) user.Role = validRole;
+        if (request.IsActive is bool active) user.IsActive = active;
+        if (area is not null) user.Area = area.Length == 0 ? null : area;
+        if (jobTitle is not null) user.JobTitle = jobTitle.Length == 0 ? null : jobTitle;
         if (request.ManagerId is Guid newManager) user.ManagerId = newManager == Guid.Empty ? null : newManager;
-        await db.SaveChangesAsync(ct); return Ok(); }
+        await db.SaveChangesAsync(ct);
+        return Ok();
+    }
     /// <summary>El jefe inmediato debe ser otro usuario activo del mismo cliente y no puede cerrar un ciclo (subir por sus jefes no debe llegar al usuario editado).</summary>
     private async Task<string?> ValidateManagerAsync(UserAccount user, Guid managerId, Guid clientId, CancellationToken ct)
     {
@@ -138,7 +183,7 @@ public sealed partial class AdminController(RtresDbContext db, PayPalCheckoutSer
         var facturaSeries = request.FacturaSeries?.Trim().ToUpperInvariant() ?? settings.FacturaSeries; var reciboSeries = request.ReciboSeries?.Trim().ToUpperInvariant() ?? settings.ReciboSeries;
         var facturaNext = request.FacturaNextNumber ?? settings.FacturaNextNumber; var reciboNext = request.ReciboNextNumber ?? settings.ReciboNextNumber;
         if (await ValidateSeriesAsync(facturaSeries, facturaNext, reciboSeries, reciboNext, ct) is string seriesError) return BadRequest(new { message = seriesError });
-        var ruc = request.Ruc is null ? settings.Ruc : request.Ruc.Trim() is { Length: > 0 } trimmed ? trimmed : null;
+        var ruc = request.Ruc is null ? settings.Ruc : EmptyToNull(request.Ruc);
         if (ruc is not null && !Regex.IsMatch(ruc, "^(10|15|17|20)[0-9]{9}$")) return BadRequest(new { message = "El RUC tiene 11 dígitos y empieza con 10, 15, 17 o 20." });
         settings.Ruc = ruc;
         if (request.IsGoodTaxpayer is bool goodTaxpayer) settings.IsGoodTaxpayer = goodTaxpayer;
@@ -221,7 +266,7 @@ public sealed partial class AdminController(RtresDbContext db, PayPalCheckoutSer
         payment.AmountPen = payment.Amount * await db.RateToPenAsync(currency, request.IssueDate, ct);
         db.PaymentTransactions.Add(payment); await db.SaveChangesAsync(ct);
         var lines = items.Select(x => new TaxDocumentLine { ClientProductId = x.ClientProductId, Description = TaxDocumentService.LineDescription(products.Single(p => p.Id == x.ClientProductId)), Amount = x.Amount }).ToList();
-        var document = await taxDocuments.IssueAsync(client.Id, types[0], request.IssueDate, currency, total, EmptyToNull(request.Notes), payment.Id, ct, lines);
+        var document = await taxDocuments.IssueAsync(new TaxDocumentDraft(client.Id, types[0], request.IssueDate, currency, total, EmptyToNull(request.Notes), payment.Id, lines), ct);
         if (request.RetentionAmount > 0) { document.RetentionAmount = request.RetentionAmount; await db.SaveChangesAsync(ct); }
         var saved = await db.TaxDocumentLines.Where(x => x.TaxDocumentId == document.Id).OrderBy(x => x.Order).ToListAsync(ct);
         return Created($"/api/admin/tax-documents/{document.Id}", TaxDocumentDto(document, payment.Amount > 0 ? payment.AmountPen / payment.Amount : 1m, saved, payment.Method));
@@ -231,7 +276,7 @@ public sealed partial class AdminController(RtresDbContext db, PayPalCheckoutSer
     private static IReadOnlyList<TaxDocumentItemRequest> TaxDocumentItems(TaxDocumentRequest request)
     {
         if (request.Items is { Count: > 0 } list) return list;
-        return request.ClientProductId is Guid single ? [new TaxDocumentItemRequest(single, request.TotalAmount)] : [];
+        return request.ClientProductId is Guid single ? [new TaxDocumentItemRequest(single, request.TotalAmount ?? 0)] : [];
     }
 
     private static string? ValidateTaxDocumentItems(string? currency, IReadOnlyList<TaxDocumentItemRequest> items)
@@ -357,13 +402,17 @@ public sealed partial class AdminController(RtresDbContext db, PayPalCheckoutSer
     }
 
     // Excel guarda números y fechas con tipo propio; si vienen como texto se aceptan los formatos habituales.
-    private static decimal? ReadDecimal(IXLCell cell) =>
-        cell.DataType == XLDataType.Number ? (decimal)cell.GetDouble()
-        : decimal.TryParse(cell.GetString().Trim(), System.Globalization.NumberStyles.Number, System.Globalization.CultureInfo.InvariantCulture, out var value) ? value : null;
+    private static decimal? ReadDecimal(IXLCell cell)
+    {
+        if (cell.DataType == XLDataType.Number) return (decimal)cell.GetDouble();
+        return decimal.TryParse(cell.GetString().Trim(), System.Globalization.NumberStyles.Number, System.Globalization.CultureInfo.InvariantCulture, out var value) ? value : null;
+    }
 
-    private static DateOnly? ReadDate(IXLCell cell) =>
-        cell.DataType == XLDataType.DateTime ? DateOnly.FromDateTime(cell.GetDateTime())
-        : DateOnly.TryParseExact(cell.GetString().Trim(), ["yyyy-MM-dd", "dd/MM/yyyy", "d/M/yyyy"], System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out var date) ? date : null;
+    private static DateOnly? ReadDate(IXLCell cell)
+    {
+        if (cell.DataType == XLDataType.DateTime) return DateOnly.FromDateTime(cell.GetDateTime());
+        return DateOnly.TryParseExact(cell.GetString().Trim(), ["yyyy-MM-dd", "dd/MM/yyyy", "d/M/yyyy"], System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out var date) ? date : null;
+    }
 
     [HttpDelete("expenses/{id:guid}")]
     public async Task<ActionResult> DeleteExpense(Guid id, CancellationToken ct)
@@ -439,7 +488,7 @@ public sealed partial class AdminController(RtresDbContext db, PayPalCheckoutSer
 
     /// <summary>Periodo anterior de igual duración: el mes anterior o el año anterior.</summary>
     private static (DateOnly From, DateOnly To) PreviousPeriod(int? month, int year) =>
-        month is int m ? Period(m == 1 ? 12 : m - 1, m == 1 ? year - 1 : year) : Period(null, year - 1);
+        month switch { null => Period(null, year - 1), 1 => Period(12, year - 1), int m => Period(m - 1, year) };
 
     /// <summary>
     /// <see cref="PersonaNatural"/>: cobro con recibo por honorarios, ingreso de 4ta categoría del titular como persona natural.
@@ -787,7 +836,11 @@ public sealed partial class AdminController(RtresDbContext db, PayPalCheckoutSer
     public async Task<ActionResult> UpdateProject(Guid id, ProjectRequest request, CancellationToken ct)
     {
         var project = await db.Projects.Include(x => x.Repositories).SingleOrDefaultAsync(x => x.Id == id, ct); if (project is null) return NotFound();
-        if (request.Name is not null) { if (string.IsNullOrWhiteSpace(request.Name)) return BadRequest(new { message = "El nombre del proyecto es obligatorio." }); project.Name = request.Name.Trim(); }
+        if (request.Name is not null)
+        {
+            if (string.IsNullOrWhiteSpace(request.Name)) return BadRequest(new { message = "El nombre del proyecto es obligatorio." });
+            project.Name = request.Name.Trim();
+        }
         await db.SaveChangesAsync(ct); return Ok(ProjectDto(project));
     }
 
@@ -804,7 +857,7 @@ public sealed partial class AdminController(RtresDbContext db, PayPalCheckoutSer
         await db.SaveChangesAsync(ct); return NoContent();
     }
 
-    private static string Count(int n, string one, string many) => n == 0 ? "" : n == 1 ? $"1 {one}" : $"{n} {many}";
+    private static string Count(int n, string one, string many) => n switch { 0 => "", 1 => $"1 {one}", _ => $"{n} {many}" };
 
     [HttpPost("projects/{id:guid}/repositories")]
     public async Task<ActionResult> AddRepository(Guid id, RepositoryRequest request, CancellationToken ct)
@@ -884,7 +937,17 @@ public sealed partial class AdminController(RtresDbContext db, PayPalCheckoutSer
     public async Task<ActionResult> UpdateProduct(Guid id, ProductPatchRequest request, CancellationToken ct)
     {
         var product = await db.Products.FindAsync([id], ct); if (product is null) return NotFound();
-        if (request.Type is ProductType type) product.Type = type; if (request.Name is not null) product.Name = request.Name.Trim(); if (request.BillingCycle is BillingCycle cycle) product.BillingCycle = cycle; if (request.BasePrice is not null) product.BasePrice = request.BasePrice; if (request.Currency is not null) product.Currency = request.Currency.Trim().ToUpperInvariant(); if (request.Description is not null) product.Description = EmptyToNull(request.Description); if (request.IsActive is bool active) product.IsActive = active; if (request.Category is not null) product.Category = EmptyToNull(request.Category); if (request.Tags is not null) product.Tags = NormalizeTags(request.Tags); if (request.AllowsTickets is bool allowsTickets) product.AllowsTickets = allowsTickets; if (request.TaxDocumentType is TaxDocumentType taxType) product.TaxDocumentType = taxType;
+        if (request.Type is ProductType type) product.Type = type;
+        if (request.Name is not null) product.Name = request.Name.Trim();
+        if (request.BillingCycle is BillingCycle cycle) product.BillingCycle = cycle;
+        if (request.BasePrice is not null) product.BasePrice = request.BasePrice;
+        if (request.Currency is not null) product.Currency = request.Currency.Trim().ToUpperInvariant();
+        if (request.Description is not null) product.Description = EmptyToNull(request.Description);
+        if (request.IsActive is bool active) product.IsActive = active;
+        if (request.Category is not null) product.Category = EmptyToNull(request.Category);
+        if (request.Tags is not null) product.Tags = NormalizeTags(request.Tags);
+        if (request.AllowsTickets is bool allowsTickets) product.AllowsTickets = allowsTickets;
+        if (request.TaxDocumentType is TaxDocumentType taxType) product.TaxDocumentType = taxType;
         if (string.IsNullOrWhiteSpace(product.Name) || string.IsNullOrWhiteSpace(product.Currency)) return BadRequest(new { message = "Nombre y moneda son obligatorios." });
         await EnsureProductCategoryAsync(product.Category, ct);
         await db.SaveChangesAsync(ct); return Ok(ProductDto(product));
@@ -961,7 +1024,7 @@ public sealed partial class AdminController(RtresDbContext db, PayPalCheckoutSer
         if (key.Length > 100) return BadRequest(new { message = "El N° de operación es demasiado largo." });
         var paidAt = ToUtcDate(request.PaidAt);
         if (paidAt > DateTime.UtcNow.AddDays(1)) return BadRequest(new { message = "La fecha de pago no puede ser futura." });
-        if (!await payments.ApplyPaymentAsync(item, key, value, item.Product?.Currency, ct, PaymentMethods.Transferencia, paidAt, request.Years)) return Conflict(new { message = "Esa transferencia (N° de operación) ya está registrada." });
+        if (!await payments.ApplyPaymentAsync(item, key, value, item.Product?.Currency, ct, new(PaymentMethods.Transferencia, paidAt, request.Years))) return Conflict(new { message = "Esa transferencia (N° de operación) ya está registrada." });
         // La vigencia pudo quedar en el pasado si el pago es antiguo: el estado sigue a la fecha de vencimiento.
         item.Status = RenewalReminderJob.StatusFor(item.Status, item.RenewsAt, DateTime.UtcNow); await db.SaveChangesAsync(ct);
         return Ok(ClientProductDto(item, igvRate));
@@ -971,7 +1034,12 @@ public sealed partial class AdminController(RtresDbContext db, PayPalCheckoutSer
     public async Task<ActionResult> UpdateClientProduct(Guid id, ClientProductPatchRequest request, CancellationToken ct)
     {
         var item = await db.ClientProducts.Include(x => x.Product).Include(x => x.Project).SingleOrDefaultAsync(x => x.Id == id, ct); if (item is null) return NotFound();
-        if (request.Price is not null) item.Price = request.Price; if (request.Status is ClientProductStatus status) item.Status = status; if (request.BillingCycle is BillingCycle cycle) item.BillingCycle = cycle; if (request.DomainName is not null) item.DomainName = EmptyToNull(request.DomainName); if (request.PriceLabelOverride is not null) item.PriceLabelOverride = EmptyToNull(request.PriceLabelOverride); if (request.IsManualBilling is bool manual) item.IsManualBilling = manual;
+        if (request.Price is not null) item.Price = request.Price;
+        if (request.Status is ClientProductStatus status) item.Status = status;
+        if (request.BillingCycle is BillingCycle cycle) item.BillingCycle = cycle;
+        if (request.DomainName is not null) item.DomainName = EmptyToNull(request.DomainName);
+        if (request.PriceLabelOverride is not null) item.PriceLabelOverride = EmptyToNull(request.PriceLabelOverride);
+        if (request.IsManualBilling is bool manual) item.IsManualBilling = manual;
         if (request.Discount is not null && item.SetDiscount(request.Discount) is string discountError) return BadRequest(new { message = discountError });
         // Mover a otro proyecto del mismo cliente (p. ej. para poder borrar el proyecto original). Sus tickets se quedan donde están.
         if (request.ProjectId is Guid projectId && projectId != item.ProjectId)
@@ -1058,7 +1126,11 @@ public sealed partial class AdminController(RtresDbContext db, PayPalCheckoutSer
         using var stream = new MemoryStream(); book.SaveAs(stream); return stream.ToArray();
     }
     private static string? EmptyToNull(string? value) => string.IsNullOrWhiteSpace(value) ? null : value.Trim();
-    private static string? ValidateClient(ClientRequest request) => string.IsNullOrWhiteSpace(request.CompanyName) || string.IsNullOrWhiteSpace(request.ContactName) || string.IsNullOrWhiteSpace(request.Email) || !request.Email.Contains('@') ? "Empresa, contacto y email válido son obligatorios." : request.PreferredLanguage.Trim().ToLowerInvariant() is not ("es" or "en" or "it") ? "Idioma inválido." : null;
+    private static string? ValidateClient(ClientRequest request)
+    {
+        if (string.IsNullOrWhiteSpace(request.CompanyName) || string.IsNullOrWhiteSpace(request.ContactName) || string.IsNullOrWhiteSpace(request.Email) || !request.Email.Contains('@')) return "Empresa, contacto y email válido son obligatorios.";
+        return request.PreferredLanguage.Trim().ToLowerInvariant() is not ("es" or "en" or "it") ? "Idioma inválido." : null;
+    }
     private static string? ValidateProduct(ProductRequest request) => string.IsNullOrWhiteSpace(request.Name) || string.IsNullOrWhiteSpace(request.Currency) ? "Nombre y moneda son obligatorios." : null;
     /// <summary>Una categoría escrita en un producto (o en la importación) que aún no existe se agrega a la lista administrable.</summary>
     private async Task EnsureProductCategoryAsync(string? name, CancellationToken ct)
@@ -1103,9 +1175,9 @@ public sealed record InviteRequest(string Name, string Email);
 public sealed record UpdateTeamRequest(UserRole? Role, bool? IsActive, string? Area = null, string? JobTitle = null, Guid? ManagerId = null);
 public sealed record ClientRequest(string CompanyName, string ContactName, string Email, string? Phone, string PreferredLanguage, bool RequiresTaxDocument = false);
 public sealed record ClientPatchRequest(string? CompanyName, string? ContactName, string? Email, string? Phone, string? PreferredLanguage, bool? IsActive, bool? RequiresTaxDocument = null);
-public sealed record ProductRequest(ProductType Type, string Name, BillingCycle BillingCycle, decimal? BasePrice, string Currency, string? Description, bool IsActive, TaxDocumentType TaxDocumentType = TaxDocumentType.Factura, string? Category = null, string? Tags = null, bool AllowsTickets = false);
+public sealed record ProductRequest([property: JsonRequired] ProductType Type, string Name, [property: JsonRequired] BillingCycle BillingCycle, decimal? BasePrice, string Currency, string? Description, [property: JsonRequired] bool IsActive, TaxDocumentType TaxDocumentType = TaxDocumentType.Factura, string? Category = null, string? Tags = null, bool AllowsTickets = false);
 public sealed record ProductPatchRequest(ProductType? Type, string? Name, BillingCycle? BillingCycle, decimal? BasePrice, string? Currency, string? Description, bool? IsActive, TaxDocumentType? TaxDocumentType = null, string? Category = null, string? Tags = null, bool? AllowsTickets = null);
-public sealed record AssignProductRequest(Guid ProductId, Guid ProjectId, BillingCycle BillingCycle, string BillingMode, decimal? Price, string? DomainName, string? PriceLabelOverride, DateOnly? RenewsAt = null, DateOnly? NextChargeAt = null, decimal? Discount = null);
+public sealed record AssignProductRequest([property: JsonRequired] Guid ProductId, [property: JsonRequired] Guid ProjectId, [property: JsonRequired] BillingCycle BillingCycle, string BillingMode, decimal? Price, string? DomainName, string? PriceLabelOverride, DateOnly? RenewsAt = null, DateOnly? NextChargeAt = null, decimal? Discount = null);
 public sealed record TransferPaymentRequest(decimal? Amount, DateOnly? PaidAt, string? Reference, int Years = 1);
 public sealed record ClientProductDatesRequest(DateOnly? RenewsAt, DateOnly? NextChargeAt);
 public sealed record ClientProductPatchRequest(decimal? Price, ClientProductStatus? Status, BillingCycle? BillingCycle, bool? IsManualBilling, string? DomainName, string? PriceLabelOverride, decimal? Discount = null, Guid? ProjectId = null);
@@ -1117,9 +1189,9 @@ public sealed record ProjectRequest(string? Name, string? Slug, string? GithubRe
 public sealed record RepositoryRequest(string? Owner, string? Name, string? Label = null, bool? IsDefault = null);
 public sealed record TaxSettingsRequest(decimal? IgvRate, decimal? RentaRate, string? FacturaSeries = null, int? FacturaNextNumber = null, string? ReciboSeries = null, int? ReciboNextNumber = null, string? Ruc = null, bool? IsGoodTaxpayer = null, bool? Use1662AsCredit = null);
 /// <summary>Varios productos van en <c>Items</c>; <c>ClientProductId</c> + <c>TotalAmount</c> se mantienen para emitir con uno solo.</summary>
-public sealed record TaxDocumentRequest(Guid? ClientProductId, DateOnly IssueDate, string Currency, decimal TotalAmount, string? Notes, decimal? RetentionAmount = null, IReadOnlyList<TaxDocumentItemRequest>? Items = null);
+public sealed record TaxDocumentRequest(Guid? ClientProductId, [property: JsonRequired] DateOnly IssueDate, string Currency, decimal? TotalAmount, string? Notes, decimal? RetentionAmount = null, IReadOnlyList<TaxDocumentItemRequest>? Items = null);
 public sealed record TaxDocumentItemRequest(Guid ClientProductId, decimal Amount);
-public sealed record ReverseTaxDocumentRequest(string? Reason, bool NotIssued);
-public sealed record ExpenseRequest(string Description, Guid CategoryId, ExpenseType Type, decimal Amount, string Currency, DateOnly Date, bool Recurring, BillingCycle? RecurrenceCycle, bool IsNonDeductible = false, bool IsNonDomiciledService = false, string? ForeignSupplierName = null, string? ForeignSupplierCountry = null);
-public sealed record EndRecurrenceRequest(DateOnly EndsAt);
+public sealed record ReverseTaxDocumentRequest(string? Reason, [property: JsonRequired] bool NotIssued);
+public sealed record ExpenseRequest(string Description, [property: JsonRequired] Guid CategoryId, [property: JsonRequired] ExpenseType Type, [property: JsonRequired] decimal Amount, string Currency, [property: JsonRequired] DateOnly Date, [property: JsonRequired] bool Recurring, BillingCycle? RecurrenceCycle, bool IsNonDeductible = false, bool IsNonDomiciledService = false, string? ForeignSupplierName = null, string? ForeignSupplierCountry = null);
+public sealed record EndRecurrenceRequest([property: JsonRequired] DateOnly EndsAt);
 public sealed record ExpensePatchRequest(string? Description, Guid? CategoryId, ExpenseType? Type, decimal? Amount, string? Currency, DateOnly? Date, bool? Recurring, BillingCycle? RecurrenceCycle, bool? IsNonDeductible = null, bool? IsNonDomiciledService = null, string? ForeignSupplierName = null, string? ForeignSupplierCountry = null);

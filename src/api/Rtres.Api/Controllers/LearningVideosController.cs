@@ -8,10 +8,10 @@ using Rtres.Infrastructure.Persistence;
 namespace Rtres.Api.Controllers;
 
 /// <summary>Videos de la página Recursos: el portal los administra y el sitio lee los publicados de su idioma.</summary>
-[ApiController]
+[ApiController, Route("api")]
 public sealed partial class LearningVideosController(RtresDbContext db) : ControllerBase
 {
-    [HttpGet("api/public/{locale}/videos")]
+    [HttpGet("public/{locale}/videos")]
     public async Task<ActionResult> PublicVideos(string locale, CancellationToken ct)
     {
         if (locale is not ("es" or "en" or "it")) return NotFound();
@@ -20,11 +20,11 @@ public sealed partial class LearningVideosController(RtresDbContext db) : Contro
             .Select(x => new PublicVideoDto(x.YoutubeId, x.Title, x.Category, x.Description)).ToListAsync(ct));
     }
 
-    [HttpGet("api/admin/learning-videos"), Authorize(Roles = "SuperAdmin")]
+    [HttpGet("admin/learning-videos"), Authorize(Roles = "SuperAdmin")]
     public async Task<ActionResult> List(CancellationToken ct) =>
         Ok(await db.LearningVideos.OrderBy(x => x.SortOrder).ThenByDescending(x => x.CreatedAt).Select(x => ToDto(x)).ToListAsync(ct));
 
-    [HttpPost("api/admin/learning-videos"), Authorize(Roles = "SuperAdmin")]
+    [HttpPost("admin/learning-videos"), Authorize(Roles = "SuperAdmin")]
     public async Task<ActionResult> Create(LearningVideoRequest request, CancellationToken ct)
     {
         var video = new LearningVideo { SortOrder = await db.LearningVideos.CountAsync(ct) };
@@ -34,7 +34,7 @@ public sealed partial class LearningVideosController(RtresDbContext db) : Contro
         return Created($"/api/admin/learning-videos/{video.Id}", ToDto(video));
     }
 
-    [HttpPut("api/admin/learning-videos/{id:guid}"), Authorize(Roles = "SuperAdmin")]
+    [HttpPut("admin/learning-videos/{id:guid}"), Authorize(Roles = "SuperAdmin")]
     public async Task<ActionResult> Update(Guid id, LearningVideoRequest request, CancellationToken ct)
     {
         var video = await db.LearningVideos.FindAsync([id], ct); if (video is null) return NotFound();
@@ -43,7 +43,7 @@ public sealed partial class LearningVideosController(RtresDbContext db) : Contro
         await db.SaveChangesAsync(ct); return Ok(ToDto(video));
     }
 
-    [HttpDelete("api/admin/learning-videos/{id:guid}"), Authorize(Roles = "SuperAdmin")]
+    [HttpDelete("admin/learning-videos/{id:guid}"), Authorize(Roles = "SuperAdmin")]
     public async Task<ActionResult> Delete(Guid id, CancellationToken ct)
     {
         var video = await db.LearningVideos.FindAsync([id], ct); if (video is null) return NotFound();
@@ -51,7 +51,7 @@ public sealed partial class LearningVideosController(RtresDbContext db) : Contro
     }
 
     /// <summary>Nuevo orden de la lista: los ids en el orden en que deben mostrarse.</summary>
-    [HttpPost("api/admin/learning-videos/reorder"), Authorize(Roles = "SuperAdmin")]
+    [HttpPost("admin/learning-videos/reorder"), Authorize(Roles = "SuperAdmin")]
     public async Task<ActionResult> Reorder(IReadOnlyList<Guid> ids, CancellationToken ct)
     {
         var videos = await db.LearningVideos.ToListAsync(ct);

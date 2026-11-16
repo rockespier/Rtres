@@ -11,7 +11,7 @@ namespace Rtres.Api.Tests;
 public class ImportTemplateTests
 {
     [Fact]
-    public void Templates_explain_accepted_values_and_offer_dropdowns()
+    public async Task Templates_explain_accepted_values_and_offer_dropdowns()
     {
         using var db = TestData.Db(out _);
         var admin = Admin(db);
@@ -19,7 +19,7 @@ public class ImportTemplateTests
         {
             (admin.ClientTemplate(), 5, "\"es,en,it\""),
             (admin.ProductTemplate(), 1, $"\"{string.Join(",", Enum.GetNames<ProductType>())}\""),
-            (admin.ExpenseTemplate(CancellationToken.None).Result, 2, $"\"{string.Join(",", ExpenseCategoryIds.Seed.Select(x => x.Name))}\""),
+            (await admin.ExpenseTemplate(CancellationToken.None), 2, $"\"{string.Join(",", ExpenseCategoryIds.Seed.Select(x => x.Name))}\""),
         })
         {
             using var book = Open(result);

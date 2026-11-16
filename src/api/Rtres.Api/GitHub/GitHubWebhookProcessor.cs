@@ -24,7 +24,11 @@ public sealed class GitHubWebhookProcessor(RtresDbContext db, INotificationSende
         if (ticket is null) { logger.LogDebug("Issue {Owner}/{Repo}#{Number} no corresponde a ningún ticket", owner, name, number); return; }
 
         var action = payload.GetProperty("action").GetString();
-        if (eventName == "issues") { if (!AffectsStatus(action, payload)) return; await ApplyIssueAsync(ticket, issue, ct); }
+        if (eventName == "issues")
+        {
+            if (!AffectsStatus(action, payload)) return;
+            await ApplyIssueAsync(ticket, issue, ct);
+        }
         else await ApplyCommentAsync(ticket, action, payload.GetProperty("comment"), ct);
         await db.SaveChangesAsync(ct);
     }

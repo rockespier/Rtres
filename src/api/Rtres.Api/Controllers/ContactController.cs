@@ -14,13 +14,13 @@ namespace Rtres.Api.Controllers;
 /// Formulario de contacto del sitio público: guarda el lead y avisa al equipo (email y campana) en segundo plano. Contra
 /// bots: límite de envíos por IP y un campo trampa (<see cref="ContactRequest.Website"/>) que una persona no ve.
 /// </summary>
-[ApiController]
+[ApiController, Route("api")]
 public sealed class ContactController(RtresDbContext db, IBackgroundJobClient jobs) : ControllerBase
 {
     public const string RateLimitPolicy = "contact";
     public static readonly string[] Locales = ["es", "en", "it"];
 
-    [HttpPost("api/public/contact"), EnableRateLimiting(RateLimitPolicy)]
+    [HttpPost("public/contact"), EnableRateLimiting(RateLimitPolicy)]
     public async Task<ActionResult> Submit(ContactRequest request, CancellationToken ct)
     {
         // Un bot llena el campo oculto: se responde igual que a una persona, sin guardar ni avisar.
@@ -45,11 +45,11 @@ public sealed class ContactController(RtresDbContext db, IBackgroundJobClient jo
         return Accepted();
     }
 
-    [HttpGet("api/admin/leads"), Authorize(Roles = "SuperAdmin")]
+    [HttpGet("admin/leads"), Authorize(Roles = "SuperAdmin")]
     public async Task<ActionResult> Leads(ContactLeadStatus? status, CancellationToken ct) =>
         Ok(await db.ContactLeads.Where(x => status == null || x.Status == status).OrderByDescending(x => x.CreatedAt).Take(300).ToListAsync(ct));
 
-    [HttpPatch("api/admin/leads/{id:guid}"), Authorize(Roles = "SuperAdmin")]
+    [HttpPatch("admin/leads/{id:guid}"), Authorize(Roles = "SuperAdmin")]
     public async Task<ActionResult> UpdateLead(Guid id, ContactLeadPatch request, CancellationToken ct)
     {
         var lead = await db.ContactLeads.FindAsync([id], ct); if (lead is null) return NotFound();
@@ -58,7 +58,12 @@ public sealed class ContactController(RtresDbContext db, IBackgroundJobClient jo
         await db.SaveChangesAsync(ct); return Ok(lead);
     }
 
-    private static string? Clip(string? value, int max) => string.IsNullOrWhiteSpace(value) ? null : value.Trim() is var v && v.Length > max ? v[..max] : value.Trim();
+    private static string? Clip(string? value, int max)
+    {
+        if (string.IsNullOrWhiteSpace(value)) return null;
+        var trimmed = value.Trim();
+        return trimmed.Length > max ? trimmed[..max] : trimmed;
+    }
 }
 
 /// <summary><see cref="Website"/>: campo trampa oculto; si llega con valor, es un bot.</summary>

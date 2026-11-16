@@ -97,6 +97,6 @@ RecurringJob.AddOrUpdate<GitHubProjectStatusSyncJob>("github-project-status", jo
 RecurringJob.AddOrUpdate<TaxDueReminderJob>("tax-due-reminders", job => job.SendAsync(CancellationToken.None), "30 13 * * *");
 RecurringJob.AddOrUpdate<PayPalReconciliationJob>("paypal-reconciliation", job => job.ReconcileAsync(CancellationToken.None), Cron.Hourly);
 app.MapControllers();
-app.Run();
+await app.RunAsync();
 
-public partial class Program;
+public partial class Program { protected Program() { } }

@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using System.Globalization;
 using System.Security.Claims;
 using System.Text.Json;
@@ -19,7 +20,12 @@ public sealed class PaymentsController(RtresDbContext db, IPayPalClient payPal, 
     private IActionResult? ClientScope(Guid? requested, out Guid clientId)
     {
         clientId = Guid.Empty;
-        if (User.IsInRole(nameof(UserRole.SuperAdmin))) { if (requested is not Guid value) return BadRequest(new { message = "clientId es obligatorio para SuperAdmin." }); clientId = value; return null; }
+        if (User.IsInRole(nameof(UserRole.SuperAdmin)))
+        {
+            if (requested is not Guid value) return BadRequest(new { message = "clientId es obligatorio para SuperAdmin." });
+            clientId = value;
+            return null;
+        }
         return Guid.TryParse(User.FindFirstValue("client_id"), out clientId) ? null : Forbid();
     }
 
@@ -204,4 +210,4 @@ public sealed class PaymentsController(RtresDbContext db, IPayPalClient payPal, 
 }
 
 /// <summary><see cref="ProjectId"/> null: se crea un proyecto con el nombre del producto (clientes sin proyectos).</summary>
-public sealed record SubscribeRequest(Guid ProductId, Guid? ProjectId, BillingCycle BillingCycle, string PaymentMethod = PaymentMethods.PayPal, int Years = 1);
+public sealed record SubscribeRequest([property: JsonRequired] Guid ProductId, Guid? ProjectId, [property: JsonRequired] BillingCycle BillingCycle, string PaymentMethod = PaymentMethods.PayPal, int Years = 1);

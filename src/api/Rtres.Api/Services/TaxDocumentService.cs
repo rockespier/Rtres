@@ -26,7 +26,7 @@ public sealed class TaxDocumentService(RtresDbContext db, ILogger<TaxDocumentSer
             var item = await db.ClientProducts.Include(x => x.Product).SingleAsync(x => x.Id == payment.ClientProductId, ct);
             var client = await db.Clients.SingleAsync(x => x.Id == item.ClientId, ct);
             if (!client.RequiresTaxDocument || item.Product is null) return null;
-            return await IssueAsync(client.Id, item.Product.TaxDocumentType, LimaToday(payment.CreatedAt), payment.Currency, payment.Amount, payment.Years > 1 ? $"Pago {payment.InternalCode} ({payment.Years} años por adelantado)" : $"Pago {payment.InternalCode}", payment.Id, ct, [new TaxDocumentLine { ClientProductId = item.Id, Description = LineDescription(item), Amount = payment.Amount }]);
+            return await IssueAsync(new TaxDocumentDraft(client.Id, item.Product.TaxDocumentType, LimaToday(payment.CreatedAt), payment.Currency, payment.Amount, payment.Years > 1 ? $"Pago {payment.InternalCode} ({payment.Years} años por adelantado)" : $"Pago {payment.InternalCode}", payment.Id, [new TaxDocumentLine { ClientProductId = item.Id, Description = LineDescription(item), Amount = payment.Amount }]), ct);
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
@@ -37,11 +37,12 @@ public sealed class TaxDocumentService(RtresDbContext db, ILogger<TaxDocumentSer
     }
 
     /// <summary>
-    /// Asigna serie y correlativo y guarda el documento. <paramref name="total"/> es lo cobrado: en la Factura incluye
+    /// Asigna serie y correlativo y guarda el documento. <see cref="TaxDocumentDraft.Total"/> es lo cobrado: en la Factura incluye
     /// el IGV (se desglosa con la tasa configurada); el Recibo por honorarios no lleva IGV.
     /// </summary>
-    public async Task<TaxDocument> IssueAsync(Guid clientId, TaxDocumentType type, DateOnly issueDate, string currency, decimal total, string? notes, Guid? paymentTransactionId, CancellationToken ct, IReadOnlyList<TaxDocumentLine>? lines = null)
+    public async Task<TaxDocument> IssueAsync(TaxDocumentDraft draft, CancellationToken ct)
     {
+        var (clientId, type, issueDate, currency, total, notes, paymentTransactionId, lines) = draft;
         for (var attempt = 1; attempt <= MaxAttempts; attempt++)
         {
             var settings = await db.TaxSettings.FirstOrDefaultAsync(ct) ?? db.TaxSettings.Add(new TaxSettings()).Entity;
@@ -162,3 +163,9 @@ public sealed class TaxDocumentService(RtresDbContext db, ILogger<TaxDocumentSer
 
 /// <summary>Resultado de un extorno; el estado y las fechas son los del producto cuando el pago lo había modificado.</summary>
 public sealed record TaxDocumentReversalResult(bool NumberReleased, string? PaymentMethod, ClientProductStatus? ProductStatus, DateTime? RenewsAt, DateTime? NextChargeAt);
+
+/// <summary>
+/// Comprobante por emitir. <see cref="Total"/> es lo cobrado: en la Factura incluye el IGV. <see cref="Lines"/> es el
+/// detalle por producto (sin <c>TaxDocumentId</c> ni orden: se asignan al emitir).
+/// </summary>
+public sealed record TaxDocumentDraft(Guid ClientId, TaxDocumentType Type, DateOnly IssueDate, string Currency, decimal Total, string? Notes, Guid? PaymentTransactionId, IReadOnlyList<TaxDocumentLine>? Lines = null);
