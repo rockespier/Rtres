@@ -4,15 +4,42 @@ import { Component, EventEmitter, Input, Output } from '@angular/core'; import {
 @Component({selector:'app-discount-field',standalone:true,imports:[MoneyPipe,CommonModule,FormsModule],template:`<fieldset class="space-y-2"><div class="flex items-center justify-between gap-3"><legend class="field-label">Ajuste de precio</legend><div class="flex gap-1 text-sm" role="radiogroup" aria-label="Forma de ajustar el precio"><button type="button" class="btn btn-sm" [class.btn-primary]="mode==='discount'" [class.btn-ghost]="mode!=='discount'" (click)="setMode('discount')" [attr.aria-pressed]="mode==='discount'">Descuento</button><button type="button" class="btn btn-sm" [class.btn-primary]="mode==='surcharge'" [class.btn-ghost]="mode!=='surcharge'" (click)="setMode('surcharge')" [attr.aria-pressed]="mode==='surcharge'">Recargo</button><button type="button" class="btn btn-sm" [class.btn-primary]="mode==='final'" [class.btn-ghost]="mode!=='final'" (click)="setMode('final')" [attr.aria-pressed]="mode==='final'">Precio final</button></div></div><input class="field" type="number" step="0.01" min="0" [max]="mode==='discount'?listPrice:null" [ngModel]="value" (ngModelChange)="change($event)" [ngModelOptions]="{standalone:true}" [attr.aria-label]="mode==='discount'?'Monto de descuento':mode==='surcharge'?'Monto de recargo':'Precio final'" [placeholder]="mode==='final'?listPrice.toFixed(2):'0.00'"><p class="text-xs text-muted">Catálogo {{listPrice|money:currency}}<ng-container *ngIf="discount"> · paga {{listPrice-discount|money:currency}} ({{discount<0?'+':'−'}}{{amount|money:currency}})</ng-container>. Precios sin IGV. {{isSurcharge?'Se suma solo al próximo cobro: la renovación siguiente vuelve al precio de catálogo.':'Vale solo el periodo actual: la renovación se cobra a precio de catálogo.'}}</p><p *ngIf="invalid" class="text-xs text-red-600">{{mode==='discount'?'El descuento debe estar entre 0 y '+(listPrice|money:currency)+'.':mode==='surcharge'?'El recargo no puede ser negativo.':'El precio final no puede ser negativo.'}}</p></fieldset>`})
 export class DiscountFieldComponent {
   @Input({required:true}) listPrice=0; @Input() currency='USD';
-  @Input() set discount(v:number|null){this._discount=v||null;if(this.value===null){if(this.mode!=='final'&&this._discount)this.mode=this._discount<0?'surcharge':'discount';this.value=this.display();}}
+  @Input() set discount(v:number|null) {
+    this._discount=v||null;
+    if(this.value===null) {
+      if(this.mode!=='final'&&this._discount)this.mode=this._discount<0?'surcharge':'discount';
+      this.value=this.display();
+    }
+  }
   get discount(){return this._discount;}
   @Output() discountChange=new EventEmitter<number|null>();
   mode:'discount'|'surcharge'|'final'='discount'; value:number|null=null; invalid=false; private _discount:number|null=null;
   get amount(){return Math.abs(this._discount??0);}
   get isSurcharge(){return this.mode==='surcharge'||(this._discount??0)<0;}
   /** Entre descuento y recargo el monto se conserva y cambia de signo; al precio final solo cambia cómo se muestra. */
-  setMode(mode:'discount'|'surcharge'|'final'){if(mode===this.mode)return;this.mode=mode;if(mode==='final'){this.invalid=false;this.value=this.display();}else this.change(this._discount?this.amount:null);}
-  change(v:number|null){this.value=v;const n=v===null||(v as unknown)===''?null:Number(v);this.invalid=n!==null&&(n<0||(this.mode==='discount'&&n>this.listPrice));if(this.invalid)return;const d=n===null?null:this.round(this.mode==='discount'?n:this.mode==='surcharge'?-n:this.listPrice-n);this._discount=d||null;this.discountChange.emit(this._discount);}
-  private display(){return this._discount?(this.mode==='final'?this.round(this.listPrice-this._discount):this.amount):null;}
+  setMode(mode:'discount'|'surcharge'|'final') {
+    if(mode===this.mode)return;
+    this.mode=mode;
+    if(mode==='final') {
+      this.invalid=false;
+      this.value=this.display();
+    }
+    else this.change(this._discount?this.amount:null);
+  }
+  change(v:number|null) {
+    this.value=v;
+    const n=v===null||(v as unknown)===''?null:Number(v);
+    this.invalid=n!==null&&(n<0||(this.mode==='discount'&&n>this.listPrice));
+    if(this.invalid)return;
+    const d=n===null?null:this.round(this.toDiscount(n));
+    this._discount=d||null;
+    this.discountChange.emit(this._discount);
+  }
+  /** Descuento (positivo) o recargo (negativo) a partir de lo que escribió el usuario según el modo. */
+  private toDiscount(n:number){
+    if(this.mode==='discount')return n;
+    return this.mode==='surcharge'?-n:this.listPrice-n;
+  }
+  private display(){if(!this._discount)return null;return this.mode==='final'?this.round(this.listPrice-this._discount):this.amount;}
   private round(n:number){return Math.round(n*100)/100;}
 }

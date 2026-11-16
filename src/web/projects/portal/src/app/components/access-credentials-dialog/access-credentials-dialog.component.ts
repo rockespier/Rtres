@@ -45,6 +45,6 @@ export class AccessCredentialsDialogComponent {
   private text(a: ClientAccessDto): string {
     return `Portal de clientes Rtres: ${this.portalUrl}\nUsuario: ${a.email}\nContraseña temporal: ${a.temporaryPassword}`;
   }
-  copy(a: ClientAccessDto): void { navigator.clipboard?.writeText(this.text(a)); this.copied = a; }
-  copyAll(): void { navigator.clipboard?.writeText(this.accesses.map(a => `${a.clientName}\n${this.text(a)}`).join('\n\n')); }
+  copy(a: ClientAccessDto): void { void navigator.clipboard?.writeText(this.text(a)); this.copied = a; }
+  copyAll(): void { void navigator.clipboard?.writeText(this.accesses.map(a => `${a.clientName}\n${this.text(a)}`).join('\n\n')); }
 }

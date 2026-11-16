@@ -74,7 +74,7 @@ import { SORTABLE } from '../../core/sortable';
   `,
 })
 export class Form1662Component implements OnInit {
-  private api = inject(PortalApiService); private ui = inject(PortalUiService);
+  private readonly api = inject(PortalApiService); private readonly ui = inject(PortalUiService);
   period = new Date().toLocaleDateString('sv-SE').slice(0, 7);
   data = signal<Form1662Dto | null>(null);
   error = signal(''); busy = signal(false);

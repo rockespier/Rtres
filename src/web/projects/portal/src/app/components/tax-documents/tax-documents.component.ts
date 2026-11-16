@@ -7,7 +7,11 @@ export class TaxDocumentsComponent implements OnInit {
   api = inject(PortalApiService); ui = inject(PortalUiService);
   documents: TaxDocumentDto[] = []; clients: AdminClientDto[] = []; period = previousMonth(); clientId = '';
   page = 1; readonly pageSize = 20; summary: TaxSummaryReportDto | null = null;
-  periodLabel() { if (!this.period) return ''; const [y, m] = this.period.split('-').map(Number); return new Date(y, m - 1, 1).toLocaleDateString('es-PE', { month: 'long', year: 'numeric' }); }
+  periodLabel() {
+    if (!this.period) return '';
+    const [y, m] = this.period.split('-').map(Number);
+    return new Date(y, m - 1, 1).toLocaleDateString('es-PE', { month: 'long', year: 'numeric' });
+  }
   editing: Omit<TaxDocumentRequest, 'items'> | null = null; editingClientId = ''; products: AdminClientProductDto[] = [];
   lines: { product: AdminClientProductDto; selected: boolean; amount: number | null }[] = [];
   saving = false; error: string | null = null;
@@ -41,9 +45,11 @@ export class TaxDocumentsComponent implements OnInit {
     this.saving = true; this.error = null;
     this.api.reverseTaxDocument(d.id, { reason: this.reverseReason.trim(), notIssued: this.reverseNotIssued }).subscribe({
       next: r => {
-        const number = this.reverseNotIssued ? (r.numberReleased ? ' El correlativo quedó libre.' : ' El correlativo no se liberó porque no es el último de la serie.') : '';
+        const released = r.numberReleased ? ' El correlativo quedó libre.' : ' El correlativo no se liberó porque no es el último de la serie.';
+        const number = this.reverseNotIssued ? released : '';
         const due = r.renewsAt ?? r.nextChargeAt;
-        const product = r.productStatus ? ` Producto: ${r.productStatus}${due ? `, fecha ${due.slice(8, 10)}/${due.slice(5, 7)}/${due.slice(0, 4)}` : ''}; revísala en la ficha del cliente.` : '';
+        const dueText = due ? ', fecha ' + [due.slice(8, 10), due.slice(5, 7), due.slice(0, 4)].join('/') : '';
+        const product = r.productStatus ? ` Producto: ${r.productStatus}${dueText}; revísala en la ficha del cliente.` : '';
         this.notice = `${d.series}-${d.number} extornado.${number}${product}`;
         this.saving = false; this.reversing = null; this.load();
       },
@@ -52,7 +58,9 @@ export class TaxDocumentsComponent implements OnInit {
   }
   openNew() { this.error = null; this.editingClientId = ''; this.products = []; this.lines = []; this.editing = { issueDate: new Date().toISOString().slice(0, 10), currency: 'PEN', notes: null, retentionAmount: null }; }
   loadProducts() {
-    if (!this.editing) return; this.products = []; this.lines = [];
+    if (!this.editing) return;
+    this.products = [];
+    this.lines = [];
     this.api.getAdminClient(this.editingClientId).subscribe(x => {
       this.products = x.products.filter(p => p.status !== 'Cancelado');
       // Importe sugerido: lo próximo a cobrar (con IGV) o el precio vigente; se puede corregir antes de emitir.

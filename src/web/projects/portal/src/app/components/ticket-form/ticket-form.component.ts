@@ -159,17 +159,17 @@ type FieldName = 'title' | 'description' | 'currentBehavior' | 'expectedBehavior
     </div>`,
 })
 export class TicketFormComponent implements OnInit, AfterViewInit, OnDestroy {
-  private fb = inject(FormBuilder);
-  private api = inject(PortalApiService);
-  private router = inject(Router);
-  private ui = inject(PortalUiService);
+  private readonly fb = inject(FormBuilder);
+  private readonly api = inject(PortalApiService);
+  private readonly router = inject(Router);
+  private readonly ui = inject(PortalUiService);
   auth = inject(AuthService);
-  private params = inject(ActivatedRoute).snapshot.queryParamMap;
+  private readonly params = inject(ActivatedRoute).snapshot.queryParamMap;
   /** Ticket registrado desde la tarjeta de un producto: se guarda el producto mientras no se cambie de proyecto. */
   productProjectId = this.params.get('projectId');
   private clientProductId = this.params.get('clientProductId');
   productName = signal('');
-  @ViewChild('actions') private actionsTpl!: TemplateRef<unknown>;
+  @ViewChild('actions') private readonly actionsTpl!: TemplateRef<unknown>;
   @ViewChild(FileDropzoneComponent) dropzone?: FileDropzoneComponent;
 
   projects = signal<ProjectDto[]>([]);
@@ -199,7 +199,7 @@ export class TicketFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
   value = toSignal(this.form.valueChanges, { initialValue: this.form.value });
   type = computed(() => this.value().type ?? 'Bug');
-  private projectId = toSignal(this.form.controls.projectId.valueChanges, { initialValue: '' });
+  private readonly projectId = toSignal(this.form.controls.projectId.valueChanges, { initialValue: '' });
   /** Repos del proyecto elegido: con más de uno, el cliente indica dónde va el ticket (por defecto el principal). */
   repositories = computed(() => this.projects().find(p => p.id === this.projectId())?.repositories ?? []);
   projectName = computed(() => this.projects().find(p => p.id === this.projectId())?.name ?? '');
@@ -298,7 +298,7 @@ export class TicketFormComponent implements OnInit, AfterViewInit, OnDestroy {
       acceptanceCriteria: v.acceptanceCriteria!,
       estimatedImpact: bug ? undefined : v.estimatedImpact || undefined,
     }, this.dropzone?.files() ?? []).subscribe({
-      next: t => this.router.navigate(['/tickets', t.id]),
+      next: t => void this.router.navigate(['/tickets', t.id]),
       error: e => { this.error.set(e?.error?.message ?? 'No se pudo crear el ticket.'); this.submitting.set(false); },
     });
   }

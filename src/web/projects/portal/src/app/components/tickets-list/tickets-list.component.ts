@@ -34,9 +34,9 @@ import { PortalUiService } from '../../core/portal-ui.service';
     </div>`,
 })
 export class TicketsListComponent implements OnInit, AfterViewInit, OnDestroy {
-  private api = inject(PortalApiService);
-  private ui = inject(PortalUiService);
-  @ViewChild('actions') private actionsTpl!: TemplateRef<unknown>;
+  private readonly api = inject(PortalApiService);
+  private readonly ui = inject(PortalUiService);
+  @ViewChild('actions') private readonly actionsTpl!: TemplateRef<unknown>;
 
   tickets = signal<TicketDto[]>([]);
   projects = signal<ProjectDto[]>([]);

@@ -27,12 +27,12 @@ export class AuthService {
   sessionExpired = signal(false);
   /** Login con Google disponible solo si el entorno trae la configuración de Firebase completa. */
   readonly googleEnabled = !!(environment.firebase.apiKey && environment.firebase.authDomain && environment.firebase.projectId);
-  private router = inject(Router);
+  private readonly router = inject(Router);
   private expiryTimer: ReturnType<typeof setTimeout> | undefined;
   private firebase: Promise<FirebaseModules> | undefined;
   private firebaseReady: FirebaseModules | undefined;
 
-  constructor(private http: HttpClient) {
+  constructor(private readonly http: HttpClient) {
     this.scheduleExpiry();
   }
 
@@ -59,7 +59,7 @@ export class AuthService {
     if (!this.token()) return;
     this.logout();
     this.sessionExpired.set(true);
-    this.router.navigateByUrl('/login');
+    void this.router.navigateByUrl('/login');
   }
 
   async login(email: string, password: string): Promise<void> {

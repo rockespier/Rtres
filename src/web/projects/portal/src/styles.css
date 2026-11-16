@@ -42,6 +42,7 @@
 /* Dark mode — toggled via portal.js, which sets html[data-theme="dark"]
    before first paint (localStorage) to avoid a flash of the wrong theme. */
 html[data-theme="dark"]{
+  --night:#0b0d08; --night-2:#161a11;
   --bg:#14170f;
   --surface:#1b2015;
   --surface-tint:rgba(164,214,78,.14);
@@ -62,7 +63,7 @@ html[data-theme="dark"]{
   --shadow-card:0 1px 2px rgba(0,0,0,.2), 0 10px 28px -18px rgba(0,0,0,.5);
   --shadow-pop:0 2px 4px rgba(0,0,0,.25), 0 20px 48px -20px rgba(0,0,0,.6);
 }
-html{transition:background-color .15s ease;}
+html{transition:background-color .15s ease;scroll-behavior:smooth}
 html[data-theme="dark"] .search-field, html[data-theme="dark"] .field{background:var(--surface);}
 /* Tailwind bakes .text-muted to the light-mode hex at build time (same trap as text-primary,
    see note above) — it silently drops below AA against any dark-mode surface without this override. */
@@ -75,7 +76,6 @@ html[data-theme="dark"] .pagination-btn:hover:not(.active){background:rgba(255,2
 
 *{box-sizing:border-box}
 input[type="checkbox"], input[type="radio"]{accent-color:var(--primary);}
-html{scroll-behavior:smooth}
 body{
   background:var(--bg);
   color:var(--ink);
@@ -253,7 +253,6 @@ input:focus-visible, textarea:focus-visible, select:focus-visible, button:focus-
    Shell v2 — referencias: portal de asistencia (barra clara, opción activa
    en lima, wordmark serif) y panel de proyectos (barra oscura del equipo).
    =================================================================== */
-html[data-theme="dark"]{--night:#0b0d08; --night-2:#161a11;}
 html[data-theme="dark"] .band{box-shadow:inset 0 0 0 1px var(--border);}
 
 /* Wordmark tipográfico */

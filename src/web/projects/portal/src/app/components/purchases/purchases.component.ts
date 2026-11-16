@@ -121,8 +121,8 @@ const NO_IGV_TYPES: PurchaseDocumentType[] = ['Boleta', 'ReciboPorHonorarios'];
   `,
 })
 export class PurchasesComponent implements OnInit {
-  private api = inject(PortalApiService);
-  private ui = inject(PortalUiService);
+  private readonly api = inject(PortalApiService);
+  private readonly ui = inject(PortalUiService);
   readonly types = DOC_TYPES;
   period = new Date().toISOString().slice(0, 7);
   page: PurchasesPageDto | null = null;
@@ -153,7 +153,11 @@ export class PurchasesComponent implements OnInit {
   noIgv() { return !!this.form && NO_IGV_TYPES.includes(this.form.documentType); }
   total() { const f = this.form; return f ? round((f.taxBase || 0) + (f.igv || 0) + (f.nonTaxable || 0)) : 0; }
   gaveCredit() { const f = this.form; return !!f && this.creditType() && f.usedForTaxedOperations && (f.igv || 0) > 0; }
-  expenseAmount() { const f = this.form; return f ? (this.gaveCredit() ? round((f.taxBase || 0) + (f.nonTaxable || 0)) : this.total()) : 0; }
+  expenseAmount() {
+    const f = this.form;
+    if (!f) return 0;
+    return this.gaveCredit() ? round((f.taxBase || 0) + (f.nonTaxable || 0)) : this.total();
+  }
   igvOff() { const f = this.form; return !!f && (f.igv || 0) > 0 && Math.abs((f.igv || 0) - (f.taxBase || 0) * this.igvRate) > 1; }
 
   /** Mientras no se edite a mano, el IGV se calcula con la tasa configurada. */

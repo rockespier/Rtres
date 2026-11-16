@@ -51,7 +51,7 @@ const SERVICES: Record<string, string> = {
   `,
 })
 export class LeadsComponent implements OnInit {
-  private api = inject(PortalApiService); private ui = inject(PortalUiService);
+  private readonly api = inject(PortalApiService); private readonly ui = inject(PortalUiService);
   readonly statuses = STATUS;
   items = signal<ContactLeadDto[]>([]);
   error = signal('');

@@ -31,7 +31,7 @@ import { PortalApiService } from '../../core/portal-api.service';
   </div>`,
 })
 export class TeamInviteDialogComponent {
-  private api = inject(PortalApiService);
+  private readonly api = inject(PortalApiService);
 
   @Output() closed = new EventEmitter<void>();
   @Output() done = new EventEmitter<void>();
@@ -54,6 +54,6 @@ export class TeamInviteDialogComponent {
   }
 
   copy(): void {
-    navigator.clipboard?.writeText(this.temporaryPassword());
+    void navigator.clipboard?.writeText(this.temporaryPassword());
   }
 }

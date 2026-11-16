@@ -150,11 +150,16 @@ export interface ClientsReportDto { totalPen:number; clientes:ClientRankingRowDt
 
 @Injectable({ providedIn: 'root' })
 export class PortalApiService {
-  private ui = inject(PortalUiService);
-  constructor(private http: HttpClient) {}
+  private readonly ui = inject(PortalUiService);
+  constructor(private readonly http: HttpClient) {}
 
   private get base() { return environment.apiBaseUrl; }
-  private scoped(path: string): string { const id=this.ui.viewingClientId(); return id ? `${this.base}${path}${path.includes('?')?'&':'?'}clientId=${encodeURIComponent(id)}` : `${this.base}${path}`; }
+  private scoped(path: string): string {
+    const id=this.ui.viewingClientId();
+    if (!id) return `${this.base}${path}`;
+    const separator = path.includes('?') ? '&' : '?';
+    return `${this.base}${path}${separator}clientId=${encodeURIComponent(id)}`;
+  }
 
   getDashboardSummary() { return this.http.get<DashboardSummary>(this.scoped('/dashboard/summary')); }
   getClientProducts() { return this.http.get<ClientProductApiDto[]>(this.scoped('/client-products')); }
@@ -163,7 +168,9 @@ export class PortalApiService {
   getPaymentMethods() { return this.http.get<PaymentMethodsDto>(`${this.base}/payment-methods`); }
   /** Reporte del cliente: multipart con la constancia opcional (campo receipt). */
   reportTransfer(clientProductId:string, body:{bankAccountId:string;amount:number;paidAt:string;operationNumber:string;years:number}, receipt:File|null) {
-    const form=new FormData(); for (const [k,v] of Object.entries(body)) form.append(k,String(v)); if (receipt) form.append('receipt',receipt,receipt.name);
+    const form=new FormData();
+    for (const [k,v] of Object.entries(body)) form.append(k,String(v));
+    if (receipt) form.append('receipt',receipt,receipt.name);
     return this.http.post<TransferReportSummary>(`${this.base}/client-products/${clientProductId}/transfer-reports`,form);
   }
   getTransferReceipt(id:string) { return this.http.get(`${this.base}/transfer-reports/${id}/receipt`,{responseType:'blob'}); }
@@ -249,7 +256,8 @@ export class PortalApiService {
   updateTaxSettings(body:Partial<TaxSettingsDto>) { return this.http.patch<TaxSettingsDto>(`${this.base}/admin/tax-settings`,body); }
   getTaxCalendar(year?:number) { return this.http.get<TaxCalendarDto>(`${this.base}/admin/tax-calendar${query({year})}`); }
   saveTaxDueDate(period:string, body:TaxDueDateRequest) { return this.http.put<TaxDueDateDto>(`${this.base}/admin/tax-calendar/${period}`,body); }
-  setTaxPeriodFiled(id:string, filed:boolean, paid?:{igvPaid:number|null;rentaPaid:number|null}) { return filed ? this.http.post<TaxDueDateDto>(`${this.base}/admin/tax-calendar/${id}/filed`,paid??{}) : this.http.delete<TaxDueDateDto>(`${this.base}/admin/tax-calendar/${id}/filed`); }
+  markTaxPeriodFiled(id:string, paid:{igvPaid:number|null;rentaPaid:number|null}) { return this.http.post<TaxDueDateDto>(`${this.base}/admin/tax-calendar/${id}/filed`,paid); }
+  unmarkTaxPeriodFiled(id:string) { return this.http.delete<TaxDueDateDto>(`${this.base}/admin/tax-calendar/${id}/filed`); }
   markOverdueTaxPeriodsFiled() { return this.http.post<{marked:number}>(`${this.base}/admin/tax-calendar/filed-overdue`,{}); }
   syncExchangeRates() { return this.http.post<ExchangeRateDto[]>(`${this.base}/admin/exchange-rates/sync`,{}); }
   getExchangeRates() { return this.http.get<ExchangeRateDto[]>(`${this.base}/admin/exchange-rates`); }

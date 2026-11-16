@@ -43,8 +43,8 @@ const EMPTY_GUID = '00000000-0000-0000-0000-000000000000';
   </div>`,
 })
 export class TeamComponent implements OnInit {
-  private api = inject(PortalApiService);
-  private ui = inject(PortalUiService);
+  private readonly api = inject(PortalApiService);
+  private readonly ui = inject(PortalUiService);
 
   users: TeamUserDto[] = [];
   showInvite = false;

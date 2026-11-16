@@ -55,7 +55,9 @@ export class FileDropzoneComponent {
     const pasted = Array.from(e.clipboardData?.files ?? []);
     if (!pasted.length) return;
     e.preventDefault();
-    this.add(pasted.map((f, i) => new File([f], f.name && f.name !== 'image.png' ? f.name : `captura-${Date.now()}${i ? '-' + i : ''}.png`, { type: f.type })));
+    // Las capturas pegadas llegan como "image.png": se les da un nombre único.
+    const name = (f: File, i: number) => f.name && f.name !== 'image.png' ? f.name : 'captura-' + Date.now() + (i ? '-' + i : '') + '.png';
+    this.add(pasted.map((f, i) => new File([f], name(f, i), { type: f.type })));
   }
 
   remove(i: number) {

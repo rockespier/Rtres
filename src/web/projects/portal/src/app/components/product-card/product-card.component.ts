@@ -46,7 +46,11 @@ const endDate = (value: string | null | undefined) => value && !value.startsWith
 const discountActive = (p: ClientProductApiDto) => !!p.discount && (!p.discountEndsAt || p.discountEndsAt.startsWith('9999') || new Date(p.discountEndsAt).getTime() > Date.now());
 /** Los precios son sin IGV: a los clientes en Perú con Factura se les suma al cobrar. */
 const igvSuffix = (p: ClientProductApiDto) => p.appliedIgvRate ? ' + IGV' : '';
-const currentPrice = (p: ClientProductApiDto) => { const list = listPrice(p); return list == null ? null : list - (discountActive(p) ? p.discount! : 0); };
+const currentPrice = (p: ClientProductApiDto) => {
+  const list = listPrice(p);
+  if (list == null) return null;
+  return discountActive(p) ? list - p.discount! : list;
+};
 
 @Component({
   selector: 'app-product-card',
@@ -75,8 +79,8 @@ const currentPrice = (p: ClientProductApiDto) => { const list = listPrice(p); re
   <app-confirm-dialog *ngIf="confirmingCancel" title="Cancelar suscripción" [message]="'Se cancelará la suscripción de ' + displayName() + ' en PayPal y no habrá más cobros. Esta acción no se puede deshacer.'" confirmLabel="Sí, cancelar suscripción" busyLabel="Cancelando…" [danger]="true" [busy]="cancelling" [error]="cancelError" (confirmed)="cancel()" (cancelled)="confirmingCancel=false"/>`,
 })
 export class ProductCardComponent implements OnInit {
-  private api = inject(PortalApiService);
-  private paymentMethods = inject(PaymentMethodsService);
+  private readonly api = inject(PortalApiService);
+  private readonly paymentMethods = inject(PaymentMethodsService);
   @Input({ required: true }) product!: ClientProductApiDto;
   /** Último pago por transferencia reportado (en revisión o rechazado). */
   report: TransferReportSummary | null = null;
@@ -84,7 +88,7 @@ export class ProductCardComponent implements OnInit {
   /** Rtres viendo como un cliente: ve los datos de pago, pero el reporte lo hace el cliente (y "Registrar pago" está en el detalle del cliente). */
   readonly isStaff = inject(AuthService).user()?.role === 'SuperAdmin';
   ngOnInit() { this.paymentMethods.load(); this.report = this.product.transferReport ?? null; }
-  private payPalEnabled = computed(() => this.paymentMethods.methods().payPal);
+  private readonly payPalEnabled = computed(() => this.paymentMethods.methods().payPal);
 
   displayName = computed(() => this.product.domainName || this.product.product.name);
   typeLabel = computed(() => TYPE_LABELS[this.product.product.type] ?? this.product.product.type);

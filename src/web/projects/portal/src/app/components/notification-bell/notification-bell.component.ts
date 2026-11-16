@@ -99,10 +99,10 @@ function notificationText(type: string, d: Record<string, string>, company: stri
   `],
 })
 export class NotificationBellComponent {
-  private api = inject(PortalApiService);
-  private ui = inject(PortalUiService);
-  private router = inject(Router);
-  private host = inject(ElementRef<HTMLElement>);
+  private readonly api = inject(PortalApiService);
+  private readonly ui = inject(PortalUiService);
+  private readonly router = inject(Router);
+  private readonly host = inject(ElementRef<HTMLElement>);
   open = signal(false);
   unread = signal(0);
   items = signal<NotificationView[]>([]);
@@ -122,7 +122,7 @@ export class NotificationBellComponent {
     else if (!this.open()) this.items.update(list => list.map(n => ({ ...n, unread: false })));
   }
 
-  go(n: NotificationView) { this.open.set(false); this.router.navigateByUrl(n.link); }
+  go(n: NotificationView) { this.open.set(false); void this.router.navigateByUrl(n.link); }
 
   @HostListener('document:click', ['$event'])
   closeOutside(event: MouseEvent) { if (this.open() && !this.host.nativeElement.contains(event.target as Node)) this.toggle(); }

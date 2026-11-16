@@ -55,7 +55,7 @@ import { CategoryDto, PortalApiService } from '../../core/portal-api.service';
   </section>`,
 })
 export class CategoryManagerComponent implements OnInit {
-  private api = inject(PortalApiService);
+  private readonly api = inject(PortalApiService);
   kind = input.required<'expense' | 'product'>();
   title = input('');
   hint = input('');

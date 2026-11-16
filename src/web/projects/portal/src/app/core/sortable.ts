@@ -73,7 +73,8 @@ export class SortByPipe implements PipeTransform {
     return [...rows].sort((x, y) => {
       const a = valueOf(x, key), b = valueOf(y, key);
       const emptyA = a == null || a === '', emptyB = b == null || b === '';
-      if (emptyA || emptyB) return emptyA === emptyB ? 0 : emptyA ? 1 : -1;
+      if (emptyA && emptyB) return 0;
+      if (emptyA || emptyB) return emptyA ? 1 : -1;
       return compare(a, b) * sign;
     });
   }

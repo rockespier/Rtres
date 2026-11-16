@@ -42,8 +42,8 @@ const NEEDS_ACTION = new Set(['PorVencer', 'Vencido', 'Pendiente']);
     }`,
 })
 export class ServicesComponent implements OnInit {
-  private api = inject(PortalApiService);
-  private ui = inject(PortalUiService);
+  private readonly api = inject(PortalApiService);
+  private readonly ui = inject(PortalUiService);
 
   products = signal<ClientProductApiDto[]>([]);
   loading = signal(true);
