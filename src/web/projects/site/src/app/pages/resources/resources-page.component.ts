@@ -108,12 +108,12 @@ const YOUTUBE_ID = /^[\w-]{11}$/;
   `],
 })
 export class ResourcesPageComponent implements OnInit {
-  private api = inject(PublicApiService);
-  private sanitizer = inject(DomSanitizer);
-  private locale = inject(LOCALE_ID).slice(0, 2);
-  private browser = isPlatformBrowser(inject(PLATFORM_ID));
-  private title = inject(Title);
-  private meta = inject(Meta);
+  private readonly api = inject(PublicApiService);
+  private readonly sanitizer = inject(DomSanitizer);
+  private readonly locale = inject(LOCALE_ID).slice(0, 2);
+  private readonly browser = isPlatformBrowser(inject(PLATFORM_ID));
+  private readonly title = inject(Title);
+  private readonly meta = inject(Meta);
   readonly ctaTitle = $localize`:@@resources.cta:¿Quieres llevar tu negocio al siguiente nivel?`;
   readonly playLabel = $localize`:@@resources.play:Reproducir`;
 

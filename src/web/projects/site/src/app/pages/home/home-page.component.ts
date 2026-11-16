@@ -22,8 +22,8 @@ import { HomeContactComponent } from '../../components/home/contact.component';
   `,
 })
 export class HomePageComponent implements OnInit {
-  private title = inject(Title);
-  private meta = inject(Meta);
+  private readonly title = inject(Title);
+  private readonly meta = inject(Meta);
 
   /** Título y description del home: el servicio y el lugar, que es lo que se busca (ver PLAN-seo.md, S3). */
   ngOnInit() {

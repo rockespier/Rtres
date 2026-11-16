@@ -18,7 +18,7 @@ const BLOG_TIMEOUT_MS = 20000;
 
 @Injectable({ providedIn: 'root' })
 export class PublicApiService {
-  constructor(private http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {}
 
   getProjects(locale: string): Observable<WordPressProject[]> {
     return this.safeGet<WordPressProject[]>(`${environment.apiBaseUrl}/public/${locale}/projects`, []);

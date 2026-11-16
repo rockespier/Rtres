@@ -120,7 +120,7 @@ export class HomeSupportComponent {
   index = signal(0);
   paused = signal(false);
   /** Opiniones visibles a la vez (2 en escritorio, 1 en móvil); en SSR se asume escritorio. */
-  private perView = signal(2);
+  private readonly perView = signal(2);
   maxIndex = computed(() => Math.max(0, this.testimonials.length - this.perView()));
   positions = computed(() => Array.from({ length: this.maxIndex() + 1 }, (_, i) => i));
 

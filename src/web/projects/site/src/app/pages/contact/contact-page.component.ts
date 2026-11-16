@@ -39,8 +39,8 @@ import { ContactFormComponent } from '../../components/contact-form/contact-form
   `],
 })
 export class ContactPageComponent implements OnInit {
-  private title = inject(Title);
-  private meta = inject(Meta);
+  private readonly title = inject(Title);
+  private readonly meta = inject(Meta);
   service = inject(ActivatedRoute).snapshot.queryParamMap.get('servicio') ?? '';
 
   ngOnInit() {

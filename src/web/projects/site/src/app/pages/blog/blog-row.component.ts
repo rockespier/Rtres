@@ -47,7 +47,7 @@ export function blogMeta(post: Pick<BlogPostSummary, 'tag' | 'publishedAt'>, loc
   `],
 })
 export class BlogRowComponent {
-  private locale = inject(LOCALE_ID).slice(0, 2);
+  private readonly locale = inject(LOCALE_ID).slice(0, 2);
   post = input.required<BlogPostSummary>();
   index = input.required<number>();
   excerpt = input(true);

@@ -25,6 +25,15 @@
   --radius-md:18px;
   --radius-sm:12px;
   --maxw:1240px;
+  /* Home v2 */
+  --v2-ink:#141414;
+  --v2-muted:#666;
+  --v2-line:#ddd;
+  --v2-rule:#bbb;
+  --v2-lime:#c9db3e;
+  --v2-mark:#b4c62d;
+  --v2-dark:#111;
+  --v2-paper:#f7f7f3;
 }
 
 /* Dark "island" sections (reviews band, closing CTA) — the one place
@@ -52,7 +61,11 @@
 .on-dark-border{border-color:var(--border);}
 
 *{box-sizing:border-box}
-html{scroll-behavior:smooth}
+/* La cabecera es fija: las anclas (#contacto, #portal…) no deben quedar debajo de ella. */
+html{scroll-padding-top:88px}
+@media (prefers-reduced-motion: no-preference){
+  html{scroll-behavior:smooth}
+}
 body{
   background:var(--bg);
   color:var(--text);
@@ -132,8 +145,6 @@ p{text-wrap:pretty;}
 
 @media (prefers-reduced-motion: reduce){
   .reveal{opacity:1; transform:none; transition:none;}
-  .marquee-track{animation:none;}
-  *{scroll-behavior:auto !important;}
 }
 
 /* Nav */
@@ -150,7 +161,10 @@ p{text-wrap:pretty;}
 }
 
 /* Marquee */
-.marquee-track{display:flex;gap:56px;animation:scroll 28s linear infinite;width:max-content;}
+.marquee-track{display:flex;gap:56px;width:max-content;}
+@media (prefers-reduced-motion: no-preference){
+  .marquee-track{animation:scroll 28s linear infinite;}
+}
 .mask-fade{mask-image:linear-gradient(90deg,transparent,black 8%,black 92%,transparent);}
 .marquee:hover .marquee-track{animation-play-state:paused;}
 @keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
@@ -207,9 +221,11 @@ input:focus,textarea:focus,select:focus,button:focus-visible,a:focus-visible{out
 .photo-duotone img{
   width:100%; height:100%; object-fit:cover; display:block;
   filter:grayscale(1) contrast(1.1) brightness(1.02);
-  transition:transform .5s ease;
 }
-.photo-duotone:hover img{transform:scale(1.04);}
+@media (prefers-reduced-motion: no-preference){
+  .photo-duotone img{transition:transform .5s ease;}
+  .photo-duotone:hover img{transform:scale(1.04);}
+}
 .photo-duotone::after{
   content:''; position:absolute; inset:0;
   background:linear-gradient(155deg, rgba(111,154,53,.16), rgba(18,20,15,.06) 70%);
@@ -254,19 +270,7 @@ input:focus,textarea:focus,select:focus,button:focus-visible,a:focus-visible{out
   .huge{font-size:clamp(2.75rem, 16vw, 6rem);}
 }
 
-/* ===== Home v2 (diseño aprobado 2026-10) — tokens y piezas compartidas ===== */
-/* La cabecera es fija: las anclas (#contacto, #portal…) no deben quedar debajo de ella. */
-html{scroll-padding-top:88px}
-:root{
-  --v2-ink:#141414;
-  --v2-muted:#666;
-  --v2-line:#ddd;
-  --v2-rule:#bbb;
-  --v2-lime:#c9db3e;
-  --v2-mark:#b4c62d;
-  --v2-dark:#111;
-  --v2-paper:#f7f7f3;
-}
+/* ===== Home v2 (diseño aprobado 2026-10) — piezas compartidas (los tokens están en :root) ===== */
 .v2-display{font-weight:900;font-size:clamp(3rem,6vw,6rem);letter-spacing:-.06em;line-height:.94;margin:0}
 .v2-label{font-size:11px;letter-spacing:.2em;font-weight:bold;margin:0 0 20px}
 .v2-btn-lime{background:var(--v2-lime);color:var(--v2-ink);padding:15px 20px;font-weight:bold}

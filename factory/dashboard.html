@@ -138,7 +138,11 @@
 
   @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .25; } }
   @keyframes breathe { 0%, 100% { opacity: 1; } 50% { opacity: .45; } }
-  @media (prefers-reduced-motion: reduce) { .pulse, .chip.wait { animation: none; } }
+  @media (prefers-reduced-motion: reduce) {
+    .pulse, .chip.wait { animation: none; }
+    .card { transition: none; }
+    .card:hover { transform: none; }
+  }
 
   /* Drawer */
   .scrim {
@@ -342,8 +346,19 @@ async function roundVerdicts(job, n) {
   return v
 }
 
+const STAGE_FLAGS = {
+  'needs-info': '<span class="flag wait">asked author</span>',
+  rejected: '<span class="flag wait">rejected</span>',
+}
+
+function chipClass(v, waiting) {
+  if (['PASS', 'CHANGES', 'FAIL'].includes(v)) return v
+  if (v !== 'pending') return 'bad'
+  return waiting ? 'wait' : ''
+}
+
 function chip(label, v, waiting, title, extra = '') {
-  const cls = ['PASS', 'CHANGES', 'FAIL'].includes(v) ? v : v === 'pending' ? (waiting ? 'wait' : '') : 'bad'
+  const cls = chipClass(v, waiting)
   return `<span class="chip ${extra} ${cls}" title="${esc(title)}: ${esc(v)}">${esc(label)}</span>`
 }
 
@@ -379,9 +394,7 @@ function card(job, rounds) {
   const human = job.stage === 'needs-human'
   const done = job.stage === 'merged' || job.stage === 'rejected'
   const [num, ...slug] = job.id.split('-')
-  const flag = human ? '<span class="flag">your call</span>'
-    : job.stage === 'needs-info' ? '<span class="flag wait">asked author</span>'
-    : job.stage === 'rejected' ? '<span class="flag wait">rejected</span>' : ''
+  const flag = human ? '<span class="flag">your call</span>' : (STAGE_FLAGS[job.stage] ?? '')
   const risk = job.intake?.risk
   const meta = [
     risk ? `<span class="risk-${esc(risk)}">${esc(risk)}</span>` : '',
@@ -400,7 +413,7 @@ function card(job, rounds) {
       <div class="links">${links(job)}</div>
       ${rounds.length ? `<div class="rounds">${rounds.join('')}</div>` : ''}
       <div class="meta">${meta}</div>
-      ${human ? `<div class="hint">${job.pr ? `merge PR #${job.pr} to approve<br>` : ''}or give feedback: /factory &lt;anything&gt;</div>` : ''}
+      ${human ? humanHint(job) : ''}
     </article>`
 }
 
@@ -500,10 +513,16 @@ function tone(first) {
 
 const firstLines = new Map()
 
+function humanHint(job) {
+  const merge = job.pr ? 'merge PR #' + job.pr + ' to approve<br>' : ''
+  return `<div class="hint">${merge}or give feedback: /factory &lt;anything&gt;</div>`
+}
+
 async function refreshDrawer() {
   const job = jobs.find((j) => j.id === openJobId)
   if (!job) return
-  $('d-num').textContent = `${job.id} · ${job.stage}${job.round ? ` · round ${job.round}` : ''} · $${Number(job.cost_usd).toFixed(2)} · ${elapsed(job)}`
+  const round = job.round ? ' · round ' + job.round : ''
+  $('d-num').textContent = `${job.id} · ${job.stage}${round} · $${Number(job.cost_usd).toFixed(2)} · ${elapsed(job)}`
   $('d-title').textContent = job.title
   $('d-links').innerHTML = links(job)
 
@@ -580,12 +599,12 @@ document.addEventListener('keydown', (e) => {
 
 function inline(s) {
   const codes = []
-  s = esc(s).replace(/`([^`]+)`/g, (_, c) => `\u0000${codes.push(c) - 1}\u0000`)
+  s = esc(s).replace(/`([^`]+)`/g, (_, c) => `\uE000${codes.push(c) - 1}\uE000`)
   s = s
     .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
     .replace(/(^|[^*])\*([^*\s][^*]*)\*/g, '$1<em>$2</em>')
     .replace(/\[([^\]]+)\]\(((?:https?:\/\/|\.{0,2}\/|#)[^)\s]*)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
-  return s.replace(/\u0000(\d+)\u0000/g, (_, i) => `<code>${codes[i]}</code>`)
+  return s.replace(/\uE000(\d+)\uE000/g, (_, i) => `<code>${codes[i]}</code>`)
 }
 
 // Every step's file has a `## Summary` of a few bullets; show it first, in a box.
@@ -633,16 +652,18 @@ function mdTable(lines, i) {
   const rows = []
   while (i < lines.length && lines[i].startsWith('|')) rows.push(lines[i++])
   const cells = (r) => r.replace(/^\||\|$/g, '').split('|').map((c) => inline(c.trim()))
-  const row = (r, n) => `<tr>${cells(r).map((c) => n ? `<td>${c}</td>` : `<th>${c}</th>`).join('')}</tr>`
+  const cell = (c, header) => header ? '<th>' + c + '</th>' : '<td>' + c + '</td>'
+  const row = (r, n) => '<tr>' + cells(r).map((c) => cell(c, n === 0)).join('') + '</tr>'
   const body = rows.filter((r) => !/^\|[\s:|-]+\|$/.test(r))
   return { html: '<table>' + body.map(row).join('') + '</table>', next: i }
 }
 
 function mdListItem({ indent, text }) {
-  const task = text.match(/^\[([ xX])\]\s+(.*)$/)
+  const task = text.match(/^\[([ xX])\]\s(.*)$/)
   const style = indent ? ` style="margin-left:${indent * 0.6}em"` : ''
   if (!task) return `<li${style}>${inline(text)}</li>`
-  return `<li class="task ${task[1] === ' ' ? '' : 'done'}"${style}>${inline(task[2])}</li>`
+  const done = task[1] === ' ' ? '' : 'done'
+  return `<li class="task ${done}"${style}>${inline(task[2].trimStart())}</li>`
 }
 
 function mdList(lines, i) {
@@ -667,8 +688,8 @@ function mdParagraph(lines, i) {
 function mdBlock(lines, i) {
   const line = lines[i]
   if (line.startsWith('```')) return mdFence(lines, i)
-  const h = line.match(/^(#{1,6})\s+(.*)$/)
-  if (h) { const n = Math.min(h[1].length, 4); return { html: `<h${n}>${inline(h[2])}</h${n}>`, next: i + 1 } }
+  const h = line.match(/^(#{1,6})\s(.*)$/)
+  if (h) { const n = Math.min(h[1].length, 4); return { html: `<h${n}>${inline(h[2].trimStart())}</h${n}>`, next: i + 1 } }
   if (/^\s*>/.test(line)) return mdQuote(lines, i)
   if (line.startsWith('|')) return mdTable(lines, i)
   if (isMdList(line)) return mdList(lines, i)

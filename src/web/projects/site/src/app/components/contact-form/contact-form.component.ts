@@ -69,10 +69,10 @@ import { servicePath } from '../../core/site-paths';
   `],
 })
 export class ContactFormComponent implements OnInit {
-  private api = inject(PublicApiService);
-  private document = inject(DOCUMENT);
-  private browser = isPlatformBrowser(inject(PLATFORM_ID));
-  private locale = inject(LOCALE_ID).slice(0, 2);
+  private readonly api = inject(PublicApiService);
+  private readonly document = inject(DOCUMENT);
+  private readonly browser = isPlatformBrowser(inject(PLATFORM_ID));
+  private readonly locale = inject(LOCALE_ID).slice(0, 2);
   /** Servicio preseleccionado (slug canónico en español, igual en todos los idiomas), p. ej. desde la página del servicio. */
   @Input() service = '';
 
@@ -89,7 +89,7 @@ export class ContactFormComponent implements OnInit {
 
   submit() {
     const m = this.model;
-    const missing = !m.name.trim() ? 'name' : !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(m.email.trim()) ? 'email' : m.message.trim().length < 10 ? 'message' : '';
+    const missing = missingField(m);
     if (missing) { this.field.set(missing); this.error.set(MESSAGES[missing]); return; }
     this.sending.set(true); this.error.set(''); this.field.set('');
     this.api.sendContact({ ...m, locale: this.locale, page: this.sourcePage() }).subscribe({
@@ -97,7 +97,7 @@ export class ContactFormComponent implements OnInit {
       error: (e: HttpErrorResponse) => {
         this.sending.set(false);
         this.field.set(e.error?.field ?? '');
-        this.error.set(e.status === 429 ? MESSAGES['tooMany'] : e.error?.field ? MESSAGES[e.error.field] ?? MESSAGES['generic'] : MESSAGES['generic']);
+        this.error.set(errorMessage(e));
       },
     });
   }
@@ -117,3 +117,23 @@ const MESSAGES: Record<string, string> = {
   tooMany: $localize`:@@contactForm.errTooMany:Recibimos varios mensajes desde tu conexión. Espera unos minutos o escríbenos a info@rtres.net.`,
   generic: $localize`:@@contactForm.errGeneric:No pudimos enviar el mensaje. Inténtalo de nuevo o escríbenos a info@rtres.net.`,
 };
+
+/** Email con usuario, una sola @ y un dominio con punto interior; sin espacios (sin regex: evita backtracking). */
+function isEmail(value: string): boolean {
+  const at = value.indexOf('@');
+  if (at < 1 || at !== value.lastIndexOf('@') || /\s/.test(value)) return false;
+  return value.slice(at + 2, -1).includes('.');
+}
+
+/** Primer campo obligatorio vacío o inválido, o '' si el formulario está completo. */
+function missingField(m: { name: string; email: string; message: string }): string {
+  if (!m.name.trim()) return 'name';
+  if (!isEmail(m.email.trim())) return 'email';
+  return m.message.trim().length < 10 ? 'message' : '';
+}
+
+function errorMessage(e: HttpErrorResponse): string {
+  if (e.status === 429) return MESSAGES['tooMany'];
+  const field = e.error?.field;
+  return field ? MESSAGES[field] ?? MESSAGES['generic'] : MESSAGES['generic'];
+}
