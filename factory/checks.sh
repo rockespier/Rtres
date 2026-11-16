@@ -16,9 +16,9 @@ dotnet test src/api/Rtres.slnx --nologo --no-build -v quiet
 
 # --- Web ---
 cd src/web
-# A fresh worktree has no node_modules.
-if [ ! -d node_modules ]; then
+# A fresh worktree has no node_modules. ng runs from node_modules/.bin (npx could install on demand).
+if [[ ! -d node_modules ]]; then
   npm ci --prefer-offline --no-audit --no-fund
 fi
-npx ng build portal
-npx ng build site
+./node_modules/.bin/ng build portal
+./node_modules/.bin/ng build site

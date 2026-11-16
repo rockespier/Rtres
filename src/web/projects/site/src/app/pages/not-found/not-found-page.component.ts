@@ -39,8 +39,8 @@ import { PATHS } from '../../core/site-paths';
 })
 export class NotFoundPageComponent implements OnInit, OnDestroy {
   readonly paths = PATHS;
-  private title = inject(Title);
-  private meta = inject(Meta);
+  private readonly title = inject(Title);
+  private readonly meta = inject(Meta);
   readonly services = SERVICE_LINKS;
 
   ngOnInit() {

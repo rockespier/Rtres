@@ -89,13 +89,13 @@ import { PublicApiService } from '../../core/public-api.service';
   `],
 })
 export class AboutPageComponent implements OnInit {
-  private title = inject(Title);
-  private meta = inject(Meta);
+  private readonly title = inject(Title);
+  private readonly meta = inject(Meta);
   readonly services = SERVICE_LINKS;
   readonly ctaTitle = $localize`:@@about.cta:¿Conversamos sobre tu proyecto?`;
-  private api = inject(PublicApiService);
+  private readonly api = inject(PublicApiService);
   /** Clientes activos en el portal: se lee en el prerender y otra vez en el navegador, para que esté al día sin recompilar. */
-  private activeClients = signal<number | null>(null);
+  private readonly activeClients = signal<number | null>(null);
   readonly stats = computed(() => [
     { value: '2007', label: $localize`:@@about.stat1:año de fundación, en Lima` },
     // Espacio fijo mientras carga (o si la API no responde): la fila no cambia de alto.

@@ -152,11 +152,11 @@ import { SERVICE_EXTRAS, ServiceExtras } from './service-extras';
 })
 export class ServicePageComponent implements OnInit {
   readonly paths = PATHS;
-  private route = inject(ActivatedRoute);
-  private title = inject(Title);
-  private meta = inject(Meta);
+  private readonly route = inject(ActivatedRoute);
+  private readonly title = inject(Title);
+  private readonly meta = inject(Meta);
   readonly steps = PROCESS_STEPS;
-  private seo = inject(SeoService);
+  private readonly seo = inject(SeoService);
   s: ServiceContent | undefined;
   extras: ServiceExtras | undefined;
 

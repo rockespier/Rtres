@@ -45,8 +45,21 @@ export const PATHS = { about: pagePath('about'), resources: pagePath('resources'
  * no están en la tabla (el home, la 404) son iguales en todos los idiomas. Cada idioma tiene sus propios posts: desde un
  * post se va a la lista del blog del otro idioma.
  */
+/** Quita las barras del final (sin regex: un `/\/+$/` hace backtracking con muchas barras seguidas). */
+export function stripTrailingSlashes(path: string): string {
+  let end = path.length;
+  while (end > 0 && path[end - 1] === '/') end--;
+  return path.slice(0, end);
+}
+
+function stripSlashes(path: string): string {
+  let start = 0;
+  while (start < path.length && path[start] === '/') start++;
+  return stripTrailingSlashes(path.slice(start));
+}
+
 export function translatePath(path: string, to: Locale, from: Locale = LOCALE) {
-  const clean = path.replace(/^\/+|\/+$/g, '');
+  const clean = stripSlashes(path);
   if (clean.startsWith(`${PAGE_PATHS.blog[from]}/`)) return `/${PAGE_PATHS.blog[to]}`;
   const entry = Object.values(PAGE_PATHS).find(p => p[from] === clean);
   return '/' + (entry ? entry[to] : clean);

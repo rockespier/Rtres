@@ -122,16 +122,17 @@ import { CASES, CaseContent } from './case-content';
   `],
 })
 export class CasePageComponent implements OnInit {
-  private route = inject(ActivatedRoute);
-  private title = inject(Title);
-  private meta = inject(Meta);
+  private readonly route = inject(ActivatedRoute);
+  private readonly title = inject(Title);
+  private readonly meta = inject(Meta);
   c: CaseContent | undefined;
   readonly ctaTitle = $localize`:@@case.cta:¿Tu empresa enfrenta un desafío parecido?`;
 
   ngOnInit() {
     this.c = CASES.find(x => x.slug === this.route.snapshot.data['slug']);
     if (!this.c) return;
-    this.title.setTitle(`${this.c.name} — ${$localize`:@@case.titleSuffix:Caso de éxito`} — Rtres Web Solutions`);
+    const suffix = $localize`:@@case.titleSuffix:Caso de éxito`;
+    this.title.setTitle(`${this.c.name} — ${suffix} — Rtres Web Solutions`);
     this.meta.updateTag({ name: 'description', content: this.c.metaDescription });
   }
 

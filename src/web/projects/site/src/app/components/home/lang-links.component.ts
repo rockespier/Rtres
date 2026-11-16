@@ -1,7 +1,7 @@
 import { Component, DestroyRef, Input, LOCALE_ID, inject, signal } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs';
-import { Locale, translatePath } from '../../core/site-paths';
+import { Locale, stripTrailingSlashes, translatePath } from '../../core/site-paths';
 
 /** Selector de idioma: lleva a la misma página en el otro idioma (core/site-paths.ts traduce el slug). */
 @Component({
@@ -16,7 +16,7 @@ export class LangLinksComponent {
   readonly langs: Locale[] = ['es', 'en', 'it'];
   /** Los slugs cambian por idioma: /es/nosotros ↔ /en/about. */
   readonly translatePath = (path: string, to: Locale) => translatePath(path, to, this.locale as Locale);
-  private router = inject(Router);
+  private readonly router = inject(Router);
   /** "/servicios/software-a-medida", o "/" en el home. */
   path = signal(this.current());
 
@@ -26,7 +26,7 @@ export class LangLinksComponent {
   }
 
   private current() {
-    const path = this.router.url.split(/[?#]/)[0].replace(/\/+$/, '');
+    const path = stripTrailingSlashes(this.router.url.split(/[?#]/)[0]);
     return !path || this.langs.some(l => path === `/${l}`) ? '/' : path;
   }
 }

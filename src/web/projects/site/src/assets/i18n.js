@@ -428,22 +428,23 @@ const RTRES_I18N = {
   function applyLang(lang){
     const dict = RTRES_I18N[lang] || RTRES_I18N.es;
     document.querySelectorAll("[data-i18n]").forEach(el => {
-      const key = el.getAttribute("data-i18n");
+      const key = el.dataset.i18n;
       if(dict[key]) el.textContent = dict[key];
     });
     document.documentElement.lang = lang;
     try{ localStorage.setItem(STORAGE_KEY, lang); }catch(e){}
     document.querySelectorAll("[data-lang-btn]").forEach(btn=>{
-      btn.classList.toggle("text-[var(--text)]", btn.getAttribute("data-lang-btn")===lang);
-      btn.classList.toggle("text-[var(--text-muted)]", btn.getAttribute("data-lang-btn")!==lang);
-      btn.setAttribute("aria-current", btn.getAttribute("data-lang-btn")===lang ? "true":"false");
+      const active = btn.dataset.langBtn===lang;
+      btn.classList.toggle("text-[var(--text)]", active);
+      btn.classList.toggle("text-[var(--text-muted)]", !active);
+      btn.setAttribute("aria-current", active ? "true":"false");
     });
   }
   window.rtresSetLang = applyLang;
   document.addEventListener("DOMContentLoaded", () => {
     applyLang(getLang());
     document.querySelectorAll("[data-lang-btn]").forEach(btn=>{
-      btn.addEventListener("click", () => applyLang(btn.getAttribute("data-lang-btn")));
+      btn.addEventListener("click", () => applyLang(btn.dataset.langBtn));
     });
 
     // Scroll reveal

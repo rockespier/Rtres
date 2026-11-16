@@ -104,12 +104,12 @@ const POSTS_KEY = makeStateKey<BlogPostSummary[]>('blog-posts');
   `],
 })
 export class BlogPageComponent implements OnInit {
-  private api = inject(PublicApiService);
-  private state = inject(TransferState);
-  private locale = inject(LOCALE_ID).slice(0, 2);
-  private browser = isPlatformBrowser(inject(PLATFORM_ID));
-  private title = inject(Title);
-  private metaTags = inject(Meta);
+  private readonly api = inject(PublicApiService);
+  private readonly state = inject(TransferState);
+  private readonly locale = inject(LOCALE_ID).slice(0, 2);
+  private readonly browser = isPlatformBrowser(inject(PLATFORM_ID));
+  private readonly title = inject(Title);
+  private readonly metaTags = inject(Meta);
   readonly ctaTitle = $localize`:@@blog.cta:¿Tienes un proyecto en mente?`;
   readonly pageSize = PAGE_SIZE;
   readonly postPath = blogPostPath;

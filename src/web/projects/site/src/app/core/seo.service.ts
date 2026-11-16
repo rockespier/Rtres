@@ -2,7 +2,7 @@ import { DOCUMENT } from '@angular/common';
 import { Injectable, LOCALE_ID, inject } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs';
-import { BLOG_SHELL_SLUG, Locale, translatePath } from './site-paths';
+import { BLOG_SHELL_SLUG, Locale, stripTrailingSlashes, translatePath } from './site-paths';
 
 export const SITE_URL = 'https://rtres.net';
 export const SITE_LOCALES = ['es', 'en', 'it'] as const;
@@ -30,9 +30,9 @@ export interface ArticleSeo { headline: string; image: string | null; datePublis
  */
 @Injectable({ providedIn: 'root' })
 export class SeoService {
-  private document = inject(DOCUMENT);
-  private router = inject(Router);
-  private locale = inject(LOCALE_ID).slice(0, 2);
+  private readonly document = inject(DOCUMENT);
+  private readonly router = inject(Router);
+  private readonly locale = inject(LOCALE_ID).slice(0, 2);
 
   /** Preguntas frecuentes de la página actual (FAQPage); la página las fija en ngOnInit y valen solo para esa navegación. */
   private faq: { q: string; a: string }[] | null = null;
@@ -53,7 +53,7 @@ export class SeoService {
 
   /** Ruta sin idioma, query ni fragmento: "/servicios/software-a-medida" o "" para el home. */
   private path() {
-    const path = this.router.url.split(/[?#]/)[0].replace(/\/+$/, '');
+    const path = stripTrailingSlashes(this.router.url.split(/[?#]/)[0]);
     // En el dev server el idioma puede venir como primer segmento (/en): no es parte de la página.
     return SITE_LOCALES.some(l => path === `/${l}`) ? '' : path;
   }
@@ -175,7 +175,12 @@ export class SeoService {
   private link(rel: string, href: string, hreflang?: string) {
     const selector = hreflang ? `link[rel="${rel}"][hreflang="${hreflang}"]` : `link[rel="${rel}"]:not([hreflang])`;
     let el = this.document.head.querySelector<HTMLLinkElement>(selector);
-    if (!el) { el = this.document.createElement('link'); el.rel = rel; if (hreflang) el.hreflang = hreflang; this.document.head.appendChild(el); }
+    if (!el) {
+      el = this.document.createElement('link');
+      el.rel = rel;
+      if (hreflang) el.hreflang = hreflang;
+      this.document.head.appendChild(el);
+    }
     el.href = href;
   }
 
