@@ -5,6 +5,9 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ClosingCtaComponent } from '../../components/home/closing-cta.component';
 import { PublicApiService, PublicVideo } from '../../core/public-api.service';
 
+/** Id de video de YouTube: 11 caracteres alfanuméricos, guion o guion bajo. */
+const YOUTUBE_ID = /^[\w-]{11}$/;
+
 /**
  * Recursos: videos educativos que se administran en el portal. Se piden en el navegador (no en el prerender)
  * para que un video nuevo aparezca sin volver a publicar el sitio.
@@ -38,8 +41,8 @@ import { PublicApiService, PublicVideo } from '../../core/public-api.service';
           @for (v of filtered(); track v.youtubeId; let first = $first) {
             <article [class.featured]="first">
               <div class="player">
-                @if (playing() === v.youtubeId) {
-                  <iframe [src]="embed(v.youtubeId)" [title]="v.title" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                @if (playing() === v.youtubeId && embedUrl(); as url) {
+                  <iframe [src]="url"[title]="v.title" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                 } @else {
                   <button type="button" class="poster" (click)="playing.set(v.youtubeId)" [attr.aria-label]="playLabel + ': ' + v.title">
                     <img [src]="'https://i.ytimg.com/vi/' + v.youtubeId + (first ? '/maxresdefault.jpg' : '/hqdefault.jpg')" alt="" loading="lazy" (error)="fallback($event, v.youtubeId)">
@@ -127,10 +130,18 @@ export class ResourcesPageComponent implements OnInit {
     if (this.browser) this.api.getVideos(this.locale).subscribe(v => this.videos.set(v));
   }
 
-  /** youtube-nocookie: no deja cookies de seguimiento hasta que el visitante reproduce. */
-  embed(id: string): SafeResourceUrl {
-    return this.sanitizer.bypassSecurityTrustResourceUrl(`https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}?autoplay=1&rel=0`);
-  }
+  /**
+   * URL del iframe del video en reproducción. youtube-nocookie: no deja cookies de seguimiento hasta que el visitante
+   * reproduce. Solo se confía en la URL si el id tiene el formato de YouTube (11 caracteres [A-Za-z0-9_-]): el id viene
+   * de la API y el dominio es fijo, así que no se puede inyectar otra URL. Es un computed para que el iframe no se
+   * recargue en cada detección de cambios.
+   */
+  embedUrl = computed<SafeResourceUrl | null>(() => {
+    const id = this.playing();
+    return id && YOUTUBE_ID.test(id)
+      ? this.sanitizer.bypassSecurityTrustResourceUrl(`https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`)
+      : null;
+  });
 
   /** No todos los videos tienen miniatura en alta resolución. */
   fallback(event: Event, id: string) {

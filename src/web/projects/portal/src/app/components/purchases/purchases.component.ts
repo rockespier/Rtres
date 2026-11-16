@@ -117,7 +117,7 @@ const NO_IGV_TYPES: PurchaseDocumentType[] = ['Boleta', 'ReciboPorHonorarios'];
         </div></ng-template>
       </form>
     </div>
-    <app-import-dialog *ngIf="importing" label="compras" [result]="importResult" (upload)="upload($event)" (template)="downloadTemplate()" (close)="importing=false;importResult=null"/>
+    <app-import-dialog *ngIf="importing" label="compras" [result]="importResult" (upload)="upload($event)" (template)="downloadTemplate()" (closed)="importing=false;importResult=null"/>
   `,
 })
 export class PurchasesComponent implements OnInit {
