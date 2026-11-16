@@ -12,7 +12,9 @@ IF EXISTS (SELECT 1 FROM TaxSettings)
     UPDATE TaxSettings
     SET FacturaSeries = N'E001', FacturaNextNumber = 419,
         ReciboSeries  = N'E001', ReciboNextNumber  = 190,
-        UpdatedAt = SYSUTCDATETIME();
+        UpdatedAt = SYSUTCDATETIME()
+    -- TaxSettings tiene una sola fila; el WHERE lo deja explícito.
+    WHERE Id = (SELECT TOP 1 Id FROM TaxSettings ORDER BY UpdatedAt DESC);
 ELSE
     INSERT INTO TaxSettings (Id, IgvRate, RentaRate, UpdatedAt, FacturaSeries, FacturaNextNumber, ReciboSeries, ReciboNextNumber)
     VALUES (NEWID(), 0.18, 0.10, SYSUTCDATETIME(), N'E001', 419, N'E001', 190);
