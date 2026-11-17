@@ -9,6 +9,7 @@ import { BLOG_SHELL_SLUG, casePath, pagePath, servicePath } from './core/site-pa
 // La home va en el bundle inicial; el resto de páginas se cargan con su ruta (menos JS para el LCP de la home).
 const servicePage = () => import('./pages/service/service-page.component').then(m => m.ServicePageComponent);
 const casePage = () => import('./pages/case/case-page.component').then(m => m.CasePageComponent);
+const legalPage = () => import('./pages/legal/legal-page.component').then(m => m.LegalPageComponent);
 const blogPostPage = () => import('./pages/blog/blog-post-page.component').then(m => m.BlogPostPageComponent);
 
 export const siteRoutes: Routes = [
@@ -26,6 +27,8 @@ export const siteRoutes: Routes = [
       { path: `${pagePath('blog').slice(1)}/${BLOG_SHELL_SLUG}`, loadComponent: blogPostPage },
       { path: `${pagePath('blog').slice(1)}/:slug`, loadComponent: blogPostPage },
       { path: pagePath('contact').slice(1), loadComponent: () => import('./pages/contact/contact-page.component').then(m => m.ContactPageComponent) },
+      { path: pagePath('privacy').slice(1), loadComponent: legalPage, data: { doc: 'privacy' } },
+      { path: pagePath('legal').slice(1), loadComponent: legalPage, data: { doc: 'legal' } },
       ...CASES.map(x => ({ path: casePath(x.slug).slice(1), loadComponent: casePage, data: { slug: x.slug } })),
       // El prefijo de idioma lo resuelve el build localizado (/es, /en, /it); esta ruta cubre el dev server.
       // Se prerenderiza en /{idioma}/404: el .htaccess la sirve con estado 404 para las URLs que no existen.

@@ -1958,6 +1958,242 @@
         <source>Teléfono (Lima)</source>
         <target>Phone (Lima)</target>
       </trans-unit>
+      <trans-unit id="home.footer.about" datatype="html">
+        <source>Sobre nosotros</source>
+        <target>About us</target>
+      </trans-unit>
+      <trans-unit id="home.footer.privacy" datatype="html">
+        <source>Privacidad</source>
+        <target>Privacy</target>
+      </trans-unit>
+      <trans-unit id="home.footer.legal" datatype="html">
+        <source>Aviso legal</source>
+        <target>Legal notice</target>
+      </trans-unit>
+      <trans-unit id="legal.updated" datatype="html">
+        <source>Última actualización: 17 de noviembre de 2026.</source>
+        <target>Last updated: November 17, 2026.</target>
+      </trans-unit>
+      <trans-unit id="legal.seePrivacy" datatype="html">
+        <source>Ver la política de privacidad</source>
+        <target>Read the privacy policy</target>
+      </trans-unit>
+      <trans-unit id="legal.seeNotice" datatype="html">
+        <source>Ver el aviso legal</source>
+        <target>Read the legal notice</target>
+      </trans-unit>
+      <trans-unit id="legal.privacy.metaTitle" datatype="html">
+        <source>Política de privacidad — Rtres Web Solutions</source>
+        <target>Privacy policy — Rtres Web Solutions</target>
+      </trans-unit>
+      <trans-unit id="legal.privacy.meta" datatype="html">
+        <source>Cómo RTRES WEB SOLUTIONS S.A.C. trata los datos personales de quienes visitan rtres.net o nos contactan: finalidades, conservación, cookies y derechos.</source>
+        <target>How RTRES WEB SOLUTIONS S.A.C. handles the personal data of people who visit rtres.net or contact us: purposes, retention, cookies and rights.</target>
+      </trans-unit>
+      <trans-unit id="legal.privacy.label" datatype="html">
+        <source>PRIVACIDAD</source>
+        <target>PRIVACY</target>
+      </trans-unit>
+      <trans-unit id="legal.privacy.title" datatype="html">
+        <source>Política de privacidad</source>
+        <target>Privacy policy</target>
+      </trans-unit>
+      <trans-unit id="legal.privacy.intro" datatype="html">
+        <source>Esta política explica cómo tratamos los datos personales de quienes visitan rtres.net o se ponen en contacto con nosotros. Aplicamos la Ley N.° 29733 de Protección de Datos Personales del Perú y su reglamento y, para las personas que se encuentran en la Unión Europea, el Reglamento (UE) 2016/679 (RGPD).</source>
+        <target>This policy explains how we handle the personal data of people who visit rtres.net or get in touch with us. We apply Peru's Personal Data Protection Law No. 29733 and its regulations and, for people located in the European Union, Regulation (EU) 2016/679 (GDPR).</target>
+      </trans-unit>
+      <trans-unit id="legal.privacy.s1.title" datatype="html">
+        <source>1. Responsable</source>
+        <target>1. Data controller</target>
+      </trans-unit>
+      <trans-unit id="legal.privacy.s1.p1" datatype="html">
+        <source>RTRES WEB SOLUTIONS S.A.C., RUC 20517137881, con domicilio en Calle Cabo Blanco 176, Lima 15067, Perú. Para cualquier asunto de privacidad escríbenos a info@rtres.net.</source>
+        <target>RTRES WEB SOLUTIONS S.A.C., RUC (tax ID) 20517137881, registered at Calle Cabo Blanco 176, Lima 15067, Peru. For any privacy matter, write to info@rtres.net.</target>
+      </trans-unit>
+      <trans-unit id="legal.privacy.s2.title" datatype="html">
+        <source>2. Qué datos tratamos y para qué</source>
+        <target>2. What data we process and why</target>
+      </trans-unit>
+      <trans-unit id="legal.privacy.s2.p1" datatype="html">
+        <source>Formulario de contacto: nombre, email, teléfono y empresa (opcionales), servicio de interés y mensaje. Los usamos para responder tu consulta y, si lo pides, preparar una propuesta. Base legal: tu consentimiento al enviar el formulario y, en el RGPD, la aplicación de medidas precontractuales a petición tuya (art. 6.1.b).</source>
+        <target>Contact form: name, email, phone and company (optional), service of interest and message. We use them to answer your enquiry and, if you ask, to prepare a proposal. Legal basis: your consent when you submit the form and, under the GDPR, steps taken at your request before entering into a contract (Art. 6(1)(b)).</target>
+      </trans-unit>
+      <trans-unit id="legal.privacy.s2.p2" datatype="html">
+        <source>WhatsApp, email o teléfono: los datos que nos envíes, para responderte. Base legal: tu consentimiento.</source>
+        <target>WhatsApp, email or phone: the data you send us, to reply to you. Legal basis: your consent.</target>
+      </trans-unit>
+      <trans-unit id="legal.privacy.s2.p3" datatype="html">
+        <source>Analítica web (Google Analytics 4): datos de navegación seudonimizados, como páginas vistas, tipo de dispositivo y país aproximado, para medir el uso del sitio y mejorarlo. Solo si lo aceptas en el aviso de cookies. Base legal: tu consentimiento (art. 6.1.a del RGPD).</source>
+        <target>Web analytics (Google Analytics 4): pseudonymised browsing data, such as pages viewed, device type and approximate country, to measure and improve the use of the site. Only if you accept it in the cookie notice. Legal basis: your consent (Art. 6(1)(a) GDPR).</target>
+      </trans-unit>
+      <trans-unit id="legal.privacy.s2.p4" datatype="html">
+        <source>No usamos tus datos para publicidad, no los vendemos ni los cedemos a terceros para sus propios fines, y no tomamos decisiones automatizadas sobre ti.</source>
+        <target>We do not use your data for advertising, we do not sell it or pass it on to third parties for their own purposes, and we do not make automated decisions about you.</target>
+      </trans-unit>
+      <trans-unit id="legal.privacy.s3.title" datatype="html">
+        <source>3. Cuánto tiempo los conservamos</source>
+        <target>3. How long we keep it</target>
+      </trans-unit>
+      <trans-unit id="legal.privacy.s3.p1" datatype="html">
+        <source>Las consultas se conservan 12 meses desde el último contacto y después se eliminan. Si llegas a ser cliente, conservamos los datos mientras dure la relación y, después, durante los plazos que exigen las normas contables y tributarias.</source>
+        <target>Enquiries are kept for 12 months after the last contact and then deleted. If you become a client, we keep your data for the duration of the relationship and afterwards for the periods required by accounting and tax rules.</target>
+      </trans-unit>
+      <trans-unit id="legal.privacy.s3.p2" datatype="html">
+        <source>Las cookies de Analytics caducan como máximo a los 2 años; se borran en cuanto retiras tu consentimiento.</source>
+        <target>Analytics cookies expire after 2 years at most; they are deleted as soon as you withdraw your consent.</target>
+      </trans-unit>
+      <trans-unit id="legal.privacy.s4.title" datatype="html">
+        <source>4. Quién más accede a los datos</source>
+        <target>4. Who else has access to the data</target>
+      </trans-unit>
+      <trans-unit id="legal.privacy.s4.p1" datatype="html">
+        <source>El sitio, el formulario y su base de datos funcionan en un servidor privado virtual contratado y administrado directamente por Rtres. El proveedor de ese servidor y el del correo electrónico actúan como encargados del tratamiento: prestan la infraestructura y no usan los datos para fines propios.</source>
+        <target>The site, the form and its database run on a virtual private server rented and managed directly by Rtres. The provider of that server and our email provider act as data processors: they supply the infrastructure and do not use the data for their own purposes.</target>
+      </trans-unit>
+      <trans-unit id="legal.privacy.s4.p2" datatype="html">
+        <source>Si aceptas la analítica, Google (Google Ireland Limited y Google LLC) trata los datos de navegación. Google LLC está en Estados Unidos y está adherida al Marco de Privacidad de Datos UE-EE. UU.; para el Perú, esto supone una transferencia internacional de datos.</source>
+        <target>If you accept analytics, Google (Google Ireland Limited and Google LLC) processes the browsing data. Google LLC is located in the United States and participates in the EU-U.S. Data Privacy Framework; under Peruvian law, this is an international data transfer.</target>
+      </trans-unit>
+      <trans-unit id="legal.privacy.s4.p3" datatype="html">
+        <source>Solo comunicaremos datos a autoridades cuando una ley nos obligue.</source>
+        <target>We will only disclose data to authorities when required by law.</target>
+      </trans-unit>
+      <trans-unit id="legal.privacy.s5.title" datatype="html">
+        <source>5. Cookies</source>
+        <target>5. Cookies</target>
+      </trans-unit>
+      <trans-unit id="legal.privacy.s5.p1" datatype="html">
+        <source>Solo instalamos cookies de analítica si las aceptas en el aviso de cookies; puedes cambiar tu elección cuando quieras desde el enlace &quot;Cookies&quot; del pie de página. Tu elección se guarda en el almacenamiento local del navegador.</source>
+        <target>We only set analytics cookies if you accept them in the cookie notice; you can change your choice at any time from the "Cookies" link in the footer. Your choice is stored in your browser's local storage.</target>
+      </trans-unit>
+      <trans-unit id="legal.privacy.s5.p2" datatype="html">
+        <source>Los vídeos se cargan desde youtube-nocookie.com, que no instala cookies hasta que reproduces un vídeo.</source>
+        <target>Videos are loaded from youtube-nocookie.com, which does not set cookies until you play a video.</target>
+      </trans-unit>
+      <trans-unit id="legal.privacy.s6.title" datatype="html">
+        <source>6. Tus derechos</source>
+        <target>6. Your rights</target>
+      </trans-unit>
+      <trans-unit id="legal.privacy.s6.p1" datatype="html">
+        <source>Puedes pedir el acceso, la rectificación, la cancelación o supresión y la oposición al tratamiento de tus datos (derechos ARCO), y retirar tu consentimiento en cualquier momento. Si estás en la Unión Europea, también puedes pedir la limitación del tratamiento y la portabilidad de tus datos.</source>
+        <target>You can request access to, rectification, erasure of and objection to the processing of your data (ARCO rights under Peruvian law), and withdraw your consent at any time. If you are in the European Union, you can also request restriction of processing and data portability.</target>
+      </trans-unit>
+      <trans-unit id="legal.privacy.s6.p2" datatype="html">
+        <source>Escríbenos a info@rtres.net indicando qué derecho quieres ejercer; podemos pedirte que acredites tu identidad. Respondemos dentro de los plazos legales (en el RGPD, un mes).</source>
+        <target>Write to info@rtres.net stating which right you want to exercise; we may ask you to verify your identity. We reply within the legal deadlines (one month under the GDPR).</target>
+      </trans-unit>
+      <trans-unit id="legal.privacy.s6.p3" datatype="html">
+        <source>Si no estás conforme con nuestra respuesta, puedes reclamar ante la Autoridad Nacional de Protección de Datos Personales del Perú o, si estás en la Unión Europea, ante la autoridad de tu país: en Italia, el Garante per la protezione dei dati personali.</source>
+        <target>If you are not satisfied with our reply, you can lodge a complaint with Peru's National Authority for Personal Data Protection or, if you are in the European Union, with the authority of your country: in Italy, the Garante per la protezione dei dati personali.</target>
+      </trans-unit>
+      <trans-unit id="legal.privacy.s7.title" datatype="html">
+        <source>7. Seguridad</source>
+        <target>7. Security</target>
+      </trans-unit>
+      <trans-unit id="legal.privacy.s7.p1" datatype="html">
+        <source>El sitio funciona solo con HTTPS y los datos se guardan en sistemas con acceso restringido al equipo de Rtres.</source>
+        <target>The site runs only over HTTPS and data is stored on systems with access restricted to the Rtres team.</target>
+      </trans-unit>
+      <trans-unit id="legal.privacy.s8.title" datatype="html">
+        <source>8. Menores de edad</source>
+        <target>8. Minors</target>
+      </trans-unit>
+      <trans-unit id="legal.privacy.s8.p1" datatype="html">
+        <source>Este sitio está dirigido a empresas y profesionales. No recogemos a sabiendas datos de menores de 14 años.</source>
+        <target>This site is aimed at businesses and professionals. We do not knowingly collect data from children under 14.</target>
+      </trans-unit>
+      <trans-unit id="legal.privacy.s9.title" datatype="html">
+        <source>9. Cambios</source>
+        <target>9. Changes</target>
+      </trans-unit>
+      <trans-unit id="legal.privacy.s9.p1" datatype="html">
+        <source>Si cambiamos esta política, publicaremos aquí la nueva versión con su fecha de actualización.</source>
+        <target>If we change this policy, we will publish the new version here with its update date.</target>
+      </trans-unit>
+      <trans-unit id="legal.notice.metaTitle" datatype="html">
+        <source>Aviso legal — Rtres Web Solutions</source>
+        <target>Legal notice — Rtres Web Solutions</target>
+      </trans-unit>
+      <trans-unit id="legal.notice.meta" datatype="html">
+        <source>Titular de rtres.net: RTRES WEB SOLUTIONS S.A.C., RUC 20517137881, Lima, Perú. Condiciones de uso del sitio, propiedad intelectual y ley aplicable.</source>
+        <target>Owner of rtres.net: RTRES WEB SOLUTIONS S.A.C., RUC 20517137881, Lima, Peru. Terms of use of the site, intellectual property and governing law.</target>
+      </trans-unit>
+      <trans-unit id="legal.notice.label" datatype="html">
+        <source>AVISO LEGAL</source>
+        <target>LEGAL NOTICE</target>
+      </trans-unit>
+      <trans-unit id="legal.notice.title" datatype="html">
+        <source>Aviso legal</source>
+        <target>Legal notice</target>
+      </trans-unit>
+      <trans-unit id="legal.notice.intro" datatype="html">
+        <source>Información sobre el titular de rtres.net y las condiciones de uso del sitio.</source>
+        <target>Information about the owner of rtres.net and the terms of use of the site.</target>
+      </trans-unit>
+      <trans-unit id="legal.notice.s1.title" datatype="html">
+        <source>Titular del sitio</source>
+        <target>Site owner</target>
+      </trans-unit>
+      <trans-unit id="legal.notice.s1.p1" datatype="html">
+        <source>Este sitio web pertenece a RTRES WEB SOLUTIONS S.A.C. (en adelante, &quot;Rtres&quot;), con RUC 20517137881 y domicilio fiscal en Calle Cabo Blanco 176, Lima 15067, Perú. Email: info@rtres.net. Teléfono: +51 942 670 094.</source>
+        <target>This website belongs to RTRES WEB SOLUTIONS S.A.C. ("Rtres"), RUC (tax ID) 20517137881, with registered address at Calle Cabo Blanco 176, Lima 15067, Peru. Email: info@rtres.net. Phone: +51 942 670 094.</target>
+      </trans-unit>
+      <trans-unit id="legal.notice.s2.title" datatype="html">
+        <source>Objeto</source>
+        <target>Purpose</target>
+      </trans-unit>
+      <trans-unit id="legal.notice.s2.p1" datatype="html">
+        <source>El sitio informa sobre los servicios de Rtres (software a medida, aplicaciones web, integración y automatización, hosting, dominios y soporte) y permite contactarnos. La información publicada es orientativa y no constituye una oferta vinculante: el alcance, el precio y el plazo de cada servicio se fijan en la propuesta o el contrato correspondiente.</source>
+        <target>The site provides information about Rtres's services (custom software, web applications, integration and automation, hosting, domains and support) and lets you contact us. The information published is for guidance only and is not a binding offer: the scope, price and timeline of each service are set out in the corresponding proposal or contract.</target>
+      </trans-unit>
+      <trans-unit id="legal.notice.s3.title" datatype="html">
+        <source>Propiedad intelectual</source>
+        <target>Intellectual property</target>
+      </trans-unit>
+      <trans-unit id="legal.notice.s3.p1" datatype="html">
+        <source>Los textos, el diseño, el logotipo y el código del sitio son de Rtres o se usan con licencia. Las marcas y capturas de clientes que aparecen en los casos de éxito pertenecen a sus titulares y se publican con su autorización. No está permitido reproducirlos con fines comerciales sin permiso escrito.</source>
+        <target>The texts, design, logo and code of the site belong to Rtres or are used under licence. Client brands and screenshots shown in the case studies belong to their owners and are published with their permission. They may not be reproduced for commercial purposes without written permission.</target>
+      </trans-unit>
+      <trans-unit id="legal.notice.s4.title" datatype="html">
+        <source>Enlaces a terceros</source>
+        <target>Third-party links</target>
+      </trans-unit>
+      <trans-unit id="legal.notice.s4.p1" datatype="html">
+        <source>El sitio enlaza a servicios de terceros, como WhatsApp, YouTube, LinkedIn, Clutch o Google Maps. Rtres no controla su contenido ni sus políticas.</source>
+        <target>The site links to third-party services such as WhatsApp, YouTube, LinkedIn, Clutch or Google Maps. Rtres does not control their content or policies.</target>
+      </trans-unit>
+      <trans-unit id="legal.notice.s5.title" datatype="html">
+        <source>Responsabilidad</source>
+        <target>Liability</target>
+      </trans-unit>
+      <trans-unit id="legal.notice.s5.p1" datatype="html">
+        <source>Procuramos que la información del sitio sea correcta y esté actualizada, pero no garantizamos la ausencia de errores ni que el sitio esté disponible sin interrupciones.</source>
+        <target>We make every effort to keep the information on the site accurate and up to date, but we do not guarantee that it is error-free or that the site will be available without interruption.</target>
+      </trans-unit>
+      <trans-unit id="legal.notice.s6.title" datatype="html">
+        <source>Portal de clientes</source>
+        <target>Client portal</target>
+      </trans-unit>
+      <trans-unit id="legal.notice.s6.p1" datatype="html">
+        <source>El uso del portal de clientes (portal.rtres.net) se rige por el contrato de servicio firmado con cada cliente.</source>
+        <target>Use of the client portal (portal.rtres.net) is governed by the service contract signed with each client.</target>
+      </trans-unit>
+      <trans-unit id="legal.notice.s7.title" datatype="html">
+        <source>Ley aplicable</source>
+        <target>Governing law</target>
+      </trans-unit>
+      <trans-unit id="legal.notice.s7.p1" datatype="html">
+        <source>Este aviso se rige por las leyes de la República del Perú. Las controversias se someten a los juzgados y tribunales de Lima, salvo que la normativa de protección al consumidor aplicable disponga otra cosa.</source>
+        <target>This notice is governed by the laws of the Republic of Peru. Disputes are submitted to the courts of Lima, unless applicable consumer protection rules provide otherwise.</target>
+      </trans-unit>
+      <trans-unit id="legal.notice.s8.title" datatype="html">
+        <source>Datos personales</source>
+        <target>Personal data</target>
+      </trans-unit>
+      <trans-unit id="legal.notice.s8.p1" datatype="html">
+        <source>El tratamiento de los datos personales se explica en la política de privacidad.</source>
+        <target>The processing of personal data is explained in the privacy policy.</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

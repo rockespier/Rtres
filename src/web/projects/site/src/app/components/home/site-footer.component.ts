@@ -4,6 +4,7 @@ import { CASE_LINKS, SERVICE_LINKS } from '../../core/site-nav';
 import { LangLinksComponent } from './lang-links.component';
 import { PATHS } from '../../core/site-paths';
 import { CookieConsentService } from '../cookie-consent/cookie-consent.service';
+import { COMPANY } from '../../core/company';
 
 @Component({
   selector: 'app-home-footer',
@@ -22,7 +23,7 @@ import { CookieConsentService } from '../cookie-consent/cookie-consent.service';
       </div>
       <div>
         <b i18n="@@home.footer.company">Empresa</b>
-        <a [routerLink]="paths.about" i18n="@@home.nav.about">Nosotros</a>
+        <a [routerLink]="paths.about" i18n="@@home.footer.about">Sobre nosotros</a>
         @for (l of cases; track l.path) {<a [routerLink]="l.path">{{ l.label }}</a>}
         <a [routerLink]="paths.resources" i18n="@@home.nav.resources">Recursos</a>
         <a [routerLink]="paths.blog" i18n="@@home.nav.blog">Blog</a>
@@ -36,7 +37,10 @@ import { CookieConsentService } from '../cookie-consent/cookie-consent.service';
         <a href="https://wa.me/393281915399" target="_blank" rel="noopener">WhatsApp ↗</a>
       </div>
       <div class="bottom">
-        <small>© {{ year }} Rtres Web Solutions · <button type="button" class="cc" (click)="consent.reopen()" i18n="@@cookies.settings">Cookies</button></small>
+        <small class="legal">
+          <span>© {{ year }} {{ company.name }} · RUC {{ company.ruc }} · {{ company.address }}</span>
+          <span><a [routerLink]="paths.privacy" i18n="@@home.footer.privacy">Privacidad</a> · <a [routerLink]="paths.legal" i18n="@@home.footer.legal">Aviso legal</a> · <button type="button" class="cc" (click)="consent.reopen()" i18n="@@cookies.settings">Cookies</button></span>
+        </small>
         <div class="langs"><app-lang-links separator=" · " /></div>
       </div>
     </footer>
@@ -50,6 +54,8 @@ import { CookieConsentService } from '../cookie-consent/cookie-consent.service';
     footer>div:not(.brand)>a{display:block;margin-bottom:10px}
     footer a:hover{text-decoration:underline;text-underline-offset:3px}
     .bottom{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;gap:20px;margin-top:30px;padding-top:22px;border-top:1px solid rgba(20,20,20,.25);font-size:12px}
+    .legal{display:flex;flex-wrap:wrap;gap:6px 18px}
+    .legal a{text-decoration:underline;text-underline-offset:3px}
     .cc{background:none;border:0;padding:0;font:inherit;color:inherit;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
     .langs{letter-spacing:.12em}
     .langs ::ng-deep a{display:inline;margin:0}
@@ -63,6 +69,7 @@ import { CookieConsentService } from '../cookie-consent/cookie-consent.service';
 export class HomeFooterComponent {
   readonly consent = inject(CookieConsentService);
   readonly paths = PATHS;
+  readonly company = COMPANY;
   readonly services = SERVICE_LINKS;
   readonly cases = CASE_LINKS;
   readonly year = new Date().getFullYear();
