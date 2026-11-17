@@ -165,7 +165,7 @@ export class ServicePageComponent implements OnInit {
     if (!this.s) return;
     this.title.setTitle(`${this.s.metaTitle ?? this.s.title} — Rtres Web Solutions`);
     this.meta.updateTag({ name: 'description', content: this.s.metaDescription });
-    this.seo.setService({ name: this.s.title });
+    this.seo.setService({ name: this.s.title, slug: this.s.slug });
     this.extras = SERVICE_EXTRAS[this.s.slug];
     if (this.extras) this.seo.setFaq(this.extras.faqs);
   }

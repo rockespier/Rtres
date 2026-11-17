@@ -3,6 +3,7 @@ import { Injectable, LOCALE_ID, inject } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs';
 import { BLOG_SHELL_SLUG, Locale, stripTrailingSlashes, translatePath } from './site-paths';
+import { COMPANY } from './company';
 
 export const SITE_URL = 'https://rtres.net';
 export const SITE_LOCALES = ['es', 'en', 'it'] as const;
@@ -19,6 +20,29 @@ const SAME_AS = [
   'https://clutch.co/profile/rtres-web-solutions',
 ];
 
+/** Entidad con su referencia pública (Wikipedia o web oficial) para about/mentions del schema Service. */
+const thing = (name: string, sameAs: string) => ({ '@type': 'Thing', name, sameAs });
+const WIKI = 'https://en.wikipedia.org/wiki/';
+const SAP = thing('SAP ERP', WIKI + 'SAP_ERP');
+const SUNAT = thing('SUNAT', 'https://www.sunat.gob.pe/');
+const DOTNET = thing('.NET', WIKI + '.NET');
+const ANGULAR = thing('Angular', WIKI + 'Angular_(web_framework)');
+const SQL_SERVER = thing('Microsoft SQL Server', WIKI + 'Microsoft_SQL_Server');
+const PAYPAL = thing('PayPal', WIKI + 'PayPal');
+/** Tema principal (about) y tecnologías que nombra cada servicio (mentions); clave: slug de service-content.ts. */
+const SERVICE_ENTITIES: Record<string, { about: object[]; mentions: object[] }> = {
+  'software-a-medida': { about: [thing('Custom software', WIKI + 'Custom_software')], mentions: [DOTNET, ANGULAR, SQL_SERVER, SAP, SUNAT] },
+  'apps-y-experiencias-web': { about: [thing('Web application', WIKI + 'Web_application')], mentions: [ANGULAR, PAYPAL, thing('WordPress', WIKI + 'WordPress')] },
+  'integracion-y-automatizacion': {
+    about: [thing('System integration', WIKI + 'System_integration'), thing('Business process automation', WIKI + 'Business_process_automation')],
+    mentions: [SAP, SUNAT, thing('Electronic invoicing', WIKI + 'Electronic_invoicing'), DOTNET, PAYPAL],
+  },
+  'hosting-dominios-y-soporte': {
+    about: [thing('Web hosting service', WIKI + 'Web_hosting_service'), thing('Domain name', WIKI + 'Domain_name'), thing('Technical support', WIKI + 'Technical_support')],
+    mentions: [thing('Linux', WIKI + 'Linux'), thing('Windows Server', WIKI + 'Windows_Server'), SQL_SERVER, thing('Public key certificate', WIKI + 'Public_key_certificate')],
+  },
+};
+
 export interface ArticleSeo { headline: string; image: string | null; datePublished: string; dateModified: string; }
 
 /**
@@ -26,7 +50,7 @@ export interface ArticleSeo { headline: string; image: string | null; datePublis
  * - canonical absoluto: sin "/" final, salvo el home de cada idioma (/es/);
  * - alternates hreflang es/en/it y x-default (español);
  * - Open Graph y Twitter con el título y la descripción que fijó la página;
- * - JSON-LD: Organization en todo el sitio, BreadcrumbList en las páginas internas y BlogPosting en los posts.
+ * - JSON-LD: Organization y WebSite en todo el sitio, BreadcrumbList en las páginas internas y BlogPosting en los posts.
  */
 @Injectable({ providedIn: 'root' })
 export class SeoService {
@@ -39,8 +63,8 @@ export class SeoService {
   setFaq(items: { q: string; a: string }[]) { this.faq = items; }
 
   /** Servicio de la página actual (schema Service); como setFaq, vale solo para esa navegación. */
-  private service: { name: string } | null = null;
-  setService(service: { name: string }) { this.service = service; }
+  private service: { name: string; slug: string } | null = null;
+  setService(service: { name: string; slug: string }) { this.service = service; }
 
   /** Post del blog en pantalla. Los datos llegan después de la navegación: la página llama a update() al tenerlos. */
   private article: ArticleSeo | null = null;
@@ -78,10 +102,11 @@ export class SeoService {
     const image = this.updateSocial(title, description, canonical, article);
 
     // Organization + ProfessionalService: negocio local en Lima para Google/Gemini. Mismos datos (NAP) que la web,
-    // Google Business Profile, LinkedIn y Clutch (GUIA-SEO-LOCAL.md).
+    // Google Business Profile, LinkedIn y Clutch (GUIA-SEO-LOCAL.md). Sin AggregateRating a propósito: Google no muestra
+    // estrellas de reseñas que la propia empresa publica sobre sí misma (auditoría 2026-11-13, punto 10).
     this.jsonLd('ld-organization', {
       '@context': 'https://schema.org', '@type': ['Organization', 'ProfessionalService'], '@id': `${SITE_URL}/#organization`,
-      name: 'Rtres Web Solutions', url: `${SITE_URL}/${this.locale}/`, logo: `${SITE_URL}/es/assets/logo-rtres.png`,
+      name: 'Rtres Web Solutions', legalName: COMPANY.name, taxID: COMPANY.ruc, url: `${SITE_URL}/${this.locale}/`, logo: `${SITE_URL}/es/assets/logo-rtres.png`,
       image: `${SITE_URL}/es/assets/logo-rtres.png`,
       email: 'info@rtres.net', telephone: PHONE_PE, foundingDate: '2007',
       contactPoint: [
@@ -102,10 +127,15 @@ export class SeoService {
       knowsAbout: ['Desarrollo de software a medida', 'Desarrollo web', 'Integración con SAP', 'Facturación electrónica SUNAT', '.NET', 'Angular'],
       sameAs: SAME_AS,
     });
+    this.jsonLd('ld-website', {
+      '@context': 'https://schema.org', '@type': 'WebSite', '@id': `${SITE_URL}/${this.locale}/#website`, url: this.url(this.locale, ''),
+      name: 'Rtres Web Solutions', inLanguage: this.locale, publisher: { '@id': `${SITE_URL}/#organization` },
+    });
     this.jsonLd('ld-service', this.service && !noindex ? {
       '@context': 'https://schema.org', '@type': 'Service', name: this.service.name, serviceType: this.service.name,
       description, url: canonical, provider: { '@id': `${SITE_URL}/#organization` },
       areaServed: [{ '@type': 'City', name: 'Lima' }, { '@type': 'Country', name: 'Perú' }],
+      ...SERVICE_ENTITIES[this.service.slug],
     } : null);
     this.service = null;
     this.jsonLd('ld-faq', this.faq?.length && !noindex ? {
