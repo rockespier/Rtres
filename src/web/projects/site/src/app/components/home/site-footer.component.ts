@@ -13,7 +13,7 @@ import { CookieConsentService } from '../cookie-consent/cookie-consent.service';
     <footer>
       <div class="brand">
         <!-- Sobre lima el logo gris/lima se pierde: se muestra en una sola tinta oscura. -->
-        <a routerLink="/"><img src="assets/logo-rtres.png" alt="Rtres — inicio"></a>
+        <a routerLink="/"><img src="assets/logo-rtres.png" width="527" height="315" alt="Rtres — inicio"></a>
         <p class="tagline" i18n="@@home.footer.tagline">Profesionales en soluciones web.</p>
       </div>
       <div>
@@ -44,7 +44,7 @@ import { CookieConsentService } from '../cookie-consent/cookie-consent.service';
   styles: [`
     :host{display:block}
     footer{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:30px;padding:70px 5% 28px;background:var(--v2-lime);color:var(--v2-ink)}
-    img{width:125px;filter:brightness(0)}
+    img{width:125px;height:auto;filter:brightness(0)}
     .tagline{margin:18px 0 0;max-width:260px;font-size:15px}
     b{display:block;margin-bottom:14px;font-size:11px;letter-spacing:.2em;text-transform:uppercase}
     footer>div:not(.brand)>a{display:block;margin-bottom:10px}

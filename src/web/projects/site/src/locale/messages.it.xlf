@@ -530,6 +530,10 @@
         <source>Equipo trabajando en un proyecto</source>
         <target>Team al lavoro su un progetto</target>
       </trans-unit>
+      <trans-unit id="site.skipLink" datatype="html">
+        <source>Saltar al contenido</source>
+        <target>Vai al contenuto</target>
+      </trans-unit>
       <trans-unit id="site.nav.aria" datatype="html">
         <source>Principal</source>
         <target>Principale</target>
