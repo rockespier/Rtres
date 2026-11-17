@@ -30,7 +30,7 @@ public sealed partial class BankTransfersController(RtresDbContext db, BankTrans
     // ---- Medios de pago ----
 
     /// <summary>Qué medios de pago ve el cliente (catálogo, renovación y tarjetas de servicios).</summary>
-    [HttpGet("payment-methods")]
+    [HttpGet("payment-methods"), Authorize(Roles = ClientRoles.Billing)]
     public async Task<ActionResult> EnabledPaymentMethods(CancellationToken ct) { var s = await transfers.SettingsAsync(ct); return Ok(new { payPal = s.PayPalEnabled, bankTransfer = s.BankTransferEnabled }); }
 
     [HttpPatch("admin/payment-settings"), Authorize(Roles = "SuperAdmin")]
@@ -113,7 +113,7 @@ public sealed partial class BankTransfersController(RtresDbContext db, BankTrans
     /// El cliente informa que transfirió: con N° de operación, constancia (foto o PDF) o ambos. Queda en revisión hasta que
     /// Rtres lo apruebe o rechace; mientras tanto no se puede reportar otro pago para el mismo producto.
     /// </summary>
-    [HttpPost("client-products/{id:guid}/transfer-reports"), Authorize(Roles = "Cliente,Admin"), RequestSizeLimit(8_000_000), RequestFormLimits(MultipartBodyLengthLimit = 8_000_000)]
+    [HttpPost("client-products/{id:guid}/transfer-reports"), Authorize(Roles = ClientRoles.Purchase), RequestSizeLimit(8_000_000), RequestFormLimits(MultipartBodyLengthLimit = 8_000_000)]
     public async Task<ActionResult> Report(Guid id, [FromForm] TransferReportRequest request, CancellationToken ct, IFormFile? receipt = null)
     {
         if (!Guid.TryParse(User.FindFirstValue("client_id"), out var clientId)) return Forbid();
@@ -190,7 +190,7 @@ public sealed partial class BankTransfersController(RtresDbContext db, BankTrans
     }
 
     /// <summary>Constancia subida por el cliente: la ve el cliente dueño y Rtres.</summary>
-    [HttpGet("transfer-reports/{id:guid}/receipt")]
+    [HttpGet("transfer-reports/{id:guid}/receipt"), Authorize(Roles = ClientRoles.Billing)]
     public async Task<ActionResult> Receipt(Guid id, CancellationToken ct)
     {
         var report = await db.TransferReports.SingleOrDefaultAsync(x => x.Id == id, ct);

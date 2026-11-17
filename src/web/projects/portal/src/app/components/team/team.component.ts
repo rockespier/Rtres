@@ -17,7 +17,7 @@ const EMPTY_GUID = '00000000-0000-0000-0000-000000000000';
     <h1 class="font-display text-2xl font-semibold">Equipo</h1>
     <button type="button" class="btn btn-primary btn-sm" *ngIf="!showInvite" (click)="showInvite = true">+ Invitar</button>
   </div>
-  <p class="text-muted mt-1">Gestiona quién tiene acceso al portal de tu empresa.</p>
+  <p class="text-muted mt-1">Gestiona quién tiene acceso al portal de tu empresa. Los <strong>Admin</strong> ven todo (servicios, pagos y equipo); los <strong>miembros</strong>, solo los tickets y su cuenta.</p>
 
   <app-team-invite-dialog *ngIf="showInvite" (closed)="showInvite = false" (done)="showInvite = false; load()"/>
 
@@ -50,7 +50,7 @@ const EMPTY_GUID = '00000000-0000-0000-0000-000000000000';
           <td class="min-w-[150px]"><input class="field field-sm" maxlength="100" [(ngModel)]="x.area" (change)="update(x, { area: x.area ?? '' })" aria-label="Área" [title]="x.area ?? ''"></td>
           <td class="min-w-[170px]"><input class="field field-sm" maxlength="100" [(ngModel)]="x.jobTitle" (change)="update(x, { jobTitle: x.jobTitle ?? '' })" aria-label="Cargo" [title]="x.jobTitle ?? ''"></td>
           <td class="min-w-[190px]"><select class="field field-sm" [ngModel]="x.managerId ?? ''" (ngModelChange)="updateManager(x, $event)" aria-label="Jefe inmediato"><option value="">Sin jefe</option><option *ngIf="inactiveManager(x) as m" [value]="m.id">{{ m.name }} (inactivo)</option><option *ngFor="let m of managerOptions(x)" [value]="m.id">{{ m.name }}</option></select></td>
-          <td class="min-w-[115px]"><select class="field field-sm" [(ngModel)]="x.role" (change)="updateRole(x)" aria-label="Rol"><option value="Cliente">Cliente</option><option value="Admin">Admin</option></select></td>
+          <td class="min-w-[150px]"><select class="field field-sm" [(ngModel)]="x.role" (change)="updateRole(x)" aria-label="Rol"><option value="Cliente">Miembro: tickets</option><option value="Admin">Admin: todo</option></select></td>
           <td class="whitespace-nowrap"><span class="pill" [class.pill-success]="x.isActive" [class.pill-neutral]="!x.isActive">{{ x.isActive ? 'Activo' : 'Inactivo' }}</span></td>
           <td class="whitespace-nowrap text-right"><button type="button" class="btn btn-ghost btn-sm" *ngIf="x.isActive" (click)="resetTarget = x; resetError = ''" title="Envía una contraseña temporal nueva a quien olvidó la suya">Restablecer acceso</button><button type="button" class="btn btn-ghost btn-sm" (click)="toggle(x)">{{ x.isActive ? 'Desactivar' : 'Activar' }}</button></td>
         </tr>

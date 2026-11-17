@@ -49,7 +49,7 @@ public sealed class AccountController(RtresDbContext db, AccessEmailService acce
     /// <summary>Contraseña temporal aleatoria: solo se devuelve una vez (en la respuesta que crea/restablece el acceso).</summary>
     internal static string TemporaryPassword() => Convert.ToBase64String(RandomNumberGenerator.GetBytes(12)).Replace("+", "A").Replace("/", "B");
 
-    [HttpGet("billing/transactions")]
+    [HttpGet("billing/transactions"), Authorize(Roles = ClientRoles.Billing)]
     public async Task<ActionResult> Transactions(Guid? clientId, CancellationToken ct)
     {
         // Cliente/Admin: siempre sus propios pagos. SuperAdmin: los del cliente seleccionado o, sin selección, los de todos.

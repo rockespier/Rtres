@@ -29,7 +29,7 @@ public sealed class PaymentsController(RtresDbContext db, IPayPalClient payPal, 
         return Guid.TryParse(User.FindFirstValue("client_id"), out clientId) ? null : Forbid();
     }
 
-    [Authorize, HttpGet("catalog/products")]
+    [Authorize(Roles = ClientRoles.Billing), HttpGet("catalog/products")]
     public async Task<IActionResult> Catalog(CancellationToken ct)
     {
         // Precios sin IGV; igvRate indica si a este cliente se le suma (Perú + Factura) para mostrar "+ IGV".
@@ -39,7 +39,7 @@ public sealed class PaymentsController(RtresDbContext db, IPayPalClient payPal, 
         return Ok(products.Select(x => new { id = x.Id, type = x.Type, name = x.Name, billingCycle = x.BillingCycle, basePrice = x.BasePrice, currency = x.Currency, description = x.Description, category = x.Category, tags = x.Tags, allowsTickets = x.AllowsTickets, isActive = x.IsActive, igvRate = client is null ? 0m : ClientProductPricing.IgvRateFor(client, x, igvRate) }));
     }
 
-    [Authorize(Roles = "Cliente,Admin"), HttpPost("subscriptions")]
+    [Authorize(Roles = ClientRoles.Purchase), HttpPost("subscriptions")]
     public async Task<IActionResult> Subscribe(SubscribeRequest request, CancellationToken ct)
     {
         var scope = ClientScope(null, out var clientId); if (scope is not null) return scope;
@@ -92,7 +92,7 @@ public sealed class PaymentsController(RtresDbContext db, IPayPalClient payPal, 
     }
 
     /// <summary>Datos para pagar por transferencia (cuentas bancarias activas) y el monto a transferir por <paramref name="years"/> años.</summary>
-    [Authorize, HttpGet("client-products/{id:guid}/bank-transfer")]
+    [Authorize(Roles = ClientRoles.Billing), HttpGet("client-products/{id:guid}/bank-transfer")]
     public async Task<IActionResult> BankTransfer(Guid id, Guid? clientId, CancellationToken ct, int years = 1)
     {
         var scope = ClientScope(clientId, out var owner); if (scope is not null) return scope;
@@ -117,7 +117,7 @@ public sealed class PaymentsController(RtresDbContext db, IPayPalClient payPal, 
         await notifications.SendAsync(client, new Notification(NotificationType.TransferRequested, data, $"transfer-request:{item.Id}", staffEmail), ct);
     }
 
-    [Authorize(Roles = "Cliente,Admin"), HttpPost("client-products/{id:guid}/renew")]
+    [Authorize(Roles = ClientRoles.Purchase), HttpPost("client-products/{id:guid}/renew")]
     public async Task<IActionResult> Renew(Guid id, Guid? clientId, CancellationToken ct, int years = 1)
     {
         var scope = ClientScope(clientId, out var owner); if (scope is not null) return scope;
@@ -130,7 +130,7 @@ public sealed class PaymentsController(RtresDbContext db, IPayPalClient payPal, 
         try { var checkout = await checkoutService.StartAsync(item, item.Product, Request, ct, await db.IgvRateForAsync(owner, item.Product, ct), years); await db.SaveChangesAsync(ct); return Ok(new { approvalUrl = checkout.ApprovalUrl }); } catch (InvalidOperationException ex) { return BadRequest(new { message = ex.Message }); }
     }
 
-    [Authorize(Roles = "Cliente,Admin"), HttpPost("client-products/{id:guid}/cancel")]
+    [Authorize(Roles = ClientRoles.Purchase), HttpPost("client-products/{id:guid}/cancel")]
     public async Task<IActionResult> Cancel(Guid id, Guid? clientId, CancellationToken ct)
     {
         var scope = ClientScope(clientId, out var owner); if (scope is not null) return scope;
@@ -141,7 +141,7 @@ public sealed class PaymentsController(RtresDbContext db, IPayPalClient payPal, 
     }
 
     /// <summary>La llama la pantalla de retorno de PayPal: captura el cobro sin esperar al webhook (idempotente con él).</summary>
-    [Authorize(Roles = "Cliente,Admin"), HttpPost("client-products/{id:guid}/capture")]
+    [Authorize(Roles = ClientRoles.Purchase), HttpPost("client-products/{id:guid}/capture")]
     public async Task<IActionResult> Capture(Guid id, Guid? clientId, CancellationToken ct)
     {
         var scope = ClientScope(clientId, out var owner); if (scope is not null) return scope;
@@ -152,7 +152,7 @@ public sealed class PaymentsController(RtresDbContext db, IPayPalClient payPal, 
         return Ok(new { status = item.Status.ToString() });
     }
 
-    [Authorize(Roles = "Cliente,Admin"), HttpGet("client-products/{id:guid}")]
+    [Authorize(Roles = ClientRoles.Purchase), HttpGet("client-products/{id:guid}")]
     public async Task<IActionResult> ClientProduct(Guid id, Guid? clientId, CancellationToken ct)
     {
         var scope = ClientScope(clientId, out var owner); if (scope is not null) return scope;
