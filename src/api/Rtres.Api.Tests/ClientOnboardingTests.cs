@@ -166,6 +166,50 @@ public class ClientOnboardingTests
     }
 
     [Fact]
+    public async Task Admin_resets_the_access_of_a_team_member_who_forgot_the_password()
+    {
+        using var db = TestData.Db(out var seed);
+        var member = new UserAccount { ClientId = seed.Client.Id, Name = "Pedro", Email = "pedro@cabalgatas.pe", Role = UserRole.Cliente };
+        member.PasswordHash = AccountController.Hasher.HashPassword(member, "olvidada");
+        db.UserAccounts.Add(member); db.SaveChanges();
+        var email = new FakeEmail();
+
+        var result = Assert.IsType<OkObjectResult>(await TeamAdmin(db, seed, email).ResetTeamAccess(member.Id, CancellationToken.None));
+
+        var temporaryPassword = Prop<string>(result.Value!, "temporaryPassword");
+        Assert.True(Prop<bool>(result.Value!, "emailSent"));
+        var message = Assert.Single(email.Sent);
+        Assert.Equal("pedro@cabalgatas.pe", message.To);
+        Assert.Contains(temporaryPassword, message.Text);
+        Assert.IsType<OkObjectResult>(await Login(db, "pedro@cabalgatas.pe", temporaryPassword));
+        Assert.IsNotType<OkObjectResult>(await Login(db, "pedro@cabalgatas.pe", "olvidada"));
+    }
+
+    [Fact]
+    public async Task Admin_cannot_reset_access_of_inactive_users_users_of_other_clients_or_itself()
+    {
+        using var db = TestData.Db(out var seed);
+        var other = new Client { CompanyName = "Otra", ContactName = "Luis", Email = "luis@otra.pe" };
+        db.Clients.Add(other);
+        var outsider = new UserAccount { ClientId = other.Id, Name = "Luis", Email = "luis@otra.pe", Role = UserRole.Admin, PasswordHash = "x" };
+        var inactive = new UserAccount { ClientId = seed.Client.Id, Name = "Eva", Email = "eva@cabalgatas.pe", Role = UserRole.Cliente, PasswordHash = "x", IsActive = false };
+        db.UserAccounts.AddRange(outsider, inactive); db.SaveChanges();
+        var controller = TeamAdmin(db, seed, new FakeEmail());
+
+        Assert.IsType<NotFoundResult>(await controller.ResetTeamAccess(outsider.Id, CancellationToken.None));
+        Assert.IsType<BadRequestObjectResult>(await controller.ResetTeamAccess(inactive.Id, CancellationToken.None));
+        Assert.IsType<BadRequestObjectResult>(await controller.ResetTeamAccess(seed.User.Id, CancellationToken.None));
+        Assert.Equal("x", outsider.PasswordHash);
+        Assert.Equal("x", inactive.PasswordHash);
+    }
+
+    /// <summary>AccountController con la sesión del Admin del cliente sembrado.</summary>
+    private static AccountController TeamAdmin(RtresDbContext db, Seed seed, FakeEmail email) => new(db, AccessEmail(db, email))
+    {
+        ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext { User = new ClaimsPrincipal(new ClaimsIdentity([new Claim(ClaimTypes.NameIdentifier, seed.User.Id.ToString()), new Claim("client_id", seed.Client.Id.ToString()), new Claim(ClaimTypes.Role, "Admin")], "test")) } },
+    };
+
+    [Fact]
     public async Task Admin_sets_the_dates_of_a_manual_product_and_its_status_follows()
     {
         using var db = TestData.Db(out var seed);

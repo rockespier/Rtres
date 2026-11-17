@@ -5,13 +5,14 @@ import { FormsModule } from '@angular/forms';
 import { PortalApiService, TeamUserDto } from '../../core/portal-api.service';
 import { PortalUiService } from '../../core/portal-ui.service';
 import { TeamInviteDialogComponent } from '../team-invite-dialog/team-invite-dialog.component';
+import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 
 const EMPTY_GUID = '00000000-0000-0000-0000-000000000000';
 
 @Component({
   selector: 'app-team',
   standalone: true,
-  imports: [...SORTABLE,CommonModule, FormsModule, TeamInviteDialogComponent],
+  imports: [...SORTABLE,CommonModule, FormsModule, TeamInviteDialogComponent, ConfirmDialogComponent],
   template: `<div class="flex items-center justify-between">
     <h1 class="font-display text-2xl font-semibold">Equipo</h1>
     <button type="button" class="btn btn-primary btn-sm" *ngIf="!showInvite" (click)="showInvite = true">+ Invitar</button>
@@ -21,6 +22,21 @@ const EMPTY_GUID = '00000000-0000-0000-0000-000000000000';
   <app-team-invite-dialog *ngIf="showInvite" (closed)="showInvite = false" (done)="showInvite = false; load()"/>
 
   <p *ngIf="error" class="text-sm text-red-600 mt-3">{{ error }}</p>
+
+  <div *ngIf="resetResult as r" class="card mt-6 p-5">
+    <p *ngIf="r.emailSent" class="text-sm">Enviamos a <strong>{{ r.email }}</strong> un correo con una contraseña temporal nueva; la anterior ya no funciona. La tienes aquí por si no le llega — no se volverá a mostrar.</p>
+    <p *ngIf="!r.emailSent" class="text-sm text-red-600">No se pudo enviar el correo a {{ r.email }}. Comparte esta contraseña temporal con {{ r.name }} — no se volverá a mostrar.</p>
+    <div class="flex items-center gap-3 mt-3">
+      <code class="field flex-1">{{ r.temporaryPassword }}</code>
+      <button type="button" class="btn btn-ghost btn-sm" (click)="copy(r.temporaryPassword)">Copiar</button>
+    </div>
+    <div class="flex justify-end mt-4"><button type="button" class="btn btn-primary btn-sm" (click)="resetResult = null">Listo</button></div>
+  </div>
+
+  <app-confirm-dialog *ngIf="resetTarget as t" title="Restablecer acceso"
+    [message]="'Se creará una contraseña temporal nueva para ' + t.name + ' y se enviará a ' + t.email + '. La contraseña actual dejará de funcionar.'"
+    confirmLabel="Restablecer" busyLabel="Restableciendo…" [busy]="resetBusy" [error]="resetError"
+    (confirmed)="resetAccess(t)" (cancelled)="resetTarget = null"/>
 
   <div class="card mt-6 overflow-x-auto">
     <table class="p-table p-table-dense w-full min-w-[1040px]" appSort #s="appSort">
@@ -36,7 +52,7 @@ const EMPTY_GUID = '00000000-0000-0000-0000-000000000000';
           <td class="min-w-[190px]"><select class="field field-sm" [ngModel]="x.managerId ?? ''" (ngModelChange)="updateManager(x, $event)" aria-label="Jefe inmediato"><option value="">Sin jefe</option><option *ngIf="inactiveManager(x) as m" [value]="m.id">{{ m.name }} (inactivo)</option><option *ngFor="let m of managerOptions(x)" [value]="m.id">{{ m.name }}</option></select></td>
           <td class="min-w-[115px]"><select class="field field-sm" [(ngModel)]="x.role" (change)="updateRole(x)" aria-label="Rol"><option value="Cliente">Cliente</option><option value="Admin">Admin</option></select></td>
           <td class="whitespace-nowrap"><span class="pill" [class.pill-success]="x.isActive" [class.pill-neutral]="!x.isActive">{{ x.isActive ? 'Activo' : 'Inactivo' }}</span></td>
-          <td class="whitespace-nowrap text-right"><button type="button" class="btn btn-ghost btn-sm" (click)="toggle(x)">{{ x.isActive ? 'Desactivar' : 'Activar' }}</button></td>
+          <td class="whitespace-nowrap text-right"><button type="button" class="btn btn-ghost btn-sm" *ngIf="x.isActive" (click)="resetTarget = x; resetError = ''" title="Envía una contraseña temporal nueva a quien olvidó la suya">Restablecer acceso</button><button type="button" class="btn btn-ghost btn-sm" (click)="toggle(x)">{{ x.isActive ? 'Desactivar' : 'Activar' }}</button></td>
         </tr>
       </tbody>
     </table>
@@ -49,6 +65,11 @@ export class TeamComponent implements OnInit {
   users: TeamUserDto[] = [];
   showInvite = false;
   error = '';
+  /** Restablecer acceso: usuario a confirmar, estado de la petición y contraseña temporal resultante. */
+  resetTarget: TeamUserDto | null = null;
+  resetBusy = false;
+  resetError = '';
+  resetResult: { name: string; email: string; temporaryPassword: string; emailSent: boolean } | null = null;
 
   /** Ordena la columna Jefe inmediato por el nombre del jefe. */
   managerName = (x: TeamUserDto) => this.users.find(u => u.id === x.managerId)?.name ?? '';
@@ -90,6 +111,19 @@ export class TeamComponent implements OnInit {
       seen.add(current);
     }
     return false;
+  }
+
+  resetAccess(user: TeamUserDto): void {
+    this.resetBusy = true;
+    this.resetError = '';
+    this.api.resetTeamAccess(user.id).subscribe({
+      next: r => { this.resetResult = { name: user.name, email: user.email, ...r }; this.resetTarget = null; this.resetBusy = false; },
+      error: e => { this.resetError = e?.error?.message ?? 'No se pudo restablecer el acceso.'; this.resetBusy = false; },
+    });
+  }
+
+  copy(text: string): void {
+    void navigator.clipboard?.writeText(text);
   }
 
   updateRole(user: TeamUserDto): void {

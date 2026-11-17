@@ -214,6 +214,8 @@ export class PortalApiService {
   changePassword(currentPassword:string,newPassword:string) { return this.http.post(`${this.base}/profile/change-password`, {currentPassword,newPassword}); }
   getTeam() { return this.http.get<TeamUserDto[]>(`${this.base}/team/users`); }
   inviteTeam(name:string,email:string) { return this.http.post<{id:string;temporaryPassword:string;emailSent:boolean}>(`${this.base}/team/users`,{name,email}); }
+  /** Contraseña temporal nueva para un usuario del equipo; se envía por email y llega aquí una sola vez. */
+  resetTeamAccess(id:string) { return this.http.post<{temporaryPassword:string;emailSent:boolean}>(`${this.base}/team/users/${id}/reset-access`,{}); }
   updateTeam(id:string, body:{role?:string;isActive?:boolean;area?:string;jobTitle?:string;managerId?:string}) { return this.http.patch(`${this.base}/team/users/${id}`,body); }
   getAdminClients() { return this.http.get<AdminClientDto[]>(`${this.base}/admin/clients`); }
   getAdminTickets(params:{status?:string;clientId?:string;projectId?:string;page?:number}={}) { return this.http.get<AdminTicketsPage>(`${this.base}/admin/tickets${query(params)}`); }

@@ -86,6 +86,25 @@ public sealed class AccountController(RtresDbContext db, AccessEmailService acce
         var emailSent = client is not null && await accessEmail.SendAsync(client, user.Name, user.Email, temporaryPassword, Request, ct);
         return Created($"/api/team/users/{user.Id}", new { id = user.Id, temporaryPassword, emailSent });
     }
+    /// <summary>
+    /// Restablece el acceso de un usuario del equipo que olvidó su contraseña: le asigna una contraseña temporal nueva
+    /// (la anterior deja de valer) y se la envía por email. La respuesta la trae una sola vez por si el correo no llega.
+    /// </summary>
+    [HttpPost("team/users/{id:guid}/reset-access"), Authorize(Roles = "Admin")]
+    public async Task<ActionResult> ResetTeamAccess(Guid id, CancellationToken ct)
+    {
+        if (!TryGetClientId(out var clientId)) return Forbid();
+        var user = await db.UserAccounts.SingleOrDefaultAsync(x => x.Id == id && x.ClientId == clientId, ct);
+        if (user is null) return NotFound();
+        if (user.Id == UserId) return BadRequest(new { message = "Tu propia contraseña se cambia en Perfil." });
+        if (!user.IsActive) return BadRequest(new { message = "Activa al usuario antes de restablecer su acceso." });
+        var temporaryPassword = TemporaryPassword();
+        user.PasswordHash = Hasher.HashPassword(user, temporaryPassword);
+        await db.SaveChangesAsync(ct);
+        var client = await db.Clients.FindAsync([clientId], ct);
+        var emailSent = client is not null && await accessEmail.SendAsync(client, user.Name, user.Email, temporaryPassword, Request, ct);
+        return Ok(new { temporaryPassword, emailSent });
+    }
     [HttpPatch("team/users/{id:guid}"), Authorize(Roles = "Admin")]
     public async Task<ActionResult> UpdateTeam(Guid id, UpdateTeamRequest request, CancellationToken ct)
     {
