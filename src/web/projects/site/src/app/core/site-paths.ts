@@ -24,6 +24,8 @@ export const PAGE_PATHS = {
   resources: { es: 'recursos', en: 'resources', it: 'risorse' },
   blog: { es: 'blog', en: 'blog', it: 'blog' },
   contact: { es: 'contacto', en: 'contact', it: 'contatti' },
+  privacy: { es: 'privacidad', en: 'privacy', it: 'privacy' },
+  legal: { es: 'aviso-legal', en: 'legal-notice', it: 'note-legali' },
 } satisfies Record<string, Record<Locale, string>>;
 
 export type PageId = keyof typeof PAGE_PATHS;
@@ -38,7 +40,7 @@ export const blogPostPath = (slug: string) => `${pagePath('blog')}/${slug}`;
 export const BLOG_SHELL_SLUG = '_post';
 
 /** Accesos directos para las plantillas. */
-export const PATHS = { about: pagePath('about'), resources: pagePath('resources'), blog: pagePath('blog'), contact: pagePath('contact') };
+export const PATHS = { about: pagePath('about'), resources: pagePath('resources'), blog: pagePath('blog'), contact: pagePath('contact'), privacy: pagePath('privacy'), legal: pagePath('legal') };
 
 /**
  * La misma página en otro idioma: "/services/custom-software" (en) → "/servicios/software-a-medida" (es). Las rutas que

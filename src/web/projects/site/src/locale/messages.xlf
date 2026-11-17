@@ -224,21 +224,21 @@
         <source>Tecnología que<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br&gt;"/>hace avanzar<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br&gt;"/>tu negocio.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/components/home/hero.component.ts</context>
-          <context context-type="linenumber">12,13</context>
+          <context context-type="linenumber">15,16</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.hero.sub" datatype="html">
         <source>Software a medida, infraestructura y soporte para convertir tus proyectos en realidad.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/components/home/hero.component.ts</context>
-          <context context-type="linenumber">13,14</context>
+          <context context-type="linenumber">16,17</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.cta.talk" datatype="html">
         <source>Hablemos de tu proyecto</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/components/home/hero.component.ts</context>
-          <context context-type="linenumber">14,15</context>
+          <context context-type="linenumber">17,18</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/components/home/site-header.component.ts</context>
@@ -257,7 +257,7 @@
         <source>Portal de asistencia</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/components/home/hero.component.ts</context>
-          <context context-type="linenumber">15,21</context>
+          <context context-type="linenumber">18,24</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/components/home/site-header.component.ts</context>
@@ -417,43 +417,35 @@
         <source>Profesionales en soluciones web.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/components/home/site-footer.component.ts</context>
-          <context context-type="linenumber">17,21</context>
+          <context context-type="linenumber">18,22</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.footer.services" datatype="html">
         <source>Servicios</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/components/home/site-footer.component.ts</context>
-          <context context-type="linenumber">20,22</context>
+          <context context-type="linenumber">21,23</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.footer.company" datatype="html">
         <source>Empresa</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/components/home/site-footer.component.ts</context>
-          <context context-type="linenumber">24,26</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="home.nav.about" datatype="html">
-        <source>Nosotros</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">projects/site/src/app/components/home/site-footer.component.ts</context>
           <context context-type="linenumber">25,27</context>
         </context-group>
+      </trans-unit>
+      <trans-unit id="home.footer.about" datatype="html">
+        <source>Sobre nosotros</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">projects/site/src/app/components/home/site-header.component.ts</context>
-          <context context-type="linenumber">29,30</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">projects/site/src/app/components/home/site-header.component.ts</context>
-          <context context-type="linenumber">50,51</context>
+          <context context-type="sourcefile">projects/site/src/app/components/home/site-footer.component.ts</context>
+          <context context-type="linenumber">26,28</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.nav.resources" datatype="html">
         <source>Recursos</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/components/home/site-footer.component.ts</context>
-          <context context-type="linenumber">27,29</context>
+          <context context-type="linenumber">28,30</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/components/home/site-header.component.ts</context>
@@ -468,36 +460,50 @@
         <source>Blog</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/components/home/site-footer.component.ts</context>
-          <context context-type="linenumber">29</context>
+          <context context-type="linenumber">29,30</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/components/home/site-header.component.ts</context>
-          <context context-type="linenumber">32,35</context>
+          <context context-type="linenumber">31,35</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/components/home/site-header.component.ts</context>
-          <context context-type="linenumber">53</context>
+          <context context-type="linenumber">52,53</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.footer.reviews" datatype="html">
         <source>Opiniones</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/components/home/site-footer.component.ts</context>
-          <context context-type="linenumber">29,33</context>
+          <context context-type="linenumber">30,34</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.footer.contact" datatype="html">
         <source>Contacto</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/components/home/site-footer.component.ts</context>
-          <context context-type="linenumber">32,34</context>
+          <context context-type="linenumber">33,35</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="home.footer.privacy" datatype="html">
+        <source>Privacidad</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/components/home/site-footer.component.ts</context>
+          <context context-type="linenumber">42</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="home.footer.legal" datatype="html">
+        <source>Aviso legal</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/components/home/site-footer.component.ts</context>
+          <context context-type="linenumber">42</context>
         </context-group>
       </trans-unit>
       <trans-unit id="cookies.settings" datatype="html">
         <source>Cookies</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/components/home/site-footer.component.ts</context>
-          <context context-type="linenumber">39,41</context>
+          <context context-type="linenumber">42,44</context>
         </context-group>
       </trans-unit>
       <trans-unit id="site.nav.aria" datatype="html">
@@ -527,6 +533,17 @@
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/components/home/site-header.component.ts</context>
           <context context-type="linenumber">47,48</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="home.nav.about" datatype="html">
+        <source>Nosotros</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/components/home/site-header.component.ts</context>
+          <context context-type="linenumber">29,30</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/components/home/site-header.component.ts</context>
+          <context context-type="linenumber">50,51</context>
         </context-group>
       </trans-unit>
       <trans-unit id="site.nav.menu" datatype="html">
@@ -1780,6 +1797,398 @@
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/home/home-page.component.ts</context>
           <context context-type="linenumber">31</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.updated" datatype="html">
+        <source>Última actualización: 17 de noviembre de 2026.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/legal/legal-content.ts</context>
+          <context context-type="linenumber">10</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.privacy.metaTitle" datatype="html">
+        <source>Política de privacidad — Rtres Web Solutions</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/legal/legal-content.ts</context>
+          <context context-type="linenumber">14</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.privacy.meta" datatype="html">
+        <source>Cómo RTRES WEB SOLUTIONS S.A.C. trata los datos personales de quienes visitan rtres.net o nos contactan: finalidades, conservación, cookies y derechos.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/legal/legal-content.ts</context>
+          <context context-type="linenumber">15</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.privacy.label" datatype="html">
+        <source>PRIVACIDAD</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/legal/legal-content.ts</context>
+          <context context-type="linenumber">16</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.privacy.title" datatype="html">
+        <source>Política de privacidad</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/legal/legal-content.ts</context>
+          <context context-type="linenumber">17</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.privacy.intro" datatype="html">
+        <source>Esta política explica cómo tratamos los datos personales de quienes visitan rtres.net o se ponen en contacto con nosotros. Aplicamos la Ley N.° 29733 de Protección de Datos Personales del Perú y su reglamento y, para las personas que se encuentran en la Unión Europea, el Reglamento (UE) 2016/679 (RGPD).</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/legal/legal-content.ts</context>
+          <context context-type="linenumber">18</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.privacy.s1.title" datatype="html">
+        <source>1. Responsable</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/legal/legal-content.ts</context>
+          <context context-type="linenumber">20</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.privacy.s1.p1" datatype="html">
+        <source>RTRES WEB SOLUTIONS S.A.C., RUC 20517137881, con domicilio en Calle Cabo Blanco 176, Lima 15067, Perú. Para cualquier asunto de privacidad escríbenos a info@rtres.net.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/legal/legal-content.ts</context>
+          <context context-type="linenumber">21</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.privacy.s2.title" datatype="html">
+        <source>2. Qué datos tratamos y para qué</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/legal/legal-content.ts</context>
+          <context context-type="linenumber">23</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.privacy.s2.p1" datatype="html">
+        <source>Formulario de contacto: nombre, email, teléfono y empresa (opcionales), servicio de interés y mensaje. Los usamos para responder tu consulta y, si lo pides, preparar una propuesta. Base legal: tu consentimiento al enviar el formulario y, en el RGPD, la aplicación de medidas precontractuales a petición tuya (art. 6.1.b).</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/legal/legal-content.ts</context>
+          <context context-type="linenumber">24</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.privacy.s2.p2" datatype="html">
+        <source>WhatsApp, email o teléfono: los datos que nos envíes, para responderte. Base legal: tu consentimiento.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/legal/legal-content.ts</context>
+          <context context-type="linenumber">25</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.privacy.s2.p3" datatype="html">
+        <source>Analítica web (Google Analytics 4): datos de navegación seudonimizados, como páginas vistas, tipo de dispositivo y país aproximado, para medir el uso del sitio y mejorarlo. Solo si lo aceptas en el aviso de cookies. Base legal: tu consentimiento (art. 6.1.a del RGPD).</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/legal/legal-content.ts</context>
+          <context context-type="linenumber">26</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.privacy.s2.p4" datatype="html">
+        <source>No usamos tus datos para publicidad, no los vendemos ni los cedemos a terceros para sus propios fines, y no tomamos decisiones automatizadas sobre ti.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/legal/legal-content.ts</context>
+          <context context-type="linenumber">27</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.privacy.s3.title" datatype="html">
+        <source>3. Cuánto tiempo los conservamos</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/legal/legal-content.ts</context>
+          <context context-type="linenumber">29</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.privacy.s3.p1" datatype="html">
+        <source>Las consultas se conservan 12 meses desde el último contacto y después se eliminan. Si llegas a ser cliente, conservamos los datos mientras dure la relación y, después, durante los plazos que exigen las normas contables y tributarias.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/legal/legal-content.ts</context>
+          <context context-type="linenumber">30</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.privacy.s3.p2" datatype="html">
+        <source>Las cookies de Analytics caducan como máximo a los 2 años; se borran en cuanto retiras tu consentimiento.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/legal/legal-content.ts</context>
+          <context context-type="linenumber">31</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.privacy.s4.title" datatype="html">
+        <source>4. Quién más accede a los datos</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/legal/legal-content.ts</context>
+          <context context-type="linenumber">33</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.privacy.s4.p1" datatype="html">
+        <source>El sitio, el formulario y su base de datos funcionan en un servidor privado virtual contratado y administrado directamente por Rtres. El proveedor de ese servidor y el del correo electrónico actúan como encargados del tratamiento: prestan la infraestructura y no usan los datos para fines propios.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/legal/legal-content.ts</context>
+          <context context-type="linenumber">34</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.privacy.s4.p2" datatype="html">
+        <source>Si aceptas la analítica, Google (Google Ireland Limited y Google LLC) trata los datos de navegación. Google LLC está en Estados Unidos y está adherida al Marco de Privacidad de Datos UE-EE. UU.; para el Perú, esto supone una transferencia internacional de datos.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/legal/legal-content.ts</context>
+          <context context-type="linenumber">35</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.privacy.s4.p3" datatype="html">
+        <source>Solo comunicaremos datos a autoridades cuando una ley nos obligue.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/legal/legal-content.ts</context>
+          <context context-type="linenumber">36</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.privacy.s5.title" datatype="html">
+        <source>5. Cookies</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/legal/legal-content.ts</context>
+          <context context-type="linenumber">38</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.privacy.s5.p1" datatype="html">
+        <source>Solo instalamos cookies de analítica si las aceptas en el aviso de cookies; puedes cambiar tu elección cuando quieras desde el enlace &quot;Cookies&quot; del pie de página. Tu elección se guarda en el almacenamiento local del navegador.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/legal/legal-content.ts</context>
+          <context context-type="linenumber">39</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.privacy.s5.p2" datatype="html">
+        <source>Los vídeos se cargan desde youtube-nocookie.com, que no instala cookies hasta que reproduces un vídeo.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/legal/legal-content.ts</context>
+          <context context-type="linenumber">40</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.privacy.s6.title" datatype="html">
+        <source>6. Tus derechos</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/legal/legal-content.ts</context>
+          <context context-type="linenumber">42</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.privacy.s6.p1" datatype="html">
+        <source>Puedes pedir el acceso, la rectificación, la cancelación o supresión y la oposición al tratamiento de tus datos (derechos ARCO), y retirar tu consentimiento en cualquier momento. Si estás en la Unión Europea, también puedes pedir la limitación del tratamiento y la portabilidad de tus datos.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/legal/legal-content.ts</context>
+          <context context-type="linenumber">43</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.privacy.s6.p2" datatype="html">
+        <source>Escríbenos a info@rtres.net indicando qué derecho quieres ejercer; podemos pedirte que acredites tu identidad. Respondemos dentro de los plazos legales (en el RGPD, un mes).</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/legal/legal-content.ts</context>
+          <context context-type="linenumber">44</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.privacy.s6.p3" datatype="html">
+        <source>Si no estás conforme con nuestra respuesta, puedes reclamar ante la Autoridad Nacional de Protección de Datos Personales del Perú o, si estás en la Unión Europea, ante la autoridad de tu país: en Italia, el Garante per la protezione dei dati personali.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/legal/legal-content.ts</context>
+          <context context-type="linenumber">45</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.privacy.s7.title" datatype="html">
+        <source>7. Seguridad</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/legal/legal-content.ts</context>
+          <context context-type="linenumber">47</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.privacy.s7.p1" datatype="html">
+        <source>El sitio funciona solo con HTTPS y los datos se guardan en sistemas con acceso restringido al equipo de Rtres.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/legal/legal-content.ts</context>
+          <context context-type="linenumber">48</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.privacy.s8.title" datatype="html">
+        <source>8. Menores de edad</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/legal/legal-content.ts</context>
+          <context context-type="linenumber">50</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.privacy.s8.p1" datatype="html">
+        <source>Este sitio está dirigido a empresas y profesionales. No recogemos a sabiendas datos de menores de 14 años.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/legal/legal-content.ts</context>
+          <context context-type="linenumber">51</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.privacy.s9.title" datatype="html">
+        <source>9. Cambios</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/legal/legal-content.ts</context>
+          <context context-type="linenumber">53</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.privacy.s9.p1" datatype="html">
+        <source>Si cambiamos esta política, publicaremos aquí la nueva versión con su fecha de actualización.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/legal/legal-content.ts</context>
+          <context context-type="linenumber">54</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.notice.metaTitle" datatype="html">
+        <source>Aviso legal — Rtres Web Solutions</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/legal/legal-content.ts</context>
+          <context context-type="linenumber">59</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.notice.meta" datatype="html">
+        <source>Titular de rtres.net: RTRES WEB SOLUTIONS S.A.C., RUC 20517137881, Lima, Perú. Condiciones de uso del sitio, propiedad intelectual y ley aplicable.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/legal/legal-content.ts</context>
+          <context context-type="linenumber">60</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.notice.label" datatype="html">
+        <source>AVISO LEGAL</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/legal/legal-content.ts</context>
+          <context context-type="linenumber">61</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.notice.title" datatype="html">
+        <source>Aviso legal</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/legal/legal-content.ts</context>
+          <context context-type="linenumber">62</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.notice.intro" datatype="html">
+        <source>Información sobre el titular de rtres.net y las condiciones de uso del sitio.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/legal/legal-content.ts</context>
+          <context context-type="linenumber">63</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.notice.s1.title" datatype="html">
+        <source>Titular del sitio</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/legal/legal-content.ts</context>
+          <context context-type="linenumber">65</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.notice.s1.p1" datatype="html">
+        <source>Este sitio web pertenece a RTRES WEB SOLUTIONS S.A.C. (en adelante, &quot;Rtres&quot;), con RUC 20517137881 y domicilio fiscal en Calle Cabo Blanco 176, Lima 15067, Perú. Email: info@rtres.net. Teléfono: +51 942 670 094.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/legal/legal-content.ts</context>
+          <context context-type="linenumber">66</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.notice.s2.title" datatype="html">
+        <source>Objeto</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/legal/legal-content.ts</context>
+          <context context-type="linenumber">68</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.notice.s2.p1" datatype="html">
+        <source>El sitio informa sobre los servicios de Rtres (software a medida, aplicaciones web, integración y automatización, hosting, dominios y soporte) y permite contactarnos. La información publicada es orientativa y no constituye una oferta vinculante: el alcance, el precio y el plazo de cada servicio se fijan en la propuesta o el contrato correspondiente.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/legal/legal-content.ts</context>
+          <context context-type="linenumber">69</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.notice.s3.title" datatype="html">
+        <source>Propiedad intelectual</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/legal/legal-content.ts</context>
+          <context context-type="linenumber">71</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.notice.s3.p1" datatype="html">
+        <source>Los textos, el diseño, el logotipo y el código del sitio son de Rtres o se usan con licencia. Las marcas y capturas de clientes que aparecen en los casos de éxito pertenecen a sus titulares y se publican con su autorización. No está permitido reproducirlos con fines comerciales sin permiso escrito.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/legal/legal-content.ts</context>
+          <context context-type="linenumber">72</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.notice.s4.title" datatype="html">
+        <source>Enlaces a terceros</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/legal/legal-content.ts</context>
+          <context context-type="linenumber">74</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.notice.s4.p1" datatype="html">
+        <source>El sitio enlaza a servicios de terceros, como WhatsApp, YouTube, LinkedIn, Clutch o Google Maps. Rtres no controla su contenido ni sus políticas.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/legal/legal-content.ts</context>
+          <context context-type="linenumber">75</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.notice.s5.title" datatype="html">
+        <source>Responsabilidad</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/legal/legal-content.ts</context>
+          <context context-type="linenumber">77</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.notice.s5.p1" datatype="html">
+        <source>Procuramos que la información del sitio sea correcta y esté actualizada, pero no garantizamos la ausencia de errores ni que el sitio esté disponible sin interrupciones.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/legal/legal-content.ts</context>
+          <context context-type="linenumber">78</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.notice.s6.title" datatype="html">
+        <source>Portal de clientes</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/legal/legal-content.ts</context>
+          <context context-type="linenumber">80</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.notice.s6.p1" datatype="html">
+        <source>El uso del portal de clientes (portal.rtres.net) se rige por el contrato de servicio firmado con cada cliente.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/legal/legal-content.ts</context>
+          <context context-type="linenumber">81</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.notice.s7.title" datatype="html">
+        <source>Ley aplicable</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/legal/legal-content.ts</context>
+          <context context-type="linenumber">83</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.notice.s7.p1" datatype="html">
+        <source>Este aviso se rige por las leyes de la República del Perú. Las controversias se someten a los juzgados y tribunales de Lima, salvo que la normativa de protección al consumidor aplicable disponga otra cosa.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/legal/legal-content.ts</context>
+          <context context-type="linenumber">84</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.notice.s8.title" datatype="html">
+        <source>Datos personales</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/legal/legal-content.ts</context>
+          <context context-type="linenumber">86</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.notice.s8.p1" datatype="html">
+        <source>El tratamiento de los datos personales se explica en la política de privacidad.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/legal/legal-content.ts</context>
+          <context context-type="linenumber">87</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.seePrivacy" datatype="html">
+        <source>Ver la política de privacidad</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/legal/legal-page.component.ts</context>
+          <context context-type="linenumber">30,32</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.seeNotice" datatype="html">
+        <source>Ver el aviso legal</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/pages/legal/legal-page.component.ts</context>
+          <context context-type="linenumber">32,38</context>
         </context-group>
       </trans-unit>
       <trans-unit id="notFound.label" datatype="html">
