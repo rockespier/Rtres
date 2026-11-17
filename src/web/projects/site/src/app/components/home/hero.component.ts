@@ -1,6 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, PLATFORM_ID, inject } from '@angular/core';
+import { DOCUMENT, isPlatformServer } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { PATHS } from '../../core/site-paths';
+
+const HERO_IMAGE = 'assets/hero-dashboard.webp';
 
 @Component({
   selector: 'app-home-hero',
@@ -8,7 +11,7 @@ import { PATHS } from '../../core/site-paths';
   imports: [RouterLink],
   template: `
     <section class="hero" id="inicio">
-      <div class="copy" style="background-image:url('assets/hero-dashboard.webp')">
+      <div class="copy" [style.background-image]="heroBackground">
         <h1 class="v2-display" i18n="@@home.hero.title">Tecnología que<br>hace avanzar<br>tu negocio.</h1>
         <p i18n="@@home.hero.sub">Software a medida, infraestructura y soporte para convertir tus proyectos en realidad.</p>
         <a class="v2-btn-lime" [routerLink]="paths.contact" i18n="@@home.cta.talk">Hablemos de tu proyecto</a>
@@ -32,4 +35,18 @@ import { PATHS } from '../../core/site-paths';
     }
   `],
 })
-export class HomeHeroComponent { readonly paths = PATHS; }
+export class HomeHeroComponent {
+  readonly paths = PATHS;
+  readonly heroBackground = `url(${HERO_IMAGE})`;
+
+  constructor() {
+    // El fondo del hero es el LCP de la home: el prerender pide la imagen desde el <head> con prioridad alta,
+    // en vez de esperar a que el navegador lo descubra al aplicar estilos.
+    if (!isPlatformServer(inject(PLATFORM_ID))) return;
+    const doc = inject(DOCUMENT);
+    const link = doc.createElement('link');
+    // setAttribute: el DOM del prerender (domino) no implementa la propiedad link.as.
+    for (const [k, v] of [['rel', 'preload'], ['as', 'image'], ['href', HERO_IMAGE], ['fetchpriority', 'high']]) link.setAttribute(k, v);
+    doc.head.appendChild(link);
+  }
+}
