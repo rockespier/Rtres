@@ -15,7 +15,7 @@ type Menu = 'services' | 'cases' | null;
   host: { '[class.scrolled]': 'scrolled()', '(window:scroll)': 'onScroll()', '(document:keydown.escape)': 'closeAll()' },
   template: `
     <header>
-      <a routerLink="/" class="logo" (click)="closeAll()"><img src="assets/logo-rtres.png" alt="Rtres — inicio"></a>
+      <a routerLink="/" class="logo" (click)="closeAll()"><img src="assets/logo-rtres.png" width="527" height="315" alt="Rtres — inicio"></a>
 
       <nav aria-label="Principal" i18n-aria-label="@@site.nav.aria">
         <div class="dd" (mouseenter)="open.set('services')" (mouseleave)="open.set(null)">
@@ -62,7 +62,7 @@ type Menu = 'services' | 'cases' | null;
     /* Aire arriba y abajo: el logo y el botón no quedan pegados al borde, sobre todo con la cabecera compacta al hacer scroll. */
     header{height:100px;display:grid;grid-template-columns:150px 1fr auto;align-items:center;gap:24px;padding:12px 5%;transition:height .2s}
     :host(.scrolled) header{height:84px}
-    .logo img{width:120px;transition:width .2s}
+    .logo img{width:120px;height:auto;transition:width .2s}
     :host(.scrolled) .logo img{width:96px}
     nav{display:flex;justify-content:center;align-items:center;gap:30px;font-size:14px}
     nav>a,.dd>button{white-space:nowrap;padding:8px 0;border-bottom:2px solid transparent;background:none;font:inherit;color:inherit;cursor:pointer}

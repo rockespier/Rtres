@@ -6,140 +6,140 @@
         <source>MENSAJE ENVIADO</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/components/contact-form/contact-form.component.ts</context>
-          <context context-type="linenumber">19,20</context>
+          <context context-type="linenumber">20,21</context>
         </context-group>
       </trans-unit>
       <trans-unit id="contactForm.sentTitle" datatype="html">
         <source>Gracias, <x id="INTERPOLATION" equiv-text="{{ firstName() }}"/>. Te escribimos pronto.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/components/contact-form/contact-form.component.ts</context>
-          <context context-type="linenumber">20,21</context>
+          <context context-type="linenumber">21,22</context>
         </context-group>
       </trans-unit>
       <trans-unit id="contactForm.sentText" datatype="html">
         <source>Revisaremos lo que nos contaste y te responderemos por email o WhatsApp.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/components/contact-form/contact-form.component.ts</context>
-          <context context-type="linenumber">21,25</context>
+          <context context-type="linenumber">22,26</context>
         </context-group>
       </trans-unit>
       <trans-unit id="contactForm.name" datatype="html">
         <source>Nombre</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/components/contact-form/contact-form.component.ts</context>
-          <context context-type="linenumber">26</context>
+          <context context-type="linenumber">27</context>
         </context-group>
       </trans-unit>
       <trans-unit id="contactForm.email" datatype="html">
         <source>Email</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/components/contact-form/contact-form.component.ts</context>
-          <context context-type="linenumber">27</context>
+          <context context-type="linenumber">28</context>
         </context-group>
       </trans-unit>
       <trans-unit id="contactForm.phone" datatype="html">
         <source>Teléfono o WhatsApp</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/components/contact-form/contact-form.component.ts</context>
-          <context context-type="linenumber">30</context>
+          <context context-type="linenumber">31</context>
         </context-group>
       </trans-unit>
       <trans-unit id="contactForm.company" datatype="html">
         <source>Empresa</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/components/contact-form/contact-form.component.ts</context>
-          <context context-type="linenumber">31</context>
+          <context context-type="linenumber">32</context>
         </context-group>
       </trans-unit>
       <trans-unit id="contactForm.service" datatype="html">
         <source>¿Qué necesitas?</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/components/contact-form/contact-form.component.ts</context>
-          <context context-type="linenumber">33,35</context>
+          <context context-type="linenumber">34,36</context>
         </context-group>
       </trans-unit>
       <trans-unit id="contactForm.serviceAny" datatype="html">
         <source>Elige una opción</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/components/contact-form/contact-form.component.ts</context>
-          <context context-type="linenumber">35,36</context>
+          <context context-type="linenumber">36,37</context>
         </context-group>
       </trans-unit>
       <trans-unit id="contactForm.serviceApis" datatype="html">
         <source>APIs de validación (RUC, DNI, cuentas bancarias)</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/components/contact-form/contact-form.component.ts</context>
-          <context context-type="linenumber">37,39</context>
+          <context context-type="linenumber">38,40</context>
         </context-group>
       </trans-unit>
       <trans-unit id="contactForm.serviceOther" datatype="html">
         <source>Otro</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/components/contact-form/contact-form.component.ts</context>
-          <context context-type="linenumber">38,41</context>
+          <context context-type="linenumber">39,42</context>
         </context-group>
       </trans-unit>
       <trans-unit id="contactForm.message" datatype="html">
         <source>Cuéntanos tu proyecto</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/components/contact-form/contact-form.component.ts</context>
-          <context context-type="linenumber">41</context>
+          <context context-type="linenumber">42</context>
         </context-group>
       </trans-unit>
       <trans-unit id="contactForm.privacy" datatype="html">
         <source>Usamos tus datos solo para responderte.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/components/contact-form/contact-form.component.ts</context>
-          <context context-type="linenumber">46,52</context>
+          <context context-type="linenumber">47,53</context>
         </context-group>
       </trans-unit>
       <trans-unit id="contactForm.send" datatype="html">
         <source>Enviar mensaje</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/components/contact-form/contact-form.component.ts</context>
-          <context context-type="linenumber">79</context>
+          <context context-type="linenumber">81</context>
         </context-group>
       </trans-unit>
       <trans-unit id="contactForm.sending" datatype="html">
         <source>Enviando…</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/components/contact-form/contact-form.component.ts</context>
-          <context context-type="linenumber">80</context>
+          <context context-type="linenumber">82</context>
         </context-group>
       </trans-unit>
       <trans-unit id="contactForm.errName" datatype="html">
         <source>Escribe tu nombre.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/components/contact-form/contact-form.component.ts</context>
-          <context context-type="linenumber">113</context>
+          <context context-type="linenumber">114</context>
         </context-group>
       </trans-unit>
       <trans-unit id="contactForm.errEmail" datatype="html">
         <source>Escribe un email válido para poder responderte.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/components/contact-form/contact-form.component.ts</context>
-          <context context-type="linenumber">114</context>
+          <context context-type="linenumber">115</context>
         </context-group>
       </trans-unit>
       <trans-unit id="contactForm.errMessage" datatype="html">
         <source>Cuéntanos en unas líneas qué necesitas.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/components/contact-form/contact-form.component.ts</context>
-          <context context-type="linenumber">115</context>
+          <context context-type="linenumber">116</context>
         </context-group>
       </trans-unit>
       <trans-unit id="contactForm.errTooMany" datatype="html">
         <source>Recibimos varios mensajes desde tu conexión. Espera unos minutos o escríbenos a info@rtres.net.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/components/contact-form/contact-form.component.ts</context>
-          <context context-type="linenumber">116</context>
+          <context context-type="linenumber">117</context>
         </context-group>
       </trans-unit>
       <trans-unit id="contactForm.errGeneric" datatype="html">
         <source>No pudimos enviar el mensaje. Inténtalo de nuevo o escríbenos a info@rtres.net.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/components/contact-form/contact-form.component.ts</context>
-          <context context-type="linenumber">117</context>
+          <context context-type="linenumber">118</context>
         </context-group>
       </trans-unit>
       <trans-unit id="cookies.title" datatype="html">
@@ -174,7 +174,7 @@
         <source>Pedir una propuesta</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/components/home/closing-cta.component.ts</context>
-          <context context-type="linenumber">14,15</context>
+          <context context-type="linenumber">17,18</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/components/home/contact.component.ts</context>
@@ -185,7 +185,7 @@
         <source>Escribir por WhatsApp ↗</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/components/home/closing-cta.component.ts</context>
-          <context context-type="linenumber">15,21</context>
+          <context context-type="linenumber">18,24</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/components/home/contact.component.ts</context>
@@ -325,7 +325,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/core/site-nav.ts</context>
-          <context context-type="linenumber">6</context>
+          <context context-type="linenumber">9</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/case/case-content.ts</context>
@@ -355,7 +355,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/core/site-nav.ts</context>
-          <context context-type="linenumber">7</context>
+          <context context-type="linenumber">10</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/case/case-content.ts</context>
@@ -377,7 +377,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/core/site-nav.ts</context>
-          <context context-type="linenumber">8</context>
+          <context context-type="linenumber">11</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/case/case-content.ts</context>
@@ -399,7 +399,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/core/site-nav.ts</context>
-          <context context-type="linenumber">9</context>
+          <context context-type="linenumber">12</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/case/case-content.ts</context>
@@ -808,6 +808,13 @@
           <context context-type="linenumber">13</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="site.skipLink" datatype="html">
+        <source>Saltar al contenido</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/site/src/app/layout/site-layout.component.ts</context>
+          <context context-type="linenumber">14,17</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="about.label" datatype="html">
         <source>QUIÉNES SOMOS</source>
         <context-group purpose="location">
@@ -994,7 +1001,7 @@
         <source>BLOG</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/blog/blog-page.component.ts</context>
-          <context context-type="linenumber">25</context>
+          <context context-type="linenumber">24,25</context>
         </context-group>
       </trans-unit>
       <trans-unit id="blog.title" datatype="html">
@@ -1702,7 +1709,7 @@
         <source>CONTACTO</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/contact/contact-page.component.ts</context>
-          <context context-type="linenumber">14,16</context>
+          <context context-type="linenumber">14,15</context>
         </context-group>
       </trans-unit>
       <trans-unit id="contact.title" datatype="html">
@@ -1737,7 +1744,7 @@
         <source>Dónde estamos</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/contact/contact-page.component.ts</context>
-          <context context-type="linenumber">21,22</context>
+          <context context-type="linenumber">21</context>
         </context-group>
       </trans-unit>
       <trans-unit id="contact.whereText" datatype="html">
@@ -1828,98 +1835,98 @@
         <source>RECURSOS</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/resources/resources-page.component.ts</context>
-          <context context-type="linenumber">18,20</context>
+          <context context-type="linenumber">21,23</context>
         </context-group>
       </trans-unit>
       <trans-unit id="resources.title" datatype="html">
         <source>Aprende con<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br&gt;"/>nosotros.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/resources/resources-page.component.ts</context>
-          <context context-type="linenumber">19,20</context>
+          <context context-type="linenumber">22,23</context>
         </context-group>
       </trans-unit>
       <trans-unit id="resources.lead" datatype="html">
         <source>Videos que recomendamos para crecer como profesional y como empresa: marca personal, disciplina, hábitos, negocios y tecnología.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/resources/resources-page.component.ts</context>
-          <context context-type="linenumber">20,25</context>
+          <context context-type="linenumber">23,28</context>
         </context-group>
       </trans-unit>
       <trans-unit id="resources.loading" datatype="html">
         <source>Cargando videos…</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/resources/resources-page.component.ts</context>
-          <context context-type="linenumber">25,27</context>
+          <context context-type="linenumber">28,30</context>
         </context-group>
       </trans-unit>
       <trans-unit id="resources.error" datatype="html">
         <source>No pudimos cargar los videos. Vuelve a intentarlo en unos minutos.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/resources/resources-page.component.ts</context>
-          <context context-type="linenumber">27,29</context>
+          <context context-type="linenumber">30,32</context>
         </context-group>
       </trans-unit>
       <trans-unit id="resources.empty" datatype="html">
         <source>Muy pronto compartiremos aquí nuestros videos recomendados.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/resources/resources-page.component.ts</context>
-          <context context-type="linenumber">29,32</context>
+          <context context-type="linenumber">32,35</context>
         </context-group>
       </trans-unit>
       <trans-unit id="resources.filter" datatype="html">
         <source>Filtrar por tema</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/resources/resources-page.component.ts</context>
-          <context context-type="linenumber">32,33</context>
+          <context context-type="linenumber">35,36</context>
         </context-group>
       </trans-unit>
       <trans-unit id="resources.all" datatype="html">
         <source>Todos</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/resources/resources-page.component.ts</context>
-          <context context-type="linenumber">33,34</context>
+          <context context-type="linenumber">36,37</context>
         </context-group>
       </trans-unit>
       <trans-unit id="resources.featured" datatype="html">
         <source>Destacado</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/resources/resources-page.component.ts</context>
-          <context context-type="linenumber">51,53</context>
+          <context context-type="linenumber">54,56</context>
         </context-group>
       </trans-unit>
       <trans-unit id="resources.openYoutube" datatype="html">
         <source>Ver en YouTube</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/resources/resources-page.component.ts</context>
-          <context context-type="linenumber">56,58</context>
+          <context context-type="linenumber">59,61</context>
         </context-group>
       </trans-unit>
       <trans-unit id="resources.cta" datatype="html">
         <source>¿Quieres llevar tu negocio al siguiente nivel?</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/resources/resources-page.component.ts</context>
-          <context context-type="linenumber">114</context>
+          <context context-type="linenumber">117</context>
         </context-group>
       </trans-unit>
       <trans-unit id="resources.play" datatype="html">
         <source>Reproducir</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/resources/resources-page.component.ts</context>
-          <context context-type="linenumber">115</context>
+          <context context-type="linenumber">118</context>
         </context-group>
       </trans-unit>
       <trans-unit id="resources.metaTitle" datatype="html">
         <source>Recursos — Rtres Web Solutions</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/resources/resources-page.component.ts</context>
-          <context context-type="linenumber">125</context>
+          <context context-type="linenumber">128</context>
         </context-group>
       </trans-unit>
       <trans-unit id="resources.meta" datatype="html">
         <source>Videos recomendados por Rtres para crecer como profesional y como empresa: marca personal, disciplina, hábitos, negocios y tecnología.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/site/src/app/pages/resources/resources-page.component.ts</context>
-          <context context-type="linenumber">126</context>
+          <context context-type="linenumber">129</context>
         </context-group>
       </trans-unit>
       <trans-unit id="service.software.title" datatype="html">
