@@ -8,6 +8,11 @@ DirectorySlash Off
 <IfModule mod_rewrite.c>
 RewriteEngine On
 
+# Bytespider (ByteDance) ignora robots.txt: se rechaza con 403 por User-Agent (auditoría SEO 2026-11-13, punto 12).
+# CCBot y los demás rastreadores de IA siguen permitidos.
+RewriteCond %{HTTP_USER_AGENT} Bytespider [NC]
+RewriteRule ^ - [F,L]
+
 # HTTPS y sin www. El hosting termina SSL en Nginx: se mira también X-Forwarded-Proto para no entrar en bucle.
 RewriteCond %{HTTPS} !=on
 RewriteCond %{HTTP:X-Forwarded-Proto} !https
