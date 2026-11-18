@@ -14,9 +14,14 @@ export const roleGuard = (...roles: PortalRole[]): CanActivateFn => () => {
  * Área del cliente. Cliente/Admin entran siempre; el SuperAdmin solo con un cliente seleccionado,
  * porque sin él la API rechaza estas consultas (clientId es obligatorio).
  */
-export const clientAreaGuard: CanActivateFn = () => {
+export const clientAreaGuard: CanActivateFn = () => clientArea(['Cliente', 'Admin']);
+
+/** Inicio, servicios, contratación y facturación: el Admin del cliente (no los miembros del equipo) o el SuperAdmin viendo un cliente. */
+export const clientAdminGuard: CanActivateFn = () => clientArea(['Admin']);
+
+function clientArea(roles: PortalRole[]) {
   const role = inject(AuthService).user()?.role;
-  if (role === 'Cliente' || role === 'Admin') return true;
+  if (role && roles.includes(role)) return true;
   if (role === 'SuperAdmin' && inject(PortalUiService).viewingClientId()) return true;
   return inject(Router).createUrlTree([homeFor(role)]);
 };

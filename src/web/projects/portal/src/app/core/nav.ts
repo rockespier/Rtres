@@ -5,7 +5,7 @@ export type PortalRole = 'Cliente' | 'Admin' | 'SuperAdmin';
 export interface NavItem { label: string; link: string; icon: IconName; }
 export interface NavGroup { label?: string; items: NavItem[]; }
 
-/** Área del cliente: lo que ve un Cliente/Admin, y el SuperAdmin cuando está "viendo como" un cliente. */
+/** Área del cliente: lo que ve el Admin del cliente, y el SuperAdmin cuando está "viendo como" un cliente. */
 const CLIENT_AREA: NavItem[] = [
   { label: 'Inicio', link: '/dashboard', icon: 'home' },
   { label: 'Mis tickets', link: '/tickets', icon: 'ticket' },
@@ -44,10 +44,11 @@ export function navFor(role: PortalRole | undefined, viewingClient: string | nul
     groups.push({ items: [{ label: 'Mi cuenta', link: '/profile', icon: 'user' }] });
     return groups;
   }
-  const items = [...CLIENT_AREA, { label: 'Mi cuenta', link: '/profile', icon: 'user' as const }];
-  if (role === 'Admin') items.push({ label: 'Equipo', link: '/team', icon: 'users' });
-  return [{ items }];
+  const account: NavItem = { label: 'Mi cuenta', link: '/profile', icon: 'user' };
+  // Miembro del equipo (rol Cliente): solo sus tickets y su cuenta; servicios, pagos y equipo son del Admin.
+  if (role === 'Cliente') return [{ items: [...CLIENT_AREA.filter(i => i.link === '/tickets'), account] }];
+  return [{ items: [...CLIENT_AREA, account, { label: 'Equipo', link: '/team', icon: 'users' }] }];
 }
 
 /** Pantalla de entrada según el rol. */
-export const homeFor = (role: PortalRole | undefined): string => role === 'SuperAdmin' ? '/admin/clients' : '/dashboard';
+export const homeFor = (role: PortalRole | undefined): string => role === 'SuperAdmin' ? '/admin/clients' : role === 'Cliente' ? '/tickets' : '/dashboard';

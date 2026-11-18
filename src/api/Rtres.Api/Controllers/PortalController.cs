@@ -30,7 +30,7 @@ public sealed class PortalController(RtresDbContext db, IBackgroundJobClient job
         return null;
     }
 
-    [HttpGet("dashboard/summary")]
+    [HttpGet("dashboard/summary"), Authorize(Roles = ClientRoles.Billing)]
     public async Task<IActionResult> Summary(Guid? clientId, CancellationToken ct)
     {
         var error = ResolveClientId(clientId, out var id); if (error is not null) return error;
@@ -39,7 +39,7 @@ public sealed class PortalController(RtresDbContext db, IBackgroundJobClient job
         var nextPaymentAmount = next?.Product is null ? null : next.NextChargeTotal(await db.IgvRateForAsync(id, next.Product, ct));
         return Ok(new { activeProducts = await p.CountAsync(x => x.Status == ClientProductStatus.Activo, ct), expiringSoon = await p.CountAsync(x => x.Status == ClientProductStatus.PorVencer, ct), openTickets = await db.Tickets.CountAsync(x => x.ClientId == id && (x.Status == TicketStatus.Abierto || x.Status == TicketStatus.EnProgreso), ct), nextPaymentAmount });
     }
-    [HttpGet("client-products")]
+    [HttpGet("client-products"), Authorize(Roles = ClientRoles.Billing)]
     public async Task<IActionResult> Products(Guid? clientId, CancellationToken ct)
     {
         var error = ResolveClientId(clientId, out var id); if (error is not null) return error;
@@ -154,6 +154,8 @@ public sealed class PortalController(RtresDbContext db, IBackgroundJobClient job
             var error = ResolveClientId(clientId, out var id); if (error is not null) return error;
             query = query.Where(x => x.ClientId == id && !x.ForStaff);
         }
+        // Miembro del equipo (rol Cliente): solo avisos de tickets; los de pagos y renovaciones son del Admin (ClientRoles).
+        if (User.IsInRole(nameof(UserRole.Cliente))) query = query.Where(x => x.Type.StartsWith("Ticket"));
         var seenAt = await db.UserAccounts.Where(x => x.Id == UserId).Select(x => x.NotificationsSeenAt).SingleOrDefaultAsync(ct);
         var unread = await query.CountAsync(x => seenAt == null || x.CreatedAt > seenAt, ct);
         var rows = await query.OrderByDescending(x => x.CreatedAt).Take(20)
