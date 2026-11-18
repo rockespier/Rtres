@@ -32,7 +32,7 @@ public sealed partial class AdminController
     // ---- Renta anual ----
 
     /// <summary>
-    /// Estimación de la Renta anual de la MYPE: ventas sin IGV (facturas y cobros sin comprobante) − gastos deducibles =
+    /// Estimación de la Renta anual de la MYPE: ventas sin IGV (comprobantes emitidos y cobros del exterior) − gastos deducibles =
     /// renta neta; impuesto por tramos; menos los pagos a cuenta (los registrados al presentar cada mes o, si faltan, el
     /// estimado). Los recibos por honorarios son del titular como persona natural: se informan aparte. Para el año en
     /// curso agrega una proyección al cierre con el promedio de los meses ya cerrados.

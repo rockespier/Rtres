@@ -108,7 +108,9 @@ import { Component, OnInit, inject } from '@angular/core'; import { CommonModule
       <div class="rep-line"><span>Impuesto a la Renta <span class="text-muted">({{taxSummary.tasa.rentaRate|percent:'1.0-2'}})</span></span><span class="tabular-nums">{{taxSummary.rentaEstimada|money}}</span></div>
       <div class="rep-line rep-subtotal"><span>Ventas gravadas</span><span class="tabular-nums">{{taxSummary.ventasGravadasPen|money}}</span></div>
       <div class="rep-line"><span>Ventas no gravadas <span class="text-muted">(exportación)</span></span><span class="tabular-nums">{{taxSummary.ventasNoGravadasPen|money}}</span></div>
+      <div class="rep-line" *ngIf="taxSummary.ventasPersonaNaturalPen"><span>Recibos por honorarios <span class="text-muted">(del titular, fuera de la Renta MYPE)</span></span><span class="tabular-nums">{{taxSummary.ventasPersonaNaturalPen|money}}</span></div>
     </div>
+    <p class="text-sm mt-4" *ngIf="taxSummary.cobrosSinComprobante.length" role="status"><strong>{{taxSummary.cobrosSinComprobante.length}} {{taxSummary.cobrosSinComprobante.length===1?'cobro':'cobros'}} de clientes en Perú sin comprobante</strong> <span class="text-muted">no cuentan en ventas ni impuestos hasta emitirlo · <a routerLink="/admin/tax-documents" class="underline">Documentos tributarios</a></span></p>
   </section>
 </div>
 <p class="note mt-6" *ngIf="taxSummary">{{taxSummary.disclaimer}}</p>`,

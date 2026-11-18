@@ -512,7 +512,7 @@ public sealed partial class AdminController(RtresDbContext db, PayPalCheckoutSer
         await db.SaveChangesAsync(ct); await db.Entry(expense).Reference(x => x.Category).LoadAsync(ct); return Ok(ExpenseDto(expense));
     }
 
-    private const string TaxDisclaimer = "Estimación calculada con las tasas configuradas por el usuario en Configuración de tasas — no es una liquidación oficial ante SUNAT. El IGV sale de las facturas emitidas a clientes en Perú; las ventas al exterior y los recibos por honorarios no llevan IGV. El régimen tributario real (RER/MYPE/General) puede calcular la Renta sobre una base distinta (utilidad neta, no ventas brutas); confirma con tu contador antes de declarar.";
+    private const string TaxDisclaimer = "Estimación calculada con las tasas configuradas por el usuario en Configuración de tasas — no es una liquidación oficial ante SUNAT. El IGV y la Renta salen de los comprobantes emitidos en el mes (por su fecha de emisión) y de los cobros del exterior; las ventas al exterior y los recibos por honorarios no llevan IGV. Un cobro de un cliente en Perú sin comprobante no cuenta hasta que se emita. El régimen tributario real (RER/MYPE/General) puede calcular la Renta sobre una base distinta (utilidad neta, no ventas brutas); confirma con tu contador antes de declarar.";
 
     /// <summary>Periodo de un reporte: el mes indicado o, sin mes, el año completo.</summary>
     private static (DateOnly From, DateOnly To) Period(int? month, int year) =>
@@ -524,32 +524,52 @@ public sealed partial class AdminController(RtresDbContext db, PayPalCheckoutSer
 
     /// <summary>
     /// <see cref="PersonaNatural"/>: cobro con recibo por honorarios, ingreso de 4ta categoría del titular como persona natural.
-    /// No entra en la Renta de la MYPE (facturas y cobros sin comprobante) ni en su pago a cuenta.
+    /// No entra en la Renta de la MYPE (facturas y cobros del exterior) ni en su pago a cuenta.
     /// </summary>
     private sealed record Sale(Guid ClientId, DateOnly Date, decimal BasePen, decimal IgvPen, bool Gravada, decimal RetentionPen, bool PersonaNatural = false)
     {
         public bool Mype => !PersonaNatural;
     }
 
+    /// <summary>Cobro de un cliente en Perú que aún no tiene comprobante: no cuenta como venta hasta que se emita.</summary>
+    private sealed record UndocumentedPayment(Guid PaymentId, Guid ClientId, DateOnly Date, decimal AmountPen, string Method, string? InternalCode);
+
     /// <summary>
-    /// Ventas del periodo en PEN, una por cobro (cada cobro es un ingreso; su comprobante no se cuenta aparte). Lo cobrado ya
-    /// incluye el IGV cuando hay Factura (se desglosa con la proporción base/total del comprobante); sin comprobante (cliente
-    /// del exterior) o con Recibo por honorarios, todo lo cobrado es base sin IGV. La retención del recibo es Renta ya pagada.
+    /// Ventas del periodo en PEN, como se declaran a SUNAT: cada comprobante emitido cuenta en el mes de su fecha de emisión
+    /// (en soles con el tipo de cambio de su cobro, igual que la tabla de Documentos tributarios), y cada cobro de un cliente
+    /// del exterior (sin comprobante peruano) en el día de Lima en que se cobró, todo como base sin IGV. Los cobros de clientes
+    /// en Perú sin comprobante quedan fuera y se devuelven aparte para avisar. La retención del recibo es Renta ya pagada.
     /// </summary>
-    private async Task<List<Sale>> SalesAsync(DateOnly from, DateOnly to, CancellationToken ct)
+    private async Task<(List<Sale> Sales, List<UndocumentedPayment> Undocumented)> LedgerAsync(DateOnly from, DateOnly to, CancellationToken ct)
     {
-        var start = from.ToDateTime(TimeOnly.MinValue); var end = to.AddDays(1).ToDateTime(TimeOnly.MinValue);
-        var payments = await db.PaymentTransactions.Where(x => x.CreatedAt >= start && x.CreatedAt < end)
-            .Select(x => new { x.ClientId, x.CreatedAt, x.AmountPen, Document = db.TaxDocuments.FirstOrDefault(d => d.PaymentTransactionId == x.Id) }).ToListAsync(ct);
-        return payments.Select(x =>
+        var documents = await db.TaxDocuments.Where(x => x.IssueDate >= from && x.IssueDate <= to && x.TotalAmount > 0)
+            .Select(x => new { Document = x, Payment = db.PaymentTransactions.Where(p => p.Id == x.PaymentTransactionId).Select(p => new { p.Amount, p.AmountPen }).FirstOrDefault() }).ToListAsync(ct);
+        var sales = new List<Sale>(documents.Count);
+        foreach (var x in documents)
         {
-            var document = x.Document is { TotalAmount: > 0 } d ? d : null;
-            var isFactura = document?.Type == TaxDocumentType.Factura;
-            var basePen = isFactura ? x.AmountPen * document!.BaseAmount / document.TotalAmount : x.AmountPen;
-            var retentionPen = document?.RetentionAmount is decimal retention ? x.AmountPen * retention / document.TotalAmount : 0m;
-            return new Sale(x.ClientId, DateOnly.FromDateTime(x.CreatedAt), basePen, x.AmountPen - basePen, isFactura, retentionPen, document?.Type == TaxDocumentType.ReciboPorHonorarios);
-        }).ToList();
+            var d = x.Document;
+            var rate = x.Payment is { Amount: > 0 } p ? p.AmountPen / p.Amount : await db.RateToPenAsync(d.Currency, d.IssueDate, ct);
+            var isFactura = d.Type == TaxDocumentType.Factura;
+            var basePen = (isFactura ? d.BaseAmount : d.TotalAmount) * rate;
+            sales.Add(new Sale(d.ClientId, d.IssueDate, basePen, d.TotalAmount * rate - basePen, isFactura, (d.RetentionAmount ?? 0m) * rate, d.Type == TaxDocumentType.ReciboPorHonorarios));
+        }
+
+        // Día de Lima: el periodo empieza y termina a las 00:00 de Lima (05:00 UTC).
+        var startUtc = from.ToDateTime(TimeOnly.MinValue).AddHours(5); var endUtc = to.AddDays(1).ToDateTime(TimeOnly.MinValue).AddHours(5);
+        var payments = await db.PaymentTransactions.Where(x => x.CreatedAt >= startUtc && x.CreatedAt < endUtc && !db.TaxDocuments.Any(d => d.PaymentTransactionId == x.Id && d.TotalAmount > 0))
+            .Select(x => new { x.Id, x.ClientId, x.CreatedAt, x.AmountPen, x.Method, x.InternalCode, Peru = db.Clients.Where(c => c.Id == x.ClientId).Select(c => c.RequiresTaxDocument).FirstOrDefault() }).ToListAsync(ct);
+        var undocumented = new List<UndocumentedPayment>();
+        foreach (var x in payments)
+        {
+            var date = TaxDocumentService.LimaToday(x.CreatedAt);
+            // Una remesa es del exterior aunque el cliente esté marcado para comprobante.
+            if (x.Peru && x.Method != PaymentMethods.Remesa) undocumented.Add(new UndocumentedPayment(x.Id, x.ClientId, date, x.AmountPen, x.Method, x.InternalCode));
+            else sales.Add(new Sale(x.ClientId, date, x.AmountPen, 0m, false, 0m));
+        }
+        return (sales, undocumented);
     }
+
+    private async Task<List<Sale>> SalesAsync(DateOnly from, DateOnly to, CancellationToken ct) => (await LedgerAsync(from, to, ct)).Sales;
 
     [HttpGet("reports/sales")]
     public async Task<ActionResult> SalesReport(int? month, int year, string currency, CancellationToken ct)
@@ -567,13 +587,19 @@ public sealed partial class AdminController(RtresDbContext db, PayPalCheckoutSer
     {
         var settings = await TaxSettingsRow(ct);
         var (from, to) = Period(month, year);
-        var sales = await SalesAsync(from, to, ct);
-        decimal basePen = sales.Sum(x => x.BasePen), gravadasPen = sales.Where(x => x.Gravada).Sum(x => x.BasePen);
+        var (sales, undocumented) = await LedgerAsync(from, to, ct);
+        decimal gravadasPen = sales.Where(x => x.Gravada).Sum(x => x.BasePen), rentaBasePen = sales.Where(x => x.Mype).Sum(x => x.BasePen);
         var igv = (await IgvMonthsAsync(to, ct)).Where(x => x.Month >= from).ToList();
-        // El pago a cuenta de la MYPE se estima sobre sus ventas sin IGV (gravadas y no gravadas); los recibos por honorarios son del titular.
+        var clientIds = undocumented.Select(x => x.ClientId).Distinct().ToList();
+        var names = await db.Clients.Where(x => clientIds.Contains(x.Id)).ToDictionaryAsync(x => x.Id, x => x.CompanyName, ct);
+        // El pago a cuenta de la MYPE se estima sobre sus ventas sin IGV (facturas y cobros del exterior); los recibos por honorarios son del titular.
         return Ok(new
         {
-            ventasGravadasPen = Math.Round(gravadasPen, 2), ventasNoGravadasPen = Math.Round(basePen - gravadasPen, 2), igvEstimado = Math.Round(sales.Sum(x => x.IgvPen), 2), rentaEstimada = Math.Round(sales.Where(x => x.Mype).Sum(x => x.BasePen) * settings.RentaRate, 2), ventasPersonaNaturalPen = Math.Round(sales.Where(x => x.PersonaNatural).Sum(x => x.BasePen), 2), tasa = new { igvRate = settings.IgvRate, rentaRate = settings.RentaRate }, disclaimer = TaxDisclaimer,
+            ventasGravadasPen = Math.Round(gravadasPen, 2), ventasNoGravadasPen = Math.Round(rentaBasePen - gravadasPen, 2), igvEstimado = Math.Round(sales.Sum(x => x.IgvPen), 2),
+            rentaBasePen = Math.Round(rentaBasePen, 2), rentaEstimada = Math.Round(rentaBasePen * settings.RentaRate, 2), ventasPersonaNaturalPen = Math.Round(sales.Where(x => x.PersonaNatural).Sum(x => x.BasePen), 2),
+            // Cobros de clientes en Perú sin comprobante: no cuentan como venta hasta que se emita su comprobante.
+            cobrosSinComprobante = undocumented.OrderBy(x => x.Date).Select(x => new { paymentId = x.PaymentId, clientId = x.ClientId, clientName = names.GetValueOrDefault(x.ClientId) ?? "(cliente eliminado)", fecha = x.Date, totalPen = Math.Round(x.AmountPen, 2), method = x.Method, internalCode = x.InternalCode }),
+            tasa = new { igvRate = settings.IgvRate, rentaRate = settings.RentaRate }, disclaimer = TaxDisclaimer,
             // Cascada del IGV: débito (ventas) − crédito fiscal (compras) − saldo a favor del mes anterior.
             igv = new
             {
@@ -594,9 +620,10 @@ public sealed partial class AdminController(RtresDbContext db, PayPalCheckoutSer
     internal async Task<List<IgvMonth>> IgvMonthsAsync(DateOnly to, CancellationToken ct)
     {
         var end = new DateOnly(to.Year, to.Month, 1);
-        DateOnly? firstSale = await db.PaymentTransactions.OrderBy(x => x.CreatedAt).Select(x => (DateTime?)x.CreatedAt).FirstOrDefaultAsync(ct) is DateTime d ? DateOnly.FromDateTime(d) : null;
+        DateOnly? firstPayment = await db.PaymentTransactions.OrderBy(x => x.CreatedAt).Select(x => (DateTime?)x.CreatedAt).FirstOrDefaultAsync(ct) is DateTime d ? TaxDocumentService.LimaToday(d) : null;
+        DateOnly? firstDocument = await db.TaxDocuments.OrderBy(x => x.IssueDate).Select(x => (DateOnly?)x.IssueDate).FirstOrDefaultAsync(ct);
         DateOnly? firstPurchase = await db.Purchases.OrderBy(x => x.Period).Select(x => (DateOnly?)x.Period).FirstOrDefaultAsync(ct);
-        var first = new[] { firstSale, firstPurchase }.Where(x => x is not null).Select(x => x!.Value).DefaultIfEmpty(end).Min();
+        var first = new[] { firstPayment, firstDocument, firstPurchase }.Where(x => x is not null).Select(x => x!.Value).DefaultIfEmpty(end).Min();
         var start = new DateOnly(first.Year, first.Month, 1);
         if (start > end) start = end;
         var sales = await SalesAsync(start, end.AddMonths(1).AddDays(-1), ct);

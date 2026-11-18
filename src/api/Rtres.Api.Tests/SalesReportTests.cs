@@ -36,10 +36,43 @@ public class SalesReportTests
 
         var tax = Assert.IsType<OkObjectResult>(await admin.TaxSummaryReport(today.Month, today.Year, CancellationToken.None)).Value!;
         // Pago a cuenta de la MYPE: 10 % de 475 (factura + exterior); el recibo por honorarios (200) es del titular como persona natural.
-        Assert.Equal((100m, 575m, 18m, 47.5m), (Prop(tax, "ventasGravadasPen"), Prop(tax, "ventasNoGravadasPen"), Prop(tax, "igvEstimado"), Prop(tax, "rentaEstimada")));
+        // No gravadas: solo el exterior (375); el recibo por honorarios va aparte.
+        Assert.Equal((100m, 375m, 18m, 475m, 47.5m, 200m), (Prop(tax, "ventasGravadasPen"), Prop(tax, "ventasNoGravadasPen"), Prop(tax, "igvEstimado"), Prop(tax, "rentaBasePen"), Prop(tax, "rentaEstimada"), Prop(tax, "ventasPersonaNaturalPen")));
 
         var net = Assert.IsType<OkObjectResult>(await admin.NetReport(today.Month, today.Year, CancellationToken.None)).Value!;
         Assert.Equal((675m, 47.5m, 627.5m), (Prop(net, "ventasPen"), Prop(net, "impuestosPen"), Prop(net, "utilidadNetaPen")));
+    }
+
+    [Fact]
+    public async Task Sales_follow_the_issue_date_of_documents_and_skip_peruvian_payments_without_one()
+    {
+        using var db = TestData.Db(out var seed);
+        seed.Client.RequiresTaxDocument = true;
+        var foreign = new Client { CompanyName = "Roma Srl", Email = "info@roma.it" };
+        db.Add(foreign);
+        // Cobro del 30/9 en Lima (1/10 02:00 UTC) cuya factura se emitió el 30/9: cuenta en septiembre, no en octubre.
+        var september = new PaymentTransaction { ClientId = seed.Client.Id, Amount = 118m, Currency = "PEN", AmountPen = 118m, CreatedAt = new DateTime(2026, 10, 1, 2, 0, 0, DateTimeKind.Utc) };
+        // Cobro de octubre de un cliente en Perú sin comprobante: no es venta todavía, se avisa.
+        var pending = new PaymentTransaction { ClientId = seed.Client.Id, Amount = 236m, Currency = "PEN", AmountPen = 236m, Method = PaymentMethods.Transferencia, InternalCode = "P-9", CreatedAt = new DateTime(2026, 10, 10, 15, 0, 0, DateTimeKind.Utc) };
+        // Cobro de octubre del exterior: venta no gravada sin comprobante.
+        var export = new PaymentTransaction { ClientId = foreign.Id, Amount = 100m, Currency = "USD", AmountPen = 350m, CreatedAt = new DateTime(2026, 10, 15, 15, 0, 0, DateTimeKind.Utc) };
+        db.AddRange(september, pending, export,
+            new TaxDocument { ClientId = seed.Client.Id, Type = TaxDocumentType.Factura, Series = "F001", Number = 1, IssueDate = new DateOnly(2026, 9, 30), Currency = "PEN", BaseAmount = 100m, IgvAmount = 18m, TotalAmount = 118m, PaymentTransactionId = september.Id },
+            // Factura de octubre emitida a mano, sin cobro enlazado.
+            new TaxDocument { ClientId = seed.Client.Id, Type = TaxDocumentType.Factura, Series = "F001", Number = 2, IssueDate = new DateOnly(2026, 10, 20), Currency = "PEN", BaseAmount = 500m, IgvAmount = 90m, TotalAmount = 590m });
+        db.SaveChanges();
+        var admin = Admin(db);
+
+        var tax = Assert.IsType<OkObjectResult>(await admin.TaxSummaryReport(10, 2026, CancellationToken.None)).Value!;
+        Assert.Equal((500m, 350m, 90m, 850m), (Prop(tax, "ventasGravadasPen"), Prop(tax, "ventasNoGravadasPen"), Prop(tax, "igvEstimado"), Prop(tax, "rentaBasePen")));
+        var missing = Assert.Single((System.Collections.IEnumerable)tax.GetType().GetProperty("cobrosSinComprobante")!.GetValue(tax)!);
+        Assert.Equal((pending.Id, 236m), ((Guid)missing.GetType().GetProperty("paymentId")!.GetValue(missing)!, Prop(missing, "totalPen")));
+
+        var septemberTax = Assert.IsType<OkObjectResult>(await admin.TaxSummaryReport(9, 2026, CancellationToken.None)).Value!;
+        Assert.Equal((100m, 18m), (Prop(septemberTax, "ventasGravadasPen"), Prop(septemberTax, "igvEstimado")));
+
+        var net = Assert.IsType<OkObjectResult>(await admin.NetReport(10, 2026, CancellationToken.None)).Value!;
+        Assert.Equal(850m, Prop(net, "ventasPen"));
     }
 
     private static ClientProduct AddProduct(RtresDbContext db, Guid clientId, Guid projectId, TaxDocumentType taxType)
