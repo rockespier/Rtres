@@ -64,11 +64,11 @@ public class FinanceReportTests
     }
 
     [Fact]
-    public async Task Net_profit_always_subtracts_the_renta_advance_on_sales_without_igv()
+    public async Task Net_profit_always_subtracts_the_renta_advance_on_invoices()
     {
         using var db = TestData.Db(out var seed);
         db.TaxSettings.Add(new TaxSettings { RentaRate = 0.10m });
-        AddPayment(db, seed.Client.Id, new DateOnly(Year, 4, 10), 1000m);
+        AddPayment(db, seed.Client.Id, new DateOnly(Year, 4, 10), 1000m, withFactura: true);
         db.Expenses.Add(new Expense { Description = "Sueldo", CategoryId = ExpenseCategoryIds.Sueldos, Amount = 300m, AmountPen = 300m, Date = new DateOnly(Year, 4, 30) }); db.SaveChanges();
 
         var net = Ok(await Admin(db).NetReport(4, Year, CancellationToken.None));
@@ -90,9 +90,10 @@ public class FinanceReportTests
         Assert.NotEmpty(file.FileContents);
     }
 
-    private static void AddPayment(RtresDbContext db, Guid clientId, DateOnly date, decimal amountPen, string method = PaymentMethods.Transferencia)
+    private static void AddPayment(RtresDbContext db, Guid clientId, DateOnly date, decimal amountPen, string method = PaymentMethods.Transferencia, bool withFactura = false)
     {
-        db.PaymentTransactions.Add(new PaymentTransaction { ClientId = clientId, PayPalOrderIdOrSubscriptionId = Guid.NewGuid().ToString("N"), Amount = amountPen, Currency = "PEN", AmountPen = amountPen, Status = "COMPLETED", Method = method, CreatedAt = date.ToDateTime(new TimeOnly(12, 0), DateTimeKind.Utc) });
+        var payment = db.PaymentTransactions.Add(new PaymentTransaction { ClientId = clientId, PayPalOrderIdOrSubscriptionId = Guid.NewGuid().ToString("N"), Amount = amountPen, Currency = "PEN", AmountPen = amountPen, Status = "COMPLETED", Method = method, CreatedAt = date.ToDateTime(new TimeOnly(12, 0), DateTimeKind.Utc) }).Entity;
+        if (withFactura) db.TaxDocuments.Add(new TaxDocument { ClientId = clientId, PaymentTransactionId = payment.Id, Type = TaxDocumentType.Factura, Series = "E001", Number = db.TaxDocuments.Local.Count + 1, IssueDate = date, Currency = "PEN", BaseAmount = amountPen, TotalAmount = amountPen });
         db.SaveChanges();
     }
 

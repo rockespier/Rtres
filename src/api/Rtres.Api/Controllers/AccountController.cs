@@ -512,7 +512,7 @@ public sealed partial class AdminController(RtresDbContext db, PayPalCheckoutSer
         await db.SaveChangesAsync(ct); await db.Entry(expense).Reference(x => x.Category).LoadAsync(ct); return Ok(ExpenseDto(expense));
     }
 
-    private const string TaxDisclaimer = "Estimación calculada con las tasas configuradas por el usuario en Configuración de tasas — no es una liquidación oficial ante SUNAT. El IGV y la Renta salen de los comprobantes emitidos en el mes (por su fecha de emisión) y de los cobros del exterior; las ventas al exterior y los recibos por honorarios no llevan IGV. Un cobro de un cliente en Perú sin comprobante no cuenta hasta que se emita. El régimen tributario real (RER/MYPE/General) puede calcular la Renta sobre una base distinta (utilidad neta, no ventas brutas); confirma con tu contador antes de declarar.";
+    private const string TaxDisclaimer = "Estimación calculada con las tasas configuradas por el usuario en Configuración de tasas — no es una liquidación oficial ante SUNAT. El IGV y el pago a cuenta de la Renta salen solo de los comprobantes emitidos en el mes (por su fecha de emisión); los cobros del exterior suman a las ventas pero no al pago a cuenta; las ventas al exterior y los recibos por honorarios no llevan IGV. Un cobro de un cliente en Perú sin comprobante no cuenta hasta que se emita. El régimen tributario real (RER/MYPE/General) puede calcular la Renta sobre una base distinta (utilidad neta, no ventas brutas); confirma con tu contador antes de declarar.";
 
     /// <summary>Periodo de un reporte: el mes indicado o, sin mes, el año completo.</summary>
     private static (DateOnly From, DateOnly To) Period(int? month, int year) =>
@@ -525,10 +525,13 @@ public sealed partial class AdminController(RtresDbContext db, PayPalCheckoutSer
     /// <summary>
     /// <see cref="PersonaNatural"/>: cobro con recibo por honorarios, ingreso de 4ta categoría del titular como persona natural.
     /// No entra en la Renta de la MYPE (facturas y cobros del exterior) ni en su pago a cuenta.
+    /// <see cref="Documented"/>: la venta sale de un comprobante emitido; los cobros del exterior no lo tienen.
     /// </summary>
-    private sealed record Sale(Guid ClientId, DateOnly Date, decimal BasePen, decimal IgvPen, bool Gravada, decimal RetentionPen, bool PersonaNatural = false)
+    private sealed record Sale(Guid ClientId, DateOnly Date, decimal BasePen, decimal IgvPen, bool Gravada, decimal RetentionPen, bool PersonaNatural = false, bool Documented = false)
     {
         public bool Mype => !PersonaNatural;
+        /// <summary>Base del pago a cuenta mensual de la Renta: solo comprobantes de la MYPE (facturas); ni cobros sin comprobante ni recibos por honorarios.</summary>
+        public bool PagoACuenta => Documented && !PersonaNatural;
     }
 
     /// <summary>Cobro sin comprobante: del exterior (cuenta como venta no gravada) o de un cliente en Perú (no cuenta hasta que se emita).</summary>
@@ -551,7 +554,7 @@ public sealed partial class AdminController(RtresDbContext db, PayPalCheckoutSer
             var rate = x.Payment is { Amount: > 0 } p ? p.AmountPen / p.Amount : await db.RateToPenAsync(d.Currency, d.IssueDate, ct);
             var isFactura = d.Type == TaxDocumentType.Factura;
             var basePen = (isFactura ? d.BaseAmount : d.TotalAmount) * rate;
-            sales.Add(new Sale(d.ClientId, d.IssueDate, basePen, d.TotalAmount * rate - basePen, isFactura, (d.RetentionAmount ?? 0m) * rate, d.Type == TaxDocumentType.ReciboPorHonorarios));
+            sales.Add(new Sale(d.ClientId, d.IssueDate, basePen, d.TotalAmount * rate - basePen, isFactura, (d.RetentionAmount ?? 0m) * rate, d.Type == TaxDocumentType.ReciboPorHonorarios, Documented: true));
         }
 
         // Día de Lima: el periodo empieza y termina a las 00:00 de Lima (05:00 UTC).
@@ -589,14 +592,14 @@ public sealed partial class AdminController(RtresDbContext db, PayPalCheckoutSer
         var settings = await TaxSettingsRow(ct);
         var (from, to) = Period(month, year);
         var (sales, undocumented, exterior) = await LedgerAsync(from, to, ct);
-        decimal gravadasPen = sales.Where(x => x.Gravada).Sum(x => x.BasePen), rentaBasePen = sales.Where(x => x.Mype).Sum(x => x.BasePen);
+        decimal gravadasPen = sales.Where(x => x.Gravada).Sum(x => x.BasePen), rentaBasePen = sales.Where(x => x.PagoACuenta).Sum(x => x.BasePen);
         var igv = (await IgvMonthsAsync(to, ct)).Where(x => x.Month >= from).ToList();
         var clientIds = undocumented.Concat(exterior).Select(x => x.ClientId).Distinct().ToList();
         var names = await db.Clients.Where(x => clientIds.Contains(x.Id)).ToDictionaryAsync(x => x.Id, x => x.CompanyName, ct);
-        // El pago a cuenta de la MYPE se estima sobre sus ventas sin IGV (facturas y cobros del exterior); los recibos por honorarios son del titular.
+        // El pago a cuenta de la MYPE se estima solo sobre sus facturas emitidas (sin IGV): ni cobros sin comprobante ni recibos por honorarios (son del titular).
         return Ok(new
         {
-            ventasGravadasPen = Math.Round(gravadasPen, 2), ventasNoGravadasPen = Math.Round(rentaBasePen - gravadasPen, 2), igvEstimado = Math.Round(sales.Sum(x => x.IgvPen), 2),
+            ventasGravadasPen = Math.Round(gravadasPen, 2), ventasNoGravadasPen = Math.Round(sales.Where(x => x.Mype && !x.Gravada).Sum(x => x.BasePen), 2), igvEstimado = Math.Round(sales.Sum(x => x.IgvPen), 2),
             rentaBasePen = Math.Round(rentaBasePen, 2), rentaEstimada = Math.Round(rentaBasePen * settings.RentaRate, 2), ventasPersonaNaturalPen = Math.Round(sales.Where(x => x.PersonaNatural).Sum(x => x.BasePen), 2),
             // Cobros de clientes en Perú sin comprobante: no cuentan como venta hasta que se emita su comprobante.
             cobrosSinComprobante = undocumented.OrderBy(x => x.Date).Select(x => PaymentRowDto(x, names)),
@@ -695,7 +698,7 @@ public sealed partial class AdminController(RtresDbContext db, PayPalCheckoutSer
     {
         var ventas = sales.Sum(x => x.BasePen);
         var gastos = expenses.Where(x => x.Category?.IsIncomeTax != true).Sum(x => x.AmountPen);
-        var impuestos = sales.Where(x => x.Mype).Sum(x => x.BasePen) * rentaRate; // pago a cuenta de la MYPE
+        var impuestos = sales.Where(x => x.PagoACuenta).Sum(x => x.BasePen) * rentaRate; // pago a cuenta de la MYPE: solo facturas emitidas
         return (ventas, gastos, impuestos, ventas - gastos - impuestos);
     }
 

@@ -63,11 +63,12 @@ public class AnnualTaxTests
     }
 
     [Fact]
-    public async Task Monthly_renta_advance_excludes_fees_receipts()
+    public async Task Monthly_renta_advance_counts_only_invoices()
     {
         using var db = TestData.Db(out var seed);
         db.TaxSettings.Add(new TaxSettings { RentaRate = 0.01m });
-        AddSale(db, seed.Client.Id, new DateOnly(Year, 4, 10), 10_000m, null);
+        AddSale(db, seed.Client.Id, new DateOnly(Year, 4, 10), 10_000m, TaxDocumentType.Factura);
+        AddSale(db, seed.Client.Id, new DateOnly(Year, 4, 12), 3_000m, null); // cobro del exterior: venta, pero no entra en el pago a cuenta
         AddSale(db, seed.Client.Id, new DateOnly(Year, 4, 11), 5_000m, TaxDocumentType.ReciboPorHonorarios, 5_000m);
         var summary = Ok(await Admin(db).TaxSummaryReport(4, Year, CancellationToken.None));
         Assert.Equal((100m, 5_000m), (Prop(summary, "rentaEstimada"), Prop(summary, "ventasPersonaNaturalPen")));

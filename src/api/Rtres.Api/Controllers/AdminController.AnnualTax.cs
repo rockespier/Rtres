@@ -59,7 +59,9 @@ public sealed partial class AdminController
             var ventas = sales.Where(x => x.Mype && x.Date >= start && x.Date <= end).Sum(x => x.BasePen);
             var gastos = expenses.Where(x => x.Date >= start && x.Date <= end && IsDeductible(x)).Sum(x => x.AmountPen);
             var paid = filed.TryGetValue(m, out var row) ? row.RentaPaid : null;
-            var pago = m > lastMonth ? 0m : paid ?? Math.Round(ventas * settings.RentaRate, 2);
+            // Pago a cuenta estimado: solo sobre las facturas del mes, como en Documentos tributarios.
+            var baseACuenta = sales.Where(x => x.PagoACuenta && x.Date >= start && x.Date <= end).Sum(x => x.BasePen);
+            var pago = m > lastMonth ? 0m : paid ?? Math.Round(baseACuenta * settings.RentaRate, 2);
             return new AnnualMonth(start.ToString("yyyy-MM"), Math.Round(ventas, 2), Math.Round(gastos, 2), pago, m <= lastMonth && paid is null);
         }).ToList();
 
