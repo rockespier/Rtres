@@ -76,6 +76,12 @@ public sealed class GitHubWebhookProcessor(RtresDbContext db, INotificationSende
         var body = comment.GetProperty("body").GetString() ?? string.Empty;
         if (body.Contains(GitHubLabels.PortalCommentMarker, StringComparison.Ordinal)) return; // eco de un comentario publicado desde el portal
         var existing = await db.TicketComments.SingleOrDefaultAsync(x => x.TicketId == ticket.Id && x.GithubCommentId == commentId, ct);
+        if (body.Contains(GitHubLabels.FactoryCommentMarker, StringComparison.Ordinal))
+        {
+            // Comentario técnico de la factory: no se muestra al cliente; si ya se había importado, se retira.
+            if (existing is null) return;
+            action = "deleted";
+        }
         switch (action)
         {
             case "created" when existing is null:

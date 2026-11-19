@@ -21,6 +21,9 @@ public static class GitHubLabels
     /// <summary>Marca oculta que llevan los comentarios publicados desde el portal, para no reimportarlos por el webhook.</summary>
     public const string PortalCommentMarker = "<!-- rtres-portal-comment:";
 
+    /// <summary>Marca de los comentarios técnicos de la software factory (factory/bin/job): no son para el cliente.</summary>
+    public const string FactoryCommentMarker = "<!-- factory -->";
+
     public static string ForType(TicketType type) => type switch
     {
         TicketType.Bug => "bug",

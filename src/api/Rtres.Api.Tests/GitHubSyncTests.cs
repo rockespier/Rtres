@@ -355,14 +355,18 @@ public class GitHubWebhookProcessorTests
         await processor.ProcessAsync("issue_comment", TestData.CommentEvent("created", 7, 900, "Lo estamos revisando"), CancellationToken.None);
         await processor.ProcessAsync("issue_comment", TestData.CommentEvent("created", 7, 901, "ci", userType: "Bot"), CancellationToken.None);
         await processor.ProcessAsync("issue_comment", TestData.CommentEvent("created", 7, 902, "**Ana** (vía portal):\n\nHola\n\n" + GitHubLabels.PortalCommentMarker + Guid.NewGuid() + " -->"), CancellationToken.None);
+        await processor.ProcessAsync("issue_comment", TestData.CommentEvent("created", 7, 903, GitHubLabels.FactoryCommentMarker + "\n### Factory intake: ACCEPT"), CancellationToken.None);
         var comment = await db.TicketComments.SingleAsync();
         Assert.True(comment.FromGithub); Assert.Equal("dev", comment.GithubAuthorLogin);
-        // Solo el comentario humano nuevo avisa al cliente (ni el duplicado, ni el bot, ni el eco del portal).
+        // Solo el comentario humano nuevo avisa al cliente (ni el duplicado, ni el bot, ni el eco del portal, ni la factory).
         var reply = Assert.Single(notifications.Sent);
         Assert.Equal(NotificationType.TicketReply, reply.Type); Assert.Equal("ticket-reply:900", reply.DedupeKey); Assert.Equal("dev", reply.Data["author"]);
 
         await processor.ProcessAsync("issue_comment", TestData.CommentEvent("edited", 7, 900, "Corregido"), CancellationToken.None);
         Assert.Equal("Corregido", (await db.TicketComments.SingleAsync()).Body);
+        // Un comentario ya importado que pasa a llevar la marca de la factory se retira del portal.
+        await processor.ProcessAsync("issue_comment", TestData.CommentEvent("edited", 7, 900, GitHubLabels.FactoryCommentMarker + "\nCorregido"), CancellationToken.None);
+        Assert.Empty(db.TicketComments);
         await processor.ProcessAsync("issue_comment", TestData.CommentEvent("deleted", 7, 900, "Corregido"), CancellationToken.None);
         Assert.Empty(db.TicketComments);
     }
