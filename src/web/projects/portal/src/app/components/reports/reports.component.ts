@@ -1,6 +1,7 @@
 import { SORTABLE } from '../../core/sortable';
-import { Component, OnInit, inject } from '@angular/core'; import { CommonModule } from '@angular/common'; import { FormsModule } from '@angular/forms'; import { Router, RouterLink } from '@angular/router'; import { ClientsReportDto, ExpensesReportDto, NetReportDto, PortalApiService, SalesReportDto, TaxSummaryReportDto } from '../../core/portal-api.service'; import { PortalUiService } from '../../core/portal-ui.service'; import { EnumLabelPipe } from '../../core/enum-labels'; import { MoneyPipe, formatMoney } from '../../core/money.pipe';
-@Component({selector:'app-reports',standalone:true,imports:[RouterLink,...SORTABLE,CommonModule,FormsModule,EnumLabelPipe,MoneyPipe],template:`
+import { Component, OnInit, inject } from '@angular/core'; import { CommonModule } from '@angular/common'; import { FormsModule } from '@angular/forms'; import { Router, RouterLink } from '@angular/router'; import { PagerComponent } from '../pager/pager.component';
+import { ClientsReportDto, IncomeReportDto, IncomeType, ExpensesReportDto, NetReportDto, PortalApiService, SalesReportDto, TaxSummaryReportDto } from '../../core/portal-api.service'; import { PortalUiService } from '../../core/portal-ui.service'; import { EnumLabelPipe } from '../../core/enum-labels'; import { MoneyPipe, formatMoney } from '../../core/money.pipe';
+@Component({selector:'app-reports',standalone:true,imports:[PagerComponent,RouterLink,...SORTABLE,CommonModule,FormsModule,EnumLabelPipe,MoneyPipe],template:`
 <header class="flex justify-between items-end gap-4 flex-wrap">
   <div>
     <p class="stat-label">Reporte financiero</p>
@@ -86,6 +87,36 @@ import { Component, OnInit, inject } from '@angular/core'; import { CommonModule
   <ng-template #noClients><p class="px-6 pb-6 pt-4 text-muted">No hay cobros en este periodo.</p></ng-template>
 </section>
 
+<section class="card mt-6" *ngIf="income as inc">
+  <div class="p-6 pb-4 flex justify-between items-baseline gap-4 flex-wrap">
+    <div>
+      <h2 class="font-display text-lg font-semibold">Ingresos</h2>
+      <p class="text-muted text-sm">Todo lo que entró en el periodo: facturas, recibos por honorarios y cobros sin comprobante. Los impuestos solo usan las facturas.</p>
+    </div>
+    <span class="font-display text-lg tabular-nums" title="Total cobrado, con IGV">{{inc.totalPen|money}}</span>
+  </div>
+  <div class="grid gap-px bg-[var(--border)] border-y border-[var(--border)] sm:grid-cols-2 lg:grid-cols-4">
+    <button type="button" *ngFor="let t of inc.tipos" class="bg-[var(--surface)] p-4 text-left" [class.font-medium]="incomeFilter===t.tipo" [attr.aria-pressed]="incomeFilter===t.tipo" (click)="incomeFilter = incomeFilter===t.tipo ? '' : t.tipo; incomePage = 1">
+      <p class="stat-label">{{incomeLabel(t.tipo)}} · {{t.cantidad}}</p>
+      <p class="font-display text-xl tabular-nums mt-1">{{t.totalPen|money}}</p>
+      <p class="text-xs text-muted mt-1" *ngIf="t.igvPen">Base {{t.basePen|money}} · IGV {{t.igvPen|money}}</p>
+    </button>
+  </div>
+  <div class="overflow-x-auto" *ngIf="incomeItems().length;else noIncome">
+    <table class="p-table w-full min-w-[720px]" appSort="fecha" #si="appSort">
+      <thead><tr><th sortKey="fecha">Fecha</th><th sortKey="clientName">Cliente</th><th sortKey="tipo">Tipo</th><th sortKey="referencia">Comprobante / código</th><th class="num" sortKey="basePen">Base</th><th class="num" sortKey="igvPen">IGV</th><th class="num" sortKey="totalPen">Total</th></tr></thead>
+      <tbody><tr *ngFor="let x of (incomeItems() | sortBy:si.key():si.dir()) | slice:(incomePage-1)*incomePageSize:incomePage*incomePageSize">
+        <td class="whitespace-nowrap">{{x.fecha|date:'dd/MM/yyyy'}}</td><td>{{x.clientName}}</td>
+        <td><span class="pill" [ngClass]="x.tipo==='SinComprobante'?'pill-warn':'pill-neutral'">{{incomeLabel(x.tipo)}}</span></td>
+        <td class="whitespace-nowrap">{{x.referencia || '—'}}</td>
+        <td class="num">{{x.basePen|money}}</td><td class="num">{{x.igvPen|money}}</td><td class="num font-medium">{{x.totalPen|money}}</td>
+      </tr></tbody>
+    </table>
+  </div>
+  <app-pager [total]="incomeItems().length" [page]="incomePage" [pageSize]="incomePageSize" (pageChange)="incomePage=$event"/>
+  <ng-template #noIncome><p class="px-6 py-4 text-muted text-sm">No hay ingresos en este periodo.</p></ng-template>
+</section>
+
 <div class="grid gap-6 mt-6 lg:grid-cols-2" *ngIf="taxSummary && expenses">
   <section class="card p-6">
     <div class="flex justify-between items-baseline gap-4"><h2 class="font-display text-lg font-semibold">Gastos por categoría</h2><span class="font-display text-lg tabular-nums">{{expenses.total|money}}</span></div>
@@ -147,6 +178,7 @@ export class ReportsComponent implements OnInit {
   mode: 'month' | 'year' = 'month'; period = new Date().toISOString().slice(0, 7); year = new Date().getFullYear(); currency = 'PEN';
   years = Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i);
   sales: SalesReportDto | null = null; taxSummary: TaxSummaryReportDto | null = null; expenses: ExpensesReportDto | null = null; net: NetReportDto | null = null; clients: ClientsReportDto | null = null;
+  income: IncomeReportDto | null = null; incomeFilter: IncomeType | '' = ''; incomePage = 1; readonly incomePageSize = 20;
   exporting = false; error = '';
   readonly money = (value: number) => formatMoney(value);
   readonly abs = Math.abs;
@@ -172,7 +204,11 @@ export class ReportsComponent implements OnInit {
     this.api.getExpensesReport(month, year).subscribe(x => this.expenses = x);
     this.api.getNetReport(month, year).subscribe({ next: x => this.net = x, error: () => this.error = 'No se pudo cargar el reporte.' });
     this.api.getClientsReport(month, year).subscribe(x => this.clients = x);
+    this.incomePage = 1;
+    this.api.getIncomeReport(month, year).subscribe(x => this.income = x);
   }
+  incomeItems() { return (this.income?.items ?? []).filter(x => !this.incomeFilter || x.tipo === this.incomeFilter); }
+  incomeLabel(t: IncomeType) { return INCOME_LABELS[t]; }
   /** Mayor valor del gráfico (ingresos o gastos + Renta), redondeado hacia arriba para que las líneas guía sean cifras limpias. */
   private chartMax() { const max = Math.max(1, ...(this.net?.serie ?? []).flatMap(p => [p.ventasPen, p.gastosPen + p.impuestosPen])); const step = 10 ** Math.floor(Math.log10(max)); return Math.ceil(max / step) * step; }
   /** Altura de una barra relativa al máximo del gráfico. */
@@ -190,4 +226,5 @@ export class ReportsComponent implements OnInit {
     });
   }
 }
+const INCOME_LABELS: Record<IncomeType, string> = { Factura: 'Facturas', ReciboPorHonorarios: 'Recibos por honorarios', Exterior: 'Exterior sin comprobante', SinComprobante: 'Perú sin comprobante' };
 const MONTHS = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Setiembre', 'Octubre', 'Noviembre', 'Diciembre'];

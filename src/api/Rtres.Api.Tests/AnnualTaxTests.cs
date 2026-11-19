@@ -23,12 +23,13 @@ public class AnnualTaxTests
     }
 
     [Fact]
-    public async Task Annual_renta_uses_mype_income_deductible_expenses_and_real_advances()
+    public async Task Annual_renta_uses_only_invoices_deductible_expenses_and_real_advances()
     {
         using var db = TestData.Db(out var seed);
         db.TaxSettings.Add(new TaxSettings { RentaRate = 0.01m });
         db.AnnualTaxSettings.Add(new AnnualTaxSettings { Year = Year, Uit = 5_000m });
-        AddSale(db, seed.Client.Id, new DateOnly(Year, 3, 10), 100_000m, null);                                   // sin comprobante: MYPE
+        AddSale(db, seed.Client.Id, new DateOnly(Year, 3, 10), 100_000m, TaxDocumentType.Factura);              // factura: MYPE
+        AddSale(db, seed.Client.Id, new DateOnly(Year, 3, 12), 50_000m, null);                                    // sin comprobante (exterior): no entra en la Renta
         AddSale(db, seed.Client.Id, new DateOnly(Year, 5, 10), 23_600m, TaxDocumentType.Factura, 20_000m);       // factura: MYPE (base sin IGV)
         AddSale(db, seed.Client.Id, new DateOnly(Year, 6, 10), 9_000m, TaxDocumentType.ReciboPorHonorarios, 9_000m, retention: 720m); // persona natural
         var other = db.ExpenseCategories.Add(new ExpenseCategory { Name = "Personal", IsDeductible = false }).Entity;
@@ -42,7 +43,7 @@ public class AnnualTaxTests
         db.SaveChanges();
 
         var report = Ok(await Admin(db).AnnualRentaAsync(Year, new DateTime(2026, 6, 1), CancellationToken.None));
-        Assert.Equal(120_000m, Prop(report, "ventasMypePen"));      // sin el recibo por honorarios
+        Assert.Equal(120_000m, Prop(report, "ventasMypePen"));      // solo facturas: sin el cobro del exterior ni el recibo por honorarios
         Assert.Equal(10_000m, Prop(report, "gastosDeduciblesPen"));  // sin la cuota SUNAT, la categoría no deducible ni el pago de Renta
         Assert.Equal(2_500m, Prop(report, "noDeduciblesPen"));
         Assert.Equal(110_000m, Prop(report, "rentaNetaPen"));
@@ -63,11 +64,12 @@ public class AnnualTaxTests
     }
 
     [Fact]
-    public async Task Monthly_renta_advance_excludes_fees_receipts()
+    public async Task Monthly_renta_advance_counts_only_invoices()
     {
         using var db = TestData.Db(out var seed);
         db.TaxSettings.Add(new TaxSettings { RentaRate = 0.01m });
-        AddSale(db, seed.Client.Id, new DateOnly(Year, 4, 10), 10_000m, null);
+        AddSale(db, seed.Client.Id, new DateOnly(Year, 4, 10), 10_000m, TaxDocumentType.Factura);
+        AddSale(db, seed.Client.Id, new DateOnly(Year, 4, 12), 3_000m, null); // cobro del exterior: venta, pero no entra en el pago a cuenta
         AddSale(db, seed.Client.Id, new DateOnly(Year, 4, 11), 5_000m, TaxDocumentType.ReciboPorHonorarios, 5_000m);
         var summary = Ok(await Admin(db).TaxSummaryReport(4, Year, CancellationToken.None));
         Assert.Equal((100m, 5_000m), (Prop(summary, "rentaEstimada"), Prop(summary, "ventasPersonaNaturalPen")));

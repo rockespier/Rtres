@@ -139,8 +139,8 @@ export interface ExpenseDto { isNonDeductible?:boolean; isNonDomiciledService?:b
 export interface SalesReportDto { baseImponible:number; igv:number; total:number; }
 export interface IgvMonthDto { mes:string; debitoFiscal:number; creditoFiscal:number; saldoAFavorAnterior:number; igvAPagar:number; saldoAFavorSiguiente:number; }
 /** Cobro de un cliente en Perú sin comprobante: no cuenta como venta hasta que se emita. */
-export interface UndocumentedPaymentDto { paymentId:string; clientId:string; clientName:string; fecha:string; totalPen:number; method:string; internalCode:string|null; }
-export interface TaxSummaryReportDto { ventasGravadasPen:number; ventasNoGravadasPen:number; igvEstimado:number; rentaBasePen:number; rentaEstimada:number; ventasPersonaNaturalPen:number; cobrosSinComprobante:UndocumentedPaymentDto[]; tasa:{igvRate:number;rentaRate:number}; disclaimer:string; igv:Omit<IgvMonthDto,'mes'> & { meses:IgvMonthDto[] }; }
+export interface UndocumentedPaymentDto { paymentId:string; clientId:string; clientName:string; fecha:string; amount:number; currency:string; totalPen:number; method:string; internalCode:string|null; }
+export interface TaxSummaryReportDto { ventasGravadasPen:number; ventasNoGravadasPen:number; igvEstimado:number; rentaBasePen:number; rentaEstimada:number; ventasPersonaNaturalPen:number; cobrosSinComprobante:UndocumentedPaymentDto[]; cobrosExterior:UndocumentedPaymentDto[]; tasa:{igvRate:number;rentaRate:number}; disclaimer:string; igv:Omit<IgvMonthDto,'mes'> & { meses:IgvMonthDto[] }; }
 export type PurchaseDocumentType = 'Factura'|'NotaCredito'|'NotaDebito'|'Boleta'|'ReciboPorHonorarios'|'Extranjero'|'Otro';
 export interface PurchaseDto { id:string; issueDate:string; period:string; documentType:PurchaseDocumentType; series:string; number:string; supplierTaxId:string; supplierName:string; currency:string; taxBase:number; igv:number; nonTaxable:number; total:number; exchangeRate:number; totalPen:number; igvPen:number; givesTaxCredit:boolean; taxCreditPen:number; expenseId:string|null; notes:string|null; igvWarning:boolean; }
 export interface PurchasesPageDto { items:PurchaseDto[]; totalPen:number; creditoFiscalPen:number; igvSinCreditoPen:number; }
@@ -148,6 +148,8 @@ export interface PurchaseRequest { issueDate:string; period:string|null; documen
 export interface ExpensesReportDto { total:number; porCategoria:{categoria:string;monto:number}[]; }
 export interface NetReportDto { ventasPen:number; gastosPen:number; utilidadOperativaPen:number; rentaRate:number; impuestosPen:number; utilidadNetaPen:number; margen:number; serie:{mes:string;ventasPen:number;gastosPen:number;impuestosPen:number;utilidadNetaPen:number}[]; disclaimer:string; }
 export interface ClientRankingRowDto { clientId:string; clientName:string; ingresosPen:number; porcentaje:number; porcentajeAcumulado:number; cobros:number; ultimoCobro:string; periodoAnteriorPen:number; variacionPorcentaje:number|null; }
+export type IncomeType = 'Factura'|'ReciboPorHonorarios'|'Exterior'|'SinComprobante';
+export interface IncomeReportDto { basePen:number; igvPen:number; totalPen:number; tipos:{tipo:IncomeType;cantidad:number;basePen:number;igvPen:number;totalPen:number}[]; items:{fecha:string;clientId:string;clientName:string;tipo:IncomeType;referencia:string|null;basePen:number;igvPen:number;totalPen:number}[]; }
 export interface ClientsReportDto { totalPen:number; clientes:ClientRankingRowDto[]; }
 
 @Injectable({ providedIn: 'root' })
@@ -293,6 +295,7 @@ export class PortalApiService {
   getTaxSummaryReport(month:number|undefined,year:number) { return this.http.get<TaxSummaryReportDto>(`${this.base}/admin/reports/tax-summary${query({month,year})}`); }
   getExpensesReport(month:number|undefined,year:number) { return this.http.get<ExpensesReportDto>(`${this.base}/admin/reports/expenses${query({month,year})}`); }
   getNetReport(month:number|undefined,year:number) { return this.http.get<NetReportDto>(`${this.base}/admin/reports/net${query({month,year})}`); }
+  getIncomeReport(month:number|undefined,year:number) { return this.http.get<IncomeReportDto>(`${this.base}/admin/reports/income${query({month,year})}`); }
   getClientsReport(month:number|undefined,year:number) { return this.http.get<ClientsReportDto>(`${this.base}/admin/reports/clients${query({month,year})}`); }
   exportReport(month:number|undefined,year:number) { return this.http.get(`${this.base}/admin/reports/export${query({month,year})}`,{responseType:'blob'}); }
 }

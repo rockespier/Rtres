@@ -32,7 +32,7 @@ public sealed partial class AdminController
     // ---- Renta anual ----
 
     /// <summary>
-    /// Estimación de la Renta anual de la MYPE: ventas sin IGV (comprobantes emitidos y cobros del exterior) − gastos deducibles =
+    /// Estimación de la Renta anual de la MYPE: facturas emitidas sin IGV (sin cobros del exterior ni recibos) − gastos deducibles =
     /// renta neta; impuesto por tramos; menos los pagos a cuenta (los registrados al presentar cada mes o, si faltan, el
     /// estimado). Los recibos por honorarios son del titular como persona natural: se informan aparte. Para el año en
     /// curso agrega una proyección al cierre con el promedio de los meses ya cerrados.
@@ -56,7 +56,8 @@ public sealed partial class AdminController
         var months = Enumerable.Range(1, 12).Select(m =>
         {
             var start = new DateOnly(year, m, 1); var end = start.AddMonths(1).AddDays(-1);
-            var ventas = sales.Where(x => x.Mype && x.Date >= start && x.Date <= end).Sum(x => x.BasePen);
+            // Solo facturas: ni cobros sin comprobante (exterior) ni recibos por honorarios (son del titular).
+            var ventas = sales.Where(x => x.PagoACuenta && x.Date >= start && x.Date <= end).Sum(x => x.BasePen);
             var gastos = expenses.Where(x => x.Date >= start && x.Date <= end && IsDeductible(x)).Sum(x => x.AmountPen);
             var paid = filed.TryGetValue(m, out var row) ? row.RentaPaid : null;
             var pago = m > lastMonth ? 0m : paid ?? Math.Round(ventas * settings.RentaRate, 2);

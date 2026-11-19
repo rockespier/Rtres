@@ -35,12 +35,12 @@ public class SalesReportTests
         Assert.Equal((675m, 18m, 693m), (Prop(sales, "baseImponible"), Prop(sales, "igv"), Prop(sales, "total")));
 
         var tax = Assert.IsType<OkObjectResult>(await admin.TaxSummaryReport(today.Month, today.Year, CancellationToken.None)).Value!;
-        // Pago a cuenta de la MYPE: 10 % de 475 (factura + exterior); el recibo por honorarios (200) es del titular como persona natural.
+        // Pago a cuenta de la MYPE: 10 % de 100 (solo la factura); ni el cobro del exterior (375) ni el recibo por honorarios (200) suman.
         // No gravadas: solo el exterior (375); el recibo por honorarios va aparte.
-        Assert.Equal((100m, 375m, 18m, 475m, 47.5m, 200m), (Prop(tax, "ventasGravadasPen"), Prop(tax, "ventasNoGravadasPen"), Prop(tax, "igvEstimado"), Prop(tax, "rentaBasePen"), Prop(tax, "rentaEstimada"), Prop(tax, "ventasPersonaNaturalPen")));
+        Assert.Equal((100m, 375m, 18m, 100m, 10m, 200m), (Prop(tax, "ventasGravadasPen"), Prop(tax, "ventasNoGravadasPen"), Prop(tax, "igvEstimado"), Prop(tax, "rentaBasePen"), Prop(tax, "rentaEstimada"), Prop(tax, "ventasPersonaNaturalPen")));
 
         var net = Assert.IsType<OkObjectResult>(await admin.NetReport(today.Month, today.Year, CancellationToken.None)).Value!;
-        Assert.Equal((675m, 47.5m, 627.5m), (Prop(net, "ventasPen"), Prop(net, "impuestosPen"), Prop(net, "utilidadNetaPen")));
+        Assert.Equal((675m, 10m, 665m), (Prop(net, "ventasPen"), Prop(net, "impuestosPen"), Prop(net, "utilidadNetaPen")));
     }
 
     [Fact]
@@ -64,7 +64,7 @@ public class SalesReportTests
         var admin = Admin(db);
 
         var tax = Assert.IsType<OkObjectResult>(await admin.TaxSummaryReport(10, 2026, CancellationToken.None)).Value!;
-        Assert.Equal((500m, 350m, 90m, 850m), (Prop(tax, "ventasGravadasPen"), Prop(tax, "ventasNoGravadasPen"), Prop(tax, "igvEstimado"), Prop(tax, "rentaBasePen")));
+        Assert.Equal((500m, 350m, 90m, 500m), (Prop(tax, "ventasGravadasPen"), Prop(tax, "ventasNoGravadasPen"), Prop(tax, "igvEstimado"), Prop(tax, "rentaBasePen")));
         var missing = Assert.Single((System.Collections.IEnumerable)tax.GetType().GetProperty("cobrosSinComprobante")!.GetValue(tax)!);
         Assert.Equal((pending.Id, 236m), ((Guid)missing.GetType().GetProperty("paymentId")!.GetValue(missing)!, Prop(missing, "totalPen")));
 
@@ -73,6 +73,12 @@ public class SalesReportTests
 
         var net = Assert.IsType<OkObjectResult>(await admin.NetReport(10, 2026, CancellationToken.None)).Value!;
         Assert.Equal(850m, Prop(net, "ventasPen"));
+
+        // Reporte de ingresos: todo cuenta, también el cobro en Perú sin comprobante.
+        var income = Assert.IsType<OkObjectResult>(await admin.IncomeReport(10, 2026, CancellationToken.None)).Value!;
+        Assert.Equal((1176m, 90m), (Prop(income, "totalPen"), Prop(income, "igvPen")));
+        var tipos = ((System.Collections.IEnumerable)income.GetType().GetProperty("tipos")!.GetValue(income)!).Cast<object>().ToDictionary(x => (string)x.GetType().GetProperty("tipo")!.GetValue(x)!, x => Prop(x, "totalPen"));
+        Assert.Equal(new Dictionary<string, decimal> { ["Factura"] = 590m, ["ReciboPorHonorarios"] = 0m, ["Exterior"] = 350m, ["SinComprobante"] = 236m }, tipos);
     }
 
     private static ClientProduct AddProduct(RtresDbContext db, Guid clientId, Guid projectId, TaxDocumentType taxType)

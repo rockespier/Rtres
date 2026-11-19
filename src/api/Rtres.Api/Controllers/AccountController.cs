@@ -512,7 +512,7 @@ public sealed partial class AdminController(RtresDbContext db, PayPalCheckoutSer
         await db.SaveChangesAsync(ct); await db.Entry(expense).Reference(x => x.Category).LoadAsync(ct); return Ok(ExpenseDto(expense));
     }
 
-    private const string TaxDisclaimer = "Estimación calculada con las tasas configuradas por el usuario en Configuración de tasas — no es una liquidación oficial ante SUNAT. El IGV y la Renta salen de los comprobantes emitidos en el mes (por su fecha de emisión) y de los cobros del exterior; las ventas al exterior y los recibos por honorarios no llevan IGV. Un cobro de un cliente en Perú sin comprobante no cuenta hasta que se emita. El régimen tributario real (RER/MYPE/General) puede calcular la Renta sobre una base distinta (utilidad neta, no ventas brutas); confirma con tu contador antes de declarar.";
+    private const string TaxDisclaimer = "Estimación calculada con las tasas configuradas por el usuario en Configuración de tasas — no es una liquidación oficial ante SUNAT. El IGV y el pago a cuenta de la Renta salen solo de los comprobantes emitidos en el mes (por su fecha de emisión); los cobros del exterior suman a las ventas pero no al pago a cuenta; las ventas al exterior y los recibos por honorarios no llevan IGV. Un cobro de un cliente en Perú sin comprobante no cuenta hasta que se emita. El régimen tributario real (RER/MYPE/General) puede calcular la Renta sobre una base distinta (utilidad neta, no ventas brutas); confirma con tu contador antes de declarar.";
 
     /// <summary>Periodo de un reporte: el mes indicado o, sin mes, el año completo.</summary>
     private static (DateOnly From, DateOnly To) Period(int? month, int year) =>
@@ -525,14 +525,17 @@ public sealed partial class AdminController(RtresDbContext db, PayPalCheckoutSer
     /// <summary>
     /// <see cref="PersonaNatural"/>: cobro con recibo por honorarios, ingreso de 4ta categoría del titular como persona natural.
     /// No entra en la Renta de la MYPE (facturas y cobros del exterior) ni en su pago a cuenta.
+    /// <see cref="Documented"/>: la venta sale de un comprobante emitido; los cobros del exterior no lo tienen.
     /// </summary>
-    private sealed record Sale(Guid ClientId, DateOnly Date, decimal BasePen, decimal IgvPen, bool Gravada, decimal RetentionPen, bool PersonaNatural = false)
+    private sealed record Sale(Guid ClientId, DateOnly Date, decimal BasePen, decimal IgvPen, bool Gravada, decimal RetentionPen, bool PersonaNatural = false, bool Documented = false, string? Reference = null)
     {
         public bool Mype => !PersonaNatural;
+        /// <summary>Base del pago a cuenta mensual de la Renta: solo comprobantes de la MYPE (facturas); ni cobros sin comprobante ni recibos por honorarios.</summary>
+        public bool PagoACuenta => Documented && !PersonaNatural;
     }
 
-    /// <summary>Cobro de un cliente en Perú que aún no tiene comprobante: no cuenta como venta hasta que se emita.</summary>
-    private sealed record UndocumentedPayment(Guid PaymentId, Guid ClientId, DateOnly Date, decimal AmountPen, string Method, string? InternalCode);
+    /// <summary>Cobro sin comprobante: del exterior (cuenta como venta no gravada) o de un cliente en Perú (no cuenta hasta que se emita).</summary>
+    private sealed record UndocumentedPayment(Guid PaymentId, Guid ClientId, DateOnly Date, decimal Amount, string Currency, decimal AmountPen, string Method, string? InternalCode);
 
     /// <summary>
     /// Ventas del periodo en PEN, como se declaran a SUNAT: cada comprobante emitido cuenta en el mes de su fecha de emisión
@@ -540,7 +543,7 @@ public sealed partial class AdminController(RtresDbContext db, PayPalCheckoutSer
     /// del exterior (sin comprobante peruano) en el día de Lima en que se cobró, todo como base sin IGV. Los cobros de clientes
     /// en Perú sin comprobante quedan fuera y se devuelven aparte para avisar. La retención del recibo es Renta ya pagada.
     /// </summary>
-    private async Task<(List<Sale> Sales, List<UndocumentedPayment> Undocumented)> LedgerAsync(DateOnly from, DateOnly to, CancellationToken ct)
+    private async Task<(List<Sale> Sales, List<UndocumentedPayment> Undocumented, List<UndocumentedPayment> Exterior)> LedgerAsync(DateOnly from, DateOnly to, CancellationToken ct)
     {
         var documents = await db.TaxDocuments.Where(x => x.IssueDate >= from && x.IssueDate <= to && x.TotalAmount > 0)
             .Select(x => new { Document = x, Payment = db.PaymentTransactions.Where(p => p.Id == x.PaymentTransactionId).Select(p => new { p.Amount, p.AmountPen }).FirstOrDefault() }).ToListAsync(ct);
@@ -551,22 +554,23 @@ public sealed partial class AdminController(RtresDbContext db, PayPalCheckoutSer
             var rate = x.Payment is { Amount: > 0 } p ? p.AmountPen / p.Amount : await db.RateToPenAsync(d.Currency, d.IssueDate, ct);
             var isFactura = d.Type == TaxDocumentType.Factura;
             var basePen = (isFactura ? d.BaseAmount : d.TotalAmount) * rate;
-            sales.Add(new Sale(d.ClientId, d.IssueDate, basePen, d.TotalAmount * rate - basePen, isFactura, (d.RetentionAmount ?? 0m) * rate, d.Type == TaxDocumentType.ReciboPorHonorarios));
+            sales.Add(new Sale(d.ClientId, d.IssueDate, basePen, d.TotalAmount * rate - basePen, isFactura, (d.RetentionAmount ?? 0m) * rate, d.Type == TaxDocumentType.ReciboPorHonorarios, Documented: true, Reference: $"{d.Series}-{d.Number}"));
         }
 
         // Día de Lima: el periodo empieza y termina a las 00:00 de Lima (05:00 UTC).
         var startUtc = from.ToDateTime(TimeOnly.MinValue).AddHours(5); var endUtc = to.AddDays(1).ToDateTime(TimeOnly.MinValue).AddHours(5);
         var payments = await db.PaymentTransactions.Where(x => x.CreatedAt >= startUtc && x.CreatedAt < endUtc && !db.TaxDocuments.Any(d => d.PaymentTransactionId == x.Id && d.TotalAmount > 0))
-            .Select(x => new { x.Id, x.ClientId, x.CreatedAt, x.AmountPen, x.Method, x.InternalCode, Peru = db.Clients.Where(c => c.Id == x.ClientId).Select(c => c.RequiresTaxDocument).FirstOrDefault() }).ToListAsync(ct);
-        var undocumented = new List<UndocumentedPayment>();
+            .Select(x => new { x.Id, x.ClientId, x.CreatedAt, x.Amount, x.Currency, x.AmountPen, x.Method, x.InternalCode, Peru = db.Clients.Where(c => c.Id == x.ClientId).Select(c => c.RequiresTaxDocument).FirstOrDefault() }).ToListAsync(ct);
+        List<UndocumentedPayment> undocumented = [], exterior = [];
         foreach (var x in payments)
         {
             var date = TaxDocumentService.LimaToday(x.CreatedAt);
             // Una remesa es del exterior aunque el cliente esté marcado para comprobante.
-            if (x.Peru && x.Method != PaymentMethods.Remesa) undocumented.Add(new UndocumentedPayment(x.Id, x.ClientId, date, x.AmountPen, x.Method, x.InternalCode));
-            else sales.Add(new Sale(x.ClientId, date, x.AmountPen, 0m, false, 0m));
+            var row = new UndocumentedPayment(x.Id, x.ClientId, date, x.Amount, x.Currency, x.AmountPen, x.Method, x.InternalCode);
+            if (x.Peru && x.Method != PaymentMethods.Remesa) undocumented.Add(row);
+            else { exterior.Add(row); sales.Add(new Sale(x.ClientId, date, x.AmountPen, 0m, false, 0m, Reference: x.InternalCode)); }
         }
-        return (sales, undocumented);
+        return (sales, undocumented, exterior);
     }
 
     private async Task<List<Sale>> SalesAsync(DateOnly from, DateOnly to, CancellationToken ct) => (await LedgerAsync(from, to, ct)).Sales;
@@ -587,18 +591,20 @@ public sealed partial class AdminController(RtresDbContext db, PayPalCheckoutSer
     {
         var settings = await TaxSettingsRow(ct);
         var (from, to) = Period(month, year);
-        var (sales, undocumented) = await LedgerAsync(from, to, ct);
-        decimal gravadasPen = sales.Where(x => x.Gravada).Sum(x => x.BasePen), rentaBasePen = sales.Where(x => x.Mype).Sum(x => x.BasePen);
+        var (sales, undocumented, exterior) = await LedgerAsync(from, to, ct);
+        decimal gravadasPen = sales.Where(x => x.Gravada).Sum(x => x.BasePen), rentaBasePen = sales.Where(x => x.PagoACuenta).Sum(x => x.BasePen);
         var igv = (await IgvMonthsAsync(to, ct)).Where(x => x.Month >= from).ToList();
-        var clientIds = undocumented.Select(x => x.ClientId).Distinct().ToList();
+        var clientIds = undocumented.Concat(exterior).Select(x => x.ClientId).Distinct().ToList();
         var names = await db.Clients.Where(x => clientIds.Contains(x.Id)).ToDictionaryAsync(x => x.Id, x => x.CompanyName, ct);
-        // El pago a cuenta de la MYPE se estima sobre sus ventas sin IGV (facturas y cobros del exterior); los recibos por honorarios son del titular.
+        // El pago a cuenta de la MYPE se estima solo sobre sus facturas emitidas (sin IGV): ni cobros sin comprobante ni recibos por honorarios (son del titular).
         return Ok(new
         {
-            ventasGravadasPen = Math.Round(gravadasPen, 2), ventasNoGravadasPen = Math.Round(rentaBasePen - gravadasPen, 2), igvEstimado = Math.Round(sales.Sum(x => x.IgvPen), 2),
+            ventasGravadasPen = Math.Round(gravadasPen, 2), ventasNoGravadasPen = Math.Round(sales.Where(x => x.Mype && !x.Gravada).Sum(x => x.BasePen), 2), igvEstimado = Math.Round(sales.Sum(x => x.IgvPen), 2),
             rentaBasePen = Math.Round(rentaBasePen, 2), rentaEstimada = Math.Round(rentaBasePen * settings.RentaRate, 2), ventasPersonaNaturalPen = Math.Round(sales.Where(x => x.PersonaNatural).Sum(x => x.BasePen), 2),
             // Cobros de clientes en Perú sin comprobante: no cuentan como venta hasta que se emita su comprobante.
-            cobrosSinComprobante = undocumented.OrderBy(x => x.Date).Select(x => new { paymentId = x.PaymentId, clientId = x.ClientId, clientName = names.GetValueOrDefault(x.ClientId) ?? "(cliente eliminado)", fecha = x.Date, totalPen = Math.Round(x.AmountPen, 2), method = x.Method, internalCode = x.InternalCode }),
+            cobrosSinComprobante = undocumented.OrderBy(x => x.Date).Select(x => PaymentRowDto(x, names)),
+            // Cobros del exterior: el detalle de las ventas no gravadas, que no aparecen en la tabla de comprobantes.
+            cobrosExterior = exterior.OrderBy(x => x.Date).Select(x => PaymentRowDto(x, names)),
             tasa = new { igvRate = settings.IgvRate, rentaRate = settings.RentaRate }, disclaimer = TaxDisclaimer,
             // Cascada del IGV: débito (ventas) − crédito fiscal (compras) − saldo a favor del mes anterior.
             igv = new
@@ -610,6 +616,8 @@ public sealed partial class AdminController(RtresDbContext db, PayPalCheckoutSer
             },
         });
     }
+
+    private static object PaymentRowDto(UndocumentedPayment x, Dictionary<Guid, string> names) => new { paymentId = x.PaymentId, clientId = x.ClientId, clientName = names.GetValueOrDefault(x.ClientId) ?? "(cliente eliminado)", fecha = x.Date, amount = x.Amount, currency = x.Currency, totalPen = Math.Round(x.AmountPen, 2), method = x.Method, internalCode = x.InternalCode };
 
     internal sealed record IgvMonth(DateOnly Month, decimal Debito, decimal Credito, decimal SaldoAnterior, decimal APagar, decimal SaldoSiguiente);
 
@@ -690,7 +698,7 @@ public sealed partial class AdminController(RtresDbContext db, PayPalCheckoutSer
     {
         var ventas = sales.Sum(x => x.BasePen);
         var gastos = expenses.Where(x => x.Category?.IsIncomeTax != true).Sum(x => x.AmountPen);
-        var impuestos = sales.Where(x => x.Mype).Sum(x => x.BasePen) * rentaRate; // pago a cuenta de la MYPE
+        var impuestos = sales.Where(x => x.PagoACuenta).Sum(x => x.BasePen) * rentaRate; // pago a cuenta de la MYPE: solo facturas emitidas
         return (ventas, gastos, impuestos, ventas - gastos - impuestos);
     }
 
@@ -700,6 +708,35 @@ public sealed partial class AdminController(RtresDbContext db, PayPalCheckoutSer
     {
         var (total, clientes) = await ClientRankingAsync(month, year, ct);
         return Ok(new { totalPen = total, clientes });
+    }
+
+    /// <summary>
+    /// Reporte de ingresos: todo lo que entró en el periodo, por tipo — facturas, recibos por honorarios, cobros del exterior y
+    /// cobros de clientes en Perú aún sin comprobante. A diferencia de los impuestos, aquí sí cuenta todo.
+    /// </summary>
+    [HttpGet("reports/income")]
+    public async Task<ActionResult> IncomeReport(int? month, int year, CancellationToken ct)
+    {
+        var (from, to) = Period(month, year);
+        var (sales, undocumented, _) = await LedgerAsync(from, to, ct);
+        var rows = sales.Select(x => new IncomeRow(x.Date, x.ClientId, x.Gravada ? IncomeTypes.Factura : x.PersonaNatural ? IncomeTypes.Recibo : IncomeTypes.Exterior, x.Reference, x.BasePen, x.IgvPen))
+            .Concat(undocumented.Select(x => new IncomeRow(x.Date, x.ClientId, IncomeTypes.SinComprobante, x.InternalCode, x.AmountPen, 0m))).ToList();
+        var ids = rows.Select(x => x.ClientId).Distinct().ToList();
+        var names = await db.Clients.Where(x => ids.Contains(x.Id)).ToDictionaryAsync(x => x.Id, x => x.CompanyName, ct);
+        return Ok(new
+        {
+            basePen = Math.Round(rows.Sum(x => x.BasePen), 2), igvPen = Math.Round(rows.Sum(x => x.IgvPen), 2), totalPen = Math.Round(rows.Sum(x => x.BasePen + x.IgvPen), 2),
+            tipos = IncomeTypes.All.Select(t => rows.Where(r => r.Tipo == t).ToList()).Select((g, i) => new { tipo = IncomeTypes.All[i], cantidad = g.Count, basePen = Math.Round(g.Sum(x => x.BasePen), 2), igvPen = Math.Round(g.Sum(x => x.IgvPen), 2), totalPen = Math.Round(g.Sum(x => x.BasePen + x.IgvPen), 2) }),
+            items = rows.OrderBy(x => x.Date).Select(x => new { fecha = x.Date, clientId = x.ClientId, clientName = names.GetValueOrDefault(x.ClientId) ?? "(cliente eliminado)", tipo = x.Tipo, referencia = x.Referencia, basePen = Math.Round(x.BasePen, 2), igvPen = Math.Round(x.IgvPen, 2), totalPen = Math.Round(x.BasePen + x.IgvPen, 2) }),
+        });
+    }
+
+    private sealed record IncomeRow(DateOnly Date, Guid ClientId, string Tipo, string? Referencia, decimal BasePen, decimal IgvPen);
+
+    private static class IncomeTypes
+    {
+        public const string Factura = "Factura", Recibo = "ReciboPorHonorarios", Exterior = "Exterior", SinComprobante = "SinComprobante";
+        public static readonly string[] All = [Factura, Recibo, Exterior, SinComprobante];
     }
 
     private sealed record ClientRankingRow(Guid ClientId, string ClientName, decimal IngresosPen, decimal Porcentaje, decimal PorcentajeAcumulado, int Cobros, DateOnly UltimoCobro, decimal PeriodoAnteriorPen, decimal? VariacionPorcentaje);
