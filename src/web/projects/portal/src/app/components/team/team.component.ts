@@ -38,21 +38,50 @@ const EMPTY_GUID = '00000000-0000-0000-0000-000000000000';
     confirmLabel="Restablecer" busyLabel="Restableciendo…" [busy]="resetBusy" [error]="resetError"
     (confirmed)="resetAccess(t)" (cancelled)="resetTarget = null"/>
 
+  <div class="fixed inset-0 z-50 bg-black/40 grid place-items-center p-4" *ngIf="editing as e">
+    <form class="card p-6 w-full max-w-lg space-y-3 max-h-[90vh] overflow-y-auto" (ngSubmit)="save()">
+      <div>
+        <h2 class="font-display text-xl">Editar usuario</h2>
+        <p class="text-sm text-muted break-all">{{ e.user.name }} · {{ e.user.email }}</p>
+      </div>
+      <label class="field-label">Área<input class="field" maxlength="100" [(ngModel)]="e.area" name="area"></label>
+      <label class="field-label">Cargo<input class="field" maxlength="100" [(ngModel)]="e.jobTitle" name="jobTitle"></label>
+      <label class="field-label">Jefe inmediato<select class="field" [(ngModel)]="e.managerId" name="managerId"><option value="">Sin jefe</option><option *ngIf="inactiveManager(e.user) as m" [value]="m.id">{{ m.name }} (inactivo)</option><option *ngFor="let m of managerOptions(e.user)" [value]="m.id">{{ m.name }}</option></select></label>
+      <label class="field-label">Rol<select class="field" [(ngModel)]="e.role" name="role"><option value="Cliente">Miembro: solo tickets y su cuenta</option><option value="Admin">Admin: todo (servicios, pagos y equipo)</option></select></label>
+      <p *ngIf="editError" class="text-sm text-red-600">{{ editError }}</p>
+      <div class="flex gap-2 pt-1">
+        <button class="btn btn-primary btn-sm" [disabled]="saving">{{ saving ? 'Guardando…' : 'Guardar' }}</button>
+        <button type="button" class="btn btn-ghost btn-sm" (click)="editing = null">Cancelar</button>
+      </div>
+    </form>
+  </div>
+
   <div class="card mt-6 overflow-x-auto">
-    <table class="p-table p-table-dense w-full min-w-[1040px]" appSort #s="appSort">
-      <thead><tr><th sortKey="name">Usuario</th><th sortKey="area">Área</th><th sortKey="jobTitle">Cargo</th><th [sortKey]="managerName">Jefe inmediato</th><th sortKey="role">Rol</th><th sortKey="isActive">Estado</th><th></th></tr></thead>
+    <table class="p-table w-full min-w-[820px]" appSort="name" #s="appSort">
+      <thead><tr><th sortKey="name">Usuario</th><th sortKey="area">Área y cargo</th><th [sortKey]="managerName">Jefe inmediato</th><th sortKey="role">Rol</th><th sortKey="isActive">Estado</th><th><span class="sr-only">Acciones</span></th></tr></thead>
       <tbody>
-        <tr *ngFor="let x of users | sortBy:s.key():s.dir()">
-          <td class="min-w-[220px]">
+        <tr *ngFor="let x of users | sortBy:s.key():s.dir()" class="align-top">
+          <td>
             <div class="font-medium">{{ x.name }}</div>
             <div class="text-muted text-xs break-all">{{ x.email }}</div>
           </td>
-          <td class="min-w-[150px]"><input class="field field-sm" maxlength="100" [(ngModel)]="x.area" (change)="update(x, { area: x.area ?? '' })" aria-label="Área" [title]="x.area ?? ''"></td>
-          <td class="min-w-[170px]"><input class="field field-sm" maxlength="100" [(ngModel)]="x.jobTitle" (change)="update(x, { jobTitle: x.jobTitle ?? '' })" aria-label="Cargo" [title]="x.jobTitle ?? ''"></td>
-          <td class="min-w-[190px]"><select class="field field-sm" [ngModel]="x.managerId ?? ''" (ngModelChange)="updateManager(x, $event)" aria-label="Jefe inmediato"><option value="">Sin jefe</option><option *ngIf="inactiveManager(x) as m" [value]="m.id">{{ m.name }} (inactivo)</option><option *ngFor="let m of managerOptions(x)" [value]="m.id">{{ m.name }}</option></select></td>
-          <td class="min-w-[150px]"><select class="field field-sm" [(ngModel)]="x.role" (change)="updateRole(x)" aria-label="Rol"><option value="Cliente">Miembro: tickets</option><option value="Admin">Admin: todo</option></select></td>
+          <td>
+            <div>{{ x.area || '—' }}</div>
+            <div class="text-muted text-xs">{{ x.jobTitle || 'Sin cargo' }}</div>
+          </td>
+          <td>{{ managerName(x) || '—' }}</td>
+          <td class="whitespace-nowrap">
+            <span class="pill" [class.pill-info]="x.role === 'Admin'" [class.pill-neutral]="x.role !== 'Admin'">{{ x.role === 'Admin' ? 'Admin' : 'Miembro' }}</span>
+            <div class="text-muted text-xs mt-1">{{ x.role === 'Admin' ? 'Ve todo' : 'Tickets y su cuenta' }}</div>
+          </td>
           <td class="whitespace-nowrap"><span class="pill" [class.pill-success]="x.isActive" [class.pill-neutral]="!x.isActive">{{ x.isActive ? 'Activo' : 'Inactivo' }}</span></td>
-          <td class="whitespace-nowrap text-right"><button type="button" class="btn btn-ghost btn-sm" *ngIf="x.isActive" (click)="resetTarget = x; resetError = ''" title="Envía una contraseña temporal nueva a quien olvidó la suya">Restablecer acceso</button><button type="button" class="btn btn-ghost btn-sm" (click)="toggle(x)">{{ x.isActive ? 'Desactivar' : 'Activar' }}</button></td>
+          <td>
+            <div class="flex flex-wrap justify-end gap-1">
+              <button type="button" class="btn btn-ghost btn-sm" (click)="openEdit(x)" [attr.aria-label]="'Editar ' + x.name">Editar</button>
+              <button type="button" class="btn btn-ghost btn-sm" *ngIf="x.isActive" (click)="resetTarget = x; resetError = ''" title="Envía una contraseña temporal nueva a quien olvidó la suya">Restablecer acceso</button>
+              <button type="button" class="btn btn-ghost btn-sm" (click)="toggle(x)">{{ x.isActive ? 'Desactivar' : 'Activar' }}</button>
+            </div>
+          </td>
         </tr>
       </tbody>
     </table>
@@ -71,7 +100,12 @@ export class TeamComponent implements OnInit {
   resetError = '';
   resetResult: { name: string; email: string; temporaryPassword: string; emailSent: boolean } | null = null;
 
-  /** Ordena la columna Jefe inmediato por el nombre del jefe. */
+  /** Usuario en edición: copia de sus campos hasta guardar. */
+  editing: { user: TeamUserDto; area: string; jobTitle: string; managerId: string; role: TeamUserDto['role'] } | null = null;
+  saving = false;
+  editError = '';
+
+  /** Nombre del jefe inmediato; también ordena esa columna. */
   managerName = (x: TeamUserDto) => this.users.find(u => u.id === x.managerId)?.name ?? '';
 
   ngOnInit(): void {
@@ -93,15 +127,21 @@ export class TeamComponent implements OnInit {
     return this.users.find(u => u.id === user.managerId && !u.isActive);
   }
 
-  updateManager(user: TeamUserDto, managerId: string): void {
-    user.managerId = managerId || null;
-    this.update(user, { managerId: managerId || EMPTY_GUID });
+  openEdit(user: TeamUserDto): void {
+    this.editError = '';
+    this.editing = { user, area: user.area ?? '', jobTitle: user.jobTitle ?? '', managerId: user.managerId ?? '', role: user.role };
   }
 
-  /** Guarda un cambio; si el API lo rechaza muestra su mensaje y recarga para que la tabla refleje la base. */
-  update(user: TeamUserDto, body: { area?: string; jobTitle?: string; managerId?: string }): void {
-    this.error = '';
-    this.api.updateTeam(user.id, body).subscribe({ error: e => { this.error = e?.error?.message ?? 'No se pudo guardar el cambio.'; this.load(); } });
+  /** Guarda todos los campos en un solo cambio; si el API lo rechaza, el diálogo queda abierto con su mensaje. */
+  save(): void {
+    const e = this.editing;
+    if (!e) return;
+    this.saving = true;
+    this.editError = '';
+    this.api.updateTeam(e.user.id, { area: e.area, jobTitle: e.jobTitle, managerId: e.managerId || EMPTY_GUID, role: e.role }).subscribe({
+      next: () => { this.saving = false; this.editing = null; this.load(); },
+      error: err => { this.saving = false; this.editError = err?.error?.message ?? 'No se pudo guardar el cambio.'; },
+    });
   }
 
   private reportsTo(user: TeamUserDto, managerId: string): boolean {
@@ -126,11 +166,8 @@ export class TeamComponent implements OnInit {
     void navigator.clipboard?.writeText(text);
   }
 
-  updateRole(user: TeamUserDto): void {
-    this.api.updateTeam(user.id, { role: user.role }).subscribe();
-  }
-
   toggle(user: TeamUserDto): void {
-    this.api.updateTeam(user.id, { isActive: !user.isActive }).subscribe(() => { user.isActive = !user.isActive; });
+    this.error = '';
+    this.api.updateTeam(user.id, { isActive: !user.isActive }).subscribe({ next: () => { user.isActive = !user.isActive; }, error: e => { this.error = e?.error?.message ?? 'No se pudo guardar el cambio.'; } });
   }
 }
