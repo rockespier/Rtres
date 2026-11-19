@@ -148,6 +148,8 @@ export interface PurchaseRequest { issueDate:string; period:string|null; documen
 export interface ExpensesReportDto { total:number; porCategoria:{categoria:string;monto:number}[]; }
 export interface NetReportDto { ventasPen:number; gastosPen:number; utilidadOperativaPen:number; rentaRate:number; impuestosPen:number; utilidadNetaPen:number; margen:number; serie:{mes:string;ventasPen:number;gastosPen:number;impuestosPen:number;utilidadNetaPen:number}[]; disclaimer:string; }
 export interface ClientRankingRowDto { clientId:string; clientName:string; ingresosPen:number; porcentaje:number; porcentajeAcumulado:number; cobros:number; ultimoCobro:string; periodoAnteriorPen:number; variacionPorcentaje:number|null; }
+export type IncomeType = 'Factura'|'ReciboPorHonorarios'|'Exterior'|'SinComprobante';
+export interface IncomeReportDto { basePen:number; igvPen:number; totalPen:number; tipos:{tipo:IncomeType;cantidad:number;basePen:number;igvPen:number;totalPen:number}[]; items:{fecha:string;clientId:string;clientName:string;tipo:IncomeType;referencia:string|null;basePen:number;igvPen:number;totalPen:number}[]; }
 export interface ClientsReportDto { totalPen:number; clientes:ClientRankingRowDto[]; }
 
 @Injectable({ providedIn: 'root' })
@@ -293,6 +295,7 @@ export class PortalApiService {
   getTaxSummaryReport(month:number|undefined,year:number) { return this.http.get<TaxSummaryReportDto>(`${this.base}/admin/reports/tax-summary${query({month,year})}`); }
   getExpensesReport(month:number|undefined,year:number) { return this.http.get<ExpensesReportDto>(`${this.base}/admin/reports/expenses${query({month,year})}`); }
   getNetReport(month:number|undefined,year:number) { return this.http.get<NetReportDto>(`${this.base}/admin/reports/net${query({month,year})}`); }
+  getIncomeReport(month:number|undefined,year:number) { return this.http.get<IncomeReportDto>(`${this.base}/admin/reports/income${query({month,year})}`); }
   getClientsReport(month:number|undefined,year:number) { return this.http.get<ClientsReportDto>(`${this.base}/admin/reports/clients${query({month,year})}`); }
   exportReport(month:number|undefined,year:number) { return this.http.get(`${this.base}/admin/reports/export${query({month,year})}`,{responseType:'blob'}); }
 }

@@ -73,6 +73,12 @@ public class SalesReportTests
 
         var net = Assert.IsType<OkObjectResult>(await admin.NetReport(10, 2026, CancellationToken.None)).Value!;
         Assert.Equal(850m, Prop(net, "ventasPen"));
+
+        // Reporte de ingresos: todo cuenta, también el cobro en Perú sin comprobante.
+        var income = Assert.IsType<OkObjectResult>(await admin.IncomeReport(10, 2026, CancellationToken.None)).Value!;
+        Assert.Equal((1176m, 90m), (Prop(income, "totalPen"), Prop(income, "igvPen")));
+        var tipos = ((System.Collections.IEnumerable)income.GetType().GetProperty("tipos")!.GetValue(income)!).Cast<object>().ToDictionary(x => (string)x.GetType().GetProperty("tipo")!.GetValue(x)!, x => Prop(x, "totalPen"));
+        Assert.Equal(new Dictionary<string, decimal> { ["Factura"] = 590m, ["ReciboPorHonorarios"] = 0m, ["Exterior"] = 350m, ["SinComprobante"] = 236m }, tipos);
     }
 
     private static ClientProduct AddProduct(RtresDbContext db, Guid clientId, Guid projectId, TaxDocumentType taxType)

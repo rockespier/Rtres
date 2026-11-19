@@ -46,7 +46,7 @@ const MONTHS = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 
         <div class="p-6">
           <p class="stat-label">Cálculo a la fecha</p>
           <div class="rep-statement mt-4">
-            <div class="rep-line"><span>Ventas sin IGV de la MYPE <span class="block text-xs text-muted">Facturas y cobros sin comprobante</span></span><span class="tabular-nums">{{ d.ventasMypePen | money }}</span></div>
+            <div class="rep-line"><span>Ventas sin IGV de la MYPE <span class="block text-xs text-muted">Solo facturas emitidas (sin cobros del exterior ni recibos por honorarios)</span></span><span class="tabular-nums">{{ d.ventasMypePen | money }}</span></div>
             <div class="rep-line"><span>− Gastos deducibles</span><span class="tabular-nums">{{ d.gastosDeduciblesPen | money }}</span></div>
             <div class="rep-line rep-subtotal"><span>Renta neta imponible</span><span class="tabular-nums">{{ d.rentaNetaPen | money }}</span></div>
             <div class="rep-line"><span>Tramo 1: {{ d.impuesto.lowBase | money }} × {{ d.tasas.lowRate | percent:'1.0-1' }}</span><span class="tabular-nums">{{ d.impuesto.lowTax | money }}</span></div>

@@ -527,7 +527,7 @@ public sealed partial class AdminController(RtresDbContext db, PayPalCheckoutSer
     /// No entra en la Renta de la MYPE (facturas y cobros del exterior) ni en su pago a cuenta.
     /// <see cref="Documented"/>: la venta sale de un comprobante emitido; los cobros del exterior no lo tienen.
     /// </summary>
-    private sealed record Sale(Guid ClientId, DateOnly Date, decimal BasePen, decimal IgvPen, bool Gravada, decimal RetentionPen, bool PersonaNatural = false, bool Documented = false)
+    private sealed record Sale(Guid ClientId, DateOnly Date, decimal BasePen, decimal IgvPen, bool Gravada, decimal RetentionPen, bool PersonaNatural = false, bool Documented = false, string? Reference = null)
     {
         public bool Mype => !PersonaNatural;
         /// <summary>Base del pago a cuenta mensual de la Renta: solo comprobantes de la MYPE (facturas); ni cobros sin comprobante ni recibos por honorarios.</summary>
@@ -554,7 +554,7 @@ public sealed partial class AdminController(RtresDbContext db, PayPalCheckoutSer
             var rate = x.Payment is { Amount: > 0 } p ? p.AmountPen / p.Amount : await db.RateToPenAsync(d.Currency, d.IssueDate, ct);
             var isFactura = d.Type == TaxDocumentType.Factura;
             var basePen = (isFactura ? d.BaseAmount : d.TotalAmount) * rate;
-            sales.Add(new Sale(d.ClientId, d.IssueDate, basePen, d.TotalAmount * rate - basePen, isFactura, (d.RetentionAmount ?? 0m) * rate, d.Type == TaxDocumentType.ReciboPorHonorarios, Documented: true));
+            sales.Add(new Sale(d.ClientId, d.IssueDate, basePen, d.TotalAmount * rate - basePen, isFactura, (d.RetentionAmount ?? 0m) * rate, d.Type == TaxDocumentType.ReciboPorHonorarios, Documented: true, Reference: $"{d.Series}-{d.Number}"));
         }
 
         // Día de Lima: el periodo empieza y termina a las 00:00 de Lima (05:00 UTC).
@@ -568,7 +568,7 @@ public sealed partial class AdminController(RtresDbContext db, PayPalCheckoutSer
             // Una remesa es del exterior aunque el cliente esté marcado para comprobante.
             var row = new UndocumentedPayment(x.Id, x.ClientId, date, x.Amount, x.Currency, x.AmountPen, x.Method, x.InternalCode);
             if (x.Peru && x.Method != PaymentMethods.Remesa) undocumented.Add(row);
-            else { exterior.Add(row); sales.Add(new Sale(x.ClientId, date, x.AmountPen, 0m, false, 0m)); }
+            else { exterior.Add(row); sales.Add(new Sale(x.ClientId, date, x.AmountPen, 0m, false, 0m, Reference: x.InternalCode)); }
         }
         return (sales, undocumented, exterior);
     }
@@ -708,6 +708,35 @@ public sealed partial class AdminController(RtresDbContext db, PayPalCheckoutSer
     {
         var (total, clientes) = await ClientRankingAsync(month, year, ct);
         return Ok(new { totalPen = total, clientes });
+    }
+
+    /// <summary>
+    /// Reporte de ingresos: todo lo que entró en el periodo, por tipo — facturas, recibos por honorarios, cobros del exterior y
+    /// cobros de clientes en Perú aún sin comprobante. A diferencia de los impuestos, aquí sí cuenta todo.
+    /// </summary>
+    [HttpGet("reports/income")]
+    public async Task<ActionResult> IncomeReport(int? month, int year, CancellationToken ct)
+    {
+        var (from, to) = Period(month, year);
+        var (sales, undocumented, _) = await LedgerAsync(from, to, ct);
+        var rows = sales.Select(x => new IncomeRow(x.Date, x.ClientId, x.Gravada ? IncomeTypes.Factura : x.PersonaNatural ? IncomeTypes.Recibo : IncomeTypes.Exterior, x.Reference, x.BasePen, x.IgvPen))
+            .Concat(undocumented.Select(x => new IncomeRow(x.Date, x.ClientId, IncomeTypes.SinComprobante, x.InternalCode, x.AmountPen, 0m))).ToList();
+        var ids = rows.Select(x => x.ClientId).Distinct().ToList();
+        var names = await db.Clients.Where(x => ids.Contains(x.Id)).ToDictionaryAsync(x => x.Id, x => x.CompanyName, ct);
+        return Ok(new
+        {
+            basePen = Math.Round(rows.Sum(x => x.BasePen), 2), igvPen = Math.Round(rows.Sum(x => x.IgvPen), 2), totalPen = Math.Round(rows.Sum(x => x.BasePen + x.IgvPen), 2),
+            tipos = IncomeTypes.All.Select(t => rows.Where(r => r.Tipo == t).ToList()).Select((g, i) => new { tipo = IncomeTypes.All[i], cantidad = g.Count, basePen = Math.Round(g.Sum(x => x.BasePen), 2), igvPen = Math.Round(g.Sum(x => x.IgvPen), 2), totalPen = Math.Round(g.Sum(x => x.BasePen + x.IgvPen), 2) }),
+            items = rows.OrderBy(x => x.Date).Select(x => new { fecha = x.Date, clientId = x.ClientId, clientName = names.GetValueOrDefault(x.ClientId) ?? "(cliente eliminado)", tipo = x.Tipo, referencia = x.Referencia, basePen = Math.Round(x.BasePen, 2), igvPen = Math.Round(x.IgvPen, 2), totalPen = Math.Round(x.BasePen + x.IgvPen, 2) }),
+        });
+    }
+
+    private sealed record IncomeRow(DateOnly Date, Guid ClientId, string Tipo, string? Referencia, decimal BasePen, decimal IgvPen);
+
+    private static class IncomeTypes
+    {
+        public const string Factura = "Factura", Recibo = "ReciboPorHonorarios", Exterior = "Exterior", SinComprobante = "SinComprobante";
+        public static readonly string[] All = [Factura, Recibo, Exterior, SinComprobante];
     }
 
     private sealed record ClientRankingRow(Guid ClientId, string ClientName, decimal IngresosPen, decimal Porcentaje, decimal PorcentajeAcumulado, int Cobros, DateOnly UltimoCobro, decimal PeriodoAnteriorPen, decimal? VariacionPorcentaje);
