@@ -137,7 +137,7 @@ public sealed class PortalController(RtresDbContext db, IBackgroundJobClient job
         }
         await db.SaveChangesAsync(ct);
         jobs.Enqueue<GitHubIssueSyncJob>(j => j.CreateIssueAsync(ticket.Id, CancellationToken.None));
-        if (project.Repositories.Count == 0) await NotifyPortalTicketAsync(ticket, project, ct);
+        await NotifyPortalTicketAsync(ticket, project, ct); // siempre: con repositorio, el issue de GitHub no basta como aviso
         await NotifyManagerAsync(ticket, project, ct);
         return Created($"/api/tickets/{ticket.Id}", ticket);
     }

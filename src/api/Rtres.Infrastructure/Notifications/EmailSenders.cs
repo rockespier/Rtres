@@ -15,7 +15,7 @@ public sealed class SmtpEmailSender(IConfiguration configuration) : IEmailSender
         var smtp = configuration.GetSection("Smtp");
         var mime = new MimeMessage();
         mime.From.Add(new MailboxAddress(smtp["FromName"] ?? "Rtres Web Solutions", smtp["From"] is { Length: > 0 } from ? from : Setting(smtp, "User")));
-        mime.To.Add(MailboxAddress.Parse(message.To));
+        mime.To.AddRange(ParseRecipients(message.To));
         mime.Subject = message.Subject;
         mime.Body = new BodyBuilder { HtmlBody = message.Html, TextBody = message.Text }.ToMessageBody();
 
@@ -26,6 +26,10 @@ public sealed class SmtpEmailSender(IConfiguration configuration) : IEmailSender
         await client.SendAsync(mime, cancellationToken);
         await client.DisconnectAsync(true, cancellationToken);
     }
+
+    /// <summary>Uno o varios destinatarios separados por coma o punto y coma (p. ej. <c>Notifications:StaffEmail</c>).</summary>
+    public static IEnumerable<MailboxAddress> ParseRecipients(string to) =>
+        to.Split([',', ';'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).Select(MailboxAddress.Parse);
 
     /// <summary>Valor obligatorio de <c>Smtp:*</c>: sin él no se puede enviar, y el error dice qué falta configurar.</summary>
     private static string Setting(IConfigurationSection smtp, string key) =>

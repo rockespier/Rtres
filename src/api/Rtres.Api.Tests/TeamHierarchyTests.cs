@@ -83,7 +83,7 @@ public class TeamHierarchyTests
         var sent = Assert.Single(notifications.Sent, x => x.Type == NotificationType.TicketCreatedForManager);
         Assert.Equal("jefa@cabalgatas.pe", sent.To); Assert.Equal($"ticket-manager:{ticketId}", sent.DedupeKey);
         Assert.Equal("Roberto Ramos", sent.Data["creator"]); Assert.Equal("Ventas", sent.Data["area"]);
-        Assert.Equal(withRepositories ? 0 : 1, notifications.Sent.Count(x => x.Type == NotificationType.TicketCreated));
+        Assert.Equal(1, notifications.Sent.Count(x => x.Type == NotificationType.TicketCreated));
     }
 
     [Theory]

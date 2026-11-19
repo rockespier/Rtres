@@ -262,3 +262,13 @@ internal sealed class InlineNotifications(RtresDbContext db, IEmailSender email)
     public Task SendAsync(Client client, Notification notification, CancellationToken cancellationToken = default) =>
         NotificationJobTests.Job(db, email).SendAsync(client.Id, notification, cancellationToken);
 }
+
+public class SmtpRecipientsTests
+{
+    [Theory]
+    [InlineData("equipo@rtres.net", new[] { "equipo@rtres.net" })]
+    [InlineData("equipo@rtres.net, rtres.info@gmail.com", new[] { "equipo@rtres.net", "rtres.info@gmail.com" })]
+    [InlineData("equipo@rtres.net;rtres.info@gmail.com; ", new[] { "equipo@rtres.net", "rtres.info@gmail.com" })]
+    public void Accepts_one_or_several_recipients(string to, string[] expected) =>
+        Assert.Equal(expected, SmtpEmailSender.ParseRecipients(to).Select(x => x.Address));
+}

@@ -451,11 +451,13 @@ public class AdminTicketEndpointTests
         Assert.Equal(nameof(UserRole.SuperAdmin), authorization.Roles); // El pipeline devuelve 403 al cliente antes de ejecutar estos endpoints.
     }
 
-    [Fact]
-    public async Task New_ticket_without_repo_notifies_rtres()
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task New_ticket_always_notifies_rtres(bool withRepositories)
     {
         using var db = TestData.Db(out var seed);
-        TestData.RemoveRepos(db);
+        if (!withRepositories) TestData.RemoveRepos(db);
         var notifications = new FakeNotifications(); var jobs = new FakeJobs();
         var identity = new ClaimsIdentity([new Claim(ClaimTypes.NameIdentifier, seed.User.Id.ToString()), new Claim("client_id", seed.Client.Id.ToString()), new Claim(ClaimTypes.Role, "Cliente")], "test");
         var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?> { ["Notifications:StaffEmail"] = "equipo@rtres.net" }).Build();
