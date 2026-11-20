@@ -131,13 +131,17 @@ if ($PackageOnly) {
 }
 
 $destino = "$Usuario@$Servidor"
+# OpenSSH de Windows, no el de Git: solo ese usa el servicio ssh-agent (la passphrase se pide una vez con ssh-add).
+$openSsh = Join-Path $env:WINDIR 'System32\OpenSSH'
+$ssh = if (Test-Path -LiteralPath (Join-Path $openSsh 'ssh.exe')) { Join-Path $openSsh 'ssh.exe' } else { 'ssh' }
+$scp = if (Test-Path -LiteralPath (Join-Path $openSsh 'scp.exe')) { Join-Path $openSsh 'scp.exe' } else { 'scp' }
 $sitios = @(
     @{ Zip = "$apiPackage.zip"; Pool = $ApiAppPool; Ruta = $ApiDestination },
     @{ Zip = "$portalPackage.zip"; Pool = $PortalAppPool; Ruta = $PortalDestination }
 )
 
 # Los zips van a la carpeta del usuario SSH (no dentro del sitio, para no dejarlos publicados) y se borran al terminar.
-Invoke-Checked { scp ($sitios | ForEach-Object { $_.Zip }) "${destino}:" } "Copiando api.zip y portal.zip por scp a $destino"
+Invoke-Checked { & $scp ($sitios | ForEach-Object { $_.Zip }) "${destino}:" } "Copiando api.zip y portal.zip por scp a $destino"
 
 # En el servidor: detener pools, descomprimir, levantar pools.
 # Los pools se levantan en 'finally' para que el sitio no quede caido si falla la descompresion.
@@ -182,6 +186,6 @@ if (`$fallo) { exit 1 }
 "@
 
 $codificado = [Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes($remoto))
-Invoke-Checked { ssh $destino "powershell -NoProfile -NonInteractive -EncodedCommand $codificado" } "Despliegue remoto en $Servidor (detener pools, descomprimir, iniciar pools)"
+Invoke-Checked { & $ssh $destino "powershell -NoProfile -NonInteractive -EncodedCommand $codificado" } "Despliegue remoto en $Servidor (detener pools, descomprimir, iniciar pools)"
 
 Write-Host "`nAPI y portal desplegados en $Servidor. Si hubo migraciones, ejecuta publish\migrations.sql. Falta subir site.zip al hosting Linux." -ForegroundColor Green

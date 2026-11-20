@@ -220,7 +220,7 @@ public static class EmailTemplates
             ["transfer.body"] = "{0} agregó {1} (proyecto {2}) desde el catálogo y eligió pagar por transferencia bancaria.",
             ["transfer.amount"] = "Monto a recibir: {0}.",
             ["transfer.next"] = "El producto queda Pendiente. Cuando llegue la transferencia, regístrala en el detalle del cliente con \"Registrar pago\" para activarlo.",
-            ["ticket-created.subject"] = "Nuevo ticket sin GitHub: {0} — {1}",
+            ["ticket-created.subject"] = "Nuevo ticket: {0} — {1}",
             ["ticket-created.body"] = "{0} abrió el ticket «{2}» para el proyecto {1}. Atiéndelo desde el portal de administración:",
             ["cta.client"] = "Ver cliente",
             ["footer.staff"] = "Aviso interno del portal de clientes de Rtres.",
